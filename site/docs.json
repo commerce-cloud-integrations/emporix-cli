@@ -1,0 +1,207 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "theme": "mint",
+  "name": "epx",
+  "description": "Read and manage your Emporix tenant from the command line.",
+  "colors": {
+    "primary": "#4F46E5",
+    "light": "#818CF8",
+    "dark": "#4338CA"
+  },
+  "favicon": "/favicon.svg",
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Documentation",
+        "groups": [
+          {
+            "group": "Get started",
+            "pages": [
+              "index",
+              "install",
+              "configure",
+              "quickstart"
+            ]
+          },
+          {
+            "group": "Guides",
+            "pages": [
+              "guides/output",
+              "guides/lists",
+              "guides/api",
+              "guides/writes",
+              "guides/bulk",
+              "guides/exit-codes"
+            ]
+          },
+          {
+            "group": "Concepts",
+            "pages": [
+              "security"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "CLI reference",
+        "groups": [
+          {
+            "group": "Commands",
+            "pages": [
+              "commands/index",
+              "commands/ai",
+              "commands/api",
+              "commands/auth",
+              "commands/availability",
+              "commands/brands",
+              "commands/carts",
+              "commands/catalogs",
+              "commands/categories",
+              "commands/category-trees",
+              "commands/changelog",
+              "commands/completion",
+              "commands/configurations",
+              "commands/contact-assignments",
+              "commands/countries",
+              "commands/coupons",
+              "commands/currencies",
+              "commands/custom-entities",
+              "commands/customer-locations",
+              "commands/customers",
+              "commands/delivery-times",
+              "commands/exchange-rates",
+              "commands/fees",
+              "commands/iam",
+              "commands/imports",
+              "commands/indexing",
+              "commands/invoice-jobs",
+              "commands/labels",
+              "commands/legal-entities",
+              "commands/media",
+              "commands/orders",
+              "commands/payment-modes",
+              "commands/payment-transactions",
+              "commands/price-lists",
+              "commands/price-models",
+              "commands/prices",
+              "commands/product-templates",
+              "commands/products",
+              "commands/profile",
+              "commands/quotes",
+              "commands/regions",
+              "commands/returns",
+              "commands/reward-points",
+              "commands/schemas",
+              "commands/search",
+              "commands/segments",
+              "commands/sequential-ids",
+              "commands/session-contexts",
+              "commands/shipping",
+              "commands/shopping-lists",
+              "commands/sites",
+              "commands/taxes",
+              "commands/units",
+              "commands/vendor-locations",
+              "commands/vendors",
+              "commands/version",
+              "commands/webhooks"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "API coverage",
+        "groups": [
+          {
+            "group": "Emporix services",
+            "pages": [
+              "coverage/index",
+              "coverage/ai-rag-indexer",
+              "coverage/ai-service",
+              "coverage/approval-service",
+              "coverage/audit-logs-changelog-service",
+              "coverage/availability-service",
+              "coverage/brand-service",
+              "coverage/cart-service",
+              "coverage/catalog-management",
+              "coverage/category",
+              "coverage/checkout-service",
+              "coverage/configuration-service",
+              "coverage/country-service",
+              "coverage/coupon-service",
+              "coverage/currency-service",
+              "coverage/customer-management-service",
+              "coverage/customer-segment-service",
+              "coverage/customer-service-customer-managed",
+              "coverage/customer-service-tenant-managed",
+              "coverage/fee-service",
+              "coverage/iam-service",
+              "coverage/import-service",
+              "coverage/indexing-service",
+              "coverage/invoice-service",
+              "coverage/label-service",
+              "coverage/media-service",
+              "coverage/oauth-service",
+              "coverage/order-service",
+              "coverage/payment-gateway-service",
+              "coverage/price-service",
+              "coverage/product-service",
+              "coverage/quote-service",
+              "coverage/returns-service",
+              "coverage/reward-points-service",
+              "coverage/schema-service",
+              "coverage/search-service",
+              "coverage/sequential-id-service",
+              "coverage/session-context-service",
+              "coverage/shipping-service",
+              "coverage/shopping-list-service",
+              "coverage/site-settings-service",
+              "coverage/tax-service",
+              "coverage/unit-handling-service",
+              "coverage/vendor-service",
+              "coverage/webhook-service"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "navbar": {
+    "primary": {
+      "type": "github",
+      "href": "https://github.com/commerce-cloud-integrations/emporix-cli"
+    }
+  },
+  "contextual": {
+    "options": [
+      "copy",
+      "view",
+      "chatgpt",
+      "claude",
+      "perplexity",
+      "mcp",
+      "cursor",
+      "vscode"
+    ]
+  },
+  "footer": {
+    "socials": {
+      "github": "https://github.com/commerce-cloud-integrations/emporix-cli"
+    },
+    "links": [
+      {
+        "header": "Project",
+        "items": [
+          {
+            "label": "Source on GitHub",
+            "href": "https://github.com/commerce-cloud-integrations/emporix-cli"
+          },
+          {
+            "label": "Emporix API reference faad614 (2026-10-14)",
+            "href": "https://github.com/emporix/api-references/commit/faad61403b0683a7a8948b571f10305393760ae0"
+          }
+        ]
+      }
+    ]
+  }
+}

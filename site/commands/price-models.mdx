@@ -1,0 +1,194 @@
+---
+title: "epx price-models"
+sidebarTitle: "price-models"
+description: "Read and change price models."
+---
+
+## epx price-models
+
+Reads and changes price models, the tier structure that prices follow. create, update and
+delete change one; delete `--force` also deletes a model that prices use, with its prices.
+
+Its reads require the price.pricemodel\_read scope.
+Its writes require the price.pricemodel\_manage scope.
+
+**Command:** `epx price-models [flags]`, `epx price-models [command]`
+
+**Flags:** only the [global flags](/commands#global-flags).
+
+**Subcommands**
+
+- [`epx price-models create`](#epx-price-models-create)\
+  Create a price model.
+- [`epx price-models delete`](#epx-price-models-delete)\
+  Delete a price model.
+- [`epx price-models get`](#epx-price-models-get)\
+  Show one price model.
+- [`epx price-models list`](#epx-price-models-list)\
+  List price models.
+- [`epx price-models update`](#epx-price-models-update)\
+  Upsert a price model.
+
+## epx price-models create
+
+Create a price model.
+
+Creates the price model in `--file`, a JSON object with name, includesTax, includesMarkup,
+measurementUnit and tierDefinition: tierType (BASIC, TIERED or VOLUME) and the minQuantity of
+each tier, e.g. `{"name": {"en": "Per kilogram"}, "includesTax": true, "includesMarkup": false, "measurementUnit": {"quantity": 1, "unitCode": "kg"}, "tierDefinition": {"tierType": "BASIC", "tiers": [{"minQuantity": {"quantity": 0, "unitCode": "kg"}}]}}`. Without an id, Emporix makes one, which the response gives.
+
+Localized text in the body, such as a name, is a map of translations, e.g.
+`{"en": "gram", "de": "Gramm"}`, as `-o json` of a read prints it, or with `--content-language`
+LANGUAGE a string in that language, e.g. `"gram"` with `--content-language` en.
+
+Changes data: on a terminal, epx asks before it sends POST. `--yes` sends without
+asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
+instead of sending it.
+
+Requires the price.pricemodel\_manage scope.
+
+**Command:** `epx price-models create [flags]`
+
+**Flags**
+
+- `--content-language <LANGUAGE>`\
+  The LANGUAGE of localized text in the body, or \* for maps of translations. Default: `*`.
+- `--dry-run`\
+  Print the request instead of sending it (excludes `-o`).
+- `--file <PATH>`\
+  JSON request body in PATH, sent byte for byte (- reads standard input; sending it then needs `--yes`; required).
+- `-o, --output <format>`\
+  Format of the response: json or yaml. Default: `json`.
+- `--yes`\
+  Send without asking (required without a terminal, or with `--file` -).
+
+Also takes the [global flags](/commands#global-flags).
+
+## epx price-models delete
+
+Delete a price model.
+
+Deletes the price model ID. Emporix refuses a model that prices use (400 Bad Request,
+exit 1) unless `--force` is given, which needs both scopes below and deletes those prices
+too: Emporix deletes them after the model, in the background.
+Emporix answers an unknown ID as one that it deleted (204 No Content).
+
+Deletes data, which cannot be undone.
+With `--force`, it deletes the price model and every price that uses it with one request.
+On a terminal, epx sends DELETE only once you type ID at its prompt.
+`--yes` sends without asking (required without a terminal);
+`--dry-run` prints the request instead of sending it.
+
+`--force` also requests the price.pricemodel\_manage\_admin scope.
+
+Requires the price.pricemodel\_manage scope.
+
+**Command:** `epx price-models delete ID [flags]`
+
+**Flags**
+
+- `--dry-run`\
+  Print the request instead of sending it (excludes `-o`).
+- `--force`\
+  Delete a model that prices use, with its prices: sends forceDelete=true (requests price.pricemodel\_manage\_admin too).
+- `-o, --output <format>`\
+  Format of the response: json or yaml. Default: `json`.
+- `--yes`\
+  Send without asking (required without a terminal).
+
+Also takes the [global flags](/commands#global-flags).
+
+## epx price-models get
+
+Show one price model.
+
+Reads price models, the tier structure that prices follow. DEFAULT marks the tenant's
+default model, TYPE is the tier type (BASIC, TIERED or VOLUME), TIERS the minimum quantity
+of each tier, UNIT the quantity a price applies to, and TAX and MARKUP whether prices of
+the model include them (`-o json` adds descriptions and the tier ids that price tier values
+refer to).
+
+Requires the price.pricemodel\_read scope.
+
+**Command:** `epx price-models get ID [flags]`
+
+**Flags**
+
+- `--columns <names>`\
+  Print only these columns of table and csv, in this order: comma-separated names (any case) among ID, NAME, DEFAULT, TYPE, TIERS, UNIT, TAX, MARKUP.
+- `--language <language>`\
+  Language of localized table text; a missing translation shows another, labeled (`-o json` prints all). Default: `en`.
+- `--no-headers`\
+  Print table and csv without the header row.
+- `-o, --output <format>`\
+  Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
+
+Also takes the [global flags](/commands#global-flags).
+
+## epx price-models list
+
+List price models.
+
+Reads price models, the tier structure that prices follow. DEFAULT marks the tenant's
+default model, TYPE is the tier type (BASIC, TIERED or VOLUME), TIERS the minimum quantity
+of each tier, UNIT the quantity a price applies to, and TAX and MARKUP whether prices of
+the model include them (`-o json` adds descriptions and the tier ids that price tier values
+refer to).
+
+Requires the price.pricemodel\_read scope.
+
+**Command:** `epx price-models list [flags]`
+
+**Flags**
+
+- `--columns <names>`\
+  Print only these columns of table and csv, in this order: comma-separated names (any case) among ID, NAME, DEFAULT, TYPE, TIERS, UNIT, TAX, MARKUP.
+- `--language <language>`\
+  Language of localized table text; a missing translation shows another, labeled (`-o json` prints all). Default: `en`.
+- `--limit <n>`\
+  Print at most n items; paged reads stop early where they safely can (0: every item).
+- `--no-headers`\
+  Print table and csv without the header row.
+- `-o, --output <format>`\
+  Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
+- `--sort <order>`\
+  Emporix sort order, passed as given, e.g. code or name.en:desc,code; fields mostly as in `-o json` (Emporix may ignore an unknown one).
+- `--stream`\
+  Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
+
+Also takes the [global flags](/commands#global-flags).
+
+## epx price-models update
+
+Upsert a price model.
+
+Replaces the price model ID with the one in `--file`, a JSON object as
+[`epx price-models get ID -o json`](/commands/price-models#epx-price-models-get) prints it, or creates it with that id where none exists
+(an upsert).
+
+Localized text in the body, such as a name, is a map of translations, e.g.
+`{"en": "gram", "de": "Gramm"}`, as `-o json` of a read prints it, or with `--content-language`
+LANGUAGE a string in that language, e.g. `"gram"` with `--content-language` en.
+
+Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without
+asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
+instead of sending it.
+
+Requires the price.pricemodel\_manage scope.
+
+**Command:** `epx price-models update ID [flags]`
+
+**Flags**
+
+- `--content-language <LANGUAGE>`\
+  The LANGUAGE of localized text in the body, or \* for maps of translations. Default: `*`.
+- `--dry-run`\
+  Print the request instead of sending it (excludes `-o`).
+- `--file <PATH>`\
+  JSON request body in PATH, sent byte for byte (- reads standard input; sending it then needs `--yes`; required).
+- `-o, --output <format>`\
+  Format of the response: json or yaml. Default: `json`.
+- `--yes`\
+  Send without asking (required without a terminal, or with `--file` -).
+
+Also takes the [global flags](/commands#global-flags).

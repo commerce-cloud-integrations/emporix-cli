@@ -1,0 +1,1477 @@
+---
+title: "epx iam"
+sidebarTitle: "iam"
+description: "Read and change IAM users, groups and access rights."
+---
+
+## epx iam
+
+Reads the tenant's IAM (identity and access management) data: user accounts, the groups they
+belong to and what these may do: roles, permissions, scopes, resources, access controls and
+templates. Its writes change users, groups and their users, access controls and custom
+scopes, and with them who may do what in the tenant.
+
+Its reads require different OAuth scopes; the help of each names them.
+Its writes require different OAuth scopes; the help of each names them.
+
+**Command:** `epx iam [flags]`, `epx iam [command]`
+
+**Flags:** only the [global flags](/commands#global-flags).
+
+**Subcommands**
+
+- [`epx iam access-controls`](#epx-iam-access-controls)\
+  Read, upsert and delete access controls.
+- [`epx iam groups`](#epx-iam-groups)\
+  Read, create, upsert and delete IAM groups and their users.
+- [`epx iam permissions`](#epx-iam-permissions)\
+  Read IAM permissions.
+- [`epx iam resources`](#epx-iam-resources)\
+  Read IAM resources.
+- [`epx iam roles`](#epx-iam-roles)\
+  Read IAM roles.
+- [`epx iam scopes`](#epx-iam-scopes)\
+  Read, upsert and delete OAuth scopes.
+- [`epx iam templates`](#epx-iam-templates)\
+  Read IAM templates.
+- [`epx iam users`](#epx-iam-users)\
+  Read, create, replace and delete IAM users; read what they may do.
+
+## epx iam access-controls
+
+Read, upsert and delete access controls.
+
+Reads IAM access controls, the scopes they grant the users of the groups that hold them, and
+upserts and deletes them.
+Its writes change who may do what in the tenant.
+
+Its reads require the iam.access\_read scope.
+Its writes require the iam.access\_manage scope.
+
+**Command:** `epx iam access-controls [flags]`, `epx iam access-controls [command]`
+
+**Flags:** only the [global flags](/commands#global-flags).
+
+**Subcommands**
+
+- [`epx iam access-controls delete`](#epx-iam-access-controls-delete)\
+  Delete an access control.
+- [`epx iam access-controls get`](#epx-iam-access-controls-get)\
+  Show one access control.
+- [`epx iam access-controls list`](#epx-iam-access-controls-list)\
+  List IAM access controls.
+- [`epx iam access-controls update`](#epx-iam-access-controls-update)\
+  Upsert an access control.
+
+## epx iam access-controls delete
+
+Delete an access control.
+
+Deletes the access control ID. Emporix deletes only those made for the tenant, not the
+predefined ones (PREDEFINED in [`epx iam access-controls list`](/commands/iam#epx-iam-access-controls-list)).
+It changes who may do what in the tenant.
+
+Deletes data, which cannot be undone.
+On a terminal, epx sends DELETE only once you type ID at its prompt.
+`--yes` sends without asking (required without a terminal);
+`--dry-run` prints the request instead of sending it.
+
+Requires the iam.access\_manage scope.
+
+**Command:** `epx iam access-controls delete ID [flags]`
+
+**Flags**
+
+- `--dry-run`\
+  Print the request instead of sending it (excludes `-o`).
+- `-o, --output <format>`\
+  Format of the response: json or yaml. Default: `json`.
+- `--yes`\
+  Send without asking (required without a terminal).
+
+Also takes the [global flags](/commands#global-flags).
+
+## epx iam access-controls get
+
+Show one access control.
+
+Reads IAM access controls.
+SCOPES counts the scopes an access control grants (`-o json` lists them); RESOURCE
+and ROLE are the ids of the resource and role older access controls refer to.
+list sorts by id unless `--sort` says otherwise; end another order with ,id:asc (e.g.
+name.en:asc,id:asc), as Emporix wants a direction on every field, so pages do not overlap.
+
+Requires the iam.access\_read scope.
+
+**Command:** `epx iam access-controls get ID [flags]`
+
+**Flags**
+
+- `--columns <names>`\
+  Print only these columns of table and csv, in this order: comma-separated names (any case) among ID, NAME, SCOPES, PREDEFINED, RESOURCE, ROLE.
+- `--language <language>`\
+  Language of localized table text; a missing translation shows another, labeled (`-o json` prints all). Default: `en`.
+- `--no-headers`\
+  Print table and csv without the header row.
+- `-o, --output <format>`\
+  Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
+
+Also takes the [global flags](/commands#global-flags).
+
+## epx iam access-controls list
+
+List IAM access controls.
+
+Reads IAM access controls.
+SCOPES counts the scopes an access control grants (`-o json` lists them); RESOURCE
+and ROLE are the ids of the resource and role older access controls refer to.
+list sorts by id unless `--sort` says otherwise; end another order with ,id:asc (e.g.
+name.en:asc,id:asc), as Emporix wants a direction on every field, so pages do not overlap.
+
+Requires the iam.access\_read scope.
+
+**Command:** `epx iam access-controls list [flags]`
+
+**Flags**
+
+- `--columns <names>`\
+  Print only these columns of table and csv, in this order: comma-separated names (any case) among ID, NAME, SCOPES, PREDEFINED, RESOURCE, ROLE.
+- `--language <language>`\
+  Language of localized table text; a missing translation shows another, labeled (`-o json` prints all). Default: `en`.
+- `--limit <n>`\
+  Print at most n items; paged reads stop early where they safely can (0: every item).
+- `--no-headers`\
+  Print table and csv without the header row.
+- `-o, --output <format>`\
+  Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
+- `--query <filter>`\
+  Emporix q filter, passed as given, e.g. code:(A1,A2); space-separated conditions must all match (fields mostly as in `-o json`).
+- `--sort <order>`\
+  Emporix sort order, passed as given, e.g. code or name.en:desc,code; fields mostly as in `-o json` (Emporix may ignore an unknown one).
+- `--stream`\
+  Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
+
+Also takes the [global flags](/commands#global-flags).
+
+## epx iam access-controls update
+
+Upsert an access control.
+
+Replaces the access control ID with the JSON in `--file`, or creates it with that id where
+none exists (an upsert): the scopes it grants (at least one), and optionally its name and
+description, domains and restrictedTo (CUSTOMER or EMPLOYEE: the only kind of group that may
+grant it, set when it is created only).
+With metadata.version as read, Emporix changes it only if that is still its version.
+Emporix answers with the id of one it created, and with nothing when it replaced one.
+It changes who may do what in the tenant.
+
+Localized text in the body is a map of translations, e.g. `{"en": "Acme", "de": "Acme"}`,
+as `-o json` of a read prints it, sent with Content-Language: \*. Emporix refuses a string in
+its place.
+
+Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without
+asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
+instead of sending it.
+
+Requires the iam.access\_manage scope.
+
+**Command:** `epx iam access-controls update ID [flags]`
+
+**Flags**
+
+- `--dry-run`\
+  Print the request instead of sending it (excludes `-o`).
+- `--file <PATH>`\
+  JSON request body in PATH, sent byte for byte (- reads standard input; sending it then needs `--yes`; required).
+- `-o, --output <format>`\
+  Format of the response: json or yaml. Default: `json`.
+- `--yes`\
+  Send without asking (required without a terminal, or with `--file` -).
+
+Also takes the [global flags](/commands#global-flags).
+
+## epx iam groups
+
+Read, create, upsert and delete IAM groups and their users.
+
+Reads the tenant's user groups, their users and the access controls they grant, and
+changes groups and their users.
+Its writes change who may do what in the tenant.
+
+Its reads require different OAuth scopes; the help of each names them.
+Its writes require different OAuth scopes; the help of each names them.
+
+**Command:** `epx iam groups [flags]`, `epx iam groups [command]`
+
+**Flags:** only the [global flags](/commands#global-flags).
+
+**Subcommands**
+
+- [`epx iam groups access-controls`](#epx-iam-groups-access-controls)\
+  List the access controls of a group.
+- [`epx iam groups create`](#epx-iam-groups-create)\
+  Create a group.
+- [`epx iam groups delete`](#epx-iam-groups-delete)\
+  Delete a group.
+- [`epx iam groups get`](#epx-iam-groups-get)\
+  Show one group.
+- [`epx iam groups list`](#epx-iam-groups-list)\
+  List IAM groups.
+- [`epx iam groups update`](#epx-iam-groups-update)\
+  Upsert a group.
+- [`epx iam groups users`](#epx-iam-groups-users)\
+  Read the users of a group, add and remove them.
+
+## epx iam groups access-controls
+
+List the access controls of a group.
+
+Reads the access controls a group grants its users.
+SCOPES counts the scopes an access control grants (`-o json` lists them); RESOURCE
+and ROLE are the ids of the resource and role older access controls refer to.
+A group's ACCESS CONTROLS in [`epx iam groups list`](/commands/iam#epx-iam-groups-list) may also count removed access controls,
+which this leaves out.
+GROUP\_ID is the ID that [`epx iam groups list`](/commands/iam#epx-iam-groups-list) shows; an unknown one is not found.
+
+Requires the iam.access\_read scope.
+
+**Command:** `epx iam groups access-controls GROUP_ID [flags]`
+
+**Flags**
+
+- `--columns <names>`\
+  Print only these columns of table and csv, in this order: comma-separated names (any case) among ID, NAME, SCOPES, PREDEFINED, RESOURCE, ROLE.
+- `--language <language>`\
+  Language of localized table text; a missing translation shows another, labeled (`-o json` prints all). Default: `en`.
+- `--limit <n>`\
+  Print at most n items; paged reads stop early where they safely can (0: every item).
+- `--no-headers`\
+  Print table and csv without the header row.
+- `-o, --output <format>`\
+  Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
+- `--stream`\
+  Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
+
+Also takes the [global flags](/commands#global-flags).
+
+## epx iam groups create
+
+Create a group.
+
+Creates the group in `--file`, a JSON object with its name and the ids of the access controls
+that its users get (accessControls, from [`epx iam access-controls list`](/commands/iam#epx-iam-access-controls-list)), and optionally
+its id (Emporix makes one otherwise), description, userType (CUSTOMER, or EMPLOYEE, the
+default), templates, b2b.legalEntityId, restrictions and mixins. Emporix answers with the
+group's id; a group with the id exists already: a conflict (exit 5).
+It changes who may do what in the tenant.
+
+Localized text in the body is a map of translations, e.g. `{"en": "Acme", "de": "Acme"}`,
+as `-o json` of a read prints it, sent with Content-Language: \*. Emporix refuses a string in
+its place.
+
+Changes data: on a terminal, epx asks before it sends POST. `--yes` sends without
+asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
+instead of sending it.
+
+Requires the iam.group\_manage scope.
+
+**Command:** `epx iam groups create [flags]`
+
+**Flags**
+
+- `--dry-run`\
+  Print the request instead of sending it (excludes `-o`).
+- `--file <PATH>`\
+  JSON request body in PATH, sent byte for byte (- reads standard input; sending it then needs `--yes`; required).
+- `-o, --output <format>`\
+  Format of the response: json or yaml. Default: `json`.
+- `--yes`\
+  Send without asking (required without a terminal, or with `--file` -).
+
+Also takes the [global flags](/commands#global-flags).
+
+## epx iam groups delete
+
+Delete a group.
+
+Deletes the group ID. Emporix refuses to delete a group that users belong to (400 Bad
+Request, exit 1; [`epx iam groups users list ID`](/commands/iam#epx-iam-groups-users-list) lists them) unless `--force-delete` is
+given, which removes every user from it too.
+It changes who may do what in the tenant.
+
+Deletes data, which cannot be undone.
+With `--force-delete`, it deletes the group and the membership of every user of it with one request.
+On a terminal, epx sends DELETE only once you type ID at its prompt.
+`--yes` sends without asking (required without a terminal);
+`--dry-run` prints the request instead of sending it.
+
+`--force-delete` also requests the iam.assignment\_manage scope.
+
+Requires the iam.group\_manage scope.
+
+**Command:** `epx iam groups delete ID [flags]`
+
+**Flags**
+
+- `--dry-run`\
+  Print the request instead of sending it (excludes `-o`).
+- `--force-delete`\
+  Delete the group also when users belong to it, removing every user from it (requests iam.assignment\_manage too).
+- `-o, --output <format>`\
+  Format of the response: json or yaml. Default: `json`.
+- `--yes`\
+  Send without asking (required without a terminal).
+
+Also takes the [global flags](/commands#global-flags).
+
+## epx iam groups get
+
+Show one group.
+
+Reads the tenant's user groups. TYPE is the kind of user a group is for (e.g. EMPLOYEE,
+CUSTOMER), and ACCESS CONTROLS counts the access controls it grants (`-o json` lists their
+ids, [`epx iam groups access-controls`](/commands/iam#epx-iam-groups-access-controls) reads them).
+
+Requires the iam.group\_read scope.
+
+**Command:** `epx iam groups get ID [flags]`
+
+**Flags**
+
+- `--columns <names>`\
+  Print only these columns of table and csv, in this order: comma-separated names (any case) among ID, CODE, NAME, TYPE, ACCESS CONTROLS.
+- `--language <language>`\
+  Language of localized table text; a missing translation shows another, labeled (`-o json` prints all). Default: `en`.
+- `--no-headers`\
+  Print table and csv without the header row.
+- `-o, --output <format>`\
+  Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
+
+Also takes the [global flags](/commands#global-flags).
+
+## epx iam groups list
+
+List IAM groups.
+
+Reads the tenant's user groups. TYPE is the kind of user a group is for (e.g. EMPLOYEE,
+CUSTOMER), and ACCESS CONTROLS counts the access controls it grants (`-o json` lists their
+ids, [`epx iam groups access-controls`](/commands/iam#epx-iam-groups-access-controls) reads them).
+
+Requires the iam.group\_read scope.
+
+**Command:** `epx iam groups list [flags]`
+
+**Flags**
+
+- `--columns <names>`\
+  Print only these columns of table and csv, in this order: comma-separated names (any case) among ID, CODE, NAME, TYPE, ACCESS CONTROLS.
+- `--language <language>`\
+  Language of localized table text; a missing translation shows another, labeled (`-o json` prints all). Default: `en`.
+- `--limit <n>`\
+  Print at most n items; paged reads stop early where they safely can (0: every item).
+- `--no-headers`\
+  Print table and csv without the header row.
+- `-o, --output <format>`\
+  Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
+- `--query <filter>`\
+  Emporix q filter, passed as given, e.g. code:(A1,A2); space-separated conditions must all match (fields mostly as in `-o json`).
+- `--sort <order>`\
+  Emporix sort order, passed as given, e.g. code or name.en:desc,code; fields mostly as in `-o json` (Emporix may ignore an unknown one).
+- `--stream`\
+  Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
+
+Also takes the [global flags](/commands#global-flags).
+
+## epx iam groups update
+
+Upsert a group.
+
+Replaces the group ID with the JSON in `--file`, as create takes it without id, or
+creates it with that id where none exists (an upsert): give its name and every other
+member to keep, as [`epx iam groups get ID -o json`](/commands/iam#epx-iam-groups-get) prints it.
+With metadata.version as read, Emporix changes it only if that is still its version.
+Emporix answers with the id of one it created, and with nothing when it replaced one.
+It changes who may do what in the tenant.
+
+Localized text in the body is a map of translations, e.g. `{"en": "Acme", "de": "Acme"}`,
+as `-o json` of a read prints it, sent with Content-Language: \*. Emporix refuses a string in
+its place.
+
+Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without
+asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
+instead of sending it.
+
+Requires the iam.group\_manage scope.
+
+**Command:** `epx iam groups update ID [flags]`
+
+**Flags**
+
+- `--dry-run`\
+  Print the request instead of sending it (excludes `-o`).
+- `--file <PATH>`\
+  JSON request body in PATH, sent byte for byte (- reads standard input; sending it then needs `--yes`; required).
+- `-o, --output <format>`\
+  Format of the response: json or yaml. Default: `json`.
+- `--yes`\
+  Send without asking (required without a terminal, or with `--file` -).
+
+Also takes the [global flags](/commands#global-flags).
+
+## epx iam groups users
+
+Read the users of a group, add and remove them.
+
+Reads the users of a group, adds users to it and removes them from it.
+Its writes change who may do what in the tenant.
+
+Its reads require the iam.user\_read scope.
+Its writes require the iam.assignment\_manage scope.
+
+**Command:** `epx iam groups users [flags]`, `epx iam groups users [command]`
+
+**Flags:** only the [global flags](/commands#global-flags).
+
+**Subcommands**
+
+- [`epx iam groups users create`](#epx-iam-groups-users-create)\
+  Add a user to a group.
+- [`epx iam groups users delete`](#epx-iam-groups-users-delete)\
+  Remove a user from a group.
+- [`epx iam groups users delete-all`](#epx-iam-groups-users-delete-all)\
+  Remove every user from a group.
+- [`epx iam groups users list`](#epx-iam-groups-users-list)\
+  List the users of a group.
+- [`epx iam groups users update`](#epx-iam-groups-users-update)\
+  Upsert the membership of a user in a group.
+
+## epx iam groups users create
+
+Add a user to a group.
+
+Adds the user that `--user` names, of the kind that `--user-type` names (EMPLOYEE when left
+out), to the group GROUP\_ID, or the one in `--file`, a JSON object with its userId and
+userType. Emporix answers with the id of the membership; a user already in the group is
+answered with a new id that is not the listed membership's, and no second membership is made
+(read the members with [`epx iam groups users list`](/commands/iam#epx-iam-groups-users-list)).
+The user then gets the scopes of the group's access controls; a group of a vendor takes
+only the vendor's employees.
+GROUP\_ID is the ID that [`epx iam groups list`](/commands/iam#epx-iam-groups-list) shows; an unknown one is not found.
+It changes who may do what in the tenant.
+
+Changes data: on a terminal, epx asks before it sends POST. `--yes` sends without
+asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
+instead of sending it.
+
+Requires the iam.assignment\_manage scope.
+
+**Command:** `epx iam groups users create GROUP_ID [flags]`
+
+**Flags**
+
+- `--dry-run`\
+  Print the request instead of sending it (excludes `-o`).
+- `--file <PATH>`\
+  JSON request body in PATH, sent byte for byte instead of the one that epx makes (- reads standard input; sending it then needs `--yes`).
+- `-o, --output <format>`\
+  Format of the response: json or yaml. Default: `json`.
+- `--user <USER_ID>`\
+  The USER\_ID of the user to add: the ID that [`epx iam users list`](/commands/iam#epx-iam-users-list) shows, or a customer's id (required without `--file`).
+- `--user-type <TYPE>`\
+  The TYPE of user: CUSTOMER or EMPLOYEE.
+- `--yes`\
+  Send without asking (required without a terminal, or with `--file` -).
+
+Also takes the [global flags](/commands#global-flags).
+
+## epx iam groups users delete
+
+Remove a user from a group.
+
+Removes the user USER\_ID from the group GROUP\_ID: the user no longer gets the scopes of
+its access controls.
+GROUP\_ID is the ID that [`epx iam groups list`](/commands/iam#epx-iam-groups-list) shows; an unknown GROUP\_ID or USER\_ID is answered as one that Emporix deleted (204 No Content).
+It changes who may do what in the tenant.
+
+Deletes data, which cannot be undone.
+On a terminal, epx sends DELETE only once you type USER\_ID at its prompt.
+`--yes` sends without asking (required without a terminal);
+`--dry-run` prints the request instead of sending it.
+
+Requires the iam.assignment\_manage scope.
+
+**Command:** `epx iam groups users delete GROUP_ID USER_ID [flags]`
+
+**Flags**
+
+- `--dry-run`\
+  Print the request instead of sending it (excludes `-o`).
+- `-o, --output <format>`\
+  Format of the response: json or yaml. Default: `json`.
+- `--yes`\
+  Send without asking (required without a terminal).
+
+Also takes the [global flags](/commands#global-flags).
+
+## epx iam groups users delete-all
+
+Remove every user from a group.
+
+Removes every user from the group GROUP\_ID, which stays.
+GROUP\_ID is the ID that [`epx iam groups list`](/commands/iam#epx-iam-groups-list) shows; an unknown one is answered as one that Emporix deleted (204 No Content).
+It changes who may do what in the tenant.
+
+Deletes the membership of every user of the group with one request, which cannot be undone.
+On a terminal, epx sends DELETE only once you type GROUP\_ID at its prompt.
+`--yes` sends without asking (required without a terminal);
+`--dry-run` prints the request instead of sending it.
+
+Requires the iam.assignment\_manage scope.
+
+**Command:** `epx iam groups users delete-all GROUP_ID [flags]`
+
+**Flags**
+
+- `--dry-run`\
+  Print the request instead of sending it (excludes `-o`).
+- `-o, --output <format>`\
+  Format of the response: json or yaml. Default: `json`.
+- `--yes`\
+  Send without asking (required without a terminal).
+
+Also takes the [global flags](/commands#global-flags).
+
+## epx iam groups users list
+
+List the users of a group.
+
+Reads the members of a group: USER is a user's id and TYPE the kind of user.
+GROUP\_ID is the ID that [`epx iam groups list`](/commands/iam#epx-iam-groups-list) shows; an unknown one lists nothing.
+
+Requires the iam.user\_read scope.
+
+**Command:** `epx iam groups users list GROUP_ID [flags]`
+
+**Flags**
+
+- `--columns <names>`\
+  Print only these columns of table and csv, in this order: comma-separated names (any case) among ID, USER, TYPE.
+- `--limit <n>`\
+  Print at most n items; paged reads stop early where they safely can (0: every item).
+- `--no-headers`\
+  Print table and csv without the header row.
+- `-o, --output <format>`\
+  Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
+- `--stream`\
+  Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
+
+Also takes the [global flags](/commands#global-flags).
+
+## epx iam groups users update
+
+Upsert the membership of a user in a group.
+
+Adds the user USER\_ID, of the kind USER\_TYPE (CUSTOMER or EMPLOYEE), to the group GROUP\_ID
+unless it belongs to it already (an upsert): Emporix answers with the id of the membership
+it made, and with nothing when there was one, which it leaves as it is.
+The user then gets the scopes of the group's access controls; a group of a vendor takes
+only the vendor's employees.
+GROUP\_ID is the ID that [`epx iam groups list`](/commands/iam#epx-iam-groups-list) shows; an unknown one is not found.
+It changes who may do what in the tenant.
+
+Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without
+asking (required without a terminal); `--dry-run` prints the request
+instead of sending it.
+
+Requires the iam.assignment\_manage scope.
+
+**Command:** `epx iam groups users update GROUP_ID USER_TYPE USER_ID [flags]`
+
+**Flags**
+
+- `--dry-run`\
+  Print the request instead of sending it (excludes `-o`).
+- `-o, --output <format>`\
+  Format of the response: json or yaml. Default: `json`.
+- `--yes`\
+  Send without asking (required without a terminal).
+
+Also takes the [global flags](/commands#global-flags).
+
+## epx iam permissions
+
+Read IAM permissions.
+
+Reads IAM permissions: RESOURCES counts the resources a permission applies to.
+Emporix has deprecated the endpoints this reads; they may be removed.
+list sorts by id unless `--sort` says otherwise; end another order with ,id:asc (e.g.
+name.en:asc,id:asc), as Emporix wants a direction on every field, so pages do not overlap.
+
+Requires the iam.permission\_read scope.
+
+**Command:** `epx iam permissions [flags]`, `epx iam permissions [command]`
+
+**Flags:** only the [global flags](/commands#global-flags).
+
+**Subcommands**
+
+- [`epx iam permissions get`](#epx-iam-permissions-get)\
+  Show one permission.
+- [`epx iam permissions list`](#epx-iam-permissions-list)\
+  List IAM permissions.
+
+## epx iam permissions get
+
+Show one permission.
+
+Reads IAM permissions: RESOURCES counts the resources a permission applies to.
+Emporix has deprecated the endpoints this reads; they may be removed.
+list sorts by id unless `--sort` says otherwise; end another order with ,id:asc (e.g.
+name.en:asc,id:asc), as Emporix wants a direction on every field, so pages do not overlap.
+
+Requires the iam.permission\_read scope.
+
+**Command:** `epx iam permissions get ID [flags]`
+
+**Flags**
+
+- `--columns <names>`\
+  Print only these columns of table and csv, in this order: comma-separated names (any case) among ID, CODE, NAME, RESOURCES.
+- `--language <language>`\
+  Language of localized table text; a missing translation shows another, labeled (`-o json` prints all). Default: `en`.
+- `--no-headers`\
+  Print table and csv without the header row.
+- `-o, --output <format>`\
+  Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
+
+Also takes the [global flags](/commands#global-flags).
+
+## epx iam permissions list
+
+List IAM permissions.
+
+Reads IAM permissions: RESOURCES counts the resources a permission applies to.
+Emporix has deprecated the endpoints this reads; they may be removed.
+list sorts by id unless `--sort` says otherwise; end another order with ,id:asc (e.g.
+name.en:asc,id:asc), as Emporix wants a direction on every field, so pages do not overlap.
+
+Requires the iam.permission\_read scope.
+
+**Command:** `epx iam permissions list [flags]`
+
+**Flags**
+
+- `--columns <names>`\
+  Print only these columns of table and csv, in this order: comma-separated names (any case) among ID, CODE, NAME, RESOURCES.
+- `--language <language>`\
+  Language of localized table text; a missing translation shows another, labeled (`-o json` prints all). Default: `en`.
+- `--limit <n>`\
+  Print at most n items; paged reads stop early where they safely can (0: every item).
+- `--no-headers`\
+  Print table and csv without the header row.
+- `-o, --output <format>`\
+  Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
+- `--sort <order>`\
+  Emporix sort order, passed as given, e.g. code or name.en:desc,code; fields mostly as in `-o json` (Emporix may ignore an unknown one).
+- `--stream`\
+  Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
+
+Also takes the [global flags](/commands#global-flags).
+
+## epx iam resources
+
+Read IAM resources.
+
+Reads IAM resources, what older access controls grant a role on.
+Emporix has deprecated the endpoints this reads; they may be removed.
+list sorts by id unless `--sort` says otherwise; end another order with ,id:asc (e.g.
+name.en:asc,id:asc), as Emporix wants a direction on every field, so pages do not overlap.
+
+Requires the iam.resource\_read scope.
+
+**Command:** `epx iam resources [flags]`, `epx iam resources [command]`
+
+**Flags:** only the [global flags](/commands#global-flags).
+
+**Subcommands**
+
+- [`epx iam resources get`](#epx-iam-resources-get)\
+  Show one resource.
+- [`epx iam resources list`](#epx-iam-resources-list)\
+  List IAM resources.
+
+## epx iam resources get
+
+Show one resource.
+
+Reads IAM resources, what older access controls grant a role on.
+Emporix has deprecated the endpoints this reads; they may be removed.
+list sorts by id unless `--sort` says otherwise; end another order with ,id:asc (e.g.
+name.en:asc,id:asc), as Emporix wants a direction on every field, so pages do not overlap.
+
+Requires the iam.resource\_read scope.
+
+**Command:** `epx iam resources get ID [flags]`
+
+**Flags**
+
+- `--columns <names>`\
+  Print only these columns of table and csv, in this order: comma-separated names (any case) among ID, CODE, NAME.
+- `--language <language>`\
+  Language of localized table text; a missing translation shows another, labeled (`-o json` prints all). Default: `en`.
+- `--no-headers`\
+  Print table and csv without the header row.
+- `-o, --output <format>`\
+  Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
+
+Also takes the [global flags](/commands#global-flags).
+
+## epx iam resources list
+
+List IAM resources.
+
+Reads IAM resources, what older access controls grant a role on.
+Emporix has deprecated the endpoints this reads; they may be removed.
+list sorts by id unless `--sort` says otherwise; end another order with ,id:asc (e.g.
+name.en:asc,id:asc), as Emporix wants a direction on every field, so pages do not overlap.
+
+Requires the iam.resource\_read scope.
+
+**Command:** `epx iam resources list [flags]`
+
+**Flags**
+
+- `--columns <names>`\
+  Print only these columns of table and csv, in this order: comma-separated names (any case) among ID, CODE, NAME.
+- `--language <language>`\
+  Language of localized table text; a missing translation shows another, labeled (`-o json` prints all). Default: `en`.
+- `--limit <n>`\
+  Print at most n items; paged reads stop early where they safely can (0: every item).
+- `--no-headers`\
+  Print table and csv without the header row.
+- `-o, --output <format>`\
+  Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
+- `--sort <order>`\
+  Emporix sort order, passed as given, e.g. code or name.en:desc,code; fields mostly as in `-o json` (Emporix may ignore an unknown one).
+- `--stream`\
+  Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
+
+Also takes the [global flags](/commands#global-flags).
+
+## epx iam roles
+
+Read IAM roles.
+
+Reads IAM roles: PERMISSIONS counts the permissions a role grants (`-o json` lists them).
+Emporix has deprecated the endpoints this reads; they may be removed.
+list sorts by id unless `--sort` says otherwise; end another order with ,id:asc (e.g.
+name.en:asc,id:asc), as Emporix wants a direction on every field, so pages do not overlap.
+
+Requires the iam.role\_read scope.
+
+**Command:** `epx iam roles [flags]`, `epx iam roles [command]`
+
+**Flags:** only the [global flags](/commands#global-flags).
+
+**Subcommands**
+
+- [`epx iam roles get`](#epx-iam-roles-get)\
+  Show one role.
+- [`epx iam roles list`](#epx-iam-roles-list)\
+  List IAM roles.
+
+## epx iam roles get
+
+Show one role.
+
+Reads IAM roles: PERMISSIONS counts the permissions a role grants (`-o json` lists them).
+Emporix has deprecated the endpoints this reads; they may be removed.
+list sorts by id unless `--sort` says otherwise; end another order with ,id:asc (e.g.
+name.en:asc,id:asc), as Emporix wants a direction on every field, so pages do not overlap.
+
+Requires the iam.role\_read scope.
+
+**Command:** `epx iam roles get ID [flags]`
+
+**Flags**
+
+- `--columns <names>`\
+  Print only these columns of table and csv, in this order: comma-separated names (any case) among ID, NAME, PERMISSIONS.
+- `--language <language>`\
+  Language of localized table text; a missing translation shows another, labeled (`-o json` prints all). Default: `en`.
+- `--no-headers`\
+  Print table and csv without the header row.
+- `-o, --output <format>`\
+  Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
+
+Also takes the [global flags](/commands#global-flags).
+
+## epx iam roles list
+
+List IAM roles.
+
+Reads IAM roles: PERMISSIONS counts the permissions a role grants (`-o json` lists them).
+Emporix has deprecated the endpoints this reads; they may be removed.
+list sorts by id unless `--sort` says otherwise; end another order with ,id:asc (e.g.
+name.en:asc,id:asc), as Emporix wants a direction on every field, so pages do not overlap.
+
+Requires the iam.role\_read scope.
+
+**Command:** `epx iam roles list [flags]`
+
+**Flags**
+
+- `--columns <names>`\
+  Print only these columns of table and csv, in this order: comma-separated names (any case) among ID, NAME, PERMISSIONS.
+- `--language <language>`\
+  Language of localized table text; a missing translation shows another, labeled (`-o json` prints all). Default: `en`.
+- `--limit <n>`\
+  Print at most n items; paged reads stop early where they safely can (0: every item).
+- `--no-headers`\
+  Print table and csv without the header row.
+- `-o, --output <format>`\
+  Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
+- `--sort <order>`\
+  Emporix sort order, passed as given, e.g. code or name.en:desc,code; fields mostly as in `-o json` (Emporix may ignore an unknown one).
+- `--stream`\
+  Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
+
+Also takes the [global flags](/commands#global-flags).
+
+## epx iam scopes
+
+Read, upsert and delete OAuth scopes.
+
+Reads the OAuth scopes the tenant knows, and upserts and deletes its custom scopes.
+Its writes change who may do what in the tenant.
+
+Its reads require the iam.scope\_read scope.
+Its writes require the iam.scope\_manage scope.
+
+**Command:** `epx iam scopes [flags]`, `epx iam scopes [command]`
+
+**Flags:** only the [global flags](/commands#global-flags).
+
+**Subcommands**
+
+- [`epx iam scopes delete`](#epx-iam-scopes-delete)\
+  Delete a custom scope.
+- [`epx iam scopes get`](#epx-iam-scopes-get)\
+  Show one scope.
+- [`epx iam scopes list`](#epx-iam-scopes-list)\
+  List IAM scopes.
+- [`epx iam scopes update`](#epx-iam-scopes-update)\
+  Upsert a custom scope.
+
+## epx iam scopes delete
+
+Delete a custom scope.
+
+Deletes the custom scope ID: it can no longer be used, though API keys made before may
+still show it. Emporix deletes only custom scopes, not the predefined ones (PREDEFINED in
+[`epx iam scopes list`](/commands/iam#epx-iam-scopes-list)).
+It changes who may do what in the tenant.
+
+Deletes data, which cannot be undone.
+On a terminal, epx sends DELETE only once you type ID at its prompt.
+`--yes` sends without asking (required without a terminal);
+`--dry-run` prints the request instead of sending it.
+
+Requires the iam.scope\_manage scope.
+
+**Command:** `epx iam scopes delete ID [flags]`
+
+**Flags**
+
+- `--dry-run`\
+  Print the request instead of sending it (excludes `-o`).
+- `-o, --output <format>`\
+  Format of the response: json or yaml. Default: `json`.
+- `--yes`\
+  Send without asking (required without a terminal).
+
+Also takes the [global flags](/commands#global-flags).
+
+## epx iam scopes get
+
+Show one scope.
+
+Reads the OAuth scopes the tenant knows: ID is the scope, DOMAIN the service it belongs to
+and PREDEFINED whether Emporix defines it.
+list sorts by id unless `--sort` says otherwise; end another order with ,id:asc (e.g.
+name.en:asc,id:asc), as Emporix wants a direction on every field, so pages do not overlap.
+
+Requires the iam.scope\_read scope.
+
+**Command:** `epx iam scopes get ID [flags]`
+
+**Flags**
+
+- `--columns <names>`\
+  Print only these columns of table and csv, in this order: comma-separated names (any case) among ID, DOMAIN, PREDEFINED, DESCRIPTION.
+- `--language <language>`\
+  Language of localized table text; a missing translation shows another, labeled (`-o json` prints all). Default: `en`.
+- `--no-headers`\
+  Print table and csv without the header row.
+- `-o, --output <format>`\
+  Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
+
+Also takes the [global flags](/commands#global-flags).
+
+## epx iam scopes list
+
+List IAM scopes.
+
+Reads the OAuth scopes the tenant knows: ID is the scope, DOMAIN the service it belongs to
+and PREDEFINED whether Emporix defines it.
+list sorts by id unless `--sort` says otherwise; end another order with ,id:asc (e.g.
+name.en:asc,id:asc), as Emporix wants a direction on every field, so pages do not overlap.
+
+Requires the iam.scope\_read scope.
+
+**Command:** `epx iam scopes list [flags]`
+
+**Flags**
+
+- `--columns <names>`\
+  Print only these columns of table and csv, in this order: comma-separated names (any case) among ID, DOMAIN, PREDEFINED, DESCRIPTION.
+- `--language <language>`\
+  Language of localized table text; a missing translation shows another, labeled (`-o json` prints all). Default: `en`.
+- `--limit <n>`\
+  Print at most n items; paged reads stop early where they safely can (0: every item).
+- `--no-headers`\
+  Print table and csv without the header row.
+- `-o, --output <format>`\
+  Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
+- `--query <filter>`\
+  Emporix q filter, passed as given, e.g. code:(A1,A2); space-separated conditions must all match (fields mostly as in `-o json`).
+- `--sort <order>`\
+  Emporix sort order, passed as given, e.g. code or name.en:desc,code; fields mostly as in `-o json` (Emporix may ignore an unknown one).
+- `--stream`\
+  Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
+
+Also takes the [global flags](/commands#global-flags).
+
+## epx iam scopes update
+
+Upsert a custom scope.
+
+Replaces the custom scope ID, e.g. acme.vehicle\_manage, with the JSON in `--file`, or creates
+it where none exists (an upsert): its domain and description, a map of translations such
+as `{"en": "Manage vehicles"}`.
+With metadata.version as read, Emporix changes it only if that is still its version.
+Emporix answers with the id of one it created, and with nothing when it replaced one.
+Access controls grant scopes ([`epx iam access-controls update`](/commands/iam#epx-iam-access-controls-update)).
+It changes who may do what in the tenant.
+
+Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without
+asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
+instead of sending it.
+
+Requires the iam.scope\_manage scope.
+
+**Command:** `epx iam scopes update ID [flags]`
+
+**Flags**
+
+- `--dry-run`\
+  Print the request instead of sending it (excludes `-o`).
+- `--file <PATH>`\
+  JSON request body in PATH, sent byte for byte (- reads standard input; sending it then needs `--yes`; required).
+- `-o, --output <format>`\
+  Format of the response: json or yaml. Default: `json`.
+- `--yes`\
+  Send without asking (required without a terminal, or with `--file` -).
+
+Also takes the [global flags](/commands#global-flags).
+
+## epx iam templates
+
+Read IAM templates.
+
+Reads IAM access control templates: sets of access controls that groups are built from
+(`-o json` lists them).
+list sorts by id unless `--sort` says otherwise; end another order with ,id:asc (e.g.
+name.en:asc,id:asc), as Emporix wants a direction on every field, so pages do not overlap.
+
+Requires the iam.template\_read scope.
+
+**Command:** `epx iam templates [flags]`, `epx iam templates [command]`
+
+**Flags:** only the [global flags](/commands#global-flags).
+
+**Subcommands**
+
+- [`epx iam templates list`](#epx-iam-templates-list)\
+  List IAM templates.
+
+## epx iam templates list
+
+List IAM templates.
+
+Reads IAM access control templates: sets of access controls that groups are built from
+(`-o json` lists them).
+list sorts by id unless `--sort` says otherwise; end another order with ,id:asc (e.g.
+name.en:asc,id:asc), as Emporix wants a direction on every field, so pages do not overlap.
+
+Requires the iam.template\_read scope.
+
+**Command:** `epx iam templates list [flags]`
+
+**Flags**
+
+- `--columns <names>`\
+  Print only these columns of table and csv, in this order: comma-separated names (any case) among ID, NAME, ACCESS CONTROLS.
+- `--language <language>`\
+  Language of localized table text; a missing translation shows another, labeled (`-o json` prints all). Default: `en`.
+- `--limit <n>`\
+  Print at most n items; paged reads stop early where they safely can (0: every item).
+- `--no-headers`\
+  Print table and csv without the header row.
+- `-o, --output <format>`\
+  Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
+- `--sort <order>`\
+  Emporix sort order, passed as given, e.g. code or name.en:desc,code; fields mostly as in `-o json` (Emporix may ignore an unknown one).
+- `--stream`\
+  Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
+
+Also takes the [global flags](/commands#global-flags).
+
+## epx iam users
+
+Read, create, replace and delete IAM users; read what they may do.
+
+Reads the tenant's users (such as employees), personal data included, their groups and what
+they may do, and the users of a vendor; creates, replaces and deletes users and removes them
+from their groups.
+Its writes change who may do what in the tenant.
+
+Its reads require different OAuth scopes; the help of each names them.
+Its writes require different OAuth scopes; the help of each names them.
+
+**Command:** `epx iam users [flags]`, `epx iam users [command]`
+
+**Flags:** only the [global flags](/commands#global-flags).
+
+**Subcommands**
+
+- [`epx iam users access-controls`](#epx-iam-users-access-controls)\
+  List the access controls of a user.
+- [`epx iam users create`](#epx-iam-users-create)\
+  Create a user.
+- [`epx iam users delete`](#epx-iam-users-delete)\
+  Delete a user.
+- [`epx iam users for-vendor`](#epx-iam-users-for-vendor)\
+  List the users of a vendor.
+- [`epx iam users get`](#epx-iam-users-get)\
+  Show one user.
+- [`epx iam users groups`](#epx-iam-users-groups)\
+  Read the groups of a user, remove a user from them.
+- [`epx iam users list`](#epx-iam-users-list)\
+  List IAM users.
+- [`epx iam users resource-access-controls`](#epx-iam-users-resource-access-controls)\
+  List the access controls of a user on a resource.
+- [`epx iam users resource-permissions`](#epx-iam-users-resource-permissions)\
+  List the permissions of a user on a resource.
+- [`epx iam users scopes`](#epx-iam-users-scopes)\
+  List the scopes of a user.
+- [`epx iam users update`](#epx-iam-users-update)\
+  Replace a user.
+
+## epx iam users access-controls
+
+List the access controls of a user.
+
+Reads the access controls a user is granted through their groups.
+SCOPES counts the scopes an access control grants (`-o json` lists them); RESOURCE
+and ROLE are the ids of the resource and role older access controls refer to.
+Emporix lists them on one page only, so they are read as one page of up to 1000: a user
+with more fails.
+USER\_ID is the ID that [`epx iam users list`](/commands/iam#epx-iam-users-list) shows; an unknown one lists nothing.
+
+Requires the iam.access\_read scope.
+
+**Command:** `epx iam users access-controls USER_ID [flags]`
+
+**Flags**
+
+- `--columns <names>`\
+  Print only these columns of table and csv, in this order: comma-separated names (any case) among ID, NAME, SCOPES, PREDEFINED, RESOURCE, ROLE.
+- `--language <language>`\
+  Language of localized table text; a missing translation shows another, labeled (`-o json` prints all). Default: `en`.
+- `--limit <n>`\
+  Print at most n items; paged reads stop early where they safely can (0: every item).
+- `--no-headers`\
+  Print table and csv without the header row.
+- `-o, --output <format>`\
+  Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
+- `--stream`\
+  Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
+
+Also takes the [global flags](/commands#global-flags).
+
+## epx iam users create
+
+Create a user.
+
+Creates a Management Dashboard user (an employee) from the JSON in `--file`, which gives each
+of firstName, lastName, preferredSite, preferredCurrency, preferredLanguage, department,
+contactEmail and groupIds (the groups that the user belongs to, from [`epx iam groups list`](/commands/iam#epx-iam-groups-list)).
+Emporix emails the user to confirm the address and set a password. An e-mail that a user of the
+tenant has already is a conflict (exit 5): Emporix creates no user. It answers with the user's id.
+It changes who may do what in the tenant.
+
+Changes data: on a terminal, epx asks before it sends POST. `--yes` sends without
+asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
+instead of sending it.
+
+Requires the iam.user\_create scope.
+
+**Command:** `epx iam users create [flags]`
+
+**Flags**
+
+- `--dry-run`\
+  Print the request instead of sending it (excludes `-o`).
+- `--file <PATH>`\
+  JSON request body in PATH, sent byte for byte (- reads standard input; sending it then needs `--yes`; required).
+- `-o, --output <format>`\
+  Format of the response: json or yaml. Default: `json`.
+- `--yes`\
+  Send without asking (required without a terminal, or with `--file` -).
+
+Also takes the [global flags](/commands#global-flags).
+
+## epx iam users delete
+
+Delete a user.
+
+Deletes the user ID from the tenant: Emporix removes them from every group and blocks
+their access to the Management Dashboard; their Developer Portal account stays.
+It changes who may do what in the tenant.
+
+Deletes data, which cannot be undone.
+On a terminal, epx sends DELETE only once you type ID at its prompt.
+`--yes` sends without asking (required without a terminal);
+`--dry-run` prints the request instead of sending it.
+
+Requires the iam.user\_delete scope.
+
+**Command:** `epx iam users delete ID [flags]`
+
+**Flags**
+
+- `--dry-run`\
+  Print the request instead of sending it (excludes `-o`).
+- `-o, --output <format>`\
+  Format of the response: json or yaml. Default: `json`.
+- `--yes`\
+  Send without asking (required without a terminal).
+
+Also takes the [global flags](/commands#global-flags).
+
+## epx iam users for-vendor
+
+List the users of a vendor.
+
+Reads the users of a vendor ([`epx vendors list`](/commands/vendors#epx-vendors-list)), personal data included, with the columns
+of [`epx iam users list`](/commands/iam#epx-iam-users-list).
+VENDOR\_ID is the ID that [`epx vendors list`](/commands/vendors#epx-vendors-list) shows; an unknown one lists nothing.
+
+Requires the iam.user\_read scope.
+
+**Command:** `epx iam users for-vendor VENDOR_ID [flags]`
+
+**Flags**
+
+- `--columns <names>`\
+  Print only these columns of table and csv, in this order: comma-separated names (any case) among ID, NAME, EMAIL, STATUS, LOCKED, GROUPS.
+- `--limit <n>`\
+  Print at most n items; paged reads stop early where they safely can (0: every item).
+- `--no-headers`\
+  Print table and csv without the header row.
+- `-o, --output <format>`\
+  Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
+- `--stream`\
+  Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
+
+Also takes the [global flags](/commands#global-flags).
+
+## epx iam users get
+
+Show one user.
+
+Reads the tenant's users (such as employees), personal data included. STATUS and LOCKED
+tell whether a user can sign in, and GROUPS counts the groups a user belongs to
+([`epx iam users groups list`](/commands/iam#epx-iam-users-groups-list) lists them). Emporix orders users differently on every
+request and fails on most second pages, so list reads them as one page of up to 500: the
+order, and the users `--limit` keeps, vary per run, and a tenant with more users fails.
+
+Requires the iam.user\_read scope.
+
+**Command:** `epx iam users get ID [flags]`
+
+**Flags**
+
+- `--columns <names>`\
+  Print only these columns of table and csv, in this order: comma-separated names (any case) among ID, NAME, EMAIL, STATUS, LOCKED, GROUPS.
+- `--no-headers`\
+  Print table and csv without the header row.
+- `-o, --output <format>`\
+  Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
+
+Also takes the [global flags](/commands#global-flags).
+
+## epx iam users groups
+
+Read the groups of a user, remove a user from them.
+
+Reads the groups a user belongs to, all or one, and removes a user from every group.
+Its writes change who may do what in the tenant.
+
+Its reads require the iam.group\_read scope.
+Its writes require the iam.assignment\_manage scope.
+
+**Command:** `epx iam users groups [flags]`, `epx iam users groups [command]`
+
+**Flags:** only the [global flags](/commands#global-flags).
+
+**Subcommands**
+
+- [`epx iam users groups delete-all`](#epx-iam-users-groups-delete-all)\
+  Remove a user from every group.
+- [`epx iam users groups get`](#epx-iam-users-groups-get)\
+  Show one group of a user.
+- [`epx iam users groups list`](#epx-iam-users-groups-list)\
+  List the groups of a user.
+
+## epx iam users groups delete-all
+
+Remove a user from every group.
+
+Removes the user USER\_ID from every group: the user keeps their account, but no
+group grants them access any more.
+USER\_ID is the ID that [`epx iam users list`](/commands/iam#epx-iam-users-list) shows; an unknown one is answered as one that Emporix deleted (204 No Content).
+It changes who may do what in the tenant.
+
+Deletes the user's membership of every group with one request, which cannot be undone.
+On a terminal, epx sends DELETE only once you type USER\_ID at its prompt.
+`--yes` sends without asking (required without a terminal);
+`--dry-run` prints the request instead of sending it.
+
+Requires the iam.assignment\_manage scope.
+
+**Command:** `epx iam users groups delete-all USER_ID [flags]`
+
+**Flags**
+
+- `--dry-run`\
+  Print the request instead of sending it (excludes `-o`).
+- `-o, --output <format>`\
+  Format of the response: json or yaml. Default: `json`.
+- `--yes`\
+  Send without asking (required without a terminal).
+
+Also takes the [global flags](/commands#global-flags).
+
+## epx iam users groups get
+
+Show one group of a user.
+
+Reads one group a user belongs to; one the user does not belong to is not found.
+USER\_ID is the ID that [`epx iam users list`](/commands/iam#epx-iam-users-list) shows; an unknown one is not found.
+ID is the ID that [`epx iam users groups list USER_ID`](/commands/iam#epx-iam-users-groups-list) shows; an unknown one is not found.
+
+Requires the iam.group\_read scope.
+
+**Command:** `epx iam users groups get USER_ID ID [flags]`
+
+**Flags**
+
+- `--columns <names>`\
+  Print only these columns of table and csv, in this order: comma-separated names (any case) among ID, CODE, NAME, TYPE, ACCESS CONTROLS.
+- `--language <language>`\
+  Language of localized table text; a missing translation shows another, labeled (`-o json` prints all). Default: `en`.
+- `--no-headers`\
+  Print table and csv without the header row.
+- `-o, --output <format>`\
+  Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
+
+Also takes the [global flags](/commands#global-flags).
+
+## epx iam users groups list
+
+List the groups of a user.
+
+Reads the groups a user belongs to.
+USER\_ID is the ID that [`epx iam users list`](/commands/iam#epx-iam-users-list) shows; an unknown one lists nothing.
+
+Requires the iam.group\_read scope.
+
+**Command:** `epx iam users groups list USER_ID [flags]`
+
+**Flags**
+
+- `--columns <names>`\
+  Print only these columns of table and csv, in this order: comma-separated names (any case) among ID, CODE, NAME, TYPE, ACCESS CONTROLS.
+- `--language <language>`\
+  Language of localized table text; a missing translation shows another, labeled (`-o json` prints all). Default: `en`.
+- `--limit <n>`\
+  Print at most n items; paged reads stop early where they safely can (0: every item).
+- `--no-headers`\
+  Print table and csv without the header row.
+- `-o, --output <format>`\
+  Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
+- `--stream`\
+  Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
+
+Also takes the [global flags](/commands#global-flags).
+
+## epx iam users list
+
+List IAM users.
+
+Reads the tenant's users (such as employees), personal data included. STATUS and LOCKED
+tell whether a user can sign in, and GROUPS counts the groups a user belongs to
+([`epx iam users groups list`](/commands/iam#epx-iam-users-groups-list) lists them). Emporix orders users differently on every
+request and fails on most second pages, so list reads them as one page of up to 500: the
+order, and the users `--limit` keeps, vary per run, and a tenant with more users fails.
+
+Requires the iam.user\_read scope.
+
+**Command:** `epx iam users list [flags]`
+
+**Flags**
+
+- `--columns <names>`\
+  Print only these columns of table and csv, in this order: comma-separated names (any case) among ID, NAME, EMAIL, STATUS, LOCKED, GROUPS.
+- `--limit <n>`\
+  Print at most n items; paged reads stop early where they safely can (0: every item).
+- `--no-headers`\
+  Print table and csv without the header row.
+- `-o, --output <format>`\
+  Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
+- `--stream`\
+  Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
+
+Also takes the [global flags](/commands#global-flags).
+
+## epx iam users resource-access-controls
+
+List the access controls of a user on a resource.
+
+Reads the access controls a user is granted on one resource.
+SCOPES counts the scopes an access control grants (`-o json` lists them); RESOURCE
+and ROLE are the ids of the resource and role older access controls refer to.
+USER\_ID and RESOURCE\_ID are the IDs that [`epx iam users list`](/commands/iam#epx-iam-users-list) and [`epx iam resources list`](/commands/iam#epx-iam-resources-list) show;
+an unknown one, or a resource the user has no access to, lists nothing.
+Emporix has deprecated the endpoints this reads; they may be removed.
+
+Requires the iam.access\_read scope.
+
+**Command:** `epx iam users resource-access-controls USER_ID RESOURCE_ID [flags]`
+
+**Flags**
+
+- `--columns <names>`\
+  Print only these columns of table and csv, in this order: comma-separated names (any case) among ID, NAME, SCOPES, PREDEFINED, RESOURCE, ROLE.
+- `--language <language>`\
+  Language of localized table text; a missing translation shows another, labeled (`-o json` prints all). Default: `en`.
+- `--limit <n>`\
+  Print at most n items; paged reads stop early where they safely can (0: every item).
+- `--no-headers`\
+  Print table and csv without the header row.
+- `-o, --output <format>`\
+  Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
+- `--stream`\
+  Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
+
+Also takes the [global flags](/commands#global-flags).
+
+## epx iam users resource-permissions
+
+List the permissions of a user on a resource.
+
+Reads the permissions a user has on one resource through the roles that their groups'
+access controls grant there: RESOURCES counts the resources a permission applies to.
+USER\_ID and RESOURCE\_ID are the IDs that [`epx iam users list`](/commands/iam#epx-iam-users-list) and [`epx iam resources list`](/commands/iam#epx-iam-resources-list) show;
+an unknown one, or a resource the user has no access to, lists nothing.
+Emporix has deprecated the endpoints this reads; they may be removed.
+
+Requires the iam.permission\_read scope.
+
+**Command:** `epx iam users resource-permissions USER_ID RESOURCE_ID [flags]`
+
+**Flags**
+
+- `--columns <names>`\
+  Print only these columns of table and csv, in this order: comma-separated names (any case) among ID, CODE, NAME, RESOURCES.
+- `--language <language>`\
+  Language of localized table text; a missing translation shows another, labeled (`-o json` prints all). Default: `en`.
+- `--limit <n>`\
+  Print at most n items; paged reads stop early where they safely can (0: every item).
+- `--no-headers`\
+  Print table and csv without the header row.
+- `-o, --output <format>`\
+  Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
+- `--stream`\
+  Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
+
+Also takes the [global flags](/commands#global-flags).
+
+## epx iam users scopes
+
+List the scopes of a user.
+
+Reads the scopes a user is granted through their groups, sorted, without the tenant
+entry; a user without scopes lists nothing, like an unknown one.
+USER\_ID is the ID that [`epx iam users list`](/commands/iam#epx-iam-users-list) shows; an unknown one lists nothing.
+
+Requires the iam.scope\_read scope.
+
+**Command:** `epx iam users scopes USER_ID [flags]`
+
+**Flags**
+
+- `--columns <names>`\
+  Print only these columns of table and csv, in this order: comma-separated names (any case) among SCOPE.
+- `--no-headers`\
+  Print table and csv without the header row.
+- `-o, --output <format>`\
+  Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
+
+Also takes the [global flags](/commands#global-flags).
+
+## epx iam users update
+
+Replace a user.
+
+Replaces the user ID, an employee, with the JSON in `--file`, which gives each of
+firstName, lastName, preferredSite, preferredCurrency, preferredLanguage, department,
+backofficeUserNumber and groupIds: Emporix removes the user from every group and adds them
+to those of groupIds.
+An unknown ID is not refused: Emporix answers 204 No Content and adds that ID as a member of
+each group of groupIds, so those groups take effect for it. Check the ID with [`epx iam users get`](/commands/iam#epx-iam-users-get)
+first; [`epx iam users groups delete-all ID`](/commands/iam#epx-iam-users-groups-delete-all) removes it from every group it is in.
+It changes who may do what in the tenant.
+
+Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without
+asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
+instead of sending it.
+
+Requires the iam.user\_update scope.
+
+**Command:** `epx iam users update ID [flags]`
+
+**Flags**
+
+- `--dry-run`\
+  Print the request instead of sending it (excludes `-o`).
+- `--file <PATH>`\
+  JSON request body in PATH, sent byte for byte (- reads standard input; sending it then needs `--yes`; required).
+- `-o, --output <format>`\
+  Format of the response: json or yaml. Default: `json`.
+- `--yes`\
+  Send without asking (required without a terminal, or with `--file` -).
+
+Also takes the [global flags](/commands#global-flags).

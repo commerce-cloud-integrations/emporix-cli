@@ -1,0 +1,42 @@
+---
+title: "Cart Service"
+sidebarTitle: "Cart Service"
+description: "Which Cart Service operations epx sends, which do not apply, and which are planned."
+mode: "wide"
+---
+
+Operations of the Emporix API reference file [`checkout/cart/api-reference/api.yml`](https://github.com/emporix/api-references/blob/faad61403b0683a7a8948b571f10305393760ae0/checkout/cart/api-reference/api.yml) at commit [`faad614`](https://github.com/emporix/api-references/commit/faad61403b0683a7a8948b571f10305393760ae0) (2026-10-14).
+
+- Last change: 2026-10-07 ([`1f21665`](https://github.com/emporix/api-references/commit/1f21665))
+- Version: not stated in the reference file
+- Operations: 25 (25 built, 0 not applicable, 0 planned, 0 to do)
+
+| Operation | Status | Details |
+| --- | --- | --- |
+| `POST /cart/{tenant}/carts` | Built | [`epx carts create`](/commands/carts#epx-carts-create) |
+| `GET /cart/{tenant}/carts` | Built | [`epx carts find`](/commands/carts#epx-carts-find) |
+| `POST /cart/{tenant}/carts/search` | Built | [`epx carts search`](/commands/carts#epx-carts-search) |
+| `GET /cart/{tenant}/carts/{cartId}` | Built | [`epx carts get`](/commands/carts#epx-carts-get) |
+| `PUT /cart/{tenant}/carts/{cartId}` | Built | [`epx carts update`](/commands/carts#epx-carts-update) |
+| `DELETE /cart/{tenant}/carts/{cartId}` | Built | [`epx carts delete`](/commands/carts#epx-carts-delete) |
+| `POST /cart/{tenant}/carts/{cartId}/execute` | Built | [`epx carts execute`](/commands/carts#epx-carts-execute) |
+| `PUT /cart/{tenant}/carts/{cartId}/refresh` | Built | [`epx carts refresh`](/commands/carts#epx-carts-refresh) |
+| `POST /cart/{tenant}/carts/{cartId}/changeSite` | Built | [`epx carts change-site`](/commands/carts#epx-carts-change-site) |
+| `POST /cart/{tenant}/carts/{cartId}/changeCurrency` | Built | [`epx carts change-currency`](/commands/carts#epx-carts-change-currency) |
+| `POST /cart/{tenant}/carts/{cartId}/merge` | Built | [`epx carts merge`](/commands/carts#epx-carts-merge) |
+| `POST /cart/{tenant}/carts/{cartId}/itemsBatch` | Built | [`epx carts items bulk-create`](/commands/carts#epx-carts-items-bulk-create) |
+| `PUT /cart/{tenant}/carts/{cartId}/itemsBatch` | Built | [`epx carts items bulk-update`](/commands/carts#epx-carts-items-bulk-update) |
+| `GET /cart/{tenant}/carts/{cartId}/items` | Built | [`epx carts items list`](/commands/carts#epx-carts-items-list) |
+| `POST /cart/{tenant}/carts/{cartId}/items` | Built | [`epx carts items create`](/commands/carts#epx-carts-items-create) |
+| `DELETE /cart/{tenant}/carts/{cartId}/items` | Built | [`epx carts items delete-all`](/commands/carts#epx-carts-items-delete-all) |
+| `GET /cart/{tenant}/carts/{cartId}/items/{itemId}` | Built | [`epx carts items get`](/commands/carts#epx-carts-items-get) |
+| `PUT /cart/{tenant}/carts/{cartId}/items/{itemId}` | Built | [`epx carts items update`](/commands/carts#epx-carts-items-update) |
+| `DELETE /cart/{tenant}/carts/{cartId}/items/{itemId}` | Built | [`epx carts items delete`](/commands/carts#epx-carts-items-delete) |
+| `POST /cart/{tenant}/carts/{cartId}/discounts` | Built | [`epx carts discounts create`](/commands/carts#epx-carts-discounts-create) |
+| `DELETE /cart/{tenant}/carts/{cartId}/discounts` | Built | [`epx carts discounts delete-all`](/commands/carts#epx-carts-discounts-delete-all) |
+| `GET /cart/{tenant}/carts/{cartId}/discounts` | Built | [`epx carts discounts list`](/commands/carts#epx-carts-discounts-list) |
+| `DELETE /cart/{tenant}/carts/{cartId}/discounts/{discountIndex}` | Built | [`epx carts discounts delete`](/commands/carts#epx-carts-discounts-delete) |
+| `GET /cart/{tenant}/carts/{cartId}/dtRestrictions` | Built | [`epx carts delivery-restrictions`](/commands/carts#epx-carts-delivery-restrictions) |
+| `GET /cart/{tenant}/carts/{cartId}/validate` | Built | [`epx carts validate`](/commands/carts#epx-carts-validate) |
+
+All services: [Emporix API coverage](/coverage).

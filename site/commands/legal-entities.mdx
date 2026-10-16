@@ -1,0 +1,260 @@
+---
+title: "epx legal-entities"
+sidebarTitle: "legal-entities"
+description: "Read and change legal entities (B2B companies); read their parents."
+---
+
+## epx legal-entities
+
+Reads and changes legal entities, the companies of B2B customers and their subsidiaries,
+personal data included.
+create and update ID (an upsert) send the JSON body of `--file`; delete ID sends none.
+
+Its reads require the customermanagement.legalentity\_read scope.
+Its writes require the customermanagement.legalentity\_manage scope.
+
+**Command:** `epx legal-entities [flags]`, `epx legal-entities [command]`
+
+**Flags:** only the [global flags](/commands#global-flags).
+
+**Subcommands**
+
+- [`epx legal-entities create`](#epx-legal-entities-create)\
+  Create one legal entity.
+- [`epx legal-entities delete`](#epx-legal-entities-delete)\
+  Delete one legal entity.
+- [`epx legal-entities get`](#epx-legal-entities-get)\
+  Show one legal entity.
+- [`epx legal-entities hierarchy`](#epx-legal-entities-hierarchy)\
+  List a legal entity and its parents.
+- [`epx legal-entities list`](#epx-legal-entities-list)\
+  List legal entities.
+- [`epx legal-entities search`](#epx-legal-entities-search)\
+  Search legal entities.
+- [`epx legal-entities update`](#epx-legal-entities-update)\
+  Upsert one legal entity.
+
+## epx legal-entities create
+
+Create one legal entity.
+
+Creates the legal entity that the JSON body of `--file` describes, shaped as
+[`epx legal-entities get ID -o json`](/commands/legal-entities#epx-legal-entities-get) prints one:
+name (required), type (COMPANY, the default, or SUBSIDIARY), parentId (the legal
+entity a subsidiary belongs to), legalInfo, accountLimit, customerGroups (IAM groups),
+entitiesAddresses and approvalGroup (its customer locations and contact assignments),
+restrictions and mixins; parentId, customerGroups, entitiesAddresses and approvalGroup must
+name items that exist (400 Bad Request, exit 1, otherwise), the last three each as
+`{"id": ...}` or in full, as get prints it.
+Without an id, Emporix makes one, and answers with it; an id that exists already is a
+conflict (exit 5).
+A create that Emporix refuses as a conflict may still make the IAM customer groups of
+the legal entity.
+
+Changes data: on a terminal, epx asks before it sends POST. `--yes` sends without
+asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
+instead of sending it.
+
+Requires the customermanagement.legalentity\_manage scope.
+
+**Command:** `epx legal-entities create [flags]`
+
+**Flags**
+
+- `--dry-run`\
+  Print the request instead of sending it (excludes `-o`).
+- `--file <PATH>`\
+  JSON request body in PATH, sent byte for byte (- reads standard input; sending it then needs `--yes`; required).
+- `-o, --output <format>`\
+  Format of the response: json or yaml. Default: `json`.
+- `--yes`\
+  Send without asking (required without a terminal, or with `--file` -).
+
+Also takes the [global flags](/commands#global-flags).
+
+## epx legal-entities delete
+
+Delete one legal entity.
+
+Deletes the legal entity ID; it sends no body.
+ID is the ID that [`epx legal-entities list`](/commands/legal-entities#epx-legal-entities-list) shows; an unknown one is answered as one that Emporix deleted (204 No Content).
+The assignments are the contact assignments of it and of its subsidiaries and the segment
+assignments that name it; the IAM customer groups those still in its customerGroups. Its
+customer locations stay, and its customers no longer name it (one with no other legal
+entity becomes a B2C customer).
+
+Deletes the legal entity with its subsidiaries, assignments and IAM customer groups with one request, which cannot be undone.
+On a terminal, epx sends DELETE only once you type ID at its prompt.
+`--yes` sends without asking (required without a terminal);
+`--dry-run` prints the request instead of sending it.
+
+Requires the customermanagement.legalentity\_manage scope.
+
+**Command:** `epx legal-entities delete ID [flags]`
+
+**Flags**
+
+- `--dry-run`\
+  Print the request instead of sending it (excludes `-o`).
+- `-o, --output <format>`\
+  Format of the response: json or yaml. Default: `json`.
+- `--yes`\
+  Send without asking (required without a terminal).
+
+Also takes the [global flags](/commands#global-flags).
+
+## epx legal-entities get
+
+Show one legal entity.
+
+Reads legal entities, the companies of B2B customers and their subsidiaries, personal data
+included (approval groups name customers). TYPE is COMPANY or SUBSIDIARY, PARENT the legal
+entity a subsidiary belongs to, COUNTRY the country of registration. Registration details,
+addresses, customer groups, approval groups and restrictions are only in `-o json`.
+
+Requires the customermanagement.legalentity\_read scope.
+
+**Command:** `epx legal-entities get ID [flags]`
+
+**Flags**
+
+- `--columns <names>`\
+  Print only these columns of table and csv, in this order: comma-separated names (any case) among ID, NAME, TYPE, PARENT, LEGAL NAME, COUNTRY, ACCOUNT LIMIT.
+- `--no-headers`\
+  Print table and csv without the header row.
+- `-o, --output <format>`\
+  Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
+
+Also takes the [global flags](/commands#global-flags).
+
+## epx legal-entities hierarchy
+
+List a legal entity and its parents.
+
+Reads a legal entity and every one above it, up to its company, in the order Emporix
+sends them, personal data included; the columns are those of [`epx legal-entities list`](/commands/legal-entities#epx-legal-entities-list).
+LEGAL\_ENTITY\_ID is the ID that [`epx legal-entities list`](/commands/legal-entities#epx-legal-entities-list) shows; an unknown one lists nothing.
+
+Requires the customermanagement.legalentity\_read scope.
+
+**Command:** `epx legal-entities hierarchy LEGAL_ENTITY_ID [flags]`
+
+**Flags**
+
+- `--columns <names>`\
+  Print only these columns of table and csv, in this order: comma-separated names (any case) among ID, NAME, TYPE, PARENT, LEGAL NAME, COUNTRY, ACCOUNT LIMIT.
+- `--limit <n>`\
+  Print at most n items; paged reads stop early where they safely can (0: every item).
+- `--no-headers`\
+  Print table and csv without the header row.
+- `-o, --output <format>`\
+  Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
+- `--stream`\
+  Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
+
+Also takes the [global flags](/commands#global-flags).
+
+## epx legal-entities list
+
+List legal entities.
+
+Reads legal entities, the companies of B2B customers and their subsidiaries, personal data
+included (approval groups name customers). TYPE is COMPANY or SUBSIDIARY, PARENT the legal
+entity a subsidiary belongs to, COUNTRY the country of registration. Registration details,
+addresses, customer groups, approval groups and restrictions are only in `-o json`.
+
+Requires the customermanagement.legalentity\_read scope.
+
+**Command:** `epx legal-entities list [flags]`
+
+**Flags**
+
+- `--columns <names>`\
+  Print only these columns of table and csv, in this order: comma-separated names (any case) among ID, NAME, TYPE, PARENT, LEGAL NAME, COUNTRY, ACCOUNT LIMIT.
+- `--limit <n>`\
+  Print at most n items; paged reads stop early where they safely can (0: every item).
+- `--no-headers`\
+  Print table and csv without the header row.
+- `-o, --output <format>`\
+  Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
+- `--query <filter>`\
+  Emporix q filter, passed as given, e.g. code:(A1,A2); space-separated conditions must all match (fields mostly as in `-o json`).
+- `--sort <order>`\
+  Emporix sort order, passed as given, e.g. code or name.en:desc,code; fields mostly as in `-o json` (Emporix may ignore an unknown one).
+- `--stream`\
+  Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
+
+Also takes the [global flags](/commands#global-flags).
+
+## epx legal-entities search
+
+Search legal entities.
+
+Reads the legal entities, personal data included, that an Emporix q filter finds (`--query`;
+without it, every legal entity).
+It reads and shows them as [`epx legal-entities list`](/commands/legal-entities#epx-legal-entities-list) does.
+
+Changes nothing: Emporix serves this read as POST with a JSON body, which the
+flags make or `--body` gives whole.
+
+Requires the customermanagement.legalentity\_read scope.
+
+**Command:** `epx legal-entities search [flags]`
+
+**Flags**
+
+- `--body <FILE>`\
+  Send the JSON request body in FILE as given (- reads standard input) instead of the one the other flags make.
+- `--columns <names>`\
+  Print only these columns of table and csv, in this order: comma-separated names (any case) among ID, NAME, TYPE, PARENT, LEGAL NAME, COUNTRY, ACCOUNT LIMIT.
+- `--limit <n>`\
+  Print at most n items; paged reads stop early where they safely can (0: every item).
+- `--no-headers`\
+  Print table and csv without the header row.
+- `-o, --output <format>`\
+  Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
+- `--query <filter>`\
+  Emporix q filter, sent as given in the request body, not in the URL (empty: no filter), e.g. code:(A1,A2); space-separated conditions must all match (fields mostly as in `-o json`).
+- `--sort <order>`\
+  Emporix sort order, passed as given, e.g. code or name.en:desc,code; fields mostly as in `-o json` (Emporix may ignore an unknown one).
+- `--stream`\
+  Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
+
+Also takes the [global flags](/commands#global-flags).
+
+## epx legal-entities update
+
+Upsert one legal entity.
+
+Replaces the legal entity ID with the JSON body of `--file`, shaped as create takes it
+but without an id, or creates it with that id where none exists (an upsert); it requires
+name and type.
+With metadata.version as [`epx legal-entities get ID -o json`](/commands/legal-entities#epx-legal-entities-get) prints it, Emporix
+replaces it only if nobody changed it since, and answers 409 Conflict (exit 5) otherwise;
+without metadata.version, it replaces it whatever its version.
+ID is the ID that [`epx legal-entities list`](/commands/legal-entities#epx-legal-entities-list) shows.
+Keep every customer group that Emporix made for the legal entity (Admin, Buyer, Requester
+and Contact) in customerGroups: without the Contact group, Emporix deletes that group from
+IAM; without another, it leaves that group in IAM, where deleting the legal entity no
+longer removes it.
+
+Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without
+asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
+instead of sending it.
+
+Requires the customermanagement.legalentity\_manage scope.
+
+**Command:** `epx legal-entities update ID [flags]`
+
+**Flags**
+
+- `--dry-run`\
+  Print the request instead of sending it (excludes `-o`).
+- `--file <PATH>`\
+  JSON request body in PATH, sent byte for byte (- reads standard input; sending it then needs `--yes`; required).
+- `-o, --output <format>`\
+  Format of the response: json or yaml. Default: `json`.
+- `--yes`\
+  Send without asking (required without a terminal, or with `--file` -).
+
+Also takes the [global flags](/commands#global-flags).

@@ -1,0 +1,447 @@
+---
+title: "epx quotes"
+sidebarTitle: "quotes"
+description: "Read, create and change quotes, their PDF, history and reasons."
+---
+
+## epx quotes
+
+Reads quotes, personal data included. STATUS is CREATING, AWAITING, OPEN, IN\_PROGRESS,
+ACCEPTED, DECLINED, DECLINED\_BY\_MERCHANT or EXPIRED, CUSTOMER the customer it is for (email,
+name or customer id), and TOTAL the gross total in the quote's currency. Items, prices,
+addresses and comments are only in `-o json`.
+[`epx quotes reasons`](/commands/quotes#epx-quotes-reasons) lists the reasons for changing or declining a quote.
+[`epx quotes create`](/commands/quotes#epx-quotes-create), `patch` and `delete` change quotes; `pdf` saves a quote's PDF.
+
+Its reads require the quote.quote\_read scope.
+Its writes require the quote.quote\_manage scope.
+
+**Command:** `epx quotes [flags]`, `epx quotes [command]`
+
+**Flags:** only the [global flags](/commands#global-flags).
+
+**Subcommands**
+
+- [`epx quotes create`](#epx-quotes-create)\
+  Create a quote.
+- [`epx quotes delete`](#epx-quotes-delete)\
+  Delete one quote.
+- [`epx quotes get`](#epx-quotes-get)\
+  Show one quote.
+- [`epx quotes history`](#epx-quotes-history)\
+  List the changes of a quote.
+- [`epx quotes list`](#epx-quotes-list)\
+  List quotes.
+- [`epx quotes patch`](#epx-quotes-patch)\
+  Change a quote.
+- [`epx quotes pdf`](#epx-quotes-pdf)\
+  Save the PDF of a quote.
+- [`epx quotes reasons`](#epx-quotes-reasons)\
+  Read, create, change and delete quote reasons.
+
+## epx quotes create
+
+Create a quote.
+
+Creates a quote from the JSON object in `--file`: a whole quote, with customerId (or
+customerEmail), siteCode, currency, billingAddressId, shippingAddressId and items (each
+with its product, price and quantity), or a cart's, with its cartId and optionally the
+addresses and shipping. Without an id, Emporix makes one; it answers with the quote's id.
+A quote made from a cart closes the cart (status CLOSED, with the quoteId): Emporix then
+answers its reads and its delete as not found (exit 4), while [`epx carts search`](/commands/carts#epx-carts-search) lists it.
+Without `--allow-external-prices`, Emporix refuses an item with price type EXTERNAL with 400
+Bad Request (exit 1). It fails with 500 Internal Server Error (exit 1) on a cart without
+items, and answers a product that is not published as not found (exit 4).
+
+Changes data: on a terminal, epx asks before it sends POST. `--yes` sends without
+asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
+instead of sending it.
+
+`--allow-external-prices` also requests the cart.cart\_manage\_external\_prices scope.
+
+Requires the quote.quote\_manage scope.
+
+**Command:** `epx quotes create [flags]`
+
+**Flags**
+
+- `--allow-external-prices`\
+  Allow a body with external prices (price type EXTERNAL) (requests cart.cart\_manage\_external\_prices too).
+- `--dry-run`\
+  Print the request instead of sending it (excludes `-o`).
+- `--file <PATH>`\
+  JSON request body in PATH, sent byte for byte (- reads standard input; sending it then needs `--yes`; required).
+- `-o, --output <format>`\
+  Format of the response: json or yaml. Default: `json`.
+- `--yes`\
+  Send without asking (required without a terminal, or with `--file` -).
+
+Also takes the [global flags](/commands#global-flags).
+
+## epx quotes delete
+
+Delete one quote.
+
+Deletes the quote ID; it sends no body.
+Emporix answers an unknown ID as one that it deleted (204 No Content).
+ID is the ID that [`epx quotes list`](/commands/quotes#epx-quotes-list) shows.
+
+Deletes data, which cannot be undone.
+On a terminal, epx sends DELETE only once you type ID at its prompt.
+`--yes` sends without asking (required without a terminal);
+`--dry-run` prints the request instead of sending it.
+
+Requires the quote.quote\_manage scope.
+
+**Command:** `epx quotes delete ID [flags]`
+
+**Flags**
+
+- `--dry-run`\
+  Print the request instead of sending it (excludes `-o`).
+- `-o, --output <format>`\
+  Format of the response: json or yaml. Default: `json`.
+- `--yes`\
+  Send without asking (required without a terminal).
+
+Also takes the [global flags](/commands#global-flags).
+
+## epx quotes get
+
+Show one quote.
+
+Reads quotes, personal data included. STATUS is CREATING, AWAITING, OPEN, IN\_PROGRESS,
+ACCEPTED, DECLINED, DECLINED\_BY\_MERCHANT or EXPIRED, CUSTOMER the customer it is for (email,
+name or customer id), and TOTAL the gross total in the quote's currency. Items, prices,
+addresses and comments are only in `-o json`.
+[`epx quotes reasons`](/commands/quotes#epx-quotes-reasons) lists the reasons for changing or declining a quote.
+[`epx quotes create`](/commands/quotes#epx-quotes-create), `patch` and `delete` change quotes; `pdf` saves a quote's PDF.
+
+Requires the quote.quote\_read scope.
+
+**Command:** `epx quotes get ID [flags]`
+
+**Flags**
+
+- `--columns <names>`\
+  Print only these columns of table and csv, in this order: comma-separated names (any case) among ID, STATUS, CUSTOMER, COMPANY, SITE, VALID TO, TOTAL.
+- `--no-headers`\
+  Print table and csv without the header row.
+- `-o, --output <format>`\
+  Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
+
+Also takes the [global flags](/commands#global-flags).
+
+## epx quotes history
+
+List the changes of a quote.
+
+Reads the history of a quote, personal data included: when (MODIFIED), by whom (BY: user
+type and name) and what changed (CHANGE: the operation and the changed part). Old and new
+values are only in `-o json`. Emporix sends the whole history in one response.
+QUOTE\_ID is the ID that [`epx quotes list`](/commands/quotes#epx-quotes-list) shows; an unknown one is not found.
+
+Requires the quote.quote\_read scope.
+
+**Command:** `epx quotes history QUOTE_ID [flags]`
+
+**Flags**
+
+- `--columns <names>`\
+  Print only these columns of table and csv, in this order: comma-separated names (any case) among ID, MODIFIED, BY, CHANGE.
+- `--limit <n>`\
+  Print at most n items; paged reads stop early where they safely can (0: every item).
+- `--no-headers`\
+  Print table and csv without the header row.
+- `-o, --output <format>`\
+  Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
+- `--stream`\
+  Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
+
+Also takes the [global flags](/commands#global-flags).
+
+## epx quotes list
+
+List quotes.
+
+Reads quotes, personal data included. STATUS is CREATING, AWAITING, OPEN, IN\_PROGRESS,
+ACCEPTED, DECLINED, DECLINED\_BY\_MERCHANT or EXPIRED, CUSTOMER the customer it is for (email,
+name or customer id), and TOTAL the gross total in the quote's currency. Items, prices,
+addresses and comments are only in `-o json`.
+[`epx quotes reasons`](/commands/quotes#epx-quotes-reasons) lists the reasons for changing or declining a quote.
+[`epx quotes create`](/commands/quotes#epx-quotes-create), `patch` and `delete` change quotes; `pdf` saves a quote's PDF.
+
+Requires the quote.quote\_read scope.
+
+**Command:** `epx quotes list [flags]`
+
+**Flags**
+
+- `--columns <names>`\
+  Print only these columns of table and csv, in this order: comma-separated names (any case) among ID, STATUS, CUSTOMER, COMPANY, SITE, VALID TO, TOTAL.
+- `--limit <n>`\
+  Print at most n items; paged reads stop early where they safely can (0: every item).
+- `--no-headers`\
+  Print table and csv without the header row.
+- `-o, --output <format>`\
+  Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
+- `--query <filter>`\
+  Emporix q filter, passed as given, e.g. code:(A1,A2); space-separated conditions must all match (fields mostly as in `-o json`).
+- `--sort <order>`\
+  Emporix sort order, passed as given, e.g. code or name.en:desc,code; fields mostly as in `-o json` (Emporix may ignore an unknown one).
+- `--stream`\
+  Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
+
+Also takes the [global flags](/commands#global-flags).
+
+## epx quotes patch
+
+Change a quote.
+
+Changes the quote ID with the operations in `--file`: a JSON array of operations, each
+with op (ADD, REMOVE or REPLACE), path (such as /status, /validTo, /items or
+/items/ITEM\_ID) and value, e.g.
+`[{"op": "REPLACE", "path": "/status", "value": {"value": "OPEN"}}]`. Emporix completes
+the prices and product names of items from their ids afterwards. Emporix refuses to add
+or replace an item with price type EXTERNAL with 400 Bad Request (exit 1), also with
+cart.cart\_manage\_external\_prices (create accepts one).
+ID is the ID that [`epx quotes list`](/commands/quotes#epx-quotes-list) shows.
+
+Changes data: on a terminal, epx asks before it sends PATCH. `--yes` sends without
+asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
+instead of sending it.
+
+Requires the quote.quote\_manage scope.
+
+**Command:** `epx quotes patch ID [flags]`
+
+**Flags**
+
+- `--dry-run`\
+  Print the request instead of sending it (excludes `-o`).
+- `--file <PATH>`\
+  JSON request body in PATH, sent byte for byte (- reads standard input; sending it then needs `--yes`; required).
+- `-o, --output <format>`\
+  Format of the response: json or yaml. Default: `json`.
+- `--yes`\
+  Send without asking (required without a terminal, or with `--file` -).
+
+Also takes the [global flags](/commands#global-flags).
+
+## epx quotes pdf
+
+Save the PDF of a quote.
+
+Reads the PDF of the quote QUOTE\_ID; an unknown quote is not found (exit 4).
+QUOTE\_ID is the ID that [`epx quotes list`](/commands/quotes#epx-quotes-list) shows.
+In a `--language` for which a product has no name, the PDF shows the template variable
+$quoteitem.productName in its place; a language that the tenant does not configure is
+answered in English, not refused.
+
+Changes nothing: Emporix serves this read as POST with no body.
+Emporix answers with the PDF, which epx saves to the file that `--out` names (readable by
+its owner only; a file there is replaced, but not a directory, device or link), or writes to
+standard output with `--out` -, unless that is a terminal. An answer that is no PDF fails
+(exit 1), and nothing is saved.
+
+Requires the quote.quote\_read scope.
+
+**Command:** `epx quotes pdf QUOTE_ID [flags]`
+
+**Flags**
+
+- `--language <LANGUAGE>`\
+  The LANGUAGE of the PDF's text, e.g. de, as the tenant configures it (default: the tenant's default language).
+- `--out <PATH>`\
+  Save the PDF to the file PATH, or with - write it to standard output (required).
+
+Also takes the [global flags](/commands#global-flags).
+
+**Examples**
+
+```sh
+epx quotes pdf Q1001 --out Q1001.pdf --language de
+epx quotes pdf Q1001 --out - | lpr
+```
+
+## epx quotes reasons
+
+Read, create, change and delete quote reasons.
+
+Reads the reasons a customer or employee can give when asking for changes to a quote
+(TYPE CHANGE) or declining it (DECLINE), and their MESSAGE.
+[`epx quotes reasons create`](/commands/quotes#epx-quotes-reasons-create), `update` and `delete` change them.
+
+Its reads require the quote.quote\_read scope.
+Its writes require the quote.quote\_manage scope.
+
+**Command:** `epx quotes reasons [flags]`, `epx quotes reasons [command]`
+
+**Flags:** only the [global flags](/commands#global-flags).
+
+**Subcommands**
+
+- [`epx quotes reasons create`](#epx-quotes-reasons-create)\
+  Create a quote reason.
+- [`epx quotes reasons delete`](#epx-quotes-reasons-delete)\
+  Delete one quote reason.
+- [`epx quotes reasons get`](#epx-quotes-reasons-get)\
+  Show one quote reason.
+- [`epx quotes reasons list`](#epx-quotes-reasons-list)\
+  List quote reasons.
+- [`epx quotes reasons update`](#epx-quotes-reasons-update)\
+  Replace a quote reason.
+
+## epx quotes reasons create
+
+Create a quote reason.
+
+Creates the quote reason in `--file`: its type (CHANGE or DECLINE), code and message, and
+optionally an id, which Emporix makes otherwise; it answers with the id. A reason with the
+id exists already: a conflict (exit 5).
+
+Localized text in the body is a map of translations, e.g. `{"en": "Acme", "de": "Acme"}`,
+as `-o json` of a read prints it, sent with Content-Language: \*. Emporix refuses a string in
+its place.
+
+Changes data: on a terminal, epx asks before it sends POST. `--yes` sends without
+asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
+instead of sending it.
+
+Requires the quote.quote\_manage scope.
+
+**Command:** `epx quotes reasons create [flags]`
+
+**Flags**
+
+- `--dry-run`\
+  Print the request instead of sending it (excludes `-o`).
+- `--file <PATH>`\
+  JSON request body in PATH, sent byte for byte (- reads standard input; sending it then needs `--yes`; required).
+- `-o, --output <format>`\
+  Format of the response: json or yaml. Default: `json`.
+- `--yes`\
+  Send without asking (required without a terminal, or with `--file` -).
+
+Also takes the [global flags](/commands#global-flags).
+
+## epx quotes reasons delete
+
+Delete one quote reason.
+
+Deletes the quote reason ID; it sends no body.
+Emporix answers an unknown ID as one that it deleted (204 No Content).
+ID is the ID that [`epx quotes reasons list`](/commands/quotes#epx-quotes-reasons-list) shows.
+
+Deletes data, which cannot be undone.
+On a terminal, epx sends DELETE only once you type ID at its prompt.
+`--yes` sends without asking (required without a terminal);
+`--dry-run` prints the request instead of sending it.
+
+Requires the quote.quote\_manage scope.
+
+**Command:** `epx quotes reasons delete ID [flags]`
+
+**Flags**
+
+- `--dry-run`\
+  Print the request instead of sending it (excludes `-o`).
+- `-o, --output <format>`\
+  Format of the response: json or yaml. Default: `json`.
+- `--yes`\
+  Send without asking (required without a terminal).
+
+Also takes the [global flags](/commands#global-flags).
+
+## epx quotes reasons get
+
+Show one quote reason.
+
+Reads the reasons a customer or employee can give when asking for changes to a quote
+(TYPE CHANGE) or declining it (DECLINE), and their MESSAGE.
+[`epx quotes reasons create`](/commands/quotes#epx-quotes-reasons-create), `update` and `delete` change them.
+
+Requires the quote.quote\_read scope.
+
+**Command:** `epx quotes reasons get ID [flags]`
+
+**Flags**
+
+- `--columns <names>`\
+  Print only these columns of table and csv, in this order: comma-separated names (any case) among ID, CODE, TYPE, MESSAGE.
+- `--language <language>`\
+  Language of localized table text; a missing translation shows another, labeled (`-o json` prints all). Default: `en`.
+- `--no-headers`\
+  Print table and csv without the header row.
+- `-o, --output <format>`\
+  Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
+
+Also takes the [global flags](/commands#global-flags).
+
+## epx quotes reasons list
+
+List quote reasons.
+
+Reads the reasons a customer or employee can give when asking for changes to a quote
+(TYPE CHANGE) or declining it (DECLINE), and their MESSAGE.
+[`epx quotes reasons create`](/commands/quotes#epx-quotes-reasons-create), `update` and `delete` change them.
+
+Requires the quote.quote\_read scope.
+
+**Command:** `epx quotes reasons list [flags]`
+
+**Flags**
+
+- `--columns <names>`\
+  Print only these columns of table and csv, in this order: comma-separated names (any case) among ID, CODE, TYPE, MESSAGE.
+- `--language <language>`\
+  Language of localized table text; a missing translation shows another, labeled (`-o json` prints all). Default: `en`.
+- `--limit <n>`\
+  Print at most n items; paged reads stop early where they safely can (0: every item).
+- `--no-headers`\
+  Print table and csv without the header row.
+- `-o, --output <format>`\
+  Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
+- `--query <filter>`\
+  Emporix q filter, passed as given, e.g. code:(A1,A2); space-separated conditions must all match (fields mostly as in `-o json`).
+- `--sort <order>`\
+  Emporix sort order, passed as given, e.g. code or name.en:desc,code; fields mostly as in `-o json` (Emporix may ignore an unknown one).
+- `--stream`\
+  Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
+
+Also takes the [global flags](/commands#global-flags).
+
+## epx quotes reasons update
+
+Replace a quote reason.
+
+Replaces the quote reason ID with the one in `--file`: its type, code, message and
+metadata.version, as [`epx quotes reasons get ID -o json`](/commands/quotes#epx-quotes-reasons-get) prints it. Emporix changes only
+that version of the reason and answers an older one with 409 Conflict (exit 5); an
+unknown reason is not found (exit 4).
+ID is the ID that [`epx quotes reasons list`](/commands/quotes#epx-quotes-reasons-list) shows.
+
+Localized text in the body is a map of translations, e.g. `{"en": "Acme", "de": "Acme"}`,
+as `-o json` of a read prints it, sent with Content-Language: \*. Emporix refuses a string in
+its place.
+
+Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without
+asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
+instead of sending it.
+
+Requires the quote.quote\_manage scope.
+
+**Command:** `epx quotes reasons update ID [flags]`
+
+**Flags**
+
+- `--dry-run`\
+  Print the request instead of sending it (excludes `-o`).
+- `--file <PATH>`\
+  JSON request body in PATH, sent byte for byte (- reads standard input; sending it then needs `--yes`; required).
+- `-o, --output <format>`\
+  Format of the response: json or yaml. Default: `json`.
+- `--yes`\
+  Send without asking (required without a terminal, or with `--file` -).
+
+Also takes the [global flags](/commands#global-flags).

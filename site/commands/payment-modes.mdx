@@ -1,0 +1,254 @@
+---
+title: "epx payment-modes"
+sidebarTitle: "payment-modes"
+description: "Read, create, update and delete payment modes."
+---
+
+## epx payment-modes
+
+Reads the tenant's payment modes, and creates, updates and deletes them (create and
+update send the JSON of `--file`). Provider configurations hold credentials, which the reads
+show only in `-o json` and the writes send and print as given. [`epx payment-modes public`](/commands/payment-modes#epx-payment-modes-public)
+shows what a storefront sees and needs no scope.
+
+Its reads require different OAuth scopes; the help of each names them.
+Its writes require the payment-gateway.paymentmodes\_manage scope.
+
+**Command:** `epx payment-modes [flags]`, `epx payment-modes [command]`
+
+**Flags:** only the [global flags](/commands#global-flags).
+
+**Subcommands**
+
+- [`epx payment-modes create`](#epx-payment-modes-create)\
+  Create a payment mode.
+- [`epx payment-modes delete`](#epx-payment-modes-delete)\
+  Delete a payment mode.
+- [`epx payment-modes get`](#epx-payment-modes-get)\
+  Show one payment mode.
+- [`epx payment-modes list`](#epx-payment-modes-list)\
+  List payment modes.
+- [`epx payment-modes public`](#epx-payment-modes-public)\
+  Read payment modes as a storefront sees them.
+- [`epx payment-modes update`](#epx-payment-modes-update)\
+  Update a payment mode.
+
+## epx payment-modes create
+
+Create a payment mode.
+
+Creates the payment mode in `--file`, a JSON object with its code and provider (both
+required; PROVIDER as list shows it), active, and the provider's configuration: a map of
+string values such as Spreedly/GatewayToken, credentials included. Emporix answers with
+the payment mode, its configuration included, or, for a code that another mode has, with
+400 Bad Request (exit 1); the reference documents 409 Conflict (exit 5) for that case instead.
+
+Changes data: on a terminal, epx asks before it sends POST. `--yes` sends without
+asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
+instead of sending it.
+
+Requires the payment-gateway.paymentmodes\_manage scope.
+
+**Command:** `epx payment-modes create [flags]`
+
+**Flags**
+
+- `--dry-run`\
+  Print the request instead of sending it (excludes `-o`).
+- `--file <PATH>`\
+  JSON request body in PATH, sent byte for byte (- reads standard input; sending it then needs `--yes`; required).
+- `-o, --output <format>`\
+  Format of the response: json or yaml. Default: `json`.
+- `--yes`\
+  Send without asking (required without a terminal, or with `--file` -).
+
+Also takes the [global flags](/commands#global-flags).
+
+**Examples**
+
+```sh
+epx payment-modes create --file invoice.json --dry-run
+```
+
+## epx payment-modes delete
+
+Delete a payment mode.
+
+Deletes the payment mode ID, which storefronts then no longer offer.
+
+ID is the ID that [`epx payment-modes list`](/commands/payment-modes#epx-payment-modes-list) shows; an unknown one is not found (exit 4).
+
+Deletes data, which cannot be undone.
+On a terminal, epx sends DELETE only once you type ID at its prompt.
+`--yes` sends without asking (required without a terminal);
+`--dry-run` prints the request instead of sending it.
+
+Requires the payment-gateway.paymentmodes\_manage scope.
+
+**Command:** `epx payment-modes delete ID [flags]`
+
+**Flags**
+
+- `--dry-run`\
+  Print the request instead of sending it (excludes `-o`).
+- `-o, --output <format>`\
+  Format of the response: json or yaml. Default: `json`.
+- `--yes`\
+  Send without asking (required without a terminal).
+
+Also takes the [global flags](/commands#global-flags).
+
+## epx payment-modes get
+
+Show one payment mode.
+
+Reads the tenant's payment modes. PROVIDER is INVOICE, CASH\_ON\_DELIVERY, SPREEDLY,
+SPREEDLY\_SAFERPAY or UNZER. The provider configuration, credentials included (such as
+Spreedly/AccessSecret or Saferpay/BasicAuth), is only in `-o json`. [`epx payment-modes public`](/commands/payment-modes#epx-payment-modes-public)
+shows what a storefront sees and needs no scope.
+
+Requires the payment-gateway.paymentmodes\_read scope.
+
+**Command:** `epx payment-modes get ID [flags]`
+
+**Flags**
+
+- `--columns <names>`\
+  Print only these columns of table and csv, in this order: comma-separated names (any case) among ID, CODE, PROVIDER, ACTIVE.
+- `--no-headers`\
+  Print table and csv without the header row.
+- `-o, --output <format>`\
+  Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
+
+Also takes the [global flags](/commands#global-flags).
+
+## epx payment-modes list
+
+List payment modes.
+
+Reads the tenant's payment modes. PROVIDER is INVOICE, CASH\_ON\_DELIVERY, SPREEDLY,
+SPREEDLY\_SAFERPAY or UNZER. The provider configuration, credentials included (such as
+Spreedly/AccessSecret or Saferpay/BasicAuth), is only in `-o json`. [`epx payment-modes public`](/commands/payment-modes#epx-payment-modes-public)
+shows what a storefront sees and needs no scope.
+
+Requires the payment-gateway.paymentmodes\_read scope.
+
+**Command:** `epx payment-modes list [flags]`
+
+**Flags**
+
+- `--columns <names>`\
+  Print only these columns of table and csv, in this order: comma-separated names (any case) among ID, CODE, PROVIDER, ACTIVE.
+- `--limit <n>`\
+  Print at most n items; paged reads stop early where they safely can (0: every item).
+- `--no-headers`\
+  Print table and csv without the header row.
+- `-o, --output <format>`\
+  Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
+- `--stream`\
+  Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
+
+Also takes the [global flags](/commands#global-flags).
+
+## epx payment-modes public
+
+Read payment modes as a storefront sees them.
+
+Reads payment modes as a storefront sees them, without provider secrets. INTEGRATION is
+OFFSITE, EXTERNAL, SEPA or TOKENIZED and METHOD the payment method type, e.g. paypal; public
+keys, tokens and script URLs are only in `-o json`.
+
+No OAuth scope is needed.
+
+**Command:** `epx payment-modes public [flags]`, `epx payment-modes public [command]`
+
+**Flags:** only the [global flags](/commands#global-flags).
+
+**Subcommands**
+
+- [`epx payment-modes public get`](#epx-payment-modes-public-get)\
+  Show one storefront payment mode.
+- [`epx payment-modes public list`](#epx-payment-modes-public-list)\
+  List payment modes as a storefront sees them.
+
+## epx payment-modes public get
+
+Show one storefront payment mode.
+
+Reads payment modes as a storefront sees them, without provider secrets. INTEGRATION is
+OFFSITE, EXTERNAL, SEPA or TOKENIZED and METHOD the payment method type, e.g. paypal; public
+keys, tokens and script URLs are only in `-o json`.
+
+No OAuth scope is needed.
+
+**Command:** `epx payment-modes public get ID [flags]`
+
+**Flags**
+
+- `--columns <names>`\
+  Print only these columns of table and csv, in this order: comma-separated names (any case) among ID, CODE, INTEGRATION, METHOD.
+- `--no-headers`\
+  Print table and csv without the header row.
+- `-o, --output <format>`\
+  Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
+
+Also takes the [global flags](/commands#global-flags).
+
+## epx payment-modes public list
+
+List payment modes as a storefront sees them.
+
+Reads payment modes as a storefront sees them, without provider secrets. INTEGRATION is
+OFFSITE, EXTERNAL, SEPA or TOKENIZED and METHOD the payment method type, e.g. paypal; public
+keys, tokens and script URLs are only in `-o json`.
+
+No OAuth scope is needed.
+
+**Command:** `epx payment-modes public list [flags]`
+
+**Flags**
+
+- `--columns <names>`\
+  Print only these columns of table and csv, in this order: comma-separated names (any case) among ID, CODE, INTEGRATION, METHOD.
+- `--limit <n>`\
+  Print at most n items; paged reads stop early where they safely can (0: every item).
+- `--no-headers`\
+  Print table and csv without the header row.
+- `-o, --output <format>`\
+  Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
+- `--stream`\
+  Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
+
+Also takes the [global flags](/commands#global-flags).
+
+## epx payment-modes update
+
+Update a payment mode.
+
+Sets active and the configuration of the payment mode ID to those in `--file`, a JSON
+object with active and configuration, the map of the provider's values that create takes;
+the code and provider stay as created. Emporix answers with the payment mode, its
+configuration included, and creates no missing mode.
+
+ID is the ID that [`epx payment-modes list`](/commands/payment-modes#epx-payment-modes-list) shows; an unknown one is not found (exit 4).
+
+Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without
+asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
+instead of sending it.
+
+Requires the payment-gateway.paymentmodes\_manage scope.
+
+**Command:** `epx payment-modes update ID [flags]`
+
+**Flags**
+
+- `--dry-run`\
+  Print the request instead of sending it (excludes `-o`).
+- `--file <PATH>`\
+  JSON request body in PATH, sent byte for byte (- reads standard input; sending it then needs `--yes`; required).
+- `-o, --output <format>`\
+  Format of the response: json or yaml. Default: `json`.
+- `--yes`\
+  Send without asking (required without a terminal, or with `--file` -).
+
+Also takes the [global flags](/commands#global-flags).

@@ -1,0 +1,74 @@
+---
+title: "Call any API endpoint"
+description: "Send a request to any Emporix API path with epx api, using only the OAuth scopes you name."
+---
+
+`epx api` sends a request to any Emporix API path and prints the response as JSON. Use it
+for endpoints that have no command of their own, or to see a raw page of a collection.
+The [API coverage](/coverage) lists, per service, which operations have a command.
+
+```sh
+epx api get '/site/{tenant}/sites'
+epx api get '/product/{tenant}/products/100200' --scope product.product_read_unpublished
+```
+
+## Send a GET request
+
+```sh
+epx api get '/product/{tenant}/products' -p pageSize=5 --scope product.product_read_unpublished
+```
+
+`epx api get PATH` reads one response: it doesn't page, filter, or print a table. It
+prints the body as JSON with sorted keys and every value as sent, or as YAML with
+`-o yaml`.
+
+### Paths
+
+A path starts with `/` and goes to your configured API host. epx refuses a full URL or
+another host. It replaces `{tenant}` with your tenant, so quote the path to keep your
+shell from expanding the braces.
+
+### Query parameters
+
+Add query parameters inline (`'/product/{tenant}/products?pageSize=5'`) or with
+`-p key=value`, which you can repeat. A `-p` value replaces an inline value of the same
+key.
+
+### Scopes
+
+`--scope` requests a scope for the token, and you can repeat it. Emporix only grants the
+scopes a token asks for, and may silently return less data otherwise, so name every scope
+the endpoint needs. If your API key lacks one, epx fails with exit code 3 before it sends
+the request.
+
+`epx api get` requests exactly the scopes you name, and it only ever sends GET, so it
+doesn't need `--allow-write-scope`.
+
+## Send a write
+
+```sh
+epx api post '/product/{tenant}/products' --scope product.product_manage --file product.json --dry-run
+epx api delete '/product/{tenant}/products/100200' --scope product.product_manage
+```
+
+`epx api post`, `put`, `patch`, and `delete` send a write to any path, with the same
+paths, query parameters, and scopes as `epx api get`. Like every write, they take their
+body from `--file`, show the exact request with `--dry-run`, and ask before they send.
+See [Change data](/guides/writes).
+
+`epx api` sends no headers of its own beyond the standard ones. A body with localized
+text sent this way is sent without a `Content-Language` header; a write command of its
+own sends the right one for its service.
+
+## Responses and errors
+
+| Situation | Exit code |
+| --- | --- |
+| Emporix answers with a 2xx status. | 0 |
+| Your API key is rejected or lacks a scope. | 3 |
+| Emporix answers 404, or an empty body to a GET. | 4 |
+| Emporix answers 409 to a write. | 5 |
+| The command is invalid: a full URL, a malformed `-p` or `--scope`, a body that isn't JSON, or a write without `--yes` where epx can't ask. Nothing was sent. | 2 |
+| Any other error. | 1 |
+
+See [Exit codes and scripting](/guides/exit-codes) for the full list.

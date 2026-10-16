@@ -1,0 +1,169 @@
+---
+title: "epx completion"
+sidebarTitle: "completion"
+description: "Generate the autocompletion script for the specified shell."
+---
+
+## epx completion
+
+Generate the autocompletion script for epx for the specified shell.
+See each sub-command's help for details on how to use the generated script.
+
+With EPX\_COMPLETE\_IDS=1 in the environment, the arguments that name items (such as ID of
+[`epx products get ID`](/commands/products#epx-products-get)) and `--site` complete too, with up to 100 of the IDs and site codes that
+the first page of their list shows (the whole list where Emporix sends it in one response),
+read with the API key in effect and the scopes of that list within 3s.
+Without it, completion never calls the API; when the API cannot be read, it offers no IDs
+and prints nothing.
+
+**Command:** `epx completion [flags]`, `epx completion [command]`
+
+**Flags:** only the [global flags](/commands#global-flags).
+
+**Subcommands**
+
+- [`epx completion bash`](#epx-completion-bash)\
+  Generate the autocompletion script for bash.
+- [`epx completion fish`](#epx-completion-fish)\
+  Generate the autocompletion script for fish.
+- [`epx completion powershell`](#epx-completion-powershell)\
+  Generate the autocompletion script for powershell.
+- [`epx completion zsh`](#epx-completion-zsh)\
+  Generate the autocompletion script for zsh.
+
+## epx completion bash
+
+Generate the autocompletion script for bash.
+
+Generate the autocompletion script for the bash shell.
+
+This script depends on the `'bash-completion'` package.
+If it is not installed already, you can install it via your OS's package manager.
+
+To load completions in your current shell session:
+
+```text
+source <(epx completion bash)
+```
+
+To load completions for every new session, execute once:
+
+**Linux:**
+
+```text
+epx completion bash > /etc/bash_completion.d/epx
+```
+
+**macOS:**
+
+```text
+epx completion bash > $(brew --prefix)/etc/bash_completion.d/epx
+```
+
+You will need to start a new shell for this setup to take effect.
+
+**Command:** `epx completion bash`
+
+**Flags**
+
+- `--no-descriptions`\
+  Disable completion descriptions.
+
+Also takes the [global flags](/commands#global-flags).
+
+## epx completion fish
+
+Generate the autocompletion script for fish.
+
+Generate the autocompletion script for the fish shell.
+
+To load completions in your current shell session:
+
+```text
+epx completion fish | source
+```
+
+To load completions for every new session, execute once:
+
+```text
+epx completion fish > ~/.config/fish/completions/epx.fish
+```
+
+You will need to start a new shell for this setup to take effect.
+
+**Command:** `epx completion fish [flags]`
+
+**Flags**
+
+- `--no-descriptions`\
+  Disable completion descriptions.
+
+Also takes the [global flags](/commands#global-flags).
+
+## epx completion powershell
+
+Generate the autocompletion script for powershell.
+
+Generate the autocompletion script for powershell.
+
+To load completions in your current shell session:
+
+```text
+epx completion powershell | Out-String | Invoke-Expression
+```
+
+To load completions for every new session, add the output of the above command
+to your powershell profile.
+
+**Command:** `epx completion powershell [flags]`
+
+**Flags**
+
+- `--no-descriptions`\
+  Disable completion descriptions.
+
+Also takes the [global flags](/commands#global-flags).
+
+## epx completion zsh
+
+Generate the autocompletion script for zsh.
+
+Generate the autocompletion script for the zsh shell.
+
+If shell completion is not already enabled in your environment you will need
+to enable it.  You can execute the following once:
+
+```text
+echo "autoload -U compinit; compinit" >> ~/.zshrc
+```
+
+To load completions in your current shell session:
+
+```text
+source <(epx completion zsh)
+```
+
+To load completions for every new session, execute once:
+
+**Linux:**
+
+```text
+epx completion zsh > "${fpath[1]}/_epx"
+```
+
+**macOS:**
+
+```text
+epx completion zsh > $(brew --prefix)/share/zsh/site-functions/_epx
+```
+
+You will need to start a new shell for this setup to take effect.
+
+**Command:** `epx completion zsh [flags]`
+
+**Flags**
+
+- `--no-descriptions`\
+  Disable completion descriptions.
+
+Also takes the [global flags](/commands#global-flags).

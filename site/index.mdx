@@ -1,0 +1,78 @@
+---
+title: "epx"
+description: "Read and manage your Emporix tenant from the command line."
+sidebarTitle: "Overview"
+---
+
+epx is a command-line client for the [Emporix Commerce APIs](https://developer.emporix.io/api-references).
+It helps you inspect, script, and change the data of an Emporix tenant right from the terminal.
+
+With epx, you can:
+
+- Read products, categories, catalogs, prices, availability, customers, orders, and nearly
+  every other Emporix resource as a table, CSV, JSON, YAML, or JSON Lines.
+- [Filter, sort, and page through lists](/guides/lists) without writing paging code.
+- [Change data safely](/guides/writes): every write shows its exact request with `--dry-run` and
+  asks before it sends.
+- [Call any Emporix endpoint](/guides/api) with `epx api`, using only the OAuth scopes you name.
+- [Script reliably](/guides/exit-codes) with stable output and exit codes that tell a missing item
+  from a missing scope.
+
+<Frame>
+  <video autoPlay muted loop playsInline src="/images/demo.webm" aria-label="epx reading sites and products, previewing a write, and checking its API key" />
+</Frame>
+
+<Note>
+  epx is an unofficial project. It isn't affiliated with or endorsed by Emporix.
+</Note>
+
+## Get started
+
+<CardGroup cols={3}>
+  <Card title="Install epx" icon="download" href="/install">
+    Install with npm, from a release archive, or with Go.
+  </Card>
+  <Card title="Authenticate" icon="key" href="/configure">
+    Give epx an API key with only the scopes you need.
+  </Card>
+  <Card title="Quickstart" icon="rocket" href="/quickstart">
+    Make your first reads in five minutes.
+  </Card>
+</CardGroup>
+
+## Guides
+
+<CardGroup cols={2}>
+  <Card title="Format output" icon="table" href="/guides/output">
+    Choose tables, CSV, JSON, YAML, or JSON Lines, and pick columns and languages.
+  </Card>
+  <Card title="List, filter, and sort" icon="filter" href="/guides/lists">
+    Narrow lists with `--limit`, `--query`, and `--sort`.
+  </Card>
+  <Card title="Call any API endpoint" icon="code" href="/guides/api">
+    Send a request to any Emporix API path with `epx api`.
+  </Card>
+  <Card title="Change data" icon="pen-to-square" href="/guides/writes">
+    Send writes with dry runs, confirmation, and explicit scopes.
+  </Card>
+  <Card title="Bulk writes, chains, and jobs" icon="layer-group" href="/guides/bulk">
+    Write many items at once and wait for long-running jobs.
+  </Card>
+  <Card title="Exit codes and scripting" icon="terminal" href="/guides/exit-codes">
+    Use epx in scripts and CI, and handle every failure.
+  </Card>
+</CardGroup>
+
+## Reference
+
+<CardGroup cols={3}>
+  <Card title="CLI reference" icon="book" href="/commands">
+    Every command and flag, with the OAuth scopes it requests.
+  </Card>
+  <Card title="Security model" icon="shield" href="/security">
+    How epx handles credentials, scopes, and the data it prints.
+  </Card>
+  <Card title="API coverage" icon="chart-simple" href="/coverage">
+    Which Emporix API operations epx sends, per service.
+  </Card>
+</CardGroup>

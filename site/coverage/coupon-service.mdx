@@ -1,0 +1,30 @@
+---
+title: "Coupon Service"
+sidebarTitle: "Coupon Service"
+description: "Which Coupon Service operations epx sends, which do not apply, and which are planned."
+mode: "wide"
+---
+
+Operations of the Emporix API reference file [`rewards-and-promotions/coupon/api-reference/api.yml`](https://github.com/emporix/api-references/blob/faad61403b0683a7a8948b571f10305393760ae0/rewards-and-promotions/coupon/api-reference/api.yml) at commit [`faad614`](https://github.com/emporix/api-references/commit/faad61403b0683a7a8948b571f10305393760ae0) (2026-10-14).
+
+- Last change: 2026-09-25 ([`86c5409`](https://github.com/emporix/api-references/commit/86c5409))
+- Version: not stated in the reference file
+- Operations: 13 (13 built, 0 not applicable, 0 planned, 0 to do)
+
+| Operation | Status | Details |
+| --- | --- | --- |
+| `GET /coupon/{tenant}/coupons` | Built | [`epx coupons list`](/commands/coupons#epx-coupons-list) |
+| `POST /coupon/{tenant}/coupons` | Built | [`epx coupons create`](/commands/coupons#epx-coupons-create) |
+| `GET /coupon/{tenant}/coupons/{code}` | Built | [`epx coupons get`](/commands/coupons#epx-coupons-get) |
+| `PUT /coupon/{tenant}/coupons/{code}` | Built | [`epx coupons update`](/commands/coupons#epx-coupons-update) |
+| `PATCH /coupon/{tenant}/coupons/{code}` | Built | [`epx coupons patch`](/commands/coupons#epx-coupons-patch) |
+| `DELETE /coupon/{tenant}/coupons/{code}` | Built | [`epx coupons delete`](/commands/coupons#epx-coupons-delete) |
+| `POST /coupon/{tenant}/coupons/{code}/validation` | Built | [`epx coupons validate`](/commands/coupons#epx-coupons-validate) |
+| `GET /coupon/{tenant}/coupons/{code}/redemptions` | Built | [`epx coupons redemptions`](/commands/coupons#epx-coupons-redemptions) |
+| `POST /coupon/{tenant}/coupons/{code}/redemptions` | Built | [`epx coupons redeem`](/commands/coupons#epx-coupons-redeem) |
+| `GET /coupon/{tenant}/coupons/{code}/redemptions/{id}` | Built | [`epx coupons redemption`](/commands/coupons#epx-coupons-redemption) |
+| `DELETE /coupon/{tenant}/coupons/{code}/redemptions/{id}` | Built | [`epx coupons redemption-delete`](/commands/coupons#epx-coupons-redemption-delete) |
+| `GET /coupon/{tenant}/referral-coupons/{customerNumber}` | Built | [`epx coupons referral`](/commands/coupons#epx-coupons-referral) |
+| `POST /coupon/{tenant}/referral-coupons/{customerNumber}` | Built | [`epx coupons referral-create`](/commands/coupons#epx-coupons-referral-create) |
+
+All services: [Emporix API coverage](/coverage).

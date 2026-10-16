@@ -1,0 +1,179 @@
+---
+title: "epx customer-locations"
+sidebarTitle: "customer-locations"
+description: "Read and change the locations of B2B customers."
+---
+
+## epx customer-locations
+
+Reads and changes the locations of B2B customers (legal entities), contact emails
+included. A legal entity names its locations in entitiesAddresses, each as `{"id": ...}`.
+create and update ID (an upsert) send the JSON body of `--file`; delete ID sends none.
+
+Its reads require the customermanagement.location\_read scope.
+Its writes require the customermanagement.location\_manage scope.
+
+**Command:** `epx customer-locations [flags]`, `epx customer-locations [command]`
+
+**Flags:** only the [global flags](/commands#global-flags).
+
+**Subcommands**
+
+- [`epx customer-locations create`](#epx-customer-locations-create)\
+  Create one customer location.
+- [`epx customer-locations delete`](#epx-customer-locations-delete)\
+  Delete one customer location.
+- [`epx customer-locations get`](#epx-customer-locations-get)\
+  Show one customer location.
+- [`epx customer-locations list`](#epx-customer-locations-list)\
+  List customer locations.
+- [`epx customer-locations update`](#epx-customer-locations-update)\
+  Upsert one customer location.
+
+## epx customer-locations create
+
+Create one customer location.
+
+Creates the customer location that the JSON body of `--file` describes, shaped as
+[`epx customer-locations get ID -o json`](/commands/customer-locations#epx-customer-locations-get) prints one:
+type (required: HEADQUARTER, WAREHOUSE or OFFICE), contactDetails (required: emails,
+phones, addressLine1, addressLine2, city, state, postcode, countryCode and tags) and name;
+leave out `"phones"`: \[\] (an empty list), which Emporix refuses (exit 1).
+Without an id, Emporix makes one, and answers with it; an id that exists already is a
+conflict (exit 5).
+
+Changes data: on a terminal, epx asks before it sends POST. `--yes` sends without
+asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
+instead of sending it.
+
+Requires the customermanagement.location\_manage scope.
+
+**Command:** `epx customer-locations create [flags]`
+
+**Flags**
+
+- `--dry-run`\
+  Print the request instead of sending it (excludes `-o`).
+- `--file <PATH>`\
+  JSON request body in PATH, sent byte for byte (- reads standard input; sending it then needs `--yes`; required).
+- `-o, --output <format>`\
+  Format of the response: json or yaml. Default: `json`.
+- `--yes`\
+  Send without asking (required without a terminal, or with `--file` -).
+
+Also takes the [global flags](/commands#global-flags).
+
+## epx customer-locations delete
+
+Delete one customer location.
+
+Deletes the customer location ID; it sends no body.
+ID is the ID that [`epx customer-locations list`](/commands/customer-locations#epx-customer-locations-list) shows; an unknown one is not found.
+A legal entity that names it in entitiesAddresses no longer does.
+
+Deletes data, which cannot be undone.
+On a terminal, epx sends DELETE only once you type ID at its prompt.
+`--yes` sends without asking (required without a terminal);
+`--dry-run` prints the request instead of sending it.
+
+Requires the customermanagement.location\_manage scope.
+
+**Command:** `epx customer-locations delete ID [flags]`
+
+**Flags**
+
+- `--dry-run`\
+  Print the request instead of sending it (excludes `-o`).
+- `-o, --output <format>`\
+  Format of the response: json or yaml. Default: `json`.
+- `--yes`\
+  Send without asking (required without a terminal).
+
+Also takes the [global flags](/commands#global-flags).
+
+## epx customer-locations get
+
+Show one customer location.
+
+Reads the locations of B2B customers (legal entities), contact emails included.
+TYPE is HEADQUARTER, WAREHOUSE or OFFICE, ADDRESS the first address line and TAGS the
+location's labels; phone numbers and the rest of the address are only in `-o json`.
+
+Requires the customermanagement.location\_read scope.
+
+**Command:** `epx customer-locations get ID [flags]`
+
+**Flags**
+
+- `--columns <names>`\
+  Print only these columns of table and csv, in this order: comma-separated names (any case) among ID, NAME, TYPE, ADDRESS, POSTCODE, CITY, COUNTRY, EMAILS, TAGS.
+- `--no-headers`\
+  Print table and csv without the header row.
+- `-o, --output <format>`\
+  Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
+
+Also takes the [global flags](/commands#global-flags).
+
+## epx customer-locations list
+
+List customer locations.
+
+Reads the locations of B2B customers (legal entities), contact emails included.
+TYPE is HEADQUARTER, WAREHOUSE or OFFICE, ADDRESS the first address line and TAGS the
+location's labels; phone numbers and the rest of the address are only in `-o json`.
+
+Requires the customermanagement.location\_read scope.
+
+**Command:** `epx customer-locations list [flags]`
+
+**Flags**
+
+- `--columns <names>`\
+  Print only these columns of table and csv, in this order: comma-separated names (any case) among ID, NAME, TYPE, ADDRESS, POSTCODE, CITY, COUNTRY, EMAILS, TAGS.
+- `--limit <n>`\
+  Print at most n items; paged reads stop early where they safely can (0: every item).
+- `--no-headers`\
+  Print table and csv without the header row.
+- `-o, --output <format>`\
+  Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
+- `--query <filter>`\
+  Emporix q filter, passed as given, e.g. code:(A1,A2); space-separated conditions must all match (fields mostly as in `-o json`).
+- `--sort <order>`\
+  Emporix sort order, passed as given, e.g. code or name.en:desc,code; fields mostly as in `-o json` (Emporix may ignore an unknown one).
+- `--stream`\
+  Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
+
+Also takes the [global flags](/commands#global-flags).
+
+## epx customer-locations update
+
+Upsert one customer location.
+
+Replaces the customer location ID with the JSON body of `--file`, shaped as create takes it
+but without an id, or creates it with that id where none exists (an upsert); it requires
+type and contactDetails.
+With metadata.version as [`epx customer-locations get ID -o json`](/commands/customer-locations#epx-customer-locations-get) prints it, Emporix
+replaces it only if nobody changed it since, and answers 409 Conflict (exit 5) otherwise;
+without metadata.version, it replaces it whatever its version.
+ID is the ID that [`epx customer-locations list`](/commands/customer-locations#epx-customer-locations-list) shows.
+
+Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without
+asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
+instead of sending it.
+
+Requires the customermanagement.location\_manage scope.
+
+**Command:** `epx customer-locations update ID [flags]`
+
+**Flags**
+
+- `--dry-run`\
+  Print the request instead of sending it (excludes `-o`).
+- `--file <PATH>`\
+  JSON request body in PATH, sent byte for byte (- reads standard input; sending it then needs `--yes`; required).
+- `-o, --output <format>`\
+  Format of the response: json or yaml. Default: `json`.
+- `--yes`\
+  Send without asking (required without a terminal, or with `--file` -).
+
+Also takes the [global flags](/commands#global-flags).

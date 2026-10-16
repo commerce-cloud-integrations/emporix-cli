@@ -1,0 +1,232 @@
+---
+title: "epx returns"
+sidebarTitle: "returns"
+description: "Read, create, change and delete returns."
+---
+
+## epx returns
+
+Reads return requests, personal data included. STATUS is the approval status (PENDING,
+APPROVED, REJECTED or CLOSED), RECEIVED whether the goods arrived, ORDERS the orders whose
+items are returned, REQUESTOR who asked (email, name or customer id) and TOTAL the value
+returned: the order entries' deprecated unitPrice times the quantity returned, net or gross
+as that unitPrice is. Items (with their reasons and prices), the return reason, approver,
+submitter, expiry date and assisted-buying entries are only in `-o json`.
+`--query submitter.userType:CUSTOMER` lists the returns that customers made themselves
+(EMPLOYEE: those made on their behalf).
+[`epx returns create`](/commands/returns#epx-returns-create), `update`, `patch` and `delete` change returns.
+
+Its reads require the returns.returns\_read scope.
+Its writes require different OAuth scopes; the help of each names them.
+
+**Command:** `epx returns [flags]`, `epx returns [command]`
+
+**Flags:** only the [global flags](/commands#global-flags).
+
+**Subcommands**
+
+- [`epx returns create`](#epx-returns-create)\
+  Create a return.
+- [`epx returns delete`](#epx-returns-delete)\
+  Delete one return.
+- [`epx returns get`](#epx-returns-get)\
+  Show one return.
+- [`epx returns list`](#epx-returns-list)\
+  List returns.
+- [`epx returns patch`](#epx-returns-patch)\
+  Change a return.
+- [`epx returns update`](#epx-returns-update)\
+  Replace a return.
+
+## epx returns create
+
+Create a return.
+
+Creates a return on behalf of a customer from the JSON object in `--file`: its orders
+(each with its id and the items to return, each with id and quantity), reason (code or
+details), requestor (the customer, by customerId) and submitter (who submits it), and
+optionally approver (`{"type": "USER" or "GROUP", "id": an IAM user or group id}`;
+Emporix refuses an id unknown for that type with 400 Bad Request, exit 1), expiryDate and
+mixins. Emporix answers with the return's id. It does not check quantities against earlier
+returns: sending the body again creates another return, even beyond the entry's amount.
+It fails with 500 Internal Server Error (exit 1) for an order whose entries lack the
+deprecated unitPrice (nothing is created).
+
+Changes data: on a terminal, epx asks before it sends POST. `--yes` sends without
+asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
+instead of sending it.
+
+Requires the returns.returns\_manage scope.
+
+**Command:** `epx returns create [flags]`
+
+**Flags**
+
+- `--dry-run`\
+  Print the request instead of sending it (excludes `-o`).
+- `--file <PATH>`\
+  JSON request body in PATH, sent byte for byte (- reads standard input; sending it then needs `--yes`; required).
+- `-o, --output <format>`\
+  Format of the response: json or yaml. Default: `json`.
+- `--yes`\
+  Send without asking (required without a terminal, or with `--file` -).
+
+Also takes the [global flags](/commands#global-flags).
+
+## epx returns delete
+
+Delete one return.
+
+Deletes the return ID; it sends no body. Emporix deletes a PENDING or an
+APPROVED return (the reference documents 400 Bad Request, exit 1, where the status does not
+allow it).
+Emporix answers an unknown ID as one that it deleted (204 No Content).
+ID is the ID that [`epx returns list`](/commands/returns#epx-returns-list) shows.
+
+Deletes data, which cannot be undone.
+On a terminal, epx sends DELETE only once you type ID at its prompt.
+`--yes` sends without asking (required without a terminal);
+`--dry-run` prints the request instead of sending it.
+
+Requires the returns.returns\_manage scope.
+
+**Command:** `epx returns delete ID [flags]`
+
+**Flags**
+
+- `--dry-run`\
+  Print the request instead of sending it (excludes `-o`).
+- `-o, --output <format>`\
+  Format of the response: json or yaml. Default: `json`.
+- `--yes`\
+  Send without asking (required without a terminal).
+
+Also takes the [global flags](/commands#global-flags).
+
+## epx returns get
+
+Show one return.
+
+Reads return requests, personal data included. STATUS is the approval status (PENDING,
+APPROVED, REJECTED or CLOSED), RECEIVED whether the goods arrived, ORDERS the orders whose
+items are returned, REQUESTOR who asked (email, name or customer id) and TOTAL the value
+returned: the order entries' deprecated unitPrice times the quantity returned, net or gross
+as that unitPrice is. Items (with their reasons and prices), the return reason, approver,
+submitter, expiry date and assisted-buying entries are only in `-o json`.
+`--query submitter.userType:CUSTOMER` lists the returns that customers made themselves
+(EMPLOYEE: those made on their behalf).
+[`epx returns create`](/commands/returns#epx-returns-create), `update`, `patch` and `delete` change returns.
+
+Requires the returns.returns\_read scope.
+
+**Command:** `epx returns get ID [flags]`
+
+**Flags**
+
+- `--columns <names>`\
+  Print only these columns of table and csv, in this order: comma-separated names (any case) among ID, STATUS, RECEIVED, ORDERS, REQUESTOR, TOTAL, CREATED.
+- `--no-headers`\
+  Print table and csv without the header row.
+- `-o, --output <format>`\
+  Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
+
+Also takes the [global flags](/commands#global-flags).
+
+## epx returns list
+
+List returns.
+
+Reads return requests, personal data included. STATUS is the approval status (PENDING,
+APPROVED, REJECTED or CLOSED), RECEIVED whether the goods arrived, ORDERS the orders whose
+items are returned, REQUESTOR who asked (email, name or customer id) and TOTAL the value
+returned: the order entries' deprecated unitPrice times the quantity returned, net or gross
+as that unitPrice is. Items (with their reasons and prices), the return reason, approver,
+submitter, expiry date and assisted-buying entries are only in `-o json`.
+`--query submitter.userType:CUSTOMER` lists the returns that customers made themselves
+(EMPLOYEE: those made on their behalf).
+[`epx returns create`](/commands/returns#epx-returns-create), `update`, `patch` and `delete` change returns.
+
+Requires the returns.returns\_read scope.
+
+**Command:** `epx returns list [flags]`
+
+**Flags**
+
+- `--columns <names>`\
+  Print only these columns of table and csv, in this order: comma-separated names (any case) among ID, STATUS, RECEIVED, ORDERS, REQUESTOR, TOTAL, CREATED.
+- `--limit <n>`\
+  Print at most n items; paged reads stop early where they safely can (0: every item).
+- `--no-headers`\
+  Print table and csv without the header row.
+- `-o, --output <format>`\
+  Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
+- `--query <filter>`\
+  Emporix q filter, passed as given, e.g. code:(A1,A2); space-separated conditions must all match (fields mostly as in `-o json`).
+- `--sort <order>`\
+  Emporix sort order, passed as given, e.g. code or name.en:desc,code; fields mostly as in `-o json` (Emporix may ignore an unknown one).
+- `--stream`\
+  Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
+
+Also takes the [global flags](/commands#global-flags).
+
+## epx returns patch
+
+Change a return.
+
+Changes the return ID with the JSON Patch (RFC 6902) in `--file`: an array of
+operations, each with op (add, remove or replace), path and value, e.g.
+`[{"op": "replace", "path": "/approvalStatus", "value": "APPROVED"}]`. Emporix requires its
+read scope for it too, and answers a token without it with 400 Bad Request.
+ID is the ID that [`epx returns list`](/commands/returns#epx-returns-list) shows.
+
+Changes data: on a terminal, epx asks before it sends PATCH. `--yes` sends without
+asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
+instead of sending it.
+
+Requires the returns.returns\_read, returns.returns\_manage scopes.
+
+**Command:** `epx returns patch ID [flags]`
+
+**Flags**
+
+- `--dry-run`\
+  Print the request instead of sending it (excludes `-o`).
+- `--file <PATH>`\
+  JSON request body in PATH, sent byte for byte (- reads standard input; sending it then needs `--yes`; required).
+- `-o, --output <format>`\
+  Format of the response: json or yaml. Default: `json`.
+- `--yes`\
+  Send without asking (required without a terminal, or with `--file` -).
+
+Also takes the [global flags](/commands#global-flags).
+
+## epx returns update
+
+Replace a return.
+
+Replaces the return ID with the return in `--file`, a JSON object as
+[`epx returns get ID -o json`](/commands/returns#epx-returns-get) prints it, metadata.version included (Emporix refuses a body
+without metadata with 400 Bad Request). Emporix replaces only the latest version: an older
+metadata.version, like an unknown return, is not found (exit 4).
+ID is the ID that [`epx returns list`](/commands/returns#epx-returns-list) shows.
+
+Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without
+asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
+instead of sending it.
+
+Requires the returns.returns\_manage scope.
+
+**Command:** `epx returns update ID [flags]`
+
+**Flags**
+
+- `--dry-run`\
+  Print the request instead of sending it (excludes `-o`).
+- `--file <PATH>`\
+  JSON request body in PATH, sent byte for byte (- reads standard input; sending it then needs `--yes`; required).
+- `-o, --output <format>`\
+  Format of the response: json or yaml. Default: `json`.
+- `--yes`\
+  Send without asking (required without a terminal, or with `--file` -).
+
+Also takes the [global flags](/commands#global-flags).

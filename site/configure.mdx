@@ -1,0 +1,145 @@
+---
+title: "Authenticate"
+description: "Give epx an Emporix API key through environment variables or a profile, with only the scopes your commands need."
+---
+
+epx authenticates with an Emporix API key: the client ID and client secret of OAuth
+client credentials. It reads the key from environment variables or from a
+[profile](#store-keys-in-profiles), never from flags, and it never reads a client secret
+from a file.
+
+## Create an API key
+
+In the [Emporix Developer Portal](https://app.emporix.io), open **Manage API Keys** and
+create a custom key with only the scopes of the commands you run. Each command's help
+ends with the scopes it requests, as does its entry in the [CLI reference](/commands):
+
+```sh
+epx products list --help    # ... Requires the product.product_read_unpublished scope.
+epx sites list --help       # ... No OAuth scope is needed.
+```
+
+Add write scopes, such as `product.product_manage`, only to keys that send
+[writes](/guides/writes). Keep them off keys you use only to read.
+
+<Warning>
+  Your tenant's default Emporix API key also works, but it grants every scope, including
+  those that change data.
+</Warning>
+
+## Set environment variables
+
+```sh
+export EMPORIX_TENANT=acme1
+export EMPORIX_CLIENT_ID=...
+export EMPORIX_CLIENT_SECRET=...
+```
+
+| Variable | Description |
+| --- | --- |
+| `EMPORIX_TENANT` | Your tenant, such as `acme1`. Required unless you pass `--tenant`. |
+| `EMPORIX_CLIENT_ID` | The client ID of the API key. Required. |
+| `EMPORIX_CLIENT_SECRET` | The client secret of the API key. Required. |
+| `EMPORIX_API_URL` | The API host. Defaults to `https://api.emporix.io`. Must use HTTPS, except for a loopback address such as `localhost`. |
+| `EPX_PROFILE` | The [profile](#store-keys-in-profiles) to use when you don't pass `--profile` and no `EMPORIX_` variable is set. |
+| `EPX_COMPLETE_IDS` | Set to `1` to let [shell completion](/install#complete-ids-from-your-tenant) read IDs from the API. |
+
+When a required setting is missing, any command that calls Emporix, and any write's
+`--dry-run`, fails with exit code 2 and names what to set.
+
+## Store keys in profiles
+
+A profile keeps an API key so you can switch between tenants and keys without exporting
+variables. It holds a tenant, an API URL, a client ID, and optionally a default site and
+language. The client secret goes to your OS keychain, never to a file.
+
+```sh
+epx profile add dev --tenant acme1 --client-id ... --site AcmeStore_NL --language nl
+epx profile list
+epx profile show dev     # its settings, and whether its client secret is stored
+epx profile use dev      # make it the default profile
+epx profile remove dev   # asks first; pass --yes in scripts
+```
+
+`profile add` asks for the client secret on a terminal without showing it. Elsewhere, it
+reads the first line of standard input:
+
+```sh
+printf '%s\n' "$CLIENT_SECRET" | epx profile add ci --tenant acme1 --client-id ...
+```
+
+The first profile you add becomes the default. `profile add` sends nothing to Emporix;
+check the new key with `epx --profile dev auth status`.
+
+### Choose a profile
+
+A command uses the profile that `--profile` names, then the one in `EPX_PROFILE`, then
+the default profile. Profiles apply only when no `EMPORIX_` variable is set: the
+environment or a profile supplies the whole API key, never a mix of both, so a client
+secret only ever goes to its own API URL. Naming a profile while an `EMPORIX_` variable
+is set is a usage error.
+
+A profile's default site and language apply on its own tenant to commands that need a
+site or show translations, when you don't pass `--site` or `--language`.
+
+### Where profiles are stored
+
+| Item | Location |
+| --- | --- |
+| Profiles | `epx/config.json` in your configuration directory: `~/.config` on Linux, `~/Library/Application Support` on macOS, `%AppData%` on Windows. epx writes it readable by you only. On Linux and macOS, it refuses to read it once other users can read or change it. |
+| Client secrets | The macOS Keychain, the Windows Credential Manager, or a Secret Service such as GNOME Keyring or KWallet on Linux, under the service `epx` and the profile's name. |
+
+Profile names have up to 64 characters: lowercase letters and digits, with `.`, `_`,
+and `-` after the first. The Windows Credential Manager ignores case, so `Dev` and `dev` would share a
+secret.
+
+## Check your API key
+
+```sh
+epx auth status --scope product.product_read_unpublished --scope indexing.search_view
+```
+
+`auth status` requests a token for your tenant and each `--scope`, then shows the tenant,
+the token's lifetime, and the scopes granted. It never prints the token. Emporix only
+grants the scopes a token asks for, so pass every scope you want to check.
+
+## Missing scopes
+
+Emporix doesn't reject a token request for a scope your API key lacks. It leaves the
+scope out of the token, and reads may then return less data, such as published products
+only. To keep that from going unnoticed, epx compares every token with the scopes and
+tenant it asked for, and fails with exit code 3 when one doesn't match:
+
+```text
+Error: credential for tenant "acme1" lacks required scopes: product.product_read_unpublished
+```
+
+Add the scope to your API key, or use another key. epx never retries with broader scopes.
+
+## Write-capable scopes for reads
+
+A few reads are allowed by Emporix only with a scope that can also change data, such as
+`site.site_manage`. epx treats any scope whose name doesn't contain `read` or `view` as a
+word as write-capable. These reads request such a scope only when you pass
+`--allow-write-scope`, and their help marks them as opt-in:
+
+```sh
+epx sites codes --allow-write-scope
+```
+
+Without the flag, they fail with exit code 2 before anything is sent. The read still
+changes nothing; the flag confirms that you accept a token that could. Writes don't take
+this flag: they request the scopes in their help, or those you name with `--scope`.
+
+## Global flags
+
+These flags apply to every command:
+
+| Flag | Description |
+| --- | --- |
+| `--profile <name>` | The profile to use. |
+| `--tenant <tenant>` | The tenant, instead of the one from the environment or the profile. An empty value fails as missing configuration. |
+| `--timeout <duration>` | The limit for each HTTP request. Defaults to `30s`. |
+
+Once you've set up a key, take the [quickstart](/quickstart) or read the
+[security model](/security).

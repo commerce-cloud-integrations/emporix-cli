@@ -1,0 +1,9 @@
+/* Wide pages (mode: "wide", the API coverage tables) take the whole width beside the
+   navigation: Mintlify's wide layout keeps the page at 54rem even without a table of
+   contents. Its header carries the classes peer and is-wide on such pages, and the
+   page is the last child of the container that follows the header. */
+@media (min-width: 1024px) {
+  .peer.is-wide ~ div > :last-child {
+    max-width: none !important;
+  }
+}

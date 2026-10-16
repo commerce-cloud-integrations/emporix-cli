@@ -1,0 +1,223 @@
+---
+title: "epx api"
+sidebarTitle: "api"
+description: "Send requests to any Emporix API path."
+---
+
+## epx api
+
+**Command:** `epx api [flags]`, `epx api [command]`
+
+**Flags:** only the [global flags](/commands#global-flags).
+
+**Subcommands**
+
+- [`epx api delete`](#epx-api-delete)\
+  Send DELETE to an API path and print the JSON response.
+- [`epx api get`](#epx-api-get)\
+  GET an API path and print the JSON response.
+- [`epx api patch`](#epx-api-patch)\
+  Send PATCH to an API path and print the JSON response.
+- [`epx api post`](#epx-api-post)\
+  Send POST to an API path and print the JSON response.
+- [`epx api put`](#epx-api-put)\
+  Send PUT to an API path and print the JSON response.
+
+## epx api delete
+
+Send DELETE to an API path and print the JSON response.
+
+Sends DELETE to PATH on the configured API host, with the JSON body that `--file` gives
+(none without it), and prints the response body as JSON (YAML with `-o yaml`) with sorted
+keys and every value as sent (nothing for an empty one). \{tenant\} in PATH is replaced with
+the tenant; query values given with `-p` replace inline ones. It sends no other header, such
+as the Content-Language that the Unit Service requires to create or update a unit.
+
+Deletes data, which cannot be undone.
+On a terminal, epx sends DELETE only once you type PATH at its prompt.
+`--yes` sends without asking (required without a terminal, or with `--file` -);
+`--dry-run` prints the request instead of sending it.
+
+Requests only the scopes given with `--scope` besides the tenant: name every write scope
+that the endpoint needs, as Emporix grants only requested scopes.
+
+**Command:** `epx api delete PATH [flags]`
+
+**Flags**
+
+- `--dry-run`\
+  Print the request instead of sending it (excludes `-o`).
+- `--file <PATH>`\
+  JSON request body in PATH, sent byte for byte (- reads standard input; sending it then needs `--yes`).
+- `-o, --output <format>`\
+  Format of the response: json or yaml. Default: `json`.
+- `-p, --param <key=value>`\
+  Query parameter as key=value (repeatable).
+- `--scope <strings>`\
+  OAuth scope to request besides the tenant (repeatable).
+- `--yes`\
+  Send without asking (required without a terminal, or with `--file` -).
+
+Also takes the [global flags](/commands#global-flags).
+
+**Examples**
+
+```sh
+epx api delete /product/{tenant}/products/100200 --scope product.product_manage --yes
+```
+
+## epx api get
+
+GET an API path and print the JSON response.
+
+Sends GET to PATH on the configured API host and prints the response body as JSON
+(YAML with `-o yaml`) with sorted keys and every value as sent.
+\{tenant\} in PATH is replaced with the tenant; Accept-Language: \* requests every translation.
+Query values given with `-p` replace inline ones. Request every scope the endpoint needs
+with `--scope`: Emporix grants only requested scopes and may silently omit data otherwise.
+
+**Command:** `epx api get PATH [flags]`
+
+**Flags**
+
+- `-o, --output <format>`\
+  Format of the response: json or yaml. Default: `json`.
+- `-p, --param <key=value>`\
+  Query parameter as key=value (repeatable).
+- `--scope <strings>`\
+  OAuth scope to request besides the tenant (repeatable).
+
+Also takes the [global flags](/commands#global-flags).
+
+**Examples**
+
+```sh
+epx api get /site/{tenant}/sites
+epx api get /product/{tenant}/products -p pageSize=5 --scope product.product_read_unpublished
+```
+
+## epx api patch
+
+Send PATCH to an API path and print the JSON response.
+
+Sends PATCH to PATH on the configured API host, with the JSON body that `--file` gives
+(none without it), and prints the response body as JSON (YAML with `-o yaml`) with sorted
+keys and every value as sent (nothing for an empty one). \{tenant\} in PATH is replaced with
+the tenant; query values given with `-p` replace inline ones. It sends no other header, such
+as the Content-Language that the Unit Service requires to create or update a unit.
+
+Changes data: on a terminal, epx asks before it sends PATCH. `--yes` sends without
+asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
+instead of sending it.
+
+Requests only the scopes given with `--scope` besides the tenant: name every write scope
+that the endpoint needs, as Emporix grants only requested scopes.
+
+**Command:** `epx api patch PATH [flags]`
+
+**Flags**
+
+- `--dry-run`\
+  Print the request instead of sending it (excludes `-o`).
+- `--file <PATH>`\
+  JSON request body in PATH, sent byte for byte (- reads standard input; sending it then needs `--yes`).
+- `-o, --output <format>`\
+  Format of the response: json or yaml. Default: `json`.
+- `-p, --param <key=value>`\
+  Query parameter as key=value (repeatable).
+- `--scope <strings>`\
+  OAuth scope to request besides the tenant (repeatable).
+- `--yes`\
+  Send without asking (required without a terminal, or with `--file` -).
+
+Also takes the [global flags](/commands#global-flags).
+
+**Examples**
+
+```sh
+epx api patch /site/{tenant}/sites/AcmeStore_NL --scope site.site_manage --file site.json
+```
+
+## epx api post
+
+Send POST to an API path and print the JSON response.
+
+Sends POST to PATH on the configured API host, with the JSON body that `--file` gives
+(none without it), and prints the response body as JSON (YAML with `-o yaml`) with sorted
+keys and every value as sent (nothing for an empty one). \{tenant\} in PATH is replaced with
+the tenant; query values given with `-p` replace inline ones. It sends no other header, such
+as the Content-Language that the Unit Service requires to create or update a unit.
+
+Changes data: on a terminal, epx asks before it sends POST. `--yes` sends without
+asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
+instead of sending it.
+
+Requests only the scopes given with `--scope` besides the tenant: name every write scope
+that the endpoint needs, as Emporix grants only requested scopes.
+
+**Command:** `epx api post PATH [flags]`
+
+**Flags**
+
+- `--dry-run`\
+  Print the request instead of sending it (excludes `-o`).
+- `--file <PATH>`\
+  JSON request body in PATH, sent byte for byte (- reads standard input; sending it then needs `--yes`).
+- `-o, --output <format>`\
+  Format of the response: json or yaml. Default: `json`.
+- `-p, --param <key=value>`\
+  Query parameter as key=value (repeatable).
+- `--scope <strings>`\
+  OAuth scope to request besides the tenant (repeatable).
+- `--yes`\
+  Send without asking (required without a terminal, or with `--file` -).
+
+Also takes the [global flags](/commands#global-flags).
+
+**Examples**
+
+```sh
+epx api post /brand/brands --scope brand.brand_manage --file brand.json
+```
+
+## epx api put
+
+Send PUT to an API path and print the JSON response.
+
+Sends PUT to PATH on the configured API host, with the JSON body that `--file` gives
+(none without it), and prints the response body as JSON (YAML with `-o yaml`) with sorted
+keys and every value as sent (nothing for an empty one). \{tenant\} in PATH is replaced with
+the tenant; query values given with `-p` replace inline ones. It sends no other header, such
+as the Content-Language that the Unit Service requires to create or update a unit.
+
+Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without
+asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
+instead of sending it.
+
+Requests only the scopes given with `--scope` besides the tenant: name every write scope
+that the endpoint needs, as Emporix grants only requested scopes.
+
+**Command:** `epx api put PATH [flags]`
+
+**Flags**
+
+- `--dry-run`\
+  Print the request instead of sending it (excludes `-o`).
+- `--file <PATH>`\
+  JSON request body in PATH, sent byte for byte (- reads standard input; sending it then needs `--yes`).
+- `-o, --output <format>`\
+  Format of the response: json or yaml. Default: `json`.
+- `-p, --param <key=value>`\
+  Query parameter as key=value (repeatable).
+- `--scope <strings>`\
+  OAuth scope to request besides the tenant (repeatable).
+- `--yes`\
+  Send without asking (required without a terminal, or with `--file` -).
+
+Also takes the [global flags](/commands#global-flags).
+
+**Examples**
+
+```sh
+epx api put /product/{tenant}/products/100200 --scope product.product_manage --file product.json --dry-run
+```

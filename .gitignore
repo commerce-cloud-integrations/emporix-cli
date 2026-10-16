@@ -1,0 +1,11 @@
+# Build and test output
+/bin/
+/dist/
+*.test
+*.out
+
+# Credentials belong in the environment, never in files
+.env
+.env.*
+
+.DS_Store

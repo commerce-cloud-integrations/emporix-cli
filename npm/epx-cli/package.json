@@ -1,0 +1,21 @@
+{
+  "name": "epx-cli",
+  "version": "0.0.0",
+  "private": true,
+  "description": "epx, a command-line client for the Emporix Commerce APIs",
+  "keywords": ["emporix", "commerce", "cli"],
+  "homepage": "https://github.com/commerce-cloud-integrations/emporix-cli",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/commerce-cloud-integrations/emporix-cli.git"
+  },
+  "license": "Apache-2.0",
+  "bin": {
+    "epx": "bin/epx.js"
+  },
+  "files": ["bin/epx.js"],
+  "engines": {
+    "node": ">=18"
+  },
+  "optionalDependencies": {}
+}
