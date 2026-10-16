@@ -1,0 +1,72 @@
+# epx regions
+
+> Read regions.
+
+## epx regions
+
+Reads the regions that group countries.
+
+No OAuth scope is needed.
+
+**Command:** `epx regions [flags]`, `epx regions [command]`
+
+**Flags:** only the [global flags](/emporix-cli/commands#global-flags).
+
+**Subcommands**
+
+- [`epx regions get`](#epx-regions-get)\
+  Show one region.
+- [`epx regions list`](#epx-regions-list)\
+  List regions.
+
+## epx regions get
+
+Show one region.
+
+Reads the regions that group countries.
+
+No OAuth scope is needed.
+
+**Command:** `epx regions get CODE [flags]`
+
+**Flags**
+
+- `--columns <names>`\
+  Print only these columns of table and csv, in this order: comma-separated names (any case) among CODE, NAME.
+- `--language <language>`\
+  Language of localized table text; a missing translation shows another, labeled (`-o json` prints all). Default: `en`.
+- `--no-headers`\
+  Print table and csv without the header row.
+- `-o, --output <format>`\
+  Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
+
+Also takes the [global flags](/emporix-cli/commands#global-flags).
+
+## epx regions list
+
+List regions.
+
+Reads the regions that group countries.
+
+No OAuth scope is needed.
+
+**Command:** `epx regions list [flags]`
+
+**Flags**
+
+- `--columns <names>`\
+  Print only these columns of table and csv, in this order: comma-separated names (any case) among CODE, NAME.
+- `--language <language>`\
+  Language of localized table text; a missing translation shows another, labeled (`-o json` prints all). Default: `en`.
+- `--limit <n>`\
+  Print at most n items; paged reads stop early where they safely can (0: every item).
+- `--no-headers`\
+  Print table and csv without the header row.
+- `-o, --output <format>`\
+  Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
+- `--sort <order>`\
+  Emporix sort order, passed as given, e.g. code or name.en:desc,code; fields mostly as in `-o json` (Emporix may ignore an unknown one).
+- `--stream`\
+  Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
+
+Also takes the [global flags](/emporix-cli/commands#global-flags).

@@ -1,0 +1,149 @@
+# epx category-trees
+
+> Read and rebuild category trees.
+
+## epx category-trees
+
+Reads category trees, published and unpublished: each root category followed by its
+subcategories, depth first, in the order Emporix sends them; NAME is indented by the
+category's level. get takes the id of a root category: Emporix answers another
+category's id as not found. list's `--limit` counts trees, each shown whole. A move of a
+category shows in its tree a few seconds later; a root category moved below another may
+keep its old tree until it is deleted.
+
+Its reads require the category.category\_read\_unpublished scope.
+Its writes require the category.category\_manage, category.category\_read\_unpublished scopes.
+
+**Command:** `epx category-trees [flags]`, `epx category-trees [command]`
+
+**Flags:** only the [global flags](/emporix-cli/commands#global-flags).
+
+**Subcommands**
+
+- [`epx category-trees get`](#epx-category-trees-get)\
+  Show one category tree.
+- [`epx category-trees list`](#epx-category-trees-list)\
+  List category trees.
+- [`epx category-trees rebuild`](#epx-category-trees-rebuild)\
+  Rebuild a category tree.
+- [`epx category-trees search`](#epx-category-trees-search)\
+  Search category trees.
+
+## epx category-trees get
+
+Show one category tree.
+
+Reads category trees, published and unpublished: each root category followed by its
+subcategories, depth first, in the order Emporix sends them; NAME is indented by the
+category's level. get takes the id of a root category: Emporix answers another
+category's id as not found. list's `--limit` counts trees, each shown whole. A move of a
+category shows in its tree a few seconds later; a root category moved below another may
+keep its old tree until it is deleted.
+
+Requires the category.category\_read\_unpublished scope.
+
+**Command:** `epx category-trees get ID [flags]`
+
+**Flags**
+
+- `--columns <names>`\
+  Print only these columns of table and csv, in this order: comma-separated names (any case) among ID, CODE, PUBLISHED, NAME.
+- `--language <language>`\
+  Language of localized table text; a missing translation shows another, labeled (`-o json` prints all). Default: `en`.
+- `--no-headers`\
+  Print table and csv without the header row.
+- `-o, --output <format>`\
+  Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
+
+Also takes the [global flags](/emporix-cli/commands#global-flags).
+
+## epx category-trees list
+
+List category trees.
+
+Reads category trees, published and unpublished: each root category followed by its
+subcategories, depth first, in the order Emporix sends them; NAME is indented by the
+category's level. get takes the id of a root category: Emporix answers another
+category's id as not found. list's `--limit` counts trees, each shown whole. A move of a
+category shows in its tree a few seconds later; a root category moved below another may
+keep its old tree until it is deleted.
+
+Requires the category.category\_read\_unpublished scope.
+
+**Command:** `epx category-trees list [flags]`
+
+**Flags**
+
+- `--columns <names>`\
+  Print only these columns of table and csv, in this order: comma-separated names (any case) among ID, CODE, PUBLISHED, NAME.
+- `--language <language>`\
+  Language of localized table text; a missing translation shows another, labeled (`-o json` prints all). Default: `en`.
+- `--limit <n>`\
+  Print at most n items; paged reads stop early where they safely can (0: every item).
+- `--no-headers`\
+  Print table and csv without the header row.
+- `-o, --output <format>`\
+  Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
+
+Also takes the [global flags](/emporix-cli/commands#global-flags).
+
+## epx category-trees rebuild
+
+Rebuild a category tree.
+
+Rebuilds the category tree of the root category ID (an unindented row of
+[`epx category-trees list`](/emporix-cli/commands/category-trees#epx-category-trees-list)) and prints the rebuilt tree as JSON, published and unpublished
+categories. It sends no body; another category's id is not found (exit 4).
+
+Changes data: on a terminal, epx asks before it sends POST. `--yes` sends without
+asking (required without a terminal); `--dry-run` prints the request
+instead of sending it.
+
+Requires the category.category\_manage, category.category\_read\_unpublished scopes.
+
+**Command:** `epx category-trees rebuild ID [flags]`
+
+**Flags**
+
+- `--dry-run`\
+  Print the request instead of sending it (excludes `-o`).
+- `-o, --output <format>`\
+  Format of the response: json or yaml. Default: `json`.
+- `--yes`\
+  Send without asking (required without a terminal).
+
+Also takes the [global flags](/emporix-cli/commands#global-flags).
+
+## epx category-trees search
+
+Search category trees.
+
+Reads the category trees, published and unpublished, that hold any of the categories
+`--category` names, each whole; without `--category`, every tree. `--limit` counts trees.
+It reads and shows them as [`epx category-trees list`](/emporix-cli/commands/category-trees#epx-category-trees-list) does.
+
+Changes nothing: Emporix serves this read as POST with a JSON body, which the
+flags make or `--body` gives whole.
+
+Requires the category.category\_read\_unpublished scope.
+
+**Command:** `epx category-trees search [flags]`
+
+**Flags**
+
+- `--body <FILE>`\
+  Send the JSON request body in FILE as given (- reads standard input) instead of the one the other flags make.
+- `--category <ID>`\
+  A category ID whose tree to read (repeatable).
+- `--columns <names>`\
+  Print only these columns of table and csv, in this order: comma-separated names (any case) among ID, CODE, PUBLISHED, NAME.
+- `--language <language>`\
+  Language of localized table text; a missing translation shows another, labeled (`-o json` prints all). Default: `en`.
+- `--limit <n>`\
+  Print at most n items; paged reads stop early where they safely can (0: every item).
+- `--no-headers`\
+  Print table and csv without the header row.
+- `-o, --output <format>`\
+  Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
+
+Also takes the [global flags](/emporix-cli/commands#global-flags).

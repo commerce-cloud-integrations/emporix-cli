@@ -1,0 +1,20 @@
+# Tax Service
+
+> Which Tax Service operations epx sends, which do not apply, and which are planned.
+
+Operations of the Emporix API reference file [`prices-and-taxes/tax-service/api-reference/api.yml`](https://github.com/emporix/api-references/blob/faad61403b0683a7a8948b571f10305393760ae0/prices-and-taxes/tax-service/api-reference/api.yml) at commit [`faad614`](https://github.com/emporix/api-references/commit/faad61403b0683a7a8948b571f10305393760ae0) (2026-10-14).
+
+- Last change: 2025-11-15 ([`4ed37c9`](https://github.com/emporix/api-references/commit/4ed37c9))
+- Version: not stated in the reference file
+- Operations: 6 (6 built, 0 not applicable, 0 planned, 0 to do)
+
+| Operation | Status | Details |
+| --- | --- | --- |
+| `POST /tax/{tenant}/taxes` | Built | [`epx taxes create`](/emporix-cli/commands/taxes#epx-taxes-create) |
+| `GET /tax/{tenant}/taxes` | Built | [`epx taxes list`](/emporix-cli/commands/taxes#epx-taxes-list) |
+| `GET /tax/{tenant}/taxes/{locationCode}` | Built | [`epx taxes get`](/emporix-cli/commands/taxes#epx-taxes-get) |
+| `PUT /tax/{tenant}/taxes/{locationCode}` | Built | [`epx taxes update`](/emporix-cli/commands/taxes#epx-taxes-update) |
+| `DELETE /tax/{tenant}/taxes/{locationCode}` | Built | [`epx taxes delete`](/emporix-cli/commands/taxes#epx-taxes-delete) |
+| `PUT /tax/{tenant}/taxes/calculation-commands` | Built | [`epx taxes calculate`](/emporix-cli/commands/taxes#epx-taxes-calculate) |
+
+All services: [Emporix API coverage](/emporix-cli/coverage).

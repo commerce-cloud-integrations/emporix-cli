@@ -1,0 +1,177 @@
+# epx vendor-locations
+
+> Read and change the locations of vendors.
+
+## epx vendor-locations
+
+Reads and changes the locations of vendors, contact emails included. A vendor names its
+locations in locations, each as `{"id": ...}`.
+create and update ID (an upsert) send the JSON body of `--file`; delete ID sends none.
+
+Its reads require the vendor.vendor\_read scope.
+Its writes require the vendor.vendor\_manage scope.
+
+**Command:** `epx vendor-locations [flags]`, `epx vendor-locations [command]`
+
+**Flags:** only the [global flags](/emporix-cli/commands#global-flags).
+
+**Subcommands**
+
+- [`epx vendor-locations create`](#epx-vendor-locations-create)\
+  Create one vendor location.
+- [`epx vendor-locations delete`](#epx-vendor-locations-delete)\
+  Delete one vendor location.
+- [`epx vendor-locations get`](#epx-vendor-locations-get)\
+  Show one vendor location.
+- [`epx vendor-locations list`](#epx-vendor-locations-list)\
+  List vendor locations.
+- [`epx vendor-locations update`](#epx-vendor-locations-update)\
+  Upsert one vendor location.
+
+## epx vendor-locations create
+
+Create one vendor location.
+
+Creates the vendor location that the JSON body of `--file` describes, shaped as
+[`epx vendor-locations get ID -o json`](/emporix-cli/commands/vendor-locations#epx-vendor-locations-get) prints one:
+type (required: HEADQUARTER, WAREHOUSE or OFFICE), contactDetails (required: emails,
+phones, addressLine1, addressLine2, city, state, postcode, countryCode and tags) and name;
+leave out `"phones"`: \[\] (an empty list), which Emporix refuses (exit 1).
+Without an id, Emporix makes one, and answers with it; an id that exists already is a
+conflict (exit 5).
+
+Changes data: on a terminal, epx asks before it sends POST. `--yes` sends without
+asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
+instead of sending it.
+
+Requires the vendor.vendor\_manage scope.
+
+**Command:** `epx vendor-locations create [flags]`
+
+**Flags**
+
+- `--dry-run`\
+  Print the request instead of sending it (excludes `-o`).
+- `--file <PATH>`\
+  JSON request body in PATH, sent byte for byte (- reads standard input; sending it then needs `--yes`; required).
+- `-o, --output <format>`\
+  Format of the response: json or yaml. Default: `json`.
+- `--yes`\
+  Send without asking (required without a terminal, or with `--file` -).
+
+Also takes the [global flags](/emporix-cli/commands#global-flags).
+
+## epx vendor-locations delete
+
+Delete one vendor location.
+
+Deletes the vendor location ID; it sends no body.
+ID is the ID that [`epx vendor-locations list`](/emporix-cli/commands/vendor-locations#epx-vendor-locations-list) shows; an unknown one is not found.
+A vendor that names it in locations no longer does.
+
+Deletes data, which cannot be undone.
+On a terminal, epx sends DELETE only once you type ID at its prompt.
+`--yes` sends without asking (required without a terminal);
+`--dry-run` prints the request instead of sending it.
+
+Requires the vendor.vendor\_manage scope.
+
+**Command:** `epx vendor-locations delete ID [flags]`
+
+**Flags**
+
+- `--dry-run`\
+  Print the request instead of sending it (excludes `-o`).
+- `-o, --output <format>`\
+  Format of the response: json or yaml. Default: `json`.
+- `--yes`\
+  Send without asking (required without a terminal).
+
+Also takes the [global flags](/emporix-cli/commands#global-flags).
+
+## epx vendor-locations get
+
+Show one vendor location.
+
+Reads the locations of vendors, contact emails included.
+TYPE is HEADQUARTER, WAREHOUSE or OFFICE, ADDRESS the first address line and TAGS the
+location's labels; phone numbers and the rest of the address are only in `-o json`.
+
+Requires the vendor.vendor\_read scope.
+
+**Command:** `epx vendor-locations get ID [flags]`
+
+**Flags**
+
+- `--columns <names>`\
+  Print only these columns of table and csv, in this order: comma-separated names (any case) among ID, NAME, TYPE, ADDRESS, POSTCODE, CITY, COUNTRY, EMAILS, TAGS.
+- `--no-headers`\
+  Print table and csv without the header row.
+- `-o, --output <format>`\
+  Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
+
+Also takes the [global flags](/emporix-cli/commands#global-flags).
+
+## epx vendor-locations list
+
+List vendor locations.
+
+Reads the locations of vendors, contact emails included.
+TYPE is HEADQUARTER, WAREHOUSE or OFFICE, ADDRESS the first address line and TAGS the
+location's labels; phone numbers and the rest of the address are only in `-o json`.
+
+Requires the vendor.vendor\_read scope.
+
+**Command:** `epx vendor-locations list [flags]`
+
+**Flags**
+
+- `--columns <names>`\
+  Print only these columns of table and csv, in this order: comma-separated names (any case) among ID, NAME, TYPE, ADDRESS, POSTCODE, CITY, COUNTRY, EMAILS, TAGS.
+- `--limit <n>`\
+  Print at most n items; paged reads stop early where they safely can (0: every item).
+- `--no-headers`\
+  Print table and csv without the header row.
+- `-o, --output <format>`\
+  Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
+- `--query <filter>`\
+  Emporix q filter, passed as given, e.g. code:(A1,A2); space-separated conditions must all match (fields mostly as in `-o json`).
+- `--sort <order>`\
+  Emporix sort order, passed as given, e.g. code or name.en:desc,code; fields mostly as in `-o json` (Emporix may ignore an unknown one).
+- `--stream`\
+  Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
+
+Also takes the [global flags](/emporix-cli/commands#global-flags).
+
+## epx vendor-locations update
+
+Upsert one vendor location.
+
+Replaces the vendor location ID with the JSON body of `--file`, shaped as create takes it
+but without an id, or creates it with that id where none exists (an upsert); it requires
+type and contactDetails.
+With metadata.version as [`epx vendor-locations get ID -o json`](/emporix-cli/commands/vendor-locations#epx-vendor-locations-get) prints it, Emporix
+replaces it only if nobody changed it since, and answers 409 Conflict (exit 5) otherwise;
+without metadata.version, it replaces it whatever its version.
+ID is the ID that [`epx vendor-locations list`](/emporix-cli/commands/vendor-locations#epx-vendor-locations-list) shows.
+
+Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without
+asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
+instead of sending it.
+
+Requires the vendor.vendor\_manage scope.
+
+**Command:** `epx vendor-locations update ID [flags]`
+
+**Flags**
+
+- `--dry-run`\
+  Print the request instead of sending it (excludes `-o`).
+- `--file <PATH>`\
+  JSON request body in PATH, sent byte for byte (- reads standard input; sending it then needs `--yes`; required).
+- `-o, --output <format>`\
+  Format of the response: json or yaml. Default: `json`.
+- `--yes`\
+  Send without asking (required without a terminal, or with `--file` -).
+
+Also takes the [global flags](/emporix-cli/commands#global-flags).

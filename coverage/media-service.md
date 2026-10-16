@@ -1,0 +1,23 @@
+# Media Service
+
+> Which Media Service operations epx sends, which do not apply, and which are planned.
+
+Operations of the Emporix API reference file [`media/media/api-reference/api.yml`](https://github.com/emporix/api-references/blob/faad61403b0683a7a8948b571f10305393760ae0/media/media/api-reference/api.yml) at commit [`faad614`](https://github.com/emporix/api-references/commit/faad61403b0683a7a8948b571f10305393760ae0) (2026-10-14).
+
+- Last change: 2026-09-28 ([`6149878`](https://github.com/emporix/api-references/commit/6149878))
+- Version: not stated in the reference file
+- Operations: 9 (8 built, 1 not applicable, 0 planned, 0 to do)
+
+| Operation | Status | Details |
+| --- | --- | --- |
+| `POST /media/{tenant}/assets` | Built | [`epx media create`](/emporix-cli/commands/media#epx-media-create) |
+| `GET /media/{tenant}/assets` | Built | [`epx media list`](/emporix-cli/commands/media#epx-media-list) |
+| `GET /media/{tenant}/assets/{assetId}` | Built | [`epx media get`](/emporix-cli/commands/media#epx-media-get) |
+| `PUT /media/{tenant}/assets/{assetId}` | Built | [`epx media update`](/emporix-cli/commands/media#epx-media-update) |
+| `PATCH /media/{tenant}/assets/{assetId}` | Built | [`epx media patch`](/emporix-cli/commands/media#epx-media-patch) |
+| `DELETE /media/{tenant}/assets/{assetId}` | Built | [`epx media delete`](/emporix-cli/commands/media#epx-media-delete) |
+| `GET /media/{tenant}/assets/{assetId}/download` | Not applicable | Answers with the file itself; `epx media download-url` gives a URL to it. |
+| `POST /media/{tenant}/assets/upload-session` | Built | [`epx media start-upload`](/emporix-cli/commands/media#epx-media-start-upload) |
+| `GET /media/{tenant}/assets/{assetId}/download-url` | Built | [`epx media download-url`](/emporix-cli/commands/media#epx-media-download-url) |
+
+All services: [Emporix API coverage](/emporix-cli/coverage).

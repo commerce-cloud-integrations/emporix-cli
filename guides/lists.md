@@ -1,0 +1,96 @@
+# List, filter, and sort
+
+> Read every page of a list, and narrow it with a limit, a query, and a sort order.
+
+Commands that list items, such as `list`, `search`, and `categories subcategories ID`,
+read every page of the collection and print the items together. You never write paging
+code: narrow the list with flags instead.
+
+```sh
+epx products list --query 'name.en:~shirt published:true' --sort code:desc --limit 20
+```
+
+## Limit results
+
+```sh
+epx products list --sort metadataCreatedAt:desc --limit 10
+```
+
+`--limit` prints at most that many items. Paged reads stop requesting pages as soon as
+they safely can. `--limit 0`, the default, prints every item.
+
+  When a limited list spans several pages, end `--sort` with a unique field, such as
+  `code:desc,id`. Items that share a sort value may come back in a different order on
+  each page.
+
+## Filter with a query
+
+```sh
+epx products list --query published:false
+epx products list --query 'code:(A1,A2)'
+epx orders count --query status:CREATED
+```
+
+`--query` filters with the Emporix
+[q parameter](https://developer.emporix.io/api-documentation/standard-practices/q-param),
+passed as given. Conditions separated by spaces must all match; quote the filter so your
+shell keeps it in one piece.
+
+Emporix rejects a malformed filter, but not an unknown field name, which may match
+nothing or everything. When a command already filters with a query of its own, your
+`--query` is added to it, so it can only narrow the result.
+
+### Search commands
+
+`search` commands, such as `products search`, send the query in the body of a POST
+request that changes nothing, and print their results as the matching list does. Pass
+`--body FILE` to send a whole JSON body instead of `--query`, or `--body -` to read it
+from standard input.
+
+## Sort results
+
+```sh
+epx products list --sort code:desc
+epx categories list --sort 'name.en,code'
+```
+
+`--sort` orders a list with the Emporix sort parameter, passed as given: fields separated
+by commas, each optionally followed by `:asc` or `:desc`.
+
+## Which lists take which flags
+
+Each list supports what its Emporix service supports. `epx <command> --help` shows the
+flags of a command.
+
+| Flags | Lists |
+| --- | --- |
+| `--query` and `--sort` | Most lists, such as products, categories, prices, customers, orders, coupons, segments, and IAM groups. |
+| `--sort` only | Catalogs, units, currencies, countries, regions, taxes, price models, payment transactions, and IAM roles and permissions. |
+| `--query` only | `changelog list` and `orders count`. |
+| `--limit` only | Lists that Emporix neither filters nor sorts, such as configurations, fees, shipping zones, payment modes, and category trees. |
+
+Field names for `--query` and `--sort` are mostly those of `-o json`, but not always.
+Products, for example, sort by creation date as `metadataCreatedAt`. Check the
+[Emporix API reference](https://developer.emporix.io/api-references) of the service.
+
+## How paging works
+
+A list reads 100 items per page, up to 1,000 pages (10,000 with
+[`--stream`](/emporix-cli/guides/output#json-lines)). It fails with exit code 1 when paging is visibly
+inconsistent: an item read twice, or a count that differs from the total Emporix
+reports. Without `--stream`, it prints nothing unless every check passes.
+
+Like any paged read, a list can't notice an item that changes while its pages are read.
+
+Some services need a different read, and the command's help says so:
+
+- Collections that Emporix returns whole, such as category trees and configurations, are
+  read with one request.
+- Some lists can't check their total, because Emporix sends none or fails when asked for
+  it. An item that moves between pages while they're read can then show twice or be
+  missed.
+- Emporix orders countries and IAM users differently on every request, so epx reads each
+  as one page. IAM users fit in one page of up to 500; on a tenant with more,
+  `iam users list` fails.
+- The change history (`changelog list`) covers the last 30 days unless you filter on
+  `occurredAt`. On an active tenant, read a closed range in the past, or use `--limit`.

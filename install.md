@@ -1,0 +1,152 @@
+# Install epx
+
+> Install epx with npm, from a release archive, or with Go, and set up shell completion.
+
+epx is a single binary for macOS, Linux, and Windows, on x64 (amd64) and arm64. Install it
+with npm, from a release archive, or with Go.
+
+## Install with npm
+
+```sh
+npm install --global epx-cli
+```
+
+npm installs the package `epx-cli`, which provides the `epx` command, and only the
+package that holds the binary of your platform, such as `epx-cli-darwin-arm64`. Nothing is
+compiled, no install script runs, and nothing is downloaded outside the npm registry, so a
+private registry mirror works too. You need Node.js 18 or later.
+
+To run epx once without installing it:
+
+```sh
+npx epx-cli version
+```
+
+  The `epx` command that npm installs is a small Node.js program that runs the binary.
+  Under `nohup`, it still ends when the terminal closes. For such runs, call the binary
+  itself (`bin/epx` in the package `epx-cli-<os>-<cpu>`), or install epx from a release
+  archive.
+
+## Install from a release archive
+
+Each [release](https://github.com/commerce-cloud-integrations/emporix-cli/releases) holds
+an archive per platform (`epx_<version>_<os>_<arch>.tar.gz`, or `.zip` on Windows) and a
+checksums file. For example, on Linux x64:
+
+```sh
+version=v0.1.0
+base=https://github.com/commerce-cloud-integrations/emporix-cli/releases/download/$version
+curl -fsSLO "$base/epx_${version}_linux_amd64.tar.gz" &&
+  curl -fsSLO "$base/epx_${version}_checksums.txt" &&
+  sha256sum --check --ignore-missing "epx_${version}_checksums.txt" &&
+  tar -xzf "epx_${version}_linux_amd64.tar.gz" &&
+  sudo install "epx_${version}_linux_amd64/epx" /usr/local/bin/epx
+```
+
+Each step runs only when the one before it succeeds, so an archive that doesn't match the
+checksums file is never installed. On macOS, use `shasum -a 256 --check --ignore-missing`
+instead of `sha256sum --check --ignore-missing`.
+
+## Install with Go
+
+```sh
+go install github.com/commerce-cloud-integrations/emporix-cli/cmd/epx@latest
+```
+
+You need Go 1.27.2 or later; an older Go toolchain downloads the required version
+automatically. Go installs the binary in `$(go env GOPATH)/bin`, or in `$GOBIN` when it's
+set. Make sure that directory is on your `PATH`.
+
+## Build from source
+
+```sh
+git clone https://github.com/commerce-cloud-integrations/emporix-cli.git
+cd emporix-cli
+go build -o bin/epx ./cmd/epx
+```
+
+## Check the version
+
+```sh
+epx version
+```
+
+```text
+epx v0.1.0 (go1.27.2)
+```
+
+A release prints its version. A build of an untagged commit prints the commit's date and
+hash instead, such as `epx v0.0.0-20261014183651-ffca1e3d7f17 (go1.27.2)`.
+
+## Upgrade epx
+
+| Installed with | Upgrade |
+| --- | --- |
+| npm | `npm update --global epx-cli` |
+| A release archive | Replace the binary with the one from the new release. |
+| Go | Run `go install` again. |
+
+## Set up shell completion
+
+`epx completion` prints a completion script for bash, zsh, fish, or PowerShell. It
+completes commands, flags, the values of `-o`, arguments that take only a few values,
+profile names, and the file names of flags that take a file, such as `--file`, `--body`,
+and `--out`.
+
+Load it in the current shell:
+
+```sh bash
+eval "$(epx completion bash)"
+```
+
+```sh zsh
+source <(epx completion zsh)   # needs compinit enabled
+```
+
+```sh fish
+epx completion fish | source
+```
+
+```powershell PowerShell
+epx completion powershell | Out-String | Invoke-Expression
+```
+
+To load it in every new session, follow `epx completion <shell> --help`. For example, in
+fish:
+
+```sh
+epx completion fish > ~/.config/fish/completions/epx.fish
+```
+
+bash completion needs the `bash-completion` package. Add `--no-descriptions` to any
+script to leave out the descriptions of commands and flags.
+
+### Complete IDs from your tenant
+
+Set `EPX_COMPLETE_IDS=1` to let completion read IDs and site codes from the API, with the
+API key in effect:
+
+```sh
+export EPX_COMPLETE_IDS=1
+epx products get <TAB>       # product IDs, each with its name
+epx prices list --site <TAB> # the codes of the active sites
+```
+
+Completion reads the first page of the matching list with that list's read scopes,
+within 3 seconds, and offers up to 100 values that start with what you typed. It never
+requests a write-capable scope. When the API can't be read, it offers nothing and prints
+nothing.
+
+An argument whose list needs a site completes once `--site` comes before it, or with the
+default site of your profile.
+
+## Uninstall epx
+
+1. If you use [profiles](/emporix-cli/configure#store-keys-in-profiles), remove each one with
+   `epx profile remove`, which also deletes its client secret from the OS keychain.
+2. Remove epx: `npm uninstall --global epx-cli`, or delete the `epx` binary you installed
+   from an archive or with Go.
+3. Delete the `epx` folder from your configuration directory.
+
+Once epx is installed, you can [authenticate](/emporix-cli/configure) with an API key and take the
+[quickstart](/emporix-cli/quickstart).

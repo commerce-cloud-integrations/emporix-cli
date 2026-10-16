@@ -1,0 +1,131 @@
+# epx
+
+> Read and manage your Emporix tenant from the command line.
+
+## Get started
+
+- [Overview](https://commerce-cloud-integrations.github.io/emporix-cli/index.md): Read and manage your Emporix tenant from the command line.
+- [Install epx](https://commerce-cloud-integrations.github.io/emporix-cli/install.md): Install epx with npm, from a release archive, or with Go, and set up shell completion.
+- [Authenticate](https://commerce-cloud-integrations.github.io/emporix-cli/configure.md): Give epx an Emporix API key through environment variables or a profile, with only the scopes your commands need.
+- [Quickstart](https://commerce-cloud-integrations.github.io/emporix-cli/quickstart.md): Go from an Emporix API key to your first epx reads in five minutes.
+
+## Guides
+
+- [Format output](https://commerce-cloud-integrations.github.io/emporix-cli/guides/output.md): Print what Emporix answers as a table, CSV, JSON, YAML, or JSON Lines, and choose columns and languages.
+- [List, filter, and sort](https://commerce-cloud-integrations.github.io/emporix-cli/guides/lists.md): Read every page of a list, and narrow it with a limit, a query, and a sort order.
+- [Call any API endpoint](https://commerce-cloud-integrations.github.io/emporix-cli/guides/api.md): Send a request to any Emporix API path with epx api, using only the OAuth scopes you name.
+- [Change data](https://commerce-cloud-integrations.github.io/emporix-cli/guides/writes.md): Create, update, and delete data in your tenant with dry runs, confirmation, and explicit scopes.
+- [Bulk writes, chains, and jobs](https://commerce-cloud-integrations.github.io/emporix-cli/guides/bulk.md): Write many items in one request, import files of any size, run cart command chains, and wait for jobs.
+- [Exit codes and scripting](https://commerce-cloud-integrations.github.io/emporix-cli/guides/exit-codes.md): Use epx in scripts and CI: what each exit code means, how errors look, and how epx retries.
+
+## Concepts
+
+- [Security model](https://commerce-cloud-integrations.github.io/emporix-cli/security.md): How epx handles credentials, OAuth scopes, network requests, and the data it prints.
+
+## Commands
+
+- [CLI reference](https://commerce-cloud-integrations.github.io/emporix-cli/commands/index.md): Every epx command and flag, with the OAuth scopes each one requests.
+- [epx ai](https://commerce-cloud-integrations.github.io/emporix-cli/commands/ai.md): Read and change AI agents and their setup, chat with them, generate texts.
+- [epx api](https://commerce-cloud-integrations.github.io/emporix-cli/commands/api.md): Send requests to any Emporix API path.
+- [epx auth](https://commerce-cloud-integrations.github.io/emporix-cli/commands/auth.md): Check Emporix credentials.
+- [epx availability](https://commerce-cloud-integrations.github.io/emporix-cli/commands/availability.md): Read and change availability.
+- [epx brands](https://commerce-cloud-integrations.github.io/emporix-cli/commands/brands.md): Read, create, change and delete brands.
+- [epx carts](https://commerce-cloud-integrations.github.io/emporix-cli/commands/carts.md): Read and change carts and their items and discounts.
+- [epx catalogs](https://commerce-cloud-integrations.github.io/emporix-cli/commands/catalogs.md): Read and change catalogs.
+- [epx categories](https://commerce-cloud-integrations.github.io/emporix-cli/commands/categories.md): Read and change categories and the products assigned to them.
+- [epx category-trees](https://commerce-cloud-integrations.github.io/emporix-cli/commands/category-trees.md): Read and rebuild category trees.
+- [epx changelog](https://commerce-cloud-integrations.github.io/emporix-cli/commands/changelog.md): Read the change history (audit log).
+- [epx completion](https://commerce-cloud-integrations.github.io/emporix-cli/commands/completion.md): Generate the autocompletion script for the specified shell.
+- [epx configurations](https://commerce-cloud-integrations.github.io/emporix-cli/commands/configurations.md): Read and change tenant configurations.
+- [epx contact-assignments](https://commerce-cloud-integrations.github.io/emporix-cli/commands/contact-assignments.md): Read and change which customers are contacts of which legal entities.
+- [epx countries](https://commerce-cloud-integrations.github.io/emporix-cli/commands/countries.md): Read countries, and activate or deactivate them.
+- [epx coupons](https://commerce-cloud-integrations.github.io/emporix-cli/commands/coupons.md): Read, create, change and redeem coupons.
+- [epx currencies](https://commerce-cloud-integrations.github.io/emporix-cli/commands/currencies.md): Read, create, change and delete currencies.
+- [epx custom-entities](https://commerce-cloud-integrations.github.io/emporix-cli/commands/custom-entities.md): Read and change custom entity types and their instances.
+- [epx customer-locations](https://commerce-cloud-integrations.github.io/emporix-cli/commands/customer-locations.md): Read and change the locations of B2B customers.
+- [epx customers](https://commerce-cloud-integrations.github.io/emporix-cli/commands/customers.md): Read and change customers and their addresses.
+- [epx delivery-times](https://commerce-cloud-integrations.github.io/emporix-cli/commands/delivery-times.md): Read and change delivery times and their time slots; read the delivery windows of a cart.
+- [epx exchange-rates](https://commerce-cloud-integrations.github.io/emporix-cli/commands/exchange-rates.md): Read, create, change and delete currency exchange rates.
+- [epx fees](https://commerce-cloud-integrations.github.io/emporix-cli/commands/fees.md): Read and change fees and which items have them.
+- [epx iam](https://commerce-cloud-integrations.github.io/emporix-cli/commands/iam.md): Read and change IAM users, groups and access rights.
+- [epx imports](https://commerce-cloud-integrations.github.io/emporix-cli/commands/imports.md): Read import configurations, runs and imported records; start and schedule runs.
+- [epx indexing](https://commerce-cloud-integrations.github.io/emporix-cli/commands/indexing.md): Read and configure search index providers; reindex.
+- [epx invoice-jobs](https://commerce-cloud-integrations.github.io/emporix-cli/commands/invoice-jobs.md): Create and read invoice jobs.
+- [epx labels](https://commerce-cloud-integrations.github.io/emporix-cli/commands/labels.md): Read, create, change and delete labels.
+- [epx legal-entities](https://commerce-cloud-integrations.github.io/emporix-cli/commands/legal-entities.md): Read and change legal entities (B2B companies); read their parents.
+- [epx media](https://commerce-cloud-integrations.github.io/emporix-cli/commands/media.md): Read, upload, link and change media assets.
+- [epx orders](https://commerce-cloud-integrations.github.io/emporix-cli/commands/orders.md): Read, create and change orders and their status.
+- [epx payment-modes](https://commerce-cloud-integrations.github.io/emporix-cli/commands/payment-modes.md): Read, create, update and delete payment modes.
+- [epx payment-transactions](https://commerce-cloud-integrations.github.io/emporix-cli/commands/payment-transactions.md): Read payment transactions; authorize, capture, refund and cancel payments.
+- [epx price-lists](https://commerce-cloud-integrations.github.io/emporix-cli/commands/price-lists.md): Read and change price lists and their prices.
+- [epx price-models](https://commerce-cloud-integrations.github.io/emporix-cli/commands/price-models.md): Read and change price models.
+- [epx prices](https://commerce-cloud-integrations.github.io/emporix-cli/commands/prices.md): Read and change prices.
+- [epx product-templates](https://commerce-cloud-integrations.github.io/emporix-cli/commands/product-templates.md): Read, create, update and delete product templates.
+- [epx products](https://commerce-cloud-integrations.github.io/emporix-cli/commands/products.md): Read, create, update and delete products.
+- [epx profile](https://commerce-cloud-integrations.github.io/emporix-cli/commands/profile.md): Manage profiles: named settings and credentials of a tenant.
+- [epx quotes](https://commerce-cloud-integrations.github.io/emporix-cli/commands/quotes.md): Read, create and change quotes, their PDF, history and reasons.
+- [epx regions](https://commerce-cloud-integrations.github.io/emporix-cli/commands/regions.md): Read regions.
+- [epx returns](https://commerce-cloud-integrations.github.io/emporix-cli/commands/returns.md): Read, create, change and delete returns.
+- [epx reward-points](https://commerce-cloud-integrations.github.io/emporix-cli/commands/reward-points.md): Read and change reward points and the ways to redeem them.
+- [epx schemas](https://commerce-cloud-integrations.github.io/emporix-cli/commands/schemas.md): Read, create, change and delete custom schemas and schema references.
+- [epx search](https://commerce-cloud-integrations.github.io/emporix-cli/commands/search.md): Search documents; read and change search indexes and saved searches.
+- [epx segments](https://commerce-cloud-integrations.github.io/emporix-cli/commands/segments.md): Read and change customer segments and what is assigned to them.
+- [epx sequential-ids](https://commerce-cloud-integrations.github.io/emporix-cli/commands/sequential-ids.md): Read, create, activate and delete sequential ID schemas; issue IDs.
+- [epx session-contexts](https://commerce-cloud-integrations.github.io/emporix-cli/commands/session-contexts.md): Read and change session contexts.
+- [epx shipping](https://commerce-cloud-integrations.github.io/emporix-cli/commands/shipping.md): Read and change shipping zones, methods and groups, and calculate shipping fees.
+- [epx shopping-lists](https://commerce-cloud-integrations.github.io/emporix-cli/commands/shopping-lists.md): Read, create, replace and delete customers' shopping lists.
+- [epx sites](https://commerce-cloud-integrations.github.io/emporix-cli/commands/sites.md): Read, create and change sites and their mixins.
+- [epx taxes](https://commerce-cloud-integrations.github.io/emporix-cli/commands/taxes.md): Read and change tax configurations, and calculate net and gross prices.
+- [epx units](https://commerce-cloud-integrations.github.io/emporix-cli/commands/units.md): Read and change units of measurement; read unit types and convert between units.
+- [epx vendor-locations](https://commerce-cloud-integrations.github.io/emporix-cli/commands/vendor-locations.md): Read and change the locations of vendors.
+- [epx vendors](https://commerce-cloud-integrations.github.io/emporix-cli/commands/vendors.md): Read and change vendors.
+- [epx version](https://commerce-cloud-integrations.github.io/emporix-cli/commands/version.md): Print the epx version.
+- [epx webhooks](https://commerce-cloud-integrations.github.io/emporix-cli/commands/webhooks.md): Read and change webhook configurations and subscriptions; read statistics.
+
+## Emporix services
+
+- [Emporix API coverage](https://commerce-cloud-integrations.github.io/emporix-cli/coverage/index.md): Which operations of each Emporix API service epx sends, which do not apply, and which are planned.
+- [AI Rag Indexer](https://commerce-cloud-integrations.github.io/emporix-cli/coverage/ai-rag-indexer.md): Which AI Rag Indexer operations epx sends, which do not apply, and which are planned.
+- [AI Service](https://commerce-cloud-integrations.github.io/emporix-cli/coverage/ai-service.md): Which AI Service operations epx sends, which do not apply, and which are planned.
+- [Approval Service](https://commerce-cloud-integrations.github.io/emporix-cli/coverage/approval-service.md): Which Approval Service operations epx sends, which do not apply, and which are planned.
+- [Audit Logs (Changelog) Service](https://commerce-cloud-integrations.github.io/emporix-cli/coverage/audit-logs-changelog-service.md): Which Audit Logs (Changelog) Service operations epx sends, which do not apply, and which are planned.
+- [Availability Service](https://commerce-cloud-integrations.github.io/emporix-cli/coverage/availability-service.md): Which Availability Service operations epx sends, which do not apply, and which are planned.
+- [Brand Service](https://commerce-cloud-integrations.github.io/emporix-cli/coverage/brand-service.md): Which Brand Service operations epx sends, which do not apply, and which are planned.
+- [Cart Service](https://commerce-cloud-integrations.github.io/emporix-cli/coverage/cart-service.md): Which Cart Service operations epx sends, which do not apply, and which are planned.
+- [Catalog Management](https://commerce-cloud-integrations.github.io/emporix-cli/coverage/catalog-management.md): Which Catalog Management operations epx sends, which do not apply, and which are planned.
+- [Category](https://commerce-cloud-integrations.github.io/emporix-cli/coverage/category.md): Which Category operations epx sends, which do not apply, and which are planned.
+- [Checkout Service](https://commerce-cloud-integrations.github.io/emporix-cli/coverage/checkout-service.md): Which Checkout Service operations epx sends, which do not apply, and which are planned.
+- [Configuration Service](https://commerce-cloud-integrations.github.io/emporix-cli/coverage/configuration-service.md): Which Configuration Service operations epx sends, which do not apply, and which are planned.
+- [Country Service](https://commerce-cloud-integrations.github.io/emporix-cli/coverage/country-service.md): Which Country Service operations epx sends, which do not apply, and which are planned.
+- [Coupon Service](https://commerce-cloud-integrations.github.io/emporix-cli/coverage/coupon-service.md): Which Coupon Service operations epx sends, which do not apply, and which are planned.
+- [Currency Service](https://commerce-cloud-integrations.github.io/emporix-cli/coverage/currency-service.md): Which Currency Service operations epx sends, which do not apply, and which are planned.
+- [Customer Management Service](https://commerce-cloud-integrations.github.io/emporix-cli/coverage/customer-management-service.md): Which Customer Management Service operations epx sends, which do not apply, and which are planned.
+- [Customer Segment Service](https://commerce-cloud-integrations.github.io/emporix-cli/coverage/customer-segment-service.md): Which Customer Segment Service operations epx sends, which do not apply, and which are planned.
+- [Customer Service (customer-managed)](https://commerce-cloud-integrations.github.io/emporix-cli/coverage/customer-service-customer-managed.md): Which Customer Service (customer-managed) operations epx sends, which do not apply, and which are planned.
+- [Customer Service (tenant-managed)](https://commerce-cloud-integrations.github.io/emporix-cli/coverage/customer-service-tenant-managed.md): Which Customer Service (tenant-managed) operations epx sends, which do not apply, and which are planned.
+- [Fee Service](https://commerce-cloud-integrations.github.io/emporix-cli/coverage/fee-service.md): Which Fee Service operations epx sends, which do not apply, and which are planned.
+- [IAM Service](https://commerce-cloud-integrations.github.io/emporix-cli/coverage/iam-service.md): Which IAM Service operations epx sends, which do not apply, and which are planned.
+- [Import Service](https://commerce-cloud-integrations.github.io/emporix-cli/coverage/import-service.md): Which Import Service operations epx sends, which do not apply, and which are planned.
+- [Indexing Service](https://commerce-cloud-integrations.github.io/emporix-cli/coverage/indexing-service.md): Which Indexing Service operations epx sends, which do not apply, and which are planned.
+- [Invoice Service](https://commerce-cloud-integrations.github.io/emporix-cli/coverage/invoice-service.md): Which Invoice Service operations epx sends, which do not apply, and which are planned.
+- [Label Service](https://commerce-cloud-integrations.github.io/emporix-cli/coverage/label-service.md): Which Label Service operations epx sends, which do not apply, and which are planned.
+- [Media Service](https://commerce-cloud-integrations.github.io/emporix-cli/coverage/media-service.md): Which Media Service operations epx sends, which do not apply, and which are planned.
+- [OAuth Service](https://commerce-cloud-integrations.github.io/emporix-cli/coverage/oauth-service.md): Which OAuth Service operations epx sends, which do not apply, and which are planned.
+- [Order Service](https://commerce-cloud-integrations.github.io/emporix-cli/coverage/order-service.md): Which Order Service operations epx sends, which do not apply, and which are planned.
+- [Payment-Gateway Service](https://commerce-cloud-integrations.github.io/emporix-cli/coverage/payment-gateway-service.md): Which Payment-Gateway Service operations epx sends, which do not apply, and which are planned.
+- [Price Service](https://commerce-cloud-integrations.github.io/emporix-cli/coverage/price-service.md): Which Price Service operations epx sends, which do not apply, and which are planned.
+- [Product Service](https://commerce-cloud-integrations.github.io/emporix-cli/coverage/product-service.md): Which Product Service operations epx sends, which do not apply, and which are planned.
+- [Quote Service](https://commerce-cloud-integrations.github.io/emporix-cli/coverage/quote-service.md): Which Quote Service operations epx sends, which do not apply, and which are planned.
+- [Returns Service](https://commerce-cloud-integrations.github.io/emporix-cli/coverage/returns-service.md): Which Returns Service operations epx sends, which do not apply, and which are planned.
+- [Reward Points Service](https://commerce-cloud-integrations.github.io/emporix-cli/coverage/reward-points-service.md): Which Reward Points Service operations epx sends, which do not apply, and which are planned.
+- [Schema Service](https://commerce-cloud-integrations.github.io/emporix-cli/coverage/schema-service.md): Which Schema Service operations epx sends, which do not apply, and which are planned.
+- [Search Service](https://commerce-cloud-integrations.github.io/emporix-cli/coverage/search-service.md): Which Search Service operations epx sends, which do not apply, and which are planned.
+- [Sequential ID Service](https://commerce-cloud-integrations.github.io/emporix-cli/coverage/sequential-id-service.md): Which Sequential ID Service operations epx sends, which do not apply, and which are planned.
+- [Session Context Service](https://commerce-cloud-integrations.github.io/emporix-cli/coverage/session-context-service.md): Which Session Context Service operations epx sends, which do not apply, and which are planned.
+- [Shipping Service](https://commerce-cloud-integrations.github.io/emporix-cli/coverage/shipping-service.md): Which Shipping Service operations epx sends, which do not apply, and which are planned.
+- [Shopping List Service](https://commerce-cloud-integrations.github.io/emporix-cli/coverage/shopping-list-service.md): Which Shopping List Service operations epx sends, which do not apply, and which are planned.
+- [Site Settings Service](https://commerce-cloud-integrations.github.io/emporix-cli/coverage/site-settings-service.md): Which Site Settings Service operations epx sends, which do not apply, and which are planned.
+- [Tax Service](https://commerce-cloud-integrations.github.io/emporix-cli/coverage/tax-service.md): Which Tax Service operations epx sends, which do not apply, and which are planned.
+- [Unit Handling Service](https://commerce-cloud-integrations.github.io/emporix-cli/coverage/unit-handling-service.md): Which Unit Handling Service operations epx sends, which do not apply, and which are planned.
+- [Vendor Service](https://commerce-cloud-integrations.github.io/emporix-cli/coverage/vendor-service.md): Which Vendor Service operations epx sends, which do not apply, and which are planned.
+- [Webhook Service](https://commerce-cloud-integrations.github.io/emporix-cli/coverage/webhook-service.md): Which Webhook Service operations epx sends, which do not apply, and which are planned.

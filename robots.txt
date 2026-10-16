@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://commerce-cloud-integrations.github.io/emporix-cli/sitemap.xml

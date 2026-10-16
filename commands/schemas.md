@@ -1,0 +1,483 @@
+# epx schemas
+
+> Read, create, change and delete custom schemas and schema references.
+
+## epx schemas
+
+Reads custom schemas, the attribute sets that extend Emporix entities. TYPES lists the
+entity types a schema applies to and ATTRIBUTES counts its top-level attributes (`-o json`
+prints their definitions). [`epx schemas references`](/emporix-cli/commands/schemas#epx-schemas-references) reads schema references and
+[`epx schemas types`](/emporix-cli/commands/schemas#epx-schemas-types) the entity types that have schemas.
+
+Its reads require different OAuth scopes; the help of each names them.
+Opt-in: epx requests a write-capable scope for a read only when given `--allow-write-scope`.
+Its writes require the schema.schema\_manage scope.
+
+**Command:** `epx schemas [flags]`, `epx schemas [command]`
+
+**Flags:** only the [global flags](/emporix-cli/commands#global-flags).
+
+**Subcommands**
+
+- [`epx schemas create`](#epx-schemas-create)\
+  Create a schema.
+- [`epx schemas delete`](#epx-schemas-delete)\
+  Delete a schema.
+- [`epx schemas get`](#epx-schemas-get)\
+  Show one schema.
+- [`epx schemas list`](#epx-schemas-list)\
+  List schemas.
+- [`epx schemas parse`](#epx-schemas-parse)\
+  Parse a JSON schema file into a schema.
+- [`epx schemas references`](#epx-schemas-references)\
+  Read, create, change and delete schema references.
+- [`epx schemas types`](#epx-schemas-types)\
+  List the entity types that have schemas.
+- [`epx schemas update`](#epx-schemas-update)\
+  Replace a schema.
+- [`epx schemas update-types`](#epx-schemas-update-types)\
+  Change the entity types of a schema.
+
+## epx schemas create
+
+Create a schema.
+
+Creates a schema from the JSON in `--file`: its name (translations), the entity types it
+extends and its attributes, such as [`epx schemas parse -o json`](/emporix-cli/commands/schemas#epx-schemas-parse) prints them once a name and
+types are added. It prints the id that Emporix answers with; one that exists already is a
+conflict.
+Name entity types by their ids, with \_, such as VENDOR\_LOCATION.
+
+Localized text in the body is a map of translations, e.g. `{"en": "Acme", "de": "Acme"}`,
+as `-o json` of a read prints it, sent with Content-Language: \*. Emporix refuses a string in
+its place.
+
+Changes data: on a terminal, epx asks before it sends POST. `--yes` sends without
+asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
+instead of sending it.
+
+Requires the schema.schema\_manage scope.
+
+**Command:** `epx schemas create [flags]`
+
+**Flags**
+
+- `--dry-run`\
+  Print the request instead of sending it (excludes `-o`).
+- `--file <PATH>`\
+  JSON request body in PATH, sent byte for byte (- reads standard input; sending it then needs `--yes`; required).
+- `-o, --output <format>`\
+  Format of the response: json or yaml. Default: `json`.
+- `--yes`\
+  Send without asking (required without a terminal, or with `--file` -).
+
+Also takes the [global flags](/emporix-cli/commands#global-flags).
+
+## epx schemas delete
+
+Delete a schema.
+
+Deletes the schema ID, every version of it.
+Emporix answers an unknown ID as a deleted one (204), so epx exits with 0.
+
+Deletes data, which cannot be undone.
+On a terminal, epx sends DELETE only once you type ID at its prompt.
+`--yes` sends without asking (required without a terminal);
+`--dry-run` prints the request instead of sending it.
+
+Requires the schema.schema\_manage scope.
+
+**Command:** `epx schemas delete ID [flags]`
+
+**Flags**
+
+- `--dry-run`\
+  Print the request instead of sending it (excludes `-o`).
+- `-o, --output <format>`\
+  Format of the response: json or yaml. Default: `json`.
+- `--yes`\
+  Send without asking (required without a terminal).
+
+Also takes the [global flags](/emporix-cli/commands#global-flags).
+
+## epx schemas get
+
+Show one schema.
+
+Reads custom schemas, the attribute sets that extend Emporix entities. TYPES lists the
+entity types a schema applies to and ATTRIBUTES counts its top-level attributes (`-o json`
+prints their definitions). [`epx schemas references`](/emporix-cli/commands/schemas#epx-schemas-references) reads schema references and
+[`epx schemas types`](/emporix-cli/commands/schemas#epx-schemas-types) the entity types that have schemas.
+
+No OAuth scope is needed.
+
+**Command:** `epx schemas get ID [flags]`
+
+**Flags**
+
+- `--columns <names>`\
+  Print only these columns of table and csv, in this order: comma-separated names (any case) among ID, NAME, TYPES, ATTRIBUTES, VERSION.
+- `--language <language>`\
+  Language of localized table text; a missing translation shows another, labeled (`-o json` prints all). Default: `en`.
+- `--no-headers`\
+  Print table and csv without the header row.
+- `-o, --output <format>`\
+  Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
+
+Also takes the [global flags](/emporix-cli/commands#global-flags).
+
+## epx schemas list
+
+List schemas.
+
+Reads custom schemas, the attribute sets that extend Emporix entities. TYPES lists the
+entity types a schema applies to and ATTRIBUTES counts its top-level attributes (`-o json`
+prints their definitions). [`epx schemas references`](/emporix-cli/commands/schemas#epx-schemas-references) reads schema references and
+[`epx schemas types`](/emporix-cli/commands/schemas#epx-schemas-types) the entity types that have schemas.
+
+No OAuth scope is needed.
+
+**Command:** `epx schemas list [flags]`
+
+**Flags**
+
+- `--columns <names>`\
+  Print only these columns of table and csv, in this order: comma-separated names (any case) among ID, NAME, TYPES, ATTRIBUTES, VERSION.
+- `--language <language>`\
+  Language of localized table text; a missing translation shows another, labeled (`-o json` prints all). Default: `en`.
+- `--limit <n>`\
+  Print at most n items; paged reads stop early where they safely can (0: every item).
+- `--no-headers`\
+  Print table and csv without the header row.
+- `-o, --output <format>`\
+  Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
+- `--query <filter>`\
+  Emporix q filter, passed as given, e.g. code:(A1,A2); space-separated conditions must all match (fields mostly as in `-o json`).
+- `--sort <order>`\
+  Emporix sort order, passed as given, e.g. code or name.en:desc,code; fields mostly as in `-o json` (Emporix may ignore an unknown one).
+- `--stream`\
+  Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
+
+Also takes the [global flags](/emporix-cli/commands#global-flags).
+
+## epx schemas parse
+
+Parse a JSON schema file into a schema.
+
+Parses the JSON schema file of `--json-schema` into the schema that Emporix makes of it, and
+stores nothing: the table lists its attributes; `-o json` prints the schema, which
+[`epx schemas create`](/emporix-cli/commands/schemas#epx-schemas-create) takes once its missing members, such as its name and types, are added,
+or, with `--id`, [`epx schemas update ID`](/emporix-cli/commands/schemas#epx-schemas-update).
+
+Changes nothing: Emporix serves this read as POST with a multipart/form-data
+body, which the flags make.
+
+Requires the schema.schema\_manage scope.
+Opt-in: epx requests a write-capable scope for a read only when given `--allow-write-scope`.
+
+**Command:** `epx schemas parse [flags]`
+
+**Flags**
+
+- `--allow-write-scope`\
+  Opt in to requesting schema.schema\_manage, which can also change data (required).
+- `--columns <names>`\
+  Print only these columns of table and csv, in this order: comma-separated names (any case) among KEY, TYPE, REQUIRED, LOCALIZED, READ ONLY.
+- `--id <ID>`\
+  ID of the schema that the file updates.
+- `--json-schema <PATH>`\
+  JSON schema file in PATH to parse (required).
+- `--no-headers`\
+  Print table and csv without the header row.
+- `-o, --output <format>`\
+  Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
+
+Also takes the [global flags](/emporix-cli/commands#global-flags).
+
+## epx schemas references
+
+Read, create, change and delete schema references.
+
+Reads schema references: schemas uploaded as a JSON schema file, for attribute types that
+schemas cannot define. TYPES lists the entity types a reference applies to; the file's
+URL is only in `-o json`.
+
+Its reads need no OAuth scope.
+Its writes require the schema.schema\_manage scope.
+
+**Command:** `epx schemas references [flags]`, `epx schemas references [command]`
+
+**Flags:** only the [global flags](/emporix-cli/commands#global-flags).
+
+**Subcommands**
+
+- [`epx schemas references create`](#epx-schemas-references-create)\
+  Create a schema reference.
+- [`epx schemas references delete`](#epx-schemas-references-delete)\
+  Delete a schema reference.
+- [`epx schemas references get`](#epx-schemas-references-get)\
+  Show one reference.
+- [`epx schemas references list`](#epx-schemas-references-list)\
+  List schema references.
+- [`epx schemas references update`](#epx-schemas-references-update)\
+  Replace a schema reference.
+
+## epx schemas references create
+
+Create a schema reference.
+
+Creates a schema reference: the JSON schema file of `--json-schema` with the JSON in
+`--file`, which names the reference and the entity types it applies to, such as
+`{"name": {"en": "Specifications"}, "types": ["PRODUCT"]}`. It prints the id that Emporix answers
+with; one that exists already is a conflict.
+It sends both as a multipart/form-data body, the file as its file field.
+Name entity types by their ids, with \_, such as VENDOR\_LOCATION. A read of a reference shows that
+type as VENDOR.LOCATION; a write that sends it so makes Emporix answer reads of references
+with 500.
+
+Localized text in the body is a map of translations, e.g. `{"en": "Acme", "de": "Acme"}`,
+as `-o json` of a read prints it, sent with Content-Language: \*. Emporix refuses a string in
+its place.
+
+Changes data: on a terminal, epx asks before it sends POST. `--yes` sends without
+asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
+instead of sending it.
+
+Requires the schema.schema\_manage scope.
+
+**Command:** `epx schemas references create [flags]`
+
+**Flags**
+
+- `--dry-run`\
+  Print the request instead of sending it (excludes `-o`).
+- `--file <PATH>`\
+  JSON in PATH, sent byte for byte as the body field of the form (- reads standard input; sending it then needs `--yes`; required).
+- `--json-schema <PATH>`\
+  JSON schema file in PATH that the reference holds (required).
+- `-o, --output <format>`\
+  Format of the response: json or yaml. Default: `json`.
+- `--yes`\
+  Send without asking (required without a terminal, or with `--file` -).
+
+Also takes the [global flags](/emporix-cli/commands#global-flags).
+
+## epx schemas references delete
+
+Delete a schema reference.
+
+Deletes the schema reference ID. The JSON schema file that it holds stays
+where Emporix stored it.
+Emporix answers an unknown ID as a deleted one (204), so epx exits with 0.
+
+Deletes data, which cannot be undone.
+On a terminal, epx sends DELETE only once you type ID at its prompt.
+`--yes` sends without asking (required without a terminal);
+`--dry-run` prints the request instead of sending it.
+
+Requires the schema.schema\_manage scope.
+
+**Command:** `epx schemas references delete ID [flags]`
+
+**Flags**
+
+- `--dry-run`\
+  Print the request instead of sending it (excludes `-o`).
+- `-o, --output <format>`\
+  Format of the response: json or yaml. Default: `json`.
+- `--yes`\
+  Send without asking (required without a terminal).
+
+Also takes the [global flags](/emporix-cli/commands#global-flags).
+
+## epx schemas references get
+
+Show one reference.
+
+Reads schema references: schemas uploaded as a JSON schema file, for attribute types that
+schemas cannot define. TYPES lists the entity types a reference applies to; the file's
+URL is only in `-o json`.
+
+No OAuth scope is needed.
+
+**Command:** `epx schemas references get ID [flags]`
+
+**Flags**
+
+- `--columns <names>`\
+  Print only these columns of table and csv, in this order: comma-separated names (any case) among ID, NAME, TYPES, VERSION.
+- `--language <language>`\
+  Language of localized table text; a missing translation shows another, labeled (`-o json` prints all). Default: `en`.
+- `--no-headers`\
+  Print table and csv without the header row.
+- `-o, --output <format>`\
+  Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
+
+Also takes the [global flags](/emporix-cli/commands#global-flags).
+
+## epx schemas references list
+
+List schema references.
+
+Reads schema references: schemas uploaded as a JSON schema file, for attribute types that
+schemas cannot define. TYPES lists the entity types a reference applies to; the file's
+URL is only in `-o json`.
+
+No OAuth scope is needed.
+
+**Command:** `epx schemas references list [flags]`
+
+**Flags**
+
+- `--columns <names>`\
+  Print only these columns of table and csv, in this order: comma-separated names (any case) among ID, NAME, TYPES, VERSION.
+- `--language <language>`\
+  Language of localized table text; a missing translation shows another, labeled (`-o json` prints all). Default: `en`.
+- `--limit <n>`\
+  Print at most n items; paged reads stop early where they safely can (0: every item).
+- `--no-headers`\
+  Print table and csv without the header row.
+- `-o, --output <format>`\
+  Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
+- `--query <filter>`\
+  Emporix q filter, passed as given, e.g. code:(A1,A2); space-separated conditions must all match (fields mostly as in `-o json`).
+- `--sort <order>`\
+  Emporix sort order, passed as given, e.g. code or name.en:desc,code; fields mostly as in `-o json` (Emporix may ignore an unknown one).
+- `--stream`\
+  Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
+
+Also takes the [global flags](/emporix-cli/commands#global-flags).
+
+## epx schemas references update
+
+Replace a schema reference.
+
+Replaces the schema reference ID: the JSON schema file of `--json-schema` with the JSON
+in `--file`, which names the reference, its types and, as metadata.version, the version that it
+replaces (VERSION in [`epx schemas references get ID`](/emporix-cli/commands/schemas#epx-schemas-references-get)). An unknown ID is not found.
+It sends both as a multipart/form-data body, the file as its file field.
+Name entity types by their ids, with \_, such as VENDOR\_LOCATION. A read of a reference shows that
+type as VENDOR.LOCATION; a write that sends it so makes Emporix answer reads of references
+with 500.
+
+Localized text in the body is a map of translations, e.g. `{"en": "Acme", "de": "Acme"}`,
+as `-o json` of a read prints it, sent with Content-Language: \*. Emporix refuses a string in
+its place.
+
+Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without
+asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
+instead of sending it.
+
+Requires the schema.schema\_manage scope.
+
+**Command:** `epx schemas references update ID [flags]`
+
+**Flags**
+
+- `--dry-run`\
+  Print the request instead of sending it (excludes `-o`).
+- `--file <PATH>`\
+  JSON in PATH, sent byte for byte as the body field of the form (- reads standard input; sending it then needs `--yes`; required).
+- `--json-schema <PATH>`\
+  JSON schema file in PATH that the reference holds (required).
+- `-o, --output <format>`\
+  Format of the response: json or yaml. Default: `json`.
+- `--yes`\
+  Send without asking (required without a terminal, or with `--file` -).
+
+Also takes the [global flags](/emporix-cli/commands#global-flags).
+
+## epx schemas types
+
+List the entity types that have schemas.
+
+Reads the entity types that have at least one schema, such as PRODUCT or CUSTOM\_ENTITY.
+
+No OAuth scope is needed.
+
+**Command:** `epx schemas types [flags]`
+
+**Flags**
+
+- `--columns <names>`\
+  Print only these columns of table and csv, in this order: comma-separated names (any case) among TYPE.
+- `--limit <n>`\
+  Print at most n items; paged reads stop early where they safely can (0: every item).
+- `--no-headers`\
+  Print table and csv without the header row.
+- `-o, --output <format>`\
+  Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
+- `--stream`\
+  Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
+
+Also takes the [global flags](/emporix-cli/commands#global-flags).
+
+## epx schemas update
+
+Replace a schema.
+
+Replaces the schema ID with the JSON in `--file`: its name, types and attributes and, optionally,
+as metadata.version, the version that it replaces (VERSION in [`epx schemas get ID`](/emporix-cli/commands/schemas#epx-schemas-get); an older
+one is a conflict). Every update, with a version or without, releases a new version of the
+schema. An unknown ID is not found.
+Name entity types by their ids, with \_, such as VENDOR\_LOCATION.
+
+Localized text in the body is a map of translations, e.g. `{"en": "Acme", "de": "Acme"}`,
+as `-o json` of a read prints it, sent with Content-Language: \*. Emporix refuses a string in
+its place.
+
+Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without
+asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
+instead of sending it.
+
+Requires the schema.schema\_manage scope.
+
+**Command:** `epx schemas update ID [flags]`
+
+**Flags**
+
+- `--dry-run`\
+  Print the request instead of sending it (excludes `-o`).
+- `--file <PATH>`\
+  JSON request body in PATH, sent byte for byte (- reads standard input; sending it then needs `--yes`; required).
+- `-o, --output <format>`\
+  Format of the response: json or yaml. Default: `json`.
+- `--yes`\
+  Send without asking (required without a terminal, or with `--file` -).
+
+Also takes the [global flags](/emporix-cli/commands#global-flags).
+
+## epx schemas update-types
+
+Change the entity types of a schema.
+
+Sets the entity types of the schema ID to those of the JSON array in `--file`, such as
+`["PRODUCT", "ORDER"]`, in the version that `--version` names: the latest is VERSION in
+[`epx schemas get ID`](/emporix-cli/commands/schemas#epx-schemas-get), and an earlier one may be named too. `--mode` ADD adds the types instead,
+REMOVE removes them. It releases no new version of the schema. An unknown ID is not found.
+Name entity types by their ids, with \_, such as VENDOR\_LOCATION.
+
+Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without
+asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
+instead of sending it.
+
+Requires the schema.schema\_manage scope.
+
+**Command:** `epx schemas update-types ID [flags]`
+
+**Flags**
+
+- `--dry-run`\
+  Print the request instead of sending it (excludes `-o`).
+- `--file <PATH>`\
+  JSON request body in PATH, sent byte for byte (- reads standard input; sending it then needs `--yes`; required).
+- `--mode <MODE>`\
+  MODE in which the types given change the schema's (REPLACE without it): REPLACE, ADD or REMOVE.
+- `-o, --output <format>`\
+  Format of the response: json or yaml. Default: `json`.
+- `--version <VERSION>`\
+  VERSION of the schema whose types change, a whole number (required).
+- `--yes`\
+  Send without asking (required without a terminal, or with `--file` -).
+
+Also takes the [global flags](/emporix-cli/commands#global-flags).

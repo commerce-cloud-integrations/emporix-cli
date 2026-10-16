@@ -1,0 +1,133 @@
+# epx profile
+
+> Manage profiles: named settings and credentials of a tenant.
+
+## epx profile
+
+A profile keeps the settings of one API key: its tenant, API URL and client ID, and a default
+site and language. Profiles are in epx/config.json in your configuration directory (~/.config on
+Linux, ~/Library/Application Support on macOS, %AppData% on Windows), which only you may read;
+the client secret of each is in the OS keychain (the macOS Keychain, the Windows Credential
+Manager or a Secret Service on Linux), never in that file.
+
+A command uses the profile that `--profile` names, else the one EPX\_PROFILE names, else the
+default ([`epx profile use`](/emporix-cli/commands/profile#epx-profile-use)), but only where no EMPORIX\_ variable is set: those give the whole
+API key, never mixed with a profile's. `--tenant` overrides the profile's tenant. These commands
+change only the configuration file and the keychain: they send nothing to Emporix.
+
+**Command:** `epx profile [flags]`, `epx profile [command]`
+
+**Flags:** only the [global flags](/emporix-cli/commands#global-flags).
+
+**Subcommands**
+
+- [`epx profile add`](#epx-profile-add)\
+  Add a profile, or replace one, with its client secret in the OS keychain.
+- [`epx profile list`](#epx-profile-list)\
+  List the profiles.
+- [`epx profile remove`](#epx-profile-remove)\
+  Remove a profile and its client secret.
+- [`epx profile show`](#epx-profile-show)\
+  Show a profile and whether its client secret is stored.
+- [`epx profile use`](#epx-profile-use)\
+  Make a profile the default.
+
+## epx profile add
+
+Add a profile, or replace one, with its client secret in the OS keychain.
+
+Adds the profile NAME, or replaces the profile of that name, and stores its client secret in
+the OS keychain. On a terminal, epx asks for the secret without showing it; otherwise it reads
+the first line of standard input. It never takes the secret from a flag. Where no profile is
+the default, as for the first one, it becomes the default. Nothing is sent to Emporix: [`epx auth status`](/emporix-cli/commands/auth#epx-auth-status) with `--profile` NAME checks the API key.
+
+**Command:** `epx profile add NAME [flags]`
+
+**Flags**
+
+- `--api-url <string>`\
+  API host (default https://api.emporix.io).
+- `--client-id <string>`\
+  Client ID of the API key (required).
+- `--language <language>`\
+  Default language of localized table text, for commands that take `--language`.
+- `--site <site>`\
+  Default site code, for commands that need a site.
+- `--tenant <string>`\
+  Emporix tenant of the API key (required).
+
+Also takes the [global flags](/emporix-cli/commands#global-flags).
+
+**Examples**
+
+```sh
+epx profile add dev --tenant acme1 --client-id CLIENT_ID --site AcmeStore_NL --language nl
+printf '%s\n' "$CLIENT_SECRET" | epx profile add ci --tenant acme1 --client-id CLIENT_ID
+```
+
+## epx profile list
+
+List the profiles.
+
+Lists the profiles and which one is the default. Client secrets are never shown.
+
+**Command:** `epx profile list [flags]`
+
+**Flags**
+
+- `--columns <names>`\
+  Print only these columns of table and csv, in this order: comma-separated names (any case) among NAME, DEFAULT, TENANT, CLIENT ID, API URL, SITE, LANGUAGE.
+- `--no-headers`\
+  Print table and csv without the header row.
+- `-o, --output <format>`\
+  Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
+
+Also takes the [global flags](/emporix-cli/commands#global-flags).
+
+## epx profile remove
+
+Remove a profile and its client secret.
+
+Removes the profile NAME and deletes its client secret from the OS keychain. On a terminal,
+epx asks first; `--yes` removes it without asking, as scripts must. Removing the default
+profile leaves no default. Where the keychain cannot delete the secret, the profile is removed
+all the same, and the error names the keychain entry (service epx, account NAME) that still holds it.
+
+**Command:** `epx profile remove NAME [flags]`
+
+**Flags**
+
+- `--yes`\
+  Remove without asking (required without a terminal).
+
+Also takes the [global flags](/emporix-cli/commands#global-flags).
+
+## epx profile show
+
+Show a profile and whether its client secret is stored.
+
+Shows the settings of the profile NAME and whether the OS keychain holds its client secret.
+The secret itself is never shown.
+
+**Command:** `epx profile show NAME [flags]`
+
+**Flags**
+
+- `--columns <names>`\
+  Print only these columns of table and csv, in this order: comma-separated names (any case) among NAME, DEFAULT, TENANT, CLIENT ID, API URL, SITE, LANGUAGE, CLIENT SECRET.
+- `--no-headers`\
+  Print table and csv without the header row.
+- `-o, --output <format>`\
+  Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
+
+Also takes the [global flags](/emporix-cli/commands#global-flags).
+
+## epx profile use
+
+Make a profile the default.
+
+Makes the profile NAME the default: the one a command uses without `--profile` and EPX\_PROFILE.
+
+**Command:** `epx profile use NAME [flags]`
+
+**Flags:** only the [global flags](/emporix-cli/commands#global-flags).

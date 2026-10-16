@@ -1,0 +1,120 @@
+# epx countries
+
+> Read countries, and activate or deactivate them.
+
+## epx countries
+
+Reads all countries known to the tenant, active or not (ACTIVE shows which ones the
+tenant uses). REGIONS lists region codes (see [`epx regions`](/emporix-cli/commands/regions#epx-regions)).
+
+Its reads need no OAuth scope.
+Its writes require the country.country\_manage scope.
+
+**Command:** `epx countries [flags]`, `epx countries [command]`
+
+**Flags:** only the [global flags](/emporix-cli/commands#global-flags).
+
+**Subcommands**
+
+- [`epx countries get`](#epx-countries-get)\
+  Show one country.
+- [`epx countries list`](#epx-countries-list)\
+  List countries.
+- [`epx countries patch`](#epx-countries-patch)\
+  Activate or deactivate a country.
+
+## epx countries get
+
+Show one country.
+
+Reads all countries known to the tenant, active or not (ACTIVE shows which ones the
+tenant uses). REGIONS lists region codes (see [`epx regions`](/emporix-cli/commands/regions#epx-regions)).
+
+No OAuth scope is needed.
+
+**Command:** `epx countries get CODE [flags]`
+
+**Flags**
+
+- `--columns <names>`\
+  Print only these columns of table and csv, in this order: comma-separated names (any case) among CODE, NAME, ACTIVE, REGIONS.
+- `--language <language>`\
+  Language of localized table text; a missing translation shows another, labeled (`-o json` prints all). Default: `en`.
+- `--no-headers`\
+  Print table and csv without the header row.
+- `-o, --output <format>`\
+  Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
+
+Also takes the [global flags](/emporix-cli/commands#global-flags).
+
+## epx countries list
+
+List countries.
+
+Reads all countries known to the tenant, active or not (ACTIVE shows which ones the
+tenant uses). REGIONS lists region codes (see [`epx regions`](/emporix-cli/commands/regions#epx-regions)).
+
+No OAuth scope is needed.
+
+**Command:** `epx countries list [flags]`
+
+**Flags**
+
+- `--columns <names>`\
+  Print only these columns of table and csv, in this order: comma-separated names (any case) among CODE, NAME, ACTIVE, REGIONS.
+- `--language <language>`\
+  Language of localized table text; a missing translation shows another, labeled (`-o json` prints all). Default: `en`.
+- `--limit <n>`\
+  Print at most n items; paged reads stop early where they safely can (0: every item).
+- `--no-headers`\
+  Print table and csv without the header row.
+- `-o, --output <format>`\
+  Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
+- `--sort <order>`\
+  Emporix sort order, passed as given, e.g. code or name.en:desc,code; fields mostly as in `-o json` (Emporix may ignore an unknown one).
+- `--stream`\
+  Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
+
+Also takes the [global flags](/emporix-cli/commands#global-flags).
+
+## epx countries patch
+
+Activate or deactivate a country.
+
+Activates the country CODE for the tenant (`--active`) or deactivates it (`--active=false`):
+Emporix lets a PATCH change active only. epx takes the country's metadata.version as read
+(`--version`, as [`epx countries get CODE -o json`](/emporix-cli/commands/countries#epx-countries-get) prints it), which the reference asks for;
+Emporix does not check it, so a stale version is accepted and applied. `--file` gives the JSON body
+instead, e.g. `{"active": true, "metadata": {"version": 1}}`. An unknown CODE is not found
+(exit 4).
+
+Changes data: on a terminal, epx asks before it sends PATCH. `--yes` sends without
+asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
+instead of sending it.
+
+Requires the country.country\_manage scope.
+
+**Command:** `epx countries patch CODE [flags]`
+
+**Flags**
+
+- `--active`\
+  Activate the country, or with `--active=false` deactivate it (required without `--file`).
+- `--dry-run`\
+  Print the request instead of sending it (excludes `-o`).
+- `--file <PATH>`\
+  JSON request body in PATH, sent byte for byte instead of the one that epx makes (- reads standard input; sending it then needs `--yes`).
+- `-o, --output <format>`\
+  Format of the response: json or yaml. Default: `json`.
+- `--version <VERSION>`\
+  The VERSION of the country as read (metadata.version; required without `--file`).
+- `--yes`\
+  Send without asking (required without a terminal, or with `--file` -).
+
+Also takes the [global flags](/emporix-cli/commands#global-flags).
+
+**Examples**
+
+```sh
+epx countries patch NL --active --version 1
+```

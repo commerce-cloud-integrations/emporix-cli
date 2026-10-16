@@ -1,0 +1,221 @@
+# epx taxes
+
+> Read and change tax configurations, and calculate net and gross prices.
+
+## epx taxes
+
+Reads tax configurations, one per location. CLASSES lists each tax class with its rate
+in percent (`-o json` adds their names). [`epx taxes calculate`](/emporix-cli/commands/taxes#epx-taxes-calculate) applies them to a price.
+
+Its reads require different OAuth scopes; the help of each names them.
+Its writes require the tax.tax\_manage scope.
+
+**Command:** `epx taxes [flags]`, `epx taxes [command]`
+
+**Flags:** only the [global flags](/emporix-cli/commands#global-flags).
+
+**Subcommands**
+
+- [`epx taxes calculate`](#epx-taxes-calculate)\
+  Calculate the net and gross value of a price.
+- [`epx taxes create`](#epx-taxes-create)\
+  Create a tax configuration.
+- [`epx taxes delete`](#epx-taxes-delete)\
+  Delete a tax configuration.
+- [`epx taxes get`](#epx-taxes-get)\
+  Show one tax configuration.
+- [`epx taxes list`](#epx-taxes-list)\
+  List taxes.
+- [`epx taxes update`](#epx-taxes-update)\
+  Replace a tax configuration.
+
+## epx taxes calculate
+
+Calculate the net and gross value of a price.
+
+Calculates the net and gross value of a price with the tax configurations that
+[`epx taxes list`](/emporix-cli/commands/taxes#epx-taxes-list) shows: a net `--price` gets the rate of `--tax-class` in `--country`; with
+`--gross`, a gross price is reduced by that rate, or, with `--source-country` and
+`--source-tax-class`, by theirs before the rate of `--country` is added. SOURCE RATE and
+TARGET RATE are the rates applied, in percent. A country without a tax configuration is
+not found (exit 4).
+
+Changes nothing: Emporix serves this read as PUT with a JSON body, which the
+flags make or `--body` gives whole.
+
+No OAuth scope is needed.
+
+**Command:** `epx taxes calculate [flags]`
+
+**Flags**
+
+- `--body <FILE>`\
+  Send the JSON request body in FILE as given (- reads standard input) instead of the one the other flags make.
+- `--columns <names>`\
+  Print only these columns of table and csv, in this order: comma-separated names (any case) among NET, GROSS, SOURCE RATE, TARGET RATE.
+- `--country <COUNTRY>`\
+  The COUNTRY code to calculate for (required without `--body`).
+- `--gross`\
+  The price is gross, tax included (default: net).
+- `--no-headers`\
+  Print table and csv without the header row.
+- `-o, --output <format>`\
+  Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
+- `--price <PRICE>`\
+  The PRICE to calculate from, e.g. 12.99 (required without `--body`).
+- `--source-country <COUNTRY>`\
+  The COUNTRY code whose tax the gross price includes (only with `--gross`).
+- `--source-tax-class <CLASS>`\
+  The tax CLASS that the gross price includes (only with `--gross`).
+- `--tax-class <CLASS>`\
+  The tax CLASS to apply, e.g. STANDARD (required without `--body`).
+
+Also takes the [global flags](/emporix-cli/commands#global-flags).
+
+## epx taxes create
+
+Create a tax configuration.
+
+Creates the tax configuration of a country from the JSON in `--file`: location.countryCode
+and taxClasses, each with its code, name, order, rate in percent and, for one, isDefault,
+e.g. `{"location": {"countryCode": "NL"}, "taxClasses": [{"code": "STANDARD", "name": {"en": "Standard"}, "order": 0, "rate": 21, "isDefault": true}]}`. A country that has one
+already is a conflict (exit 5).
+
+Localized text in the body, such as a name, is a map of translations, e.g.
+`{"en": "gram", "de": "Gramm"}`, as `-o json` of a read prints it, or with `--content-language`
+LANGUAGE a string in that language, e.g. `"gram"` with `--content-language` en.
+
+Changes data: on a terminal, epx asks before it sends POST. `--yes` sends without
+asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
+instead of sending it.
+
+Requires the tax.tax\_manage scope.
+
+**Command:** `epx taxes create [flags]`
+
+**Flags**
+
+- `--content-language <LANGUAGE>`\
+  The LANGUAGE of localized text in the body, or \* for maps of translations. Default: `*`.
+- `--dry-run`\
+  Print the request instead of sending it (excludes `-o`).
+- `--file <PATH>`\
+  JSON request body in PATH, sent byte for byte (- reads standard input; sending it then needs `--yes`; required).
+- `-o, --output <format>`\
+  Format of the response: json or yaml. Default: `json`.
+- `--yes`\
+  Send without asking (required without a terminal, or with `--file` -).
+
+Also takes the [global flags](/emporix-cli/commands#global-flags).
+
+## epx taxes delete
+
+Delete a tax configuration.
+
+Deletes the tax configuration of LOCATION; it sends no body.
+
+Deletes data, which cannot be undone.
+On a terminal, epx sends DELETE only once you type LOCATION at its prompt.
+`--yes` sends without asking (required without a terminal);
+`--dry-run` prints the request instead of sending it.
+
+Requires the tax.tax\_manage scope.
+
+**Command:** `epx taxes delete LOCATION [flags]`
+
+**Flags**
+
+- `--dry-run`\
+  Print the request instead of sending it (excludes `-o`).
+- `-o, --output <format>`\
+  Format of the response: json or yaml. Default: `json`.
+- `--yes`\
+  Send without asking (required without a terminal).
+
+Also takes the [global flags](/emporix-cli/commands#global-flags).
+
+## epx taxes get
+
+Show one tax configuration.
+
+Reads tax configurations, one per location. CLASSES lists each tax class with its rate
+in percent (`-o json` adds their names). [`epx taxes calculate`](/emporix-cli/commands/taxes#epx-taxes-calculate) applies them to a price.
+
+Requires the tax.tax\_read scope.
+
+**Command:** `epx taxes get LOCATION [flags]`
+
+**Flags**
+
+- `--columns <names>`\
+  Print only these columns of table and csv, in this order: comma-separated names (any case) among LOCATION, COUNTRY, CLASSES.
+- `--no-headers`\
+  Print table and csv without the header row.
+- `-o, --output <format>`\
+  Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
+
+Also takes the [global flags](/emporix-cli/commands#global-flags).
+
+## epx taxes list
+
+List taxes.
+
+Reads tax configurations, one per location. CLASSES lists each tax class with its rate
+in percent (`-o json` adds their names). [`epx taxes calculate`](/emporix-cli/commands/taxes#epx-taxes-calculate) applies them to a price.
+
+Requires the tax.tax\_read scope.
+
+**Command:** `epx taxes list [flags]`
+
+**Flags**
+
+- `--columns <names>`\
+  Print only these columns of table and csv, in this order: comma-separated names (any case) among LOCATION, COUNTRY, CLASSES.
+- `--limit <n>`\
+  Print at most n items; paged reads stop early where they safely can (0: every item).
+- `--no-headers`\
+  Print table and csv without the header row.
+- `-o, --output <format>`\
+  Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
+- `--sort <order>`\
+  Emporix sort order, passed as given, e.g. code or name.en:desc,code; fields mostly as in `-o json` (Emporix may ignore an unknown one).
+- `--stream`\
+  Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
+
+Also takes the [global flags](/emporix-cli/commands#global-flags).
+
+## epx taxes update
+
+Replace a tax configuration.
+
+Replaces the tax configuration of LOCATION with the JSON in `--file`, shaped as
+[`epx taxes get LOCATION -o json`](/emporix-cli/commands/taxes#epx-taxes-get) prints it, with its metadata.version as read: a stale
+version and an unknown LOCATION are both not found (exit 4): Emporix answers 404 to both. The
+country code cannot change.
+
+Localized text in the body, such as a name, is a map of translations, e.g.
+`{"en": "gram", "de": "Gramm"}`, as `-o json` of a read prints it, or with `--content-language`
+LANGUAGE a string in that language, e.g. `"gram"` with `--content-language` en.
+
+Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without
+asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
+instead of sending it.
+
+Requires the tax.tax\_manage scope.
+
+**Command:** `epx taxes update LOCATION [flags]`
+
+**Flags**
+
+- `--content-language <LANGUAGE>`\
+  The LANGUAGE of localized text in the body, or \* for maps of translations. Default: `*`.
+- `--dry-run`\
+  Print the request instead of sending it (excludes `-o`).
+- `--file <PATH>`\
+  JSON request body in PATH, sent byte for byte (- reads standard input; sending it then needs `--yes`; required).
+- `-o, --output <format>`\
+  Format of the response: json or yaml. Default: `json`.
+- `--yes`\
+  Send without asking (required without a terminal, or with `--file` -).
+
+Also takes the [global flags](/emporix-cli/commands#global-flags).
