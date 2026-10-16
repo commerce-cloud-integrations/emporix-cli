@@ -5,18 +5,18 @@
 ## epx sites
 
 Reads active sites. Inactive sites are not included: Emporix returns them only with the
-write-capable site.site\_manage scope, so `get CODE` of an inactive site is refused (403,
-exit 3) without it. [`epx sites codes`](/emporix-cli/commands/sites#epx-sites-codes) lists the codes of every site, inactive ones too (opt-in);
+write-capable site.site_manage scope, so `get CODE` of an inactive site is refused (403,
+exit 3) without it. [`epx sites codes`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/sites#epx-sites-codes) lists the codes of every site, inactive ones too (opt-in);
 to read inactive sites whole, run
-[`epx api get '/site/{tenant}/sites?includeInactive=true' --scope site.site_manage`](/emporix-cli/commands/api#epx-api-get).
+[`epx api get '/site/{tenant}/sites?includeInactive=true' --scope site.site_manage`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/api#epx-api-get).
 
 Its reads require different OAuth scopes; the help of each names them.
 Opt-in: epx requests a write-capable scope for a read only when given `--allow-write-scope`.
-Its writes require the site.site\_manage scope.
+Its writes require the site.site_manage scope.
 
 **Command:** `epx sites [flags]`, `epx sites [command]`
 
-**Flags:** only the [global flags](/emporix-cli/commands#global-flags).
+**Flags:** only the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Subcommands**
 
@@ -42,11 +42,11 @@ Its writes require the site.site\_manage scope.
 List the codes of every site, inactive ones too.
 
 Reads the code of every site, active or not. Emporix lists inactive sites only with the
-write-capable site.site\_manage and site.site\_read scopes together (each alone
-answers 403), so this read is opt-in; [`epx sites list`](/emporix-cli/commands/sites#epx-sites-list) shows active sites whole without a scope.
+write-capable site.site_manage and site.site_read scopes together (each alone
+answers 403), so this read is opt-in; [`epx sites list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/sites#epx-sites-list) shows active sites whole without a scope.
 Emporix sends no total for the codes, so their pages are read until an empty one.
 
-Requires the site.site\_read, site.site\_manage scopes.
+Requires the site.site_read, site.site_manage scopes.
 Opt-in: epx requests a write-capable scope for a read only when given `--allow-write-scope`.
 
 **Command:** `epx sites codes [flags]`
@@ -54,7 +54,7 @@ Opt-in: epx requests a write-capable scope for a read only when given `--allow-w
 **Flags**
 
 - `--allow-write-scope`\
-  Opt in to requesting site.site\_read, site.site\_manage, which can also change data (required).
+  Opt in to requesting site.site_read, site.site_manage, which can also change data (required).
 - `--columns <names>`\
   Print only these columns of table and csv, in this order: comma-separated names (any case) among CODE.
 - `--limit <n>`\
@@ -70,23 +70,23 @@ Opt-in: epx requests a write-capable scope for a read only when given `--allow-w
 - `--stream`\
   Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx sites create
 
 Create a site.
 
-Creates a site from the JSON in `--file`, shaped as [`epx sites get CODE -o json`](/emporix-cli/commands/sites#epx-sites-get) prints one.
+Creates a site from the JSON in `--file`, shaped as [`epx sites get CODE -o json`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/sites#epx-sites-get) prints one.
 The reference requires code, name, defaultLanguage, languages, currency, homeBase (an
 address with country and zipCode), shipToCountries and taxDeterminationBasedOn
-(BILLING\_ADDRESS or SHIPPING\_ADDRESS); active, default, includesTax,
+(BILLING_ADDRESS or SHIPPING_ADDRESS); active, default, includesTax,
 availableCurrencies, payment, shipping, tax, mixins and cartCalculationScale are optional.
 
 Changes data: on a terminal, epx asks before it sends POST. `--yes` sends without
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the site.site\_manage scope.
+Requires the site.site_manage scope.
 
 **Command:** `epx sites create [flags]`
 
@@ -101,7 +101,7 @@ Requires the site.site\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx sites delete
 
@@ -115,7 +115,7 @@ On a terminal, epx sends DELETE only once you type CODE at its prompt.
 `--yes` sends without asking (required without a terminal);
 `--dry-run` prints the request instead of sending it.
 
-Requires the site.site\_manage scope.
+Requires the site.site_manage scope.
 
 **Command:** `epx sites delete CODE [flags]`
 
@@ -128,17 +128,17 @@ Requires the site.site\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx sites get
 
 Show one site.
 
 Reads active sites. Inactive sites are not included: Emporix returns them only with the
-write-capable site.site\_manage scope, so `get CODE` of an inactive site is refused (403,
-exit 3) without it. [`epx sites codes`](/emporix-cli/commands/sites#epx-sites-codes) lists the codes of every site, inactive ones too (opt-in);
+write-capable site.site_manage scope, so `get CODE` of an inactive site is refused (403,
+exit 3) without it. [`epx sites codes`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/sites#epx-sites-codes) lists the codes of every site, inactive ones too (opt-in);
 to read inactive sites whole, run
-[`epx api get '/site/{tenant}/sites?includeInactive=true' --scope site.site_manage`](/emporix-cli/commands/api#epx-api-get).
+[`epx api get '/site/{tenant}/sites?includeInactive=true' --scope site.site_manage`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/api#epx-api-get).
 
 No OAuth scope is needed.
 
@@ -153,17 +153,17 @@ No OAuth scope is needed.
 - `-o, --output <format>`\
   Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx sites list
 
 List sites.
 
 Reads active sites. Inactive sites are not included: Emporix returns them only with the
-write-capable site.site\_manage scope, so `get CODE` of an inactive site is refused (403,
-exit 3) without it. [`epx sites codes`](/emporix-cli/commands/sites#epx-sites-codes) lists the codes of every site, inactive ones too (opt-in);
+write-capable site.site_manage scope, so `get CODE` of an inactive site is refused (403,
+exit 3) without it. [`epx sites codes`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/sites#epx-sites-codes) lists the codes of every site, inactive ones too (opt-in);
 to read inactive sites whole, run
-[`epx api get '/site/{tenant}/sites?includeInactive=true' --scope site.site_manage`](/emporix-cli/commands/api#epx-api-get).
+[`epx api get '/site/{tenant}/sites?includeInactive=true' --scope site.site_manage`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/api#epx-api-get).
 
 No OAuth scope is needed.
 
@@ -186,21 +186,21 @@ No OAuth scope is needed.
 - `--stream`\
   Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx sites mixins
 
 Read and change the mixins of a site.
 
 Reads the mixins of a site, the custom settings that extend it, and creates, changes and
-deletes them. SITE\_CODE is the CODE that [`epx sites list`](/emporix-cli/commands/sites#epx-sites-list) shows.
+deletes them. SITE_CODE is the CODE that [`epx sites list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/sites#epx-sites-list) shows.
 
 Its reads need no OAuth scope.
-Its writes require the site.site\_manage scope.
+Its writes require the site.site_manage scope.
 
 **Command:** `epx sites mixins [flags]`, `epx sites mixins [command]`
 
-**Flags:** only the [global flags](/emporix-cli/commands#global-flags).
+**Flags:** only the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Subcommands**
 
@@ -221,7 +221,7 @@ Its writes require the site.site\_manage scope.
 
 Add mixins to a site.
 
-Adds mixins to the site SITE\_CODE: the JSON object in `--file` maps the name of each to its
+Adds mixins to the site SITE_CODE: the JSON object in `--file` maps the name of each to its
 fields, e.g. `{"generalShopSettings": {"logoUrl": "https://shop.acme.example/logo.png"}}`.
 Emporix checks each against the schema that its metadata.schema names; a mixin that the
 site has already is a conflict (exit 5).
@@ -230,7 +230,7 @@ Changes data: on a terminal, epx asks before it sends POST. `--yes` sends withou
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the site.site\_manage scope.
+Requires the site.site_manage scope.
 
 **Command:** `epx sites mixins create SITE_CODE [flags]`
 
@@ -245,13 +245,13 @@ Requires the site.site\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx sites mixins delete
 
 Delete a mixin of a site.
 
-Deletes the mixin NAME of the site SITE\_CODE; it sends no body.
+Deletes the mixin NAME of the site SITE_CODE; it sends no body.
 An unknown site or mixin is not found (exit 4).
 
 Deletes data, which cannot be undone.
@@ -259,7 +259,7 @@ On a terminal, epx sends DELETE only once you type NAME at its prompt.
 `--yes` sends without asking (required without a terminal);
 `--dry-run` prints the request instead of sending it.
 
-Requires the site.site\_manage scope.
+Requires the site.site_manage scope.
 
 **Command:** `epx sites mixins delete SITE_CODE NAME [flags]`
 
@@ -272,15 +272,15 @@ Requires the site.site\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx sites mixins get
 
 Show one mixin of a site.
 
 Reads one mixin of a site: its fields by NAME, each VALUE cut (`-o json` prints them whole).
-SITE\_CODE is the CODE that [`epx sites list`](/emporix-cli/commands/sites#epx-sites-list) shows; an unknown one is not found.
-NAME is the NAME that [`epx sites mixins list SITE_CODE`](/emporix-cli/commands/sites#epx-sites-mixins-list) shows; an unknown one is not found.
+SITE_CODE is the CODE that [`epx sites list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/sites#epx-sites-list) shows; an unknown one is not found.
+NAME is the NAME that [`epx sites mixins list SITE_CODE`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/sites#epx-sites-mixins-list) shows; an unknown one is not found.
 
 No OAuth scope is needed.
 
@@ -295,7 +295,7 @@ No OAuth scope is needed.
 - `-o, --output <format>`\
   Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx sites mixins list
 
@@ -303,7 +303,7 @@ List the mixins of a site.
 
 Reads the mixins of a site, the custom settings that extend it (such as coupon or customer
 settings), by NAME, each VALUE cut (`-o json` prints them whole). A site without mixins lists none.
-SITE\_CODE is the CODE that [`epx sites list`](/emporix-cli/commands/sites#epx-sites-list) shows; an unknown one is not found.
+SITE_CODE is the CODE that [`epx sites list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/sites#epx-sites-list) shows; an unknown one is not found.
 
 No OAuth scope is needed.
 
@@ -318,20 +318,20 @@ No OAuth scope is needed.
 - `-o, --output <format>`\
   Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx sites mixins patch
 
 Change fields of a mixin of a site.
 
-Changes the fields of the mixin NAME of the site SITE\_CODE that the JSON object in
+Changes the fields of the mixin NAME of the site SITE_CODE that the JSON object in
 `--file` gives, such as `{"active": true}`; the others keep their values.
 
 Changes data: on a terminal, epx asks before it sends PATCH. `--yes` sends without
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the site.site\_manage scope.
+Requires the site.site_manage scope.
 
 **Command:** `epx sites mixins patch SITE_CODE NAME [flags]`
 
@@ -346,13 +346,13 @@ Requires the site.site\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx sites mixins update
 
 Replace a mixin of a site.
 
-Replaces the mixin NAME of the site SITE\_CODE with the JSON object in `--file`; the
+Replaces the mixin NAME of the site SITE_CODE with the JSON object in `--file`; the
 reference's example gives it as create does, in an object named after the mixin.
 An unknown site or mixin is not found (exit 4).
 
@@ -360,7 +360,7 @@ Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the site.site\_manage scope.
+Requires the site.site_manage scope.
 
 **Command:** `epx sites mixins update SITE_CODE NAME [flags]`
 
@@ -375,7 +375,7 @@ Requires the site.site\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx sites patch
 
@@ -389,7 +389,7 @@ Changes data: on a terminal, epx asks before it sends PATCH. `--yes` sends witho
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the site.site\_manage scope.
+Requires the site.site_manage scope.
 
 **Command:** `epx sites patch CODE [flags]`
 
@@ -404,7 +404,7 @@ Requires the site.site\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx sites update
 
@@ -419,7 +419,7 @@ Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the site.site\_manage scope.
+Requires the site.site_manage scope.
 
 **Command:** `epx sites update CODE [flags]`
 
@@ -436,4 +436,4 @@ Requires the site.site\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).

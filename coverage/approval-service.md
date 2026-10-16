@@ -18,4 +18,4 @@ Operations of the Emporix API reference file [`companies-and-customers/approval-
 | `POST /approval/{tenant}/approval/permitted` | Not applicable | Needs a signed-in customer's token, which a service token is not. |
 | `POST /approval/{tenant}/search/users` | Not applicable | Needs a signed-in customer's token, which a service token is not. |
 
-All services: [Emporix API coverage](/emporix-cli/coverage).
+All services: [Emporix API coverage](https://commerce-cloud-integrations.github.io/emporix-cli/coverage).

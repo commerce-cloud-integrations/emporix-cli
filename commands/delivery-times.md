@@ -9,11 +9,11 @@ time slots; reads the delivery windows open to a cart, checks and counts the ord
 delivery window and names its delivery cycle.
 
 Its reads require different OAuth scopes; the help of each names them.
-Its writes require the shipping.shipping\_manage scope.
+Its writes require the shipping.shipping_manage scope.
 
 **Command:** `epx delivery-times [flags]`, `epx delivery-times [command]`
 
-**Flags:** only the [global flags](/emporix-cli/commands#global-flags).
+**Flags:** only the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Subcommands**
 
@@ -59,7 +59,7 @@ Changes data: on a terminal, epx asks before it sends POST. `--yes` sends withou
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the shipping.shipping\_manage scope.
+Requires the shipping.shipping_manage scope.
 
 **Command:** `epx delivery-times bulk-create [flags]`
 
@@ -76,7 +76,7 @@ Requires the shipping.shipping\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx delivery-times create
 
@@ -85,7 +85,7 @@ Create a delivery time.
 Creates a delivery time from the JSON in `--file`: its siteCode and zoneId (or isForAllZones,
 for a day without delivery on every zone of the site), its day (a weekday, singleDate or
 datePeriod), isDeliveryDay, timeZoneId and deliveryDayShift, the slots of a delivery day
-and optionally the delivery time's id and name, as [`epx delivery-times get ID -o json`](/emporix-cli/commands/delivery-times#epx-delivery-times-get)
+and optionally the delivery time's id and name, as [`epx delivery-times get ID -o json`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/delivery-times#epx-delivery-times-get)
 prints one; a slot with a cutOffDayShift needs a delivery time without deliveryDayShift.
 Emporix answers with its id, and refuses a delivery time that overlaps another of its
 zone, or is not valid otherwise, with 400 Bad Request (exit 1).
@@ -94,7 +94,7 @@ Changes data: on a terminal, epx asks before it sends POST. `--yes` sends withou
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the shipping.shipping\_manage scope.
+Requires the shipping.shipping_manage scope.
 
 **Command:** `epx delivery-times create [flags]`
 
@@ -111,7 +111,7 @@ Requires the shipping.shipping\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx delivery-times delete
 
@@ -125,7 +125,7 @@ On a terminal, epx sends DELETE only once you type ID at its prompt.
 `--yes` sends without asking (required without a terminal);
 `--dry-run` prints the request instead of sending it.
 
-Requires the shipping.shipping\_manage scope.
+Requires the shipping.shipping_manage scope.
 
 **Command:** `epx delivery-times delete ID [flags]`
 
@@ -138,7 +138,7 @@ Requires the shipping.shipping\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx delivery-times generate-cycle
 
@@ -146,11 +146,11 @@ Name the delivery cycle of a delivery window.
 
 Prints the name of the delivery cycle of a delivery window, as Emporix names it in the
 delivery windows of a cart and in orders (deliveryCycle in
-[`epx delivery-times windows CART_ID -o json`](/emporix-cli/commands/delivery-times#epx-delivery-times-windows)): the delivery date, the hour (UTC) of the
+[`epx delivery-times windows CART_ID -o json`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/delivery-times#epx-delivery-times-windows)): the delivery date, the hour (UTC) of the
 slot's cut-off time and the deliveryCycleName of its cutOffTime, such as 2026-06-20-6morning.
 The delivery window is the delivery time `--delivery-time` on `--date`, an ISO 8601
-date and time such as 2026-11-02T12:00:00.000Z, in its `--slot`: [`epx delivery-times list`](/emporix-cli/commands/delivery-times#epx-delivery-times-list)
-and [`epx delivery-times slots list`](/emporix-cli/commands/delivery-times#epx-delivery-times-slots-list) show their IDs.
+date and time such as 2026-11-02T12:00:00.000Z, in its `--slot`: [`epx delivery-times list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/delivery-times#epx-delivery-times-list)
+and [`epx delivery-times slots list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/delivery-times#epx-delivery-times-slots-list) show their IDs.
 Emporix answers an unknown delivery time with 403 Forbidden (exit 3), not as not found.
 
 Changes nothing: Emporix serves this read as POST with a JSON body, which the
@@ -177,20 +177,20 @@ No OAuth scope is needed.
 - `--slot <ID>`\
   The ID of the delivery time's slot (required without `--body`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx delivery-times get
 
 Show one delivery time.
 
 Reads delivery times, the days on which a site delivers to a zone. ZONE is a zone id
-([`epx shipping zones list --site S`](/emporix-cli/commands/shipping#epx-shipping-zones-list)), or `"all zones"` for a day without delivery on every
+([`epx shipping zones list --site S`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/shipping#epx-shipping-zones-list)), or `"all zones"` for a day without delivery on every
 zone; DAY is a weekday, a date or a date period (from/to); DELIVERS is false for a day
 without delivery; DAY SHIFT is how many days the delivery follows an order placed before
 the cut-off, when the delivery time sets it (a weekday's slots may set their own); SLOTS
-counts the time slots, which [`epx delivery-times slots list DELIVERY_TIME_ID`](/emporix-cli/commands/delivery-times#epx-delivery-times-slots-list) lists.
+counts the time slots, which [`epx delivery-times slots list DELIVERY_TIME_ID`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/delivery-times#epx-delivery-times-slots-list) lists.
 
-Requires the shipping.shipping\_read scope.
+Requires the shipping.shipping_read scope.
 
 **Command:** `epx delivery-times get ID [flags]`
 
@@ -203,7 +203,7 @@ Requires the shipping.shipping\_read scope.
 - `-o, --output <format>`\
   Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx delivery-times increment-counter
 
@@ -211,8 +211,8 @@ Count one more order in a delivery window.
 
 Counts one more order in a delivery window that has capacity left.
 The delivery window is the delivery time `--delivery-time` on `--date`, an ISO 8601
-date and time such as 2026-11-02T12:00:00.000Z, in its `--slot`: [`epx delivery-times list`](/emporix-cli/commands/delivery-times#epx-delivery-times-list)
-and [`epx delivery-times slots list`](/emporix-cli/commands/delivery-times#epx-delivery-times-slots-list) show their IDs.
+date and time such as 2026-11-02T12:00:00.000Z, in its `--slot`: [`epx delivery-times list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/delivery-times#epx-delivery-times-list)
+and [`epx delivery-times slots list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/delivery-times#epx-delivery-times-slots-list) show their IDs.
 The Checkout Service counts each order that it places with a delivery window; only a
 checkout of your own needs this. Emporix answers true once it counted the order, and a
 window that is full or not offered that day, or a date in the past or in another format,
@@ -222,7 +222,7 @@ Changes data: on a terminal, epx asks before it sends POST. `--yes` sends withou
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the shipping.shipping\_manage scope.
+Requires the shipping.shipping_manage scope.
 
 **Command:** `epx delivery-times increment-counter [flags]`
 
@@ -243,20 +243,20 @@ Requires the shipping.shipping\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx delivery-times list
 
 List delivery times.
 
 Reads delivery times, the days on which a site delivers to a zone. ZONE is a zone id
-([`epx shipping zones list --site S`](/emporix-cli/commands/shipping#epx-shipping-zones-list)), or `"all zones"` for a day without delivery on every
+([`epx shipping zones list --site S`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/shipping#epx-shipping-zones-list)), or `"all zones"` for a day without delivery on every
 zone; DAY is a weekday, a date or a date period (from/to); DELIVERS is false for a day
 without delivery; DAY SHIFT is how many days the delivery follows an order placed before
 the cut-off, when the delivery time sets it (a weekday's slots may set their own); SLOTS
-counts the time slots, which [`epx delivery-times slots list DELIVERY_TIME_ID`](/emporix-cli/commands/delivery-times#epx-delivery-times-slots-list) lists.
+counts the time slots, which [`epx delivery-times slots list DELIVERY_TIME_ID`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/delivery-times#epx-delivery-times-slots-list) lists.
 
-Requires the shipping.shipping\_read scope.
+Requires the shipping.shipping_read scope.
 
 **Command:** `epx delivery-times list [flags]`
 
@@ -273,7 +273,7 @@ Requires the shipping.shipping\_read scope.
 - `--stream`\
   Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx delivery-times patch
 
@@ -288,7 +288,7 @@ Changes data: on a terminal, epx asks before it sends PATCH. `--yes` sends witho
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the shipping.shipping\_manage scope.
+Requires the shipping.shipping_manage scope.
 
 **Command:** `epx delivery-times patch ID [flags]`
 
@@ -305,7 +305,7 @@ Requires the shipping.shipping\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx delivery-times slots
 
@@ -313,12 +313,12 @@ Read and change the time slots of a delivery time.
 
 Reads and changes the time slots of a delivery time.
 
-Its reads require the shipping.shipping\_read scope.
-Its writes require the shipping.shipping\_manage scope.
+Its reads require the shipping.shipping_read scope.
+Its writes require the shipping.shipping_manage scope.
 
 **Command:** `epx delivery-times slots [flags]`, `epx delivery-times slots [command]`
 
-**Flags:** only the [global flags](/emporix-cli/commands#global-flags).
+**Flags:** only the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Subcommands**
 
@@ -346,16 +346,16 @@ of the delivery time's zone), deliveryTimeRange (timeFrom and timeTo, local time
 08:00), cutOffTime (its time, an ISO 8601 timestamp whose time of day counts, and for a
 weekday its cutOffDayShift, which the delivery time must not combine with a
 deliveryDayShift), capacity (the orders it takes) and optionally its id, as
-[`epx delivery-times slots get DELIVERY_TIME_ID ID -o json`](/emporix-cli/commands/delivery-times#epx-delivery-times-slots-get) prints one. Emporix answers
+[`epx delivery-times slots get DELIVERY_TIME_ID ID -o json`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/delivery-times#epx-delivery-times-slots-get) prints one. Emporix answers
 with its id, and a slot id that exists already with 400 Bad Request (exit 1), not as a
 conflict.
-DELIVERY\_TIME\_ID is the ID that [`epx delivery-times list`](/emporix-cli/commands/delivery-times#epx-delivery-times-list) shows; an unknown one is not found.
+DELIVERY_TIME_ID is the ID that [`epx delivery-times list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/delivery-times#epx-delivery-times-list) shows; an unknown one is not found.
 
 Changes data: on a terminal, epx asks before it sends POST. `--yes` sends without
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the shipping.shipping\_manage scope.
+Requires the shipping.shipping_manage scope.
 
 **Command:** `epx delivery-times slots create DELIVERY_TIME_ID [flags]`
 
@@ -372,22 +372,22 @@ Requires the shipping.shipping\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx delivery-times slots delete
 
 Delete a time slot of a delivery time.
 
 Deletes the time slot ID of a delivery time.
-DELIVERY\_TIME\_ID is the ID that [`epx delivery-times list`](/emporix-cli/commands/delivery-times#epx-delivery-times-list) shows; an unknown one is not found.
-ID is the ID that [`epx delivery-times slots list DELIVERY_TIME_ID`](/emporix-cli/commands/delivery-times#epx-delivery-times-slots-list) shows; an unknown one is answered as one that Emporix deleted (204 No Content).
+DELIVERY_TIME_ID is the ID that [`epx delivery-times list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/delivery-times#epx-delivery-times-list) shows; an unknown one is not found.
+ID is the ID that [`epx delivery-times slots list DELIVERY_TIME_ID`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/delivery-times#epx-delivery-times-slots-list) shows; an unknown one is answered as one that Emporix deleted (204 No Content).
 
 Deletes data, which cannot be undone.
 On a terminal, epx sends DELETE only once you type ID at its prompt.
 `--yes` sends without asking (required without a terminal);
 `--dry-run` prints the request instead of sending it.
 
-Requires the shipping.shipping\_manage scope.
+Requires the shipping.shipping_manage scope.
 
 **Command:** `epx delivery-times slots delete DELIVERY_TIME_ID ID [flags]`
 
@@ -400,21 +400,21 @@ Requires the shipping.shipping\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx delivery-times slots delete-all
 
 Delete every time slot of a delivery time.
 
 Deletes every time slot of a delivery time.
-DELIVERY\_TIME\_ID is the ID that [`epx delivery-times list`](/emporix-cli/commands/delivery-times#epx-delivery-times-list) shows; an unknown one is not found.
+DELIVERY_TIME_ID is the ID that [`epx delivery-times list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/delivery-times#epx-delivery-times-list) shows; an unknown one is not found.
 
 Deletes every time slot of the delivery time with one request, which cannot be undone.
-On a terminal, epx sends DELETE only once you type DELIVERY\_TIME\_ID at its prompt.
+On a terminal, epx sends DELETE only once you type DELIVERY_TIME_ID at its prompt.
 `--yes` sends without asking (required without a terminal);
 `--dry-run` prints the request instead of sending it.
 
-Requires the shipping.shipping\_manage scope.
+Requires the shipping.shipping_manage scope.
 
 **Command:** `epx delivery-times slots delete-all DELIVERY_TIME_ID [flags]`
 
@@ -427,22 +427,22 @@ Requires the shipping.shipping\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx delivery-times slots get
 
 Show one time slot of a delivery time.
 
 Reads one time slot of a delivery time.
-DELIVERY\_TIME\_ID is the ID that [`epx delivery-times list`](/emporix-cli/commands/delivery-times#epx-delivery-times-list) shows; an unknown one is not found.
-ID is the ID that [`epx delivery-times slots list DELIVERY_TIME_ID`](/emporix-cli/commands/delivery-times#epx-delivery-times-slots-list) shows; an unknown one is not found.
-METHOD is the shipping method of the slot ([`epx shipping zones methods list`](/emporix-cli/commands/shipping#epx-shipping-zones-methods-list)), FROM and TO
+DELIVERY_TIME_ID is the ID that [`epx delivery-times list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/delivery-times#epx-delivery-times-list) shows; an unknown one is not found.
+ID is the ID that [`epx delivery-times slots list DELIVERY_TIME_ID`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/delivery-times#epx-delivery-times-slots-list) shows; an unknown one is not found.
+METHOD is the shipping method of the slot ([`epx shipping zones methods list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/shipping#epx-shipping-zones-methods-list)), FROM and TO
 its delivery window in the delivery time's TIME ZONE, CUT-OFF the latest time of day to
 order for the slot (sent as an ISO 8601 timestamp whose date Emporix ignores), CUT-OFF DAYS
 how many days the delivery follows such an order (weekday delivery times only; otherwise
-see DAY SHIFT in [`epx delivery-times list`](/emporix-cli/commands/delivery-times#epx-delivery-times-list)), and CAPACITY how many orders the slot takes.
+see DAY SHIFT in [`epx delivery-times list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/delivery-times#epx-delivery-times-list)), and CAPACITY how many orders the slot takes.
 
-Requires the shipping.shipping\_read scope.
+Requires the shipping.shipping_read scope.
 
 **Command:** `epx delivery-times slots get DELIVERY_TIME_ID ID [flags]`
 
@@ -455,21 +455,21 @@ Requires the shipping.shipping\_read scope.
 - `-o, --output <format>`\
   Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx delivery-times slots list
 
 List the time slots of a delivery time.
 
 Reads the time slots of a delivery time.
-DELIVERY\_TIME\_ID is the ID that [`epx delivery-times list`](/emporix-cli/commands/delivery-times#epx-delivery-times-list) shows; an unknown one is not found.
-METHOD is the shipping method of the slot ([`epx shipping zones methods list`](/emporix-cli/commands/shipping#epx-shipping-zones-methods-list)), FROM and TO
+DELIVERY_TIME_ID is the ID that [`epx delivery-times list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/delivery-times#epx-delivery-times-list) shows; an unknown one is not found.
+METHOD is the shipping method of the slot ([`epx shipping zones methods list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/shipping#epx-shipping-zones-methods-list)), FROM and TO
 its delivery window in the delivery time's TIME ZONE, CUT-OFF the latest time of day to
 order for the slot (sent as an ISO 8601 timestamp whose date Emporix ignores), CUT-OFF DAYS
 how many days the delivery follows such an order (weekday delivery times only; otherwise
-see DAY SHIFT in [`epx delivery-times list`](/emporix-cli/commands/delivery-times#epx-delivery-times-list)), and CAPACITY how many orders the slot takes.
+see DAY SHIFT in [`epx delivery-times list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/delivery-times#epx-delivery-times-list)), and CAPACITY how many orders the slot takes.
 
-Requires the shipping.shipping\_read scope.
+Requires the shipping.shipping_read scope.
 
 **Command:** `epx delivery-times slots list DELIVERY_TIME_ID [flags]`
 
@@ -486,7 +486,7 @@ Requires the shipping.shipping\_read scope.
 - `--stream`\
   Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx delivery-times slots patch
 
@@ -495,14 +495,14 @@ Change a time slot of a delivery time.
 Changes the time slot ID of a delivery time with the JSON Patch (RFC 6902) in
 `--file`: an array of operations whose op is add, remove or replace, such as
 `[{"op": "replace", "path": "/capacity", "value": 50}]`.
-DELIVERY\_TIME\_ID is the ID that [`epx delivery-times list`](/emporix-cli/commands/delivery-times#epx-delivery-times-list) shows; an unknown one is not found.
-ID is the ID that [`epx delivery-times slots list DELIVERY_TIME_ID`](/emporix-cli/commands/delivery-times#epx-delivery-times-slots-list) shows; an unknown one is not found.
+DELIVERY_TIME_ID is the ID that [`epx delivery-times list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/delivery-times#epx-delivery-times-list) shows; an unknown one is not found.
+ID is the ID that [`epx delivery-times slots list DELIVERY_TIME_ID`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/delivery-times#epx-delivery-times-slots-list) shows; an unknown one is not found.
 
 Changes data: on a terminal, epx asks before it sends PATCH. `--yes` sends without
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the shipping.shipping\_manage scope.
+Requires the shipping.shipping_manage scope.
 
 **Command:** `epx delivery-times slots patch DELIVERY_TIME_ID ID [flags]`
 
@@ -519,21 +519,21 @@ Requires the shipping.shipping\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx delivery-times slots update
 
 Replace a time slot of a delivery time.
 
 Replaces the time slot ID of a delivery time with the one in `--file`, as create takes it.
-DELIVERY\_TIME\_ID is the ID that [`epx delivery-times list`](/emporix-cli/commands/delivery-times#epx-delivery-times-list) shows; an unknown one is not found.
-ID is the ID that [`epx delivery-times slots list DELIVERY_TIME_ID`](/emporix-cli/commands/delivery-times#epx-delivery-times-slots-list) shows; an unknown one is not found.
+DELIVERY_TIME_ID is the ID that [`epx delivery-times list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/delivery-times#epx-delivery-times-list) shows; an unknown one is not found.
+ID is the ID that [`epx delivery-times slots list DELIVERY_TIME_ID`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/delivery-times#epx-delivery-times-slots-list) shows; an unknown one is not found.
 
 Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the shipping.shipping\_manage scope.
+Requires the shipping.shipping_manage scope.
 
 **Command:** `epx delivery-times slots update DELIVERY_TIME_ID ID [flags]`
 
@@ -550,14 +550,14 @@ Requires the shipping.shipping\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx delivery-times update
 
 Replace a delivery time.
 
 Replaces the delivery time ID with the one in `--file`, as create takes it. With
-metadata.version in the body, as [`epx delivery-times get ID -o json`](/emporix-cli/commands/delivery-times#epx-delivery-times-get) prints it, Emporix
+metadata.version in the body, as [`epx delivery-times get ID -o json`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/delivery-times#epx-delivery-times-get) prints it, Emporix
 refuses the write as a conflict (exit 5) when the delivery time changed since it was read;
 without it, Emporix replaces it whatever its version. An unknown ID is not found (exit 4).
 
@@ -565,7 +565,7 @@ Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the shipping.shipping\_manage scope.
+Requires the shipping.shipping_manage scope.
 
 **Command:** `epx delivery-times update ID [flags]`
 
@@ -582,7 +582,7 @@ Requires the shipping.shipping\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx delivery-times validate
 
@@ -590,8 +590,8 @@ Check whether a delivery window can take an order.
 
 Checks whether a delivery window can take an order.
 The delivery window is the delivery time `--delivery-time` on `--date`, an ISO 8601
-date and time such as 2026-11-02T12:00:00.000Z, in its `--slot`: [`epx delivery-times list`](/emporix-cli/commands/delivery-times#epx-delivery-times-list)
-and [`epx delivery-times slots list`](/emporix-cli/commands/delivery-times#epx-delivery-times-slots-list) show their IDs.
+date and time such as 2026-11-02T12:00:00.000Z, in its `--slot`: [`epx delivery-times list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/delivery-times#epx-delivery-times-list)
+and [`epx delivery-times slots list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/delivery-times#epx-delivery-times-slots-list) show their IDs.
 VALID is true when it can; Emporix answers a date in the past or in another format, or a
 window that is full or not offered that day, with 400 Bad Request (exit 1), and an unknown
 delivery time as not found (exit 4).
@@ -620,7 +620,7 @@ No OAuth scope is needed.
 - `--slot <ID>`\
   The ID of the delivery time's slot (required without `--body`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx delivery-times windows
 
@@ -630,11 +630,11 @@ Reads the delivery windows in which a cart can be delivered to the country and p
 set on the cart. DATE is the delivery day, FROM and TO the delivery time range on it,
 METHOD the shipping method, ZONE the shipping zone, CUT-OFF the latest time to order for
 the window, SLOT the time slot of its delivery time, which
-[`epx delivery-times slots list DELIVERY_TIME_ID`](/emporix-cli/commands/delivery-times#epx-delivery-times-slots-list) lists, and ID the id of that delivery
-time ([`epx delivery-times get ID`](/emporix-cli/commands/delivery-times#epx-delivery-times-get)); the delivery cycle is only in `-o json`.
+[`epx delivery-times slots list DELIVERY_TIME_ID`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/delivery-times#epx-delivery-times-slots-list) lists, and ID the id of that delivery
+time ([`epx delivery-times get ID`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/delivery-times#epx-delivery-times-get)); the delivery cycle is only in `-o json`.
 For another postal code than the cart's, run
-[`epx api get /shipping/{tenant}/actualDeliveryWindows/CART_ID -p postalCode=CODE`](/emporix-cli/commands/api#epx-api-get).
-CART\_ID is the id of a cart; an unknown one is not found (exit 4).
+[`epx api get /shipping/{tenant}/actualDeliveryWindows/CART_ID -p postalCode=CODE`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/api#epx-api-get).
+CART_ID is the id of a cart; an unknown one is not found (exit 4).
 
 No OAuth scope is needed.
 
@@ -653,4 +653,4 @@ No OAuth scope is needed.
 - `--stream`\
   Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).

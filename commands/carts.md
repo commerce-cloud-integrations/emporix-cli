@@ -7,13 +7,13 @@
 Reads shopping carts, personal data included, with their items, discounts, delivery
 restrictions and validation; creates, changes and deletes carts, their items and discounts.
 
-Its reads require the cart.cart\_manage scope.
+Its reads require the cart.cart_manage scope.
 Opt-in: epx requests a write-capable scope for a read only when given `--allow-write-scope`.
-Its writes require the cart.cart\_manage scope.
+Its writes require the cart.cart_manage scope.
 
 **Command:** `epx carts [flags]`, `epx carts [command]`
 
-**Flags:** only the [global flags](/emporix-cli/commands#global-flags).
+**Flags:** only the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Subcommands**
 
@@ -52,15 +52,15 @@ Its writes require the cart.cart\_manage scope.
 
 Change the currency of a cart.
 
-Changes the currency of the cart CART\_ID to the one that `--currency` names; Emporix
+Changes the currency of the cart CART_ID to the one that `--currency` names; Emporix
 matches the prices of the cart's items in it.
-CART\_ID is the ID that [`epx carts search`](/emporix-cli/commands/carts#epx-carts-search) shows; an unknown one is not found.
+CART_ID is the ID that [`epx carts search`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/carts#epx-carts-search) shows; an unknown one is not found.
 
 Changes data: on a terminal, epx asks before it sends POST. `--yes` sends without
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the cart.cart\_manage scope.
+Requires the cart.cart_manage scope.
 
 **Command:** `epx carts change-currency CART_ID [flags]`
 
@@ -77,22 +77,22 @@ Requires the cart.cart\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx carts change-site
 
 Move a cart to another site.
 
-Moves the cart CART\_ID to the site that `--site` names, whose language, currency,
+Moves the cart CART_ID to the site that `--site` names, whose language, currency,
 shipping, tax and payment the cart then takes; where the site's currency differs, Emporix
 matches the prices of the cart's items in it.
-CART\_ID is the ID that [`epx carts search`](/emporix-cli/commands/carts#epx-carts-search) shows; an unknown one is not found.
+CART_ID is the ID that [`epx carts search`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/carts#epx-carts-search) shows; an unknown one is not found.
 
 Changes data: on a terminal, epx asks before it sends POST. `--yes` sends without
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the cart.cart\_manage scope.
+Requires the cart.cart_manage scope.
 
 **Command:** `epx carts change-site CART_ID [flags]`
 
@@ -109,7 +109,7 @@ Requires the cart.cart\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx carts create
 
@@ -127,7 +127,7 @@ Changes data: on a terminal, epx asks before it sends POST. `--yes` sends withou
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the cart.cart\_manage scope.
+Requires the cart.cart_manage scope.
 
 **Command:** `epx carts create [flags]`
 
@@ -142,22 +142,22 @@ Requires the cart.cart\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx carts delete
 
 Delete a cart.
 
-Deletes the cart CART\_ID with its items. A CLOSED cart, such as one merged into
+Deletes the cart CART_ID with its items. A CLOSED cart, such as one merged into
 another, is not found.
-CART\_ID is the ID that [`epx carts search`](/emporix-cli/commands/carts#epx-carts-search) shows; an unknown one is not found.
+CART_ID is the ID that [`epx carts search`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/carts#epx-carts-search) shows; an unknown one is not found.
 
 Deletes data, which cannot be undone.
-On a terminal, epx sends DELETE only once you type CART\_ID at its prompt.
+On a terminal, epx sends DELETE only once you type CART_ID at its prompt.
 `--yes` sends without asking (required without a terminal);
 `--dry-run` prints the request instead of sending it.
 
-Requires the cart.cart\_manage scope.
+Requires the cart.cart_manage scope.
 
 **Command:** `epx carts delete CART_ID [flags]`
 
@@ -170,7 +170,7 @@ Requires the cart.cart\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx carts delivery-restrictions
 
@@ -180,11 +180,11 @@ Reads what limits the delivery of a cart's items: LEAD HOURS is the time needed 
 them for delivery, the longest leadTime of the items' own mixins.productCustomAttributes,
 and NON-DELIVERY DAYS the days on which they cannot be delivered, the union of their
 nonDelivery days, as numbers from 0 (Monday). An item gets these mixins where it is added
-([`epx carts items create`](/emporix-cli/commands/carts#epx-carts-items-create) takes them); Emporix ignores those of the item's
+([`epx carts items create`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/carts#epx-carts-items-create) takes them); Emporix ignores those of the item's
 product and of its product member. The cart itself also carries leadTime and nonDelivery.
-CART\_ID is the ID that [`epx carts search`](/emporix-cli/commands/carts#epx-carts-search) shows; an unknown one is not found.
+CART_ID is the ID that [`epx carts search`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/carts#epx-carts-search) shows; an unknown one is not found.
 
-Requires the cart.cart\_manage scope.
+Requires the cart.cart_manage scope.
 Opt-in: epx requests a write-capable scope for a read only when given `--allow-write-scope`.
 
 **Command:** `epx carts delivery-restrictions CART_ID [flags]`
@@ -192,7 +192,7 @@ Opt-in: epx requests a write-capable scope for a read only when given `--allow-w
 **Flags**
 
 - `--allow-write-scope`\
-  Opt in to requesting cart.cart\_manage, which can also change data (required).
+  Opt in to requesting cart.cart_manage, which can also change data (required).
 - `--columns <names>`\
   Print only these columns of table and csv, in this order: comma-separated names (any case) among LEAD HOURS, NON-DELIVERY DAYS.
 - `--no-headers`\
@@ -200,7 +200,7 @@ Opt-in: epx requests a write-capable scope for a read only when given `--allow-w
 - `-o, --output <format>`\
   Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx carts discounts
 
@@ -208,13 +208,13 @@ Read, apply and remove the discounts of a cart.
 
 Reads the discounts (coupons) applied to a cart; applies and removes them.
 
-Its reads require the cart.cart\_manage scope.
+Its reads require the cart.cart_manage scope.
 Opt-in: epx requests a write-capable scope for a read only when given `--allow-write-scope`.
-Its writes require the cart.cart\_manage scope.
+Its writes require the cart.cart_manage scope.
 
 **Command:** `epx carts discounts [flags]`, `epx carts discounts [command]`
 
-**Flags:** only the [global flags](/emporix-cli/commands#global-flags).
+**Flags:** only the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Subcommands**
 
@@ -231,20 +231,20 @@ Its writes require the cart.cart\_manage scope.
 
 Apply a discount to a cart.
 
-Applies a discount to the cart CART\_ID: the coupon that `--code` names, or the JSON
+Applies a discount to the cart CART_ID: the coupon that `--code` names, or the JSON
 object of `--file`, with the coupon's code and optionally its name, amount or discountRate,
 currency and discountCalculationType (SUBTOTAL or TOTAL). One discount per request.
 Emporix may limit the coupons per cart (a tenant setting; one tenant allows one: a second is
 refused with 400 Bad Request, exit 1). It refuses a coupon restricted to customers
 (restrictions.validFor), even to the cart's own customer, with 403 Forbidden (exit 1),
 `"User not authorized."`, when an API key credential such as epx's applies it.
-CART\_ID is the ID that [`epx carts search`](/emporix-cli/commands/carts#epx-carts-search) shows; an unknown one is not found.
+CART_ID is the ID that [`epx carts search`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/carts#epx-carts-search) shows; an unknown one is not found.
 
 Changes data: on a terminal, epx asks before it sends POST. `--yes` sends without
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the cart.cart\_manage scope.
+Requires the cart.cart_manage scope.
 
 **Command:** `epx carts discounts create CART_ID [flags]`
 
@@ -261,24 +261,24 @@ Requires the cart.cart\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx carts discounts delete
 
 Remove a discount from a cart.
 
-Removes the discount at INDEX from the cart CART\_ID. The discounts after it then move
+Removes the discount at INDEX from the cart CART_ID. The discounts after it then move
 up by one: list them again before you remove another by INDEX, or remove discounts by
 code with delete-all `--codes`.
-CART\_ID is the ID that [`epx carts search`](/emporix-cli/commands/carts#epx-carts-search) shows; an unknown one is not found.
-INDEX is the INDEX that [`epx carts discounts list CART_ID`](/emporix-cli/commands/carts#epx-carts-discounts-list) shows; an unknown one is not found.
+CART_ID is the ID that [`epx carts search`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/carts#epx-carts-search) shows; an unknown one is not found.
+INDEX is the INDEX that [`epx carts discounts list CART_ID`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/carts#epx-carts-discounts-list) shows; an unknown one is not found.
 
 Deletes data, which cannot be undone.
 On a terminal, epx sends DELETE only once you type INDEX at its prompt.
 `--yes` sends without asking (required without a terminal);
 `--dry-run` prints the request instead of sending it.
 
-Requires the cart.cart\_manage scope.
+Requires the cart.cart_manage scope.
 
 **Command:** `epx carts discounts delete CART_ID INDEX [flags]`
 
@@ -291,22 +291,22 @@ Requires the cart.cart\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx carts discounts delete-all
 
 Remove the discounts of a cart.
 
-Removes every discount from the cart CART\_ID, or with `--codes` only those with the codes
+Removes every discount from the cart CART_ID, or with `--codes` only those with the codes
 it names.
-CART\_ID is the ID that [`epx carts search`](/emporix-cli/commands/carts#epx-carts-search) shows; an unknown one is not found.
+CART_ID is the ID that [`epx carts search`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/carts#epx-carts-search) shows; an unknown one is not found.
 
 Deletes every discount of the cart (or those that `--codes` names) with one request, which cannot be undone.
-On a terminal, epx sends DELETE only once you type CART\_ID at its prompt.
+On a terminal, epx sends DELETE only once you type CART_ID at its prompt.
 `--yes` sends without asking (required without a terminal);
 `--dry-run` prints the request instead of sending it.
 
-Requires the cart.cart\_manage scope.
+Requires the cart.cart_manage scope.
 
 **Command:** `epx carts discounts delete-all CART_ID [flags]`
 
@@ -321,7 +321,7 @@ Requires the cart.cart\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx carts discounts list
 
@@ -330,10 +330,10 @@ List the discounts of a cart.
 Reads the discounts (coupons) applied to a cart: AMOUNT is a fixed amount, RATE a percentage
 of the price, APPLIES TO is SUBTOTAL or TOTAL, and INDEX its position among the cart's
 discounts. Whether Emporix counts a discount when it calculates the cart (valid) is not
-sent here, only with the cart's own discounts: [`epx carts get CART_ID -o json`](/emporix-cli/commands/carts#epx-carts-get).
-CART\_ID is the ID that [`epx carts search`](/emporix-cli/commands/carts#epx-carts-search) shows; an unknown one is not found.
+sent here, only with the cart's own discounts: [`epx carts get CART_ID -o json`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/carts#epx-carts-get).
+CART_ID is the ID that [`epx carts search`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/carts#epx-carts-search) shows; an unknown one is not found.
 
-Requires the cart.cart\_manage scope.
+Requires the cart.cart_manage scope.
 Opt-in: epx requests a write-capable scope for a read only when given `--allow-write-scope`.
 
 **Command:** `epx carts discounts list CART_ID [flags]`
@@ -341,7 +341,7 @@ Opt-in: epx requests a write-capable scope for a read only when given `--allow-w
 **Flags**
 
 - `--allow-write-scope`\
-  Opt in to requesting cart.cart\_manage, which can also change data (required).
+  Opt in to requesting cart.cart_manage, which can also change data (required).
 - `--columns <names>`\
   Print only these columns of table and csv, in this order: comma-separated names (any case) among CODE, NAME, AMOUNT, RATE, APPLIES TO, INDEX.
 - `--limit <n>`\
@@ -353,13 +353,13 @@ Opt-in: epx requests a write-capable scope for a read only when given `--allow-w
 - `--stream`\
   Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx carts execute
 
 Run a chain of cart commands.
 
-Runs a chain of commands on the cart CART\_ID in one request, from the JSON object of
+Runs a chain of commands on the cart CART_ID in one request, from the JSON object of
 `--file`: `{"commands": [...]}`, each with its type (AddCartItem, UpdateCartItem,
 DeleteCartItem, DeleteCartItems, GetCart, AddCartItemsBatch, UpdateCartItemsBatch,
 UpdateCart, ApplyCartDiscount, GetCartDiscounts, DeleteCartDiscounts, DeleteCartDiscount,
@@ -370,7 +370,7 @@ as its operation answers. Without `--on-error` resume, Emporix runs no command a
 that failed, but keeps what those before it changed. With `--versioning` explicit, Emporix
 answers a stale resourceVersion as a failed command with code 500 (its message names 409
 CONFLICT), so epx exits 1 and says it may have been carried out; it was not.
-CART\_ID is the ID that [`epx carts search`](/emporix-cli/commands/carts#epx-carts-search) shows; an unknown one is not found.
+CART_ID is the ID that [`epx carts search`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/carts#epx-carts-search) shows; an unknown one is not found.
 
 Emporix takes up to 10 commands in one request (epx refuses more), runs them in
 order and answers with the result of each that ran: when one failed, epx prints the
@@ -383,16 +383,16 @@ Changes data: on a terminal, epx asks before it sends POST. `--yes` sends withou
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-`--allow-external-prices` also requests the cart.cart\_manage\_external\_prices scope.
+`--allow-external-prices` also requests the cart.cart_manage_external_prices scope.
 
-Requires the cart.cart\_manage scope.
+Requires the cart.cart_manage scope.
 
 **Command:** `epx carts execute CART_ID [flags]`
 
 **Flags**
 
 - `--allow-external-prices`\
-  Allow a command with an external price, product, fee or discount (requests cart.cart\_manage\_external\_prices too).
+  Allow a command with an external price, product, fee or discount (requests cart.cart_manage_external_prices too).
 - `--dry-run`\
   Print the request instead of sending it (excludes `-o`).
 - `--file <PATH>`\
@@ -406,7 +406,7 @@ Requires the cart.cart\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Examples**
 
@@ -428,7 +428,7 @@ STATUS is OPEN or CLOSED (sent by search only), CUSTOMER the customer id
 TOTAL the gross final price (items, shipping and payment fee) in the cart's currency.
 A CLOSED cart, such as one merged into another, is listed by search but not found by get.
 
-Requires the cart.cart\_manage scope.
+Requires the cart.cart_manage scope.
 Opt-in: epx requests a write-capable scope for a read only when given `--allow-write-scope`.
 
 **Command:** `epx carts find [flags]`
@@ -436,7 +436,7 @@ Opt-in: epx requests a write-capable scope for a read only when given `--allow-w
 **Flags**
 
 - `--allow-write-scope`\
-  Opt in to requesting cart.cart\_manage, which can also change data (required).
+  Opt in to requesting cart.cart_manage, which can also change data (required).
 - `--columns <names>`\
   Print only these columns of table and csv, in this order: comma-separated names (any case) among ID, STATUS, SITE, TYPE, CUSTOMER, LEGAL ENTITY, ITEMS, TOTAL, MODIFIED.
 - `--customer <ID>`\
@@ -454,20 +454,20 @@ Opt-in: epx requests a write-capable scope for a read only when given `--allow-w
 - `--type <type>`\
   The cart's type.
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx carts get
 
 Show one cart.
 
 Reads shopping carts, personal data included.
-ID is the ID that [`epx carts search`](/emporix-cli/commands/carts#epx-carts-search) shows; an unknown one is not found.
+ID is the ID that [`epx carts search`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/carts#epx-carts-search) shows; an unknown one is not found.
 STATUS is OPEN or CLOSED (sent by search only), CUSTOMER the customer id
 (empty for an anonymous cart, whose sessionId `-o json` shows), ITEMS the number of items and
 TOTAL the gross final price (items, shipping and payment fee) in the cart's currency.
 A CLOSED cart, such as one merged into another, is listed by search but not found by get.
 
-Requires the cart.cart\_manage scope.
+Requires the cart.cart_manage scope.
 Opt-in: epx requests a write-capable scope for a read only when given `--allow-write-scope`.
 
 **Command:** `epx carts get ID [flags]`
@@ -475,7 +475,7 @@ Opt-in: epx requests a write-capable scope for a read only when given `--allow-w
 **Flags**
 
 - `--allow-write-scope`\
-  Opt in to requesting cart.cart\_manage, which can also change data (required).
+  Opt in to requesting cart.cart_manage, which can also change data (required).
 - `--columns <names>`\
   Print only these columns of table and csv, in this order: comma-separated names (any case) among ID, STATUS, SITE, TYPE, CUSTOMER, LEGAL ENTITY, ITEMS, TOTAL, MODIFIED.
 - `--no-headers`\
@@ -483,7 +483,7 @@ Opt-in: epx requests a write-capable scope for a read only when given `--allow-w
 - `-o, --output <format>`\
   Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx carts items
 
@@ -491,13 +491,13 @@ Read and change the items of a cart.
 
 Reads the items of a cart; adds items to it, changes and removes them.
 
-Its reads require the cart.cart\_manage scope.
+Its reads require the cart.cart_manage scope.
 Opt-in: epx requests a write-capable scope for a read only when given `--allow-write-scope`.
-Its writes require the cart.cart\_manage scope.
+Its writes require the cart.cart_manage scope.
 
 **Command:** `epx carts items [flags]`, `epx carts items [command]`
 
-**Flags:** only the [global flags](/emporix-cli/commands#global-flags).
+**Flags:** only the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Subcommands**
 
@@ -523,8 +523,8 @@ Its writes require the cart.cart\_manage scope.
 Add products to a cart.
 
 Adds the items in `--file`, a JSON array of items, each as create takes it, to the cart
-CART\_ID.
-CART\_ID is the ID that [`epx carts search`](/emporix-cli/commands/carts#epx-carts-search) shows; an unknown one is not found.
+CART_ID.
+CART_ID is the ID that [`epx carts search`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/carts#epx-carts-search) shows; an unknown one is not found.
 
 Emporix takes up to 200 items in one request (epx refuses more), carries out each on
 its own and answers with the result of each: when one failed, epx prints the response,
@@ -536,16 +536,16 @@ Changes data: on a terminal, epx asks before it sends POST. `--yes` sends withou
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-`--allow-external-prices` also requests the cart.cart\_manage\_external\_prices scope.
+`--allow-external-prices` also requests the cart.cart_manage_external_prices scope.
 
-Requires the cart.cart\_manage scope.
+Requires the cart.cart_manage scope.
 
 **Command:** `epx carts items bulk-create CART_ID [flags]`
 
 **Flags**
 
 - `--allow-external-prices`\
-  Allow an item with an external price, product, fee or discount (requests cart.cart\_manage\_external\_prices too).
+  Allow an item with an external price, product, fee or discount (requests cart.cart_manage_external_prices too).
 - `--dry-run`\
   Print the request instead of sending it (excludes `-o`).
 - `--file <PATH>`\
@@ -555,18 +555,18 @@ Requires the cart.cart\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx carts items bulk-update
 
 Update items of a cart.
 
 Updates the items in `--file`, a JSON array of items, each with the id of an item of the
-cart CART\_ID and the whole item, as update takes it without `--partial`. Emporix
+cart CART_ID and the whole item, as update takes it without `--partial`. Emporix
 refuses an entry with only quantity for that item (400 "The Price must be
-defined."). [`epx carts execute`](/emporix-cli/commands/carts#epx-carts-execute) changes some members of several items
+defined."). [`epx carts execute`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/carts#epx-carts-execute) changes some members of several items
 (UpdateCartItemsBatch with options.partial).
-CART\_ID is the ID that [`epx carts search`](/emporix-cli/commands/carts#epx-carts-search) shows; an unknown one is not found.
+CART_ID is the ID that [`epx carts search`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/carts#epx-carts-search) shows; an unknown one is not found.
 
 Emporix takes up to 50 items in one request (epx refuses more), carries out each on
 its own and answers with the result of each: when one failed, epx prints the response,
@@ -578,16 +578,16 @@ Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-`--allow-external-prices` also requests the cart.cart\_manage\_external\_prices scope.
+`--allow-external-prices` also requests the cart.cart_manage_external_prices scope.
 
-Requires the cart.cart\_manage scope.
+Requires the cart.cart_manage scope.
 
 **Command:** `epx carts items bulk-update CART_ID [flags]`
 
 **Flags**
 
 - `--allow-external-prices`\
-  Allow an item with an external price, product, fee or discount (requests cart.cart\_manage\_external\_prices too).
+  Allow an item with an external price, product, fee or discount (requests cart.cart_manage_external_prices too).
 - `--dry-run`\
   Print the request instead of sending it (excludes `-o`).
 - `--file <PATH>`\
@@ -597,15 +597,15 @@ Requires the cart.cart\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx carts items create
 
 Add a product to a cart.
 
-Adds a product to the cart CART\_ID as a new item, from the JSON object of `--file`: its
+Adds a product to the cart CART_ID as a new item, from the JSON object of `--file`: its
 product (its id) or itemYrn, quantity and price (priceId, originalAmount,
-effectiveAmount and currency, as [`epx prices match`](/emporix-cli/commands/prices#epx-prices-match) finds them), and optionally
+effectiveAmount and currency, as [`epx prices match`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/prices#epx-prices-match) finds them), and optionally
 keepAsSeparateLineItem, externalFees, externalDiscounts and mixins.
 `--site` names the cart's site. Emporix answers 201 with the itemId (e.g. 0 for the first
 item) and yrn. A product that the cart holds already, added without
@@ -613,26 +613,26 @@ keepAsSeparateLineItem, raises the quantity of its item (the same itemId), so a 
 sent twice adds twice. A product object
 in the body is stored as sent, in place of the one Emporix would store. The item's
 mixins.productCustomAttributes (leadTime, nonDelivery) feed
-[`epx carts delivery-restrictions`](/emporix-cli/commands/carts#epx-carts-delivery-restrictions).
+[`epx carts delivery-restrictions`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/carts#epx-carts-delivery-restrictions).
 Emporix refuses a product that is not published with 400 Bad Request (exit 1), and an
 item with an external price without `--allow-external-prices` with 403 Forbidden
 (exit 3).
-CART\_ID is the ID that [`epx carts search`](/emporix-cli/commands/carts#epx-carts-search) shows; an unknown one is not found.
+CART_ID is the ID that [`epx carts search`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/carts#epx-carts-search) shows; an unknown one is not found.
 
 Changes data: on a terminal, epx asks before it sends POST. `--yes` sends without
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-`--allow-external-prices` also requests the cart.cart\_manage\_external\_prices scope.
+`--allow-external-prices` also requests the cart.cart_manage_external_prices scope.
 
-Requires the cart.cart\_manage scope.
+Requires the cart.cart_manage scope.
 
 **Command:** `epx carts items create CART_ID [flags]`
 
 **Flags**
 
 - `--allow-external-prices`\
-  Allow an item with an external price, product, fee or discount (requests cart.cart\_manage\_external\_prices too).
+  Allow an item with an external price, product, fee or discount (requests cart.cart_manage_external_prices too).
 - `--dry-run`\
   Print the request instead of sending it (excludes `-o`).
 - `--file <PATH>`\
@@ -644,22 +644,22 @@ Requires the cart.cart\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx carts items delete
 
 Remove an item from a cart.
 
-Removes an item from the cart CART\_ID.
-CART\_ID is the ID that [`epx carts search`](/emporix-cli/commands/carts#epx-carts-search) shows; an unknown one is not found.
-ID is the ID that [`epx carts items list CART_ID`](/emporix-cli/commands/carts#epx-carts-items-list) shows; an unknown one is not found.
+Removes an item from the cart CART_ID.
+CART_ID is the ID that [`epx carts search`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/carts#epx-carts-search) shows; an unknown one is not found.
+ID is the ID that [`epx carts items list CART_ID`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/carts#epx-carts-items-list) shows; an unknown one is not found.
 
 Deletes data, which cannot be undone.
 On a terminal, epx sends DELETE only once you type ID at its prompt.
 `--yes` sends without asking (required without a terminal);
 `--dry-run` prints the request instead of sending it.
 
-Requires the cart.cart\_manage scope.
+Requires the cart.cart_manage scope.
 
 **Command:** `epx carts items delete CART_ID ID [flags]`
 
@@ -672,21 +672,21 @@ Requires the cart.cart\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx carts items delete-all
 
 Remove every item from a cart.
 
-Removes every item from the cart CART\_ID.
-CART\_ID is the ID that [`epx carts search`](/emporix-cli/commands/carts#epx-carts-search) shows; an unknown one is not found.
+Removes every item from the cart CART_ID.
+CART_ID is the ID that [`epx carts search`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/carts#epx-carts-search) shows; an unknown one is not found.
 
 Deletes every item of the cart with one request, which cannot be undone.
-On a terminal, epx sends DELETE only once you type CART\_ID at its prompt.
+On a terminal, epx sends DELETE only once you type CART_ID at its prompt.
 `--yes` sends without asking (required without a terminal);
 `--dry-run` prints the request instead of sending it.
 
-Requires the cart.cart\_manage scope.
+Requires the cart.cart_manage scope.
 
 **Command:** `epx carts items delete-all CART_ID [flags]`
 
@@ -699,23 +699,23 @@ Requires the cart.cart\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx carts items get
 
 Show one item of a cart.
 
 Reads one item of a cart.
-CART\_ID is the ID that [`epx carts search`](/emporix-cli/commands/carts#epx-carts-search) shows; an unknown one is not found.
-ID is the ID that [`epx carts items list CART_ID`](/emporix-cli/commands/carts#epx-carts-items-list) shows; an unknown one is not found.
+CART_ID is the ID that [`epx carts search`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/carts#epx-carts-search) shows; an unknown one is not found.
+ID is the ID that [`epx carts items list CART_ID`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/carts#epx-carts-items-list) shows; an unknown one is not found.
 PRODUCT is the product id, NAME the product's name, PRICE the price that matched the item,
 per unit and as the price states it (net or gross), and GROSS the gross value of the item's
 quantity before discounts, one per tax line. Emporix does not always send an item's gross
 unit price and total (after discounts, with fees) here: only for the items that the cart
 held when it was last calculated (by a read of the cart or a discount, for example), not
-for those added since. The cart always has them: [`epx carts get CART_ID -o json`](/emporix-cli/commands/carts#epx-carts-get).
+for those added since. The cart always has them: [`epx carts get CART_ID -o json`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/carts#epx-carts-get).
 
-Requires the cart.cart\_manage scope.
+Requires the cart.cart_manage scope.
 Opt-in: epx requests a write-capable scope for a read only when given `--allow-write-scope`.
 
 **Command:** `epx carts items get CART_ID ID [flags]`
@@ -723,7 +723,7 @@ Opt-in: epx requests a write-capable scope for a read only when given `--allow-w
 **Flags**
 
 - `--allow-write-scope`\
-  Opt in to requesting cart.cart\_manage, which can also change data (required).
+  Opt in to requesting cart.cart_manage, which can also change data (required).
 - `--columns <names>`\
   Print only these columns of table and csv, in this order: comma-separated names (any case) among ID, PRODUCT, NAME, QUANTITY, PRICE, GROSS.
 - `--language <language>`\
@@ -733,22 +733,22 @@ Opt-in: epx requests a write-capable scope for a read only when given `--allow-w
 - `-o, --output <format>`\
   Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx carts items list
 
 List the items of a cart.
 
 Reads the items of a cart.
-CART\_ID is the ID that [`epx carts search`](/emporix-cli/commands/carts#epx-carts-search) shows; an unknown one is not found.
+CART_ID is the ID that [`epx carts search`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/carts#epx-carts-search) shows; an unknown one is not found.
 PRODUCT is the product id, NAME the product's name, PRICE the price that matched the item,
 per unit and as the price states it (net or gross), and GROSS the gross value of the item's
 quantity before discounts, one per tax line. Emporix does not always send an item's gross
 unit price and total (after discounts, with fees) here: only for the items that the cart
 held when it was last calculated (by a read of the cart or a discount, for example), not
-for those added since. The cart always has them: [`epx carts get CART_ID -o json`](/emporix-cli/commands/carts#epx-carts-get).
+for those added since. The cart always has them: [`epx carts get CART_ID -o json`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/carts#epx-carts-get).
 
-Requires the cart.cart\_manage scope.
+Requires the cart.cart_manage scope.
 Opt-in: epx requests a write-capable scope for a read only when given `--allow-write-scope`.
 
 **Command:** `epx carts items list CART_ID [flags]`
@@ -756,7 +756,7 @@ Opt-in: epx requests a write-capable scope for a read only when given `--allow-w
 **Flags**
 
 - `--allow-write-scope`\
-  Opt in to requesting cart.cart\_manage, which can also change data (required).
+  Opt in to requesting cart.cart_manage, which can also change data (required).
 - `--columns <names>`\
   Print only these columns of table and csv, in this order: comma-separated names (any case) among ID, PRODUCT, NAME, QUANTITY, PRICE, GROSS.
 - `--language <language>`\
@@ -770,31 +770,31 @@ Opt-in: epx requests a write-capable scope for a read only when given `--allow-w
 - `--stream`\
   Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx carts items update
 
 Update an item of a cart.
 
-Replaces an item of the cart CART\_ID with the JSON object of `--file`, whose members are
+Replaces an item of the cart CART_ID with the JSON object of `--file`, whose members are
 those that create takes, or with `--partial` changes only the members it gives.
-CART\_ID is the ID that [`epx carts search`](/emporix-cli/commands/carts#epx-carts-search) shows; an unknown one is not found.
-ID is the ID that [`epx carts items list CART_ID`](/emporix-cli/commands/carts#epx-carts-items-list) shows; an unknown one is not found.
+CART_ID is the ID that [`epx carts search`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/carts#epx-carts-search) shows; an unknown one is not found.
+ID is the ID that [`epx carts items list CART_ID`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/carts#epx-carts-items-list) shows; an unknown one is not found.
 
 Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-`--allow-external-prices` also requests the cart.cart\_manage\_external\_prices scope.
+`--allow-external-prices` also requests the cart.cart_manage_external_prices scope.
 
-Requires the cart.cart\_manage scope.
+Requires the cart.cart_manage scope.
 
 **Command:** `epx carts items update CART_ID ID [flags]`
 
 **Flags**
 
 - `--allow-external-prices`\
-  Allow an item with an external price, product, fee or discount (requests cart.cart\_manage\_external\_prices too).
+  Allow an item with an external price, product, fee or discount (requests cart.cart_manage_external_prices too).
 - `--dry-run`\
   Print the request instead of sending it (excludes `-o`).
 - `--file <PATH>`\
@@ -806,23 +806,23 @@ Requires the cart.cart\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx carts merge
 
 Merge anonymous carts into a customer's cart.
 
-Merges the anonymous carts that `--cart` names into the cart CART\_ID, which must belong
+Merges the anonymous carts that `--cart` names into the cart CART_ID, which must belong
 to a customer. Emporix answers with no body and closes the merged carts rather than
-deleting them: [`epx carts search`](/emporix-cli/commands/carts#epx-carts-search) still lists them as CLOSED, but get and delete no
+deleting them: [`epx carts search`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/carts#epx-carts-search) still lists them as CLOSED, but get and delete no
 longer find them.
-CART\_ID is the ID that [`epx carts search`](/emporix-cli/commands/carts#epx-carts-search) shows; an unknown one is not found.
+CART_ID is the ID that [`epx carts search`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/carts#epx-carts-search) shows; an unknown one is not found.
 
 Changes data: on a terminal, epx asks before it sends POST. `--yes` sends without
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the cart.cart\_manage scope.
+Requires the cart.cart_manage scope.
 
 **Command:** `epx carts merge CART_ID [flags]`
 
@@ -839,21 +839,21 @@ Requires the cart.cart\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx carts refresh
 
 Refresh the prices of a cart's items.
 
-Refreshes the cart CART\_ID: Emporix reads the prices of its items again and assigns
+Refreshes the cart CART_ID: Emporix reads the prices of its items again and assigns
 those that changed. It sends no body.
-CART\_ID is the ID that [`epx carts search`](/emporix-cli/commands/carts#epx-carts-search) shows; an unknown one is not found.
+CART_ID is the ID that [`epx carts search`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/carts#epx-carts-search) shows; an unknown one is not found.
 
 Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without
 asking (required without a terminal); `--dry-run` prints the request
 instead of sending it.
 
-Requires the cart.cart\_manage scope.
+Requires the cart.cart_manage scope.
 
 **Command:** `epx carts refresh CART_ID [flags]`
 
@@ -866,7 +866,7 @@ Requires the cart.cart\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx carts search
 
@@ -882,7 +882,7 @@ STATUS is OPEN or CLOSED (sent by search only), CUSTOMER the customer id
 TOTAL the gross final price (items, shipping and payment fee) in the cart's currency.
 A CLOSED cart, such as one merged into another, is listed by search but not found by get.
 
-Requires the cart.cart\_manage scope.
+Requires the cart.cart_manage scope.
 Opt-in: epx requests a write-capable scope for a read only when given `--allow-write-scope`.
 
 **Command:** `epx carts search [flags]`
@@ -890,7 +890,7 @@ Opt-in: epx requests a write-capable scope for a read only when given `--allow-w
 **Flags**
 
 - `--allow-write-scope`\
-  Opt in to requesting cart.cart\_manage, which can also change data (required).
+  Opt in to requesting cart.cart_manage, which can also change data (required).
 - `--body <FILE>`\
   Send the JSON request body in FILE as given (- reads standard input) instead of the one the other flags make.
 - `--columns <names>`\
@@ -908,34 +908,34 @@ Opt-in: epx requests a write-capable scope for a read only when given `--allow-w
 - `--stream`\
   Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx carts update
 
 Update a cart.
 
-Updates the cart CART\_ID with the JSON object of `--file`: customerId, currency, type,
+Updates the cart CART_ID with the JSON object of `--file`: customerId, currency, type,
 status (OPEN or CLOSED), deliveryWindow, zipCode and countryCode (both or neither: one
 alone is answered 400 Bad Request, exit 1), addresses, mixins and externalDiscounts, as
-[`epx carts get CART_ID -o json`](/emporix-cli/commands/carts#epx-carts-get) shows them. Emporix creates no missing cart, and
-ignores metadata.version in the body: only [`epx carts execute --versioning`](/emporix-cli/commands/carts#epx-carts-execute) checks the
+[`epx carts get CART_ID -o json`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/carts#epx-carts-get) shows them. Emporix creates no missing cart, and
+ignores metadata.version in the body: only [`epx carts execute --versioning`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/carts#epx-carts-execute) checks the
 cart's version.
-CART\_ID is the ID that [`epx carts search`](/emporix-cli/commands/carts#epx-carts-search) shows; an unknown one is not found.
+CART_ID is the ID that [`epx carts search`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/carts#epx-carts-search) shows; an unknown one is not found.
 
 Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-`--allow-external-prices` also requests the cart.cart\_manage\_external\_prices scope.
+`--allow-external-prices` also requests the cart.cart_manage_external_prices scope.
 
-Requires the cart.cart\_manage scope.
+Requires the cart.cart_manage scope.
 
 **Command:** `epx carts update CART_ID [flags]`
 
 **Flags**
 
 - `--allow-external-prices`\
-  Allow external discounts (externalDiscounts) (requests cart.cart\_manage\_external\_prices too).
+  Allow external discounts (externalDiscounts) (requests cart.cart_manage_external_prices too).
 - `--dry-run`\
   Print the request instead of sending it (excludes `-o`).
 - `--file <PATH>`\
@@ -945,7 +945,7 @@ Requires the cart.cart\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx carts validate
 
@@ -954,9 +954,9 @@ Check the prices of a cart's items.
 Reads whether a cart's items pass Emporix's checks, which find prices that are no longer
 valid and prices duplicated for a product; it changes nothing. VALID is true or false and
 ERRORS the error codes by item id (`-o json` adds each error's message and field).
-CART\_ID is the ID that [`epx carts search`](/emporix-cli/commands/carts#epx-carts-search) shows; an unknown one is not found.
+CART_ID is the ID that [`epx carts search`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/carts#epx-carts-search) shows; an unknown one is not found.
 
-Requires the cart.cart\_manage scope.
+Requires the cart.cart_manage scope.
 Opt-in: epx requests a write-capable scope for a read only when given `--allow-write-scope`.
 
 **Command:** `epx carts validate CART_ID [flags]`
@@ -964,7 +964,7 @@ Opt-in: epx requests a write-capable scope for a read only when given `--allow-w
 **Flags**
 
 - `--allow-write-scope`\
-  Opt in to requesting cart.cart\_manage, which can also change data (required).
+  Opt in to requesting cart.cart_manage, which can also change data (required).
 - `--columns <names>`\
   Print only these columns of table and csv, in this order: comma-separated names (any case) among VALID, ERRORS.
 - `--no-headers`\
@@ -972,4 +972,4 @@ Opt-in: epx requests a write-capable scope for a read only when given `--allow-w
 - `-o, --output <format>`\
   Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).

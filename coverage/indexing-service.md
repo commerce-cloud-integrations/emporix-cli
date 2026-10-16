@@ -10,16 +10,16 @@ Operations of the Emporix API reference file [`configuration/indexing-service/ap
 
 | Operation | Status | Details |
 | --- | --- | --- |
-| `POST /indexing/{tenant}/configurations` | Built | [`epx indexing providers create`](/emporix-cli/commands/indexing#epx-indexing-providers-create) |
-| `GET /indexing/{tenant}/configurations` | Built | [`epx indexing providers list`](/emporix-cli/commands/indexing#epx-indexing-providers-list) |
-| `GET /indexing/{tenant}/configurations/{provider}` | Built | [`epx indexing providers get`](/emporix-cli/commands/indexing#epx-indexing-providers-get) |
-| `PUT /indexing/{tenant}/configurations/{provider}` | Built | [`epx indexing providers update`](/emporix-cli/commands/indexing#epx-indexing-providers-update) |
-| `DELETE /indexing/{tenant}/configurations/{provider}` | Built | [`epx indexing providers delete`](/emporix-cli/commands/indexing#epx-indexing-providers-delete) |
-| `GET /indexing/{tenant}/public/configurations` | Built | [`epx indexing providers public list`](/emporix-cli/commands/indexing#epx-indexing-providers-public-list) |
-| `GET /indexing/{tenant}/public/configurations/{provider}` | Built | [`epx indexing providers public get`](/emporix-cli/commands/indexing#epx-indexing-providers-public-get) |
-| `POST /indexing/{tenant}/reindex` | Built | [`epx indexing reindex`](/emporix-cli/commands/indexing#epx-indexing-reindex) |
-| `POST /indexing/{tenant}/reindex-jobs` | Built | [`epx indexing reindex-jobs create`](/emporix-cli/commands/indexing#epx-indexing-reindex-jobs-create) |
-| `GET /indexing/{tenant}/reindex-jobs` | Built | [`epx indexing reindex-jobs list`](/emporix-cli/commands/indexing#epx-indexing-reindex-jobs-list) |
-| `GET /indexing/{tenant}/reindex-jobs/{reindexJobId}` | Built | [`epx indexing reindex-jobs get`](/emporix-cli/commands/indexing#epx-indexing-reindex-jobs-get) |
+| `POST /indexing/{tenant}/configurations` | Built | [`epx indexing providers create`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/indexing#epx-indexing-providers-create) |
+| `GET /indexing/{tenant}/configurations` | Built | [`epx indexing providers list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/indexing#epx-indexing-providers-list) |
+| `GET /indexing/{tenant}/configurations/{provider}` | Built | [`epx indexing providers get`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/indexing#epx-indexing-providers-get) |
+| `PUT /indexing/{tenant}/configurations/{provider}` | Built | [`epx indexing providers update`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/indexing#epx-indexing-providers-update) |
+| `DELETE /indexing/{tenant}/configurations/{provider}` | Built | [`epx indexing providers delete`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/indexing#epx-indexing-providers-delete) |
+| `GET /indexing/{tenant}/public/configurations` | Built | [`epx indexing providers public list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/indexing#epx-indexing-providers-public-list) |
+| `GET /indexing/{tenant}/public/configurations/{provider}` | Built | [`epx indexing providers public get`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/indexing#epx-indexing-providers-public-get) |
+| `POST /indexing/{tenant}/reindex` | Built | [`epx indexing reindex`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/indexing#epx-indexing-reindex) |
+| `POST /indexing/{tenant}/reindex-jobs` | Built | [`epx indexing reindex-jobs create`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/indexing#epx-indexing-reindex-jobs-create) |
+| `GET /indexing/{tenant}/reindex-jobs` | Built | [`epx indexing reindex-jobs list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/indexing#epx-indexing-reindex-jobs-list) |
+| `GET /indexing/{tenant}/reindex-jobs/{reindexJobId}` | Built | [`epx indexing reindex-jobs get`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/indexing#epx-indexing-reindex-jobs-get) |
 
-All services: [Emporix API coverage](/emporix-cli/coverage).
+All services: [Emporix API coverage](https://commerce-cloud-integrations.github.io/emporix-cli/coverage).

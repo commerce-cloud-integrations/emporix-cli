@@ -9,17 +9,17 @@ a customer can redeem now (expired points are left out), ADDED and REDEEMED the 
 and redeemed so far, expired ones included (a failed redemption is refunded as an
 addition), so ACTIVE may be less than ADDED minus REDEEMED. Each addition and redemption is
 only in `-o json`.
-[`epx reward-points redeem-options`](/emporix-cli/commands/reward-points#epx-reward-points-redeem-options) lists the ways to redeem points. The writes create and
+[`epx reward-points redeem-options`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/reward-points#epx-reward-points-redeem-options) lists the ways to redeem points. The writes create and
 delete a customer's reward points entry (create, delete), add and redeem points (add,
 redeem), and create, replace and delete the ways to redeem them (redeem-option-create,
 \-update, -delete).
 
 Its reads require different OAuth scopes; the help of each names them.
-Its writes require the rewardspoints.rewardpoints\_manage scope.
+Its writes require the rewardspoints.rewardpoints_manage scope.
 
 **Command:** `epx reward-points [flags]`, `epx reward-points [command]`
 
-**Flags:** only the [global flags](/emporix-cli/commands#global-flags).
+**Flags:** only the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Subcommands**
 
@@ -59,13 +59,13 @@ unknown site code, and the points then stay valid 36 months.
 `--valid-until`, which gives these points their own end of validity, takes a time such as
 2027-12-31T23:59:59Z: unlike the redeem options, Emporix reads a time that ends in Z.
 A customer without a reward points entry is not found (exit 4).
-CUSTOMER is the customer id that [`epx reward-points list`](/emporix-cli/commands/reward-points#epx-reward-points-list) shows.
+CUSTOMER is the customer id that [`epx reward-points list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/reward-points#epx-reward-points-list) shows.
 
 Changes data: on a terminal, epx asks before it sends POST. `--yes` sends without
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the rewardspoints.rewardpoints\_manage scope.
+Requires the rewardspoints.rewardpoints_manage scope.
 
 **Command:** `epx reward-points add CUSTOMER [flags]`
 
@@ -90,7 +90,7 @@ Requires the rewardspoints.rewardpoints\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Examples**
 
@@ -103,11 +103,11 @@ epx reward-points add C1001 --site AcmeStore_NL --points 50 --description "Goodw
 Show the reward points balance of a customer.
 
 Reads the reward points balance of a customer, personal data: POINTS, one number, the
-points that the customer can redeem now: ACTIVE of [`epx reward-points get`](/emporix-cli/commands/reward-points#epx-reward-points-get), which also shows
+points that the customer can redeem now: ACTIVE of [`epx reward-points get`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/reward-points#epx-reward-points-get), which also shows
 the points added and redeemed so far.
-CUSTOMER is the customer id that [`epx reward-points list`](/emporix-cli/commands/reward-points#epx-reward-points-list) shows; an unknown one is not found (exit 4).
+CUSTOMER is the customer id that [`epx reward-points list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/reward-points#epx-reward-points-list) shows; an unknown one is not found (exit 4).
 
-Requires the rewardspoints.rewardpoints\_view scope.
+Requires the rewardspoints.rewardpoints_view scope.
 
 **Command:** `epx reward-points balance CUSTOMER [flags]`
 
@@ -120,7 +120,7 @@ Requires the rewardspoints.rewardpoints\_view scope.
 - `-o, --output <format>`\
   Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx reward-points create
 
@@ -130,7 +130,7 @@ Creates the reward points entry of a customer, with the points it starts with wh
 `--points` gives them. Emporix answers without a body, so epx prints nothing. A customer
 with an entry is a conflict (exit 5). Emporix does not check the customer: an unknown one
 gets an entry too.
-[`epx reward-points add`](/emporix-cli/commands/reward-points#epx-reward-points-add) adds points to an entry.
+[`epx reward-points add`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/reward-points#epx-reward-points-add) adds points to an entry.
 The reward points settings of the site `--site` apply, the default site of the profile in
 effect without it, and site main without either: how long the points stay valid. Emporix
 keeps them in the site's couponSettings mixin; it accepts a site without them, also an
@@ -139,13 +139,13 @@ The JSON of `--file` must give customerId, CUSTOMER again (Emporix answers 400 B
 another and 500 Internal Server Error without one, exit 1, and creates no entry), and the
 points it starts with as startPoints, e.g.
 `{"customerId": "C1001", "startPoints": {"points": 20}}`.
-CUSTOMER is the customer id that [`epx reward-points list`](/emporix-cli/commands/reward-points#epx-reward-points-list) shows.
+CUSTOMER is the customer id that [`epx reward-points list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/reward-points#epx-reward-points-list) shows.
 
 Changes data: on a terminal, epx asks before it sends POST. `--yes` sends without
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the rewardspoints.rewardpoints\_manage scope.
+Requires the rewardspoints.rewardpoints_manage scope.
 
 **Command:** `epx reward-points create CUSTOMER [flags]`
 
@@ -166,7 +166,7 @@ Requires the rewardspoints.rewardpoints\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Examples**
 
@@ -181,14 +181,14 @@ Delete the reward points of a customer.
 Deletes the reward points entry of a customer, with the points added and redeemed so far.
 Emporix answers 200 OK, also for an unknown customer or one without an entry: neither is an
 error.
-CUSTOMER is the customer id that [`epx reward-points list`](/emporix-cli/commands/reward-points#epx-reward-points-list) shows.
+CUSTOMER is the customer id that [`epx reward-points list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/reward-points#epx-reward-points-list) shows.
 
 Deletes data, which cannot be undone.
 On a terminal, epx sends DELETE only once you type CUSTOMER at its prompt.
 `--yes` sends without asking (required without a terminal);
 `--dry-run` prints the request instead of sending it.
 
-Requires the rewardspoints.rewardpoints\_manage scope.
+Requires the rewardspoints.rewardpoints_manage scope.
 
 **Command:** `epx reward-points delete CUSTOMER [flags]`
 
@@ -201,7 +201,7 @@ Requires the rewardspoints.rewardpoints\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx reward-points get
 
@@ -212,9 +212,9 @@ a customer can redeem now (expired points are left out), ADDED and REDEEMED the 
 and redeemed so far, expired ones included (a failed redemption is refunded as an
 addition), so ACTIVE may be less than ADDED minus REDEEMED. Each addition and redemption is
 only in `-o json`.
-CUSTOMER is the customer id that [`epx reward-points list`](/emporix-cli/commands/reward-points#epx-reward-points-list) shows; one without reward points is not found.
+CUSTOMER is the customer id that [`epx reward-points list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/reward-points#epx-reward-points-list) shows; one without reward points is not found.
 
-Requires the rewardspoints.rewardpoints\_view scope.
+Requires the rewardspoints.rewardpoints_view scope.
 
 **Command:** `epx reward-points get CUSTOMER [flags]`
 
@@ -227,7 +227,7 @@ Requires the rewardspoints.rewardpoints\_view scope.
 - `-o, --output <format>`\
   Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx reward-points list
 
@@ -239,7 +239,7 @@ and redeemed so far, expired ones included (a failed redemption is refunded as a
 addition), so ACTIVE may be less than ADDED minus REDEEMED. Each addition and redemption is
 only in `-o json`.
 
-Requires the rewardspoints.rewardpoints\_view scope.
+Requires the rewardspoints.rewardpoints_view scope.
 
 **Command:** `epx reward-points list [flags]`
 
@@ -256,7 +256,7 @@ Requires the rewardspoints.rewardpoints\_view scope.
 - `--stream`\
   Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx reward-points redeem
 
@@ -264,16 +264,16 @@ Redeem reward points of a customer.
 
 Redeems `--points` reward points of a customer without making a coupon of them, the oldest
 points that are still valid first. Emporix answers without a body, so epx prints nothing.
-More points than are active (ACTIVE of [`epx reward-points get`](/emporix-cli/commands/reward-points#epx-reward-points-get)) are a conflict (exit 5).
+More points than are active (ACTIVE of [`epx reward-points get`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/reward-points#epx-reward-points-get)) are a conflict (exit 5).
 Sent twice, it redeems them twice.
 A customer without a reward points entry is not found (exit 4).
-CUSTOMER is the customer id that [`epx reward-points list`](/emporix-cli/commands/reward-points#epx-reward-points-list) shows.
+CUSTOMER is the customer id that [`epx reward-points list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/reward-points#epx-reward-points-list) shows.
 
 Changes data: on a terminal, epx asks before it sends POST. `--yes` sends without
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the rewardspoints.rewardpoints\_manage scope.
+Requires the rewardspoints.rewardpoints_manage scope.
 
 **Command:** `epx reward-points redeem CUSTOMER [flags]`
 
@@ -292,7 +292,7 @@ Requires the rewardspoints.rewardpoints\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Examples**
 
@@ -306,7 +306,7 @@ Create a way to redeem reward points.
 
 Creates a way to redeem reward points from the JSON in `--file`: its type (coupon), name,
 the points it costs and, for a coupon, the coupon that it makes of them, as
-[`epx coupons create`](/emporix-cli/commands/coupons#epx-coupons-create) takes it. It prints the option that Emporix answers with; sending the
+[`epx coupons create`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/coupons#epx-coupons-create) takes it. It prints the option that Emporix answers with; sending the
 same JSON twice creates two. The coupon's restrictions.validFrom and validUntil take epoch
 milliseconds or a time with a numeric offset, e.g. 2027-01-01T00:00:00.000+00:00: Emporix
 refuses a time that ends in Z (400 Bad Request).
@@ -315,7 +315,7 @@ Changes data: on a terminal, epx asks before it sends POST. `--yes` sends withou
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the rewardspoints.rewardpoints\_manage scope.
+Requires the rewardspoints.rewardpoints_manage scope.
 
 **Command:** `epx reward-points redeem-option-create [flags]`
 
@@ -330,13 +330,13 @@ Requires the rewardspoints.rewardpoints\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx reward-points redeem-option-delete
 
 Delete a way to redeem reward points.
 
-Deletes the redeem option ID, as [`epx reward-points redeem-options`](/emporix-cli/commands/reward-points#epx-reward-points-redeem-options) shows it; it sends no body.
+Deletes the redeem option ID, as [`epx reward-points redeem-options`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/reward-points#epx-reward-points-redeem-options) shows it; it sends no body.
 Emporix answers an unknown ID as one that it deleted (204 No Content).
 
 Deletes data, which cannot be undone.
@@ -344,7 +344,7 @@ On a terminal, epx sends DELETE only once you type ID at its prompt.
 `--yes` sends without asking (required without a terminal);
 `--dry-run` prints the request instead of sending it.
 
-Requires the rewardspoints.rewardpoints\_manage scope.
+Requires the rewardspoints.rewardpoints_manage scope.
 
 **Command:** `epx reward-points redeem-option-delete ID [flags]`
 
@@ -357,13 +357,13 @@ Requires the rewardspoints.rewardpoints\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx reward-points redeem-option-update
 
 Replace a way to redeem reward points.
 
-Replaces the redeem option ID, as [`epx reward-points redeem-options`](/emporix-cli/commands/reward-points#epx-reward-points-redeem-options) shows it, with the
+Replaces the redeem option ID, as [`epx reward-points redeem-options`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/reward-points#epx-reward-points-redeem-options) shows it, with the
 JSON in `--file`, as redeem-option-create takes it.
 Send its metadata.version as read to change it only if nobody changed it since:
 Emporix answers 409 Conflict (exit 5) otherwise.
@@ -372,7 +372,7 @@ Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the rewardspoints.rewardpoints\_manage scope.
+Requires the rewardspoints.rewardpoints_manage scope.
 
 **Command:** `epx reward-points redeem-option-update ID [flags]`
 
@@ -387,7 +387,7 @@ Requires the rewardspoints.rewardpoints\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx reward-points redeem-options
 
@@ -412,4 +412,4 @@ No OAuth scope is needed.
 - `--stream`\
   Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).

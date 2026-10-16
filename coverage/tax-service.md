@@ -10,11 +10,11 @@ Operations of the Emporix API reference file [`prices-and-taxes/tax-service/api-
 
 | Operation | Status | Details |
 | --- | --- | --- |
-| `POST /tax/{tenant}/taxes` | Built | [`epx taxes create`](/emporix-cli/commands/taxes#epx-taxes-create) |
-| `GET /tax/{tenant}/taxes` | Built | [`epx taxes list`](/emporix-cli/commands/taxes#epx-taxes-list) |
-| `GET /tax/{tenant}/taxes/{locationCode}` | Built | [`epx taxes get`](/emporix-cli/commands/taxes#epx-taxes-get) |
-| `PUT /tax/{tenant}/taxes/{locationCode}` | Built | [`epx taxes update`](/emporix-cli/commands/taxes#epx-taxes-update) |
-| `DELETE /tax/{tenant}/taxes/{locationCode}` | Built | [`epx taxes delete`](/emporix-cli/commands/taxes#epx-taxes-delete) |
-| `PUT /tax/{tenant}/taxes/calculation-commands` | Built | [`epx taxes calculate`](/emporix-cli/commands/taxes#epx-taxes-calculate) |
+| `POST /tax/{tenant}/taxes` | Built | [`epx taxes create`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/taxes#epx-taxes-create) |
+| `GET /tax/{tenant}/taxes` | Built | [`epx taxes list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/taxes#epx-taxes-list) |
+| `GET /tax/{tenant}/taxes/{locationCode}` | Built | [`epx taxes get`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/taxes#epx-taxes-get) |
+| `PUT /tax/{tenant}/taxes/{locationCode}` | Built | [`epx taxes update`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/taxes#epx-taxes-update) |
+| `DELETE /tax/{tenant}/taxes/{locationCode}` | Built | [`epx taxes delete`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/taxes#epx-taxes-delete) |
+| `PUT /tax/{tenant}/taxes/calculation-commands` | Built | [`epx taxes calculate`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/taxes#epx-taxes-calculate) |
 
-All services: [Emporix API coverage](/emporix-cli/coverage).
+All services: [Emporix API coverage](https://commerce-cloud-integrations.github.io/emporix-cli/coverage).

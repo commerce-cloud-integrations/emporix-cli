@@ -15,11 +15,11 @@ tenant, read a closed range in the past, e.g. `--query`
 `--limit`; otherwise a change can come or go between pages, so the read fails or misses
 it. One document's history: `--query` `'entity:order entityId:ID'`.
 
-Requires the changelog.changelog\_read scope.
+Requires the changelog.changelog_read scope.
 
 **Command:** `epx changelog [flags]`, `epx changelog [command]`
 
-**Flags:** only the [global flags](/emporix-cli/commands#global-flags).
+**Flags:** only the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Subcommands**
 
@@ -41,7 +41,7 @@ tenant, read a closed range in the past, e.g. `--query`
 `--limit`; otherwise a change can come or go between pages, so the read fails or misses
 it. One document's history: `--query` `'entity:order entityId:ID'`.
 
-Requires the changelog.changelog\_read scope.
+Requires the changelog.changelog_read scope.
 
 **Command:** `epx changelog list [flags]`
 
@@ -60,4 +60,4 @@ Requires the changelog.changelog\_read scope.
 - `--stream`\
   Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).

@@ -10,14 +10,14 @@ Linux, ~/Library/Application Support on macOS, %AppData% on Windows), which only
 the client secret of each is in the OS keychain (the macOS Keychain, the Windows Credential
 Manager or a Secret Service on Linux), never in that file.
 
-A command uses the profile that `--profile` names, else the one EPX\_PROFILE names, else the
-default ([`epx profile use`](/emporix-cli/commands/profile#epx-profile-use)), but only where no EMPORIX\_ variable is set: those give the whole
+A command uses the profile that `--profile` names, else the one EPX_PROFILE names, else the
+default ([`epx profile use`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/profile#epx-profile-use)), but only where no EMPORIX_ variable is set: those give the whole
 API key, never mixed with a profile's. `--tenant` overrides the profile's tenant. These commands
 change only the configuration file and the keychain: they send nothing to Emporix.
 
 **Command:** `epx profile [flags]`, `epx profile [command]`
 
-**Flags:** only the [global flags](/emporix-cli/commands#global-flags).
+**Flags:** only the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Subcommands**
 
@@ -39,7 +39,7 @@ Add a profile, or replace one, with its client secret in the OS keychain.
 Adds the profile NAME, or replaces the profile of that name, and stores its client secret in
 the OS keychain. On a terminal, epx asks for the secret without showing it; otherwise it reads
 the first line of standard input. It never takes the secret from a flag. Where no profile is
-the default, as for the first one, it becomes the default. Nothing is sent to Emporix: [`epx auth status`](/emporix-cli/commands/auth#epx-auth-status) with `--profile` NAME checks the API key.
+the default, as for the first one, it becomes the default. Nothing is sent to Emporix: [`epx auth status`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/auth#epx-auth-status) with `--profile` NAME checks the API key.
 
 **Command:** `epx profile add NAME [flags]`
 
@@ -56,7 +56,7 @@ the default, as for the first one, it becomes the default. Nothing is sent to Em
 - `--tenant <string>`\
   Emporix tenant of the API key (required).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Examples**
 
@@ -82,7 +82,7 @@ Lists the profiles and which one is the default. Client secrets are never shown.
 - `-o, --output <format>`\
   Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx profile remove
 
@@ -100,7 +100,7 @@ all the same, and the error names the keychain entry (service epx, account NAME)
 - `--yes`\
   Remove without asking (required without a terminal).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx profile show
 
@@ -120,14 +120,14 @@ The secret itself is never shown.
 - `-o, --output <format>`\
   Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx profile use
 
 Make a profile the default.
 
-Makes the profile NAME the default: the one a command uses without `--profile` and EPX\_PROFILE.
+Makes the profile NAME the default: the one a command uses without `--profile` and EPX_PROFILE.
 
 **Command:** `epx profile use NAME [flags]`
 
-**Flags:** only the [global flags](/emporix-cli/commands#global-flags).
+**Flags:** only the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).

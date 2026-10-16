@@ -10,17 +10,17 @@ Operations of the Emporix API reference file [`quotes/quote/api-reference/api.ya
 
 | Operation | Status | Details |
 | --- | --- | --- |
-| `GET /quote/{tenant}/quotes` | Built | [`epx quotes list`](/emporix-cli/commands/quotes#epx-quotes-list) |
-| `POST /quote/{tenant}/quotes` | Built | [`epx quotes create`](/emporix-cli/commands/quotes#epx-quotes-create) |
-| `POST /quote/{tenant}/quotes/{quoteId}/pdf` | Built | [`epx quotes pdf`](/emporix-cli/commands/quotes#epx-quotes-pdf) |
-| `GET /quote/{tenant}/quotes/{quoteId}/history` | Built | [`epx quotes history`](/emporix-cli/commands/quotes#epx-quotes-history) |
-| `GET /quote/{tenant}/quotes/{quoteId}` | Built | [`epx quotes get`](/emporix-cli/commands/quotes#epx-quotes-get) |
-| `PATCH /quote/{tenant}/quotes/{quoteId}` | Built | [`epx quotes patch`](/emporix-cli/commands/quotes#epx-quotes-patch) |
-| `DELETE /quote/{tenant}/quotes/{quoteId}` | Built | [`epx quotes delete`](/emporix-cli/commands/quotes#epx-quotes-delete) |
-| `POST /quote/{tenant}/quote-reasons` | Built | [`epx quotes reasons create`](/emporix-cli/commands/quotes#epx-quotes-reasons-create) |
-| `GET /quote/{tenant}/quote-reasons` | Built | [`epx quotes reasons list`](/emporix-cli/commands/quotes#epx-quotes-reasons-list) |
-| `GET /quote/{tenant}/quote-reasons/{quoteReasonId}` | Built | [`epx quotes reasons get`](/emporix-cli/commands/quotes#epx-quotes-reasons-get) |
-| `PUT /quote/{tenant}/quote-reasons/{quoteReasonId}` | Built | [`epx quotes reasons update`](/emporix-cli/commands/quotes#epx-quotes-reasons-update) |
-| `DELETE /quote/{tenant}/quote-reasons/{quoteReasonId}` | Built | [`epx quotes reasons delete`](/emporix-cli/commands/quotes#epx-quotes-reasons-delete) |
+| `GET /quote/{tenant}/quotes` | Built | [`epx quotes list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/quotes#epx-quotes-list) |
+| `POST /quote/{tenant}/quotes` | Built | [`epx quotes create`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/quotes#epx-quotes-create) |
+| `POST /quote/{tenant}/quotes/{quoteId}/pdf` | Built | [`epx quotes pdf`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/quotes#epx-quotes-pdf) |
+| `GET /quote/{tenant}/quotes/{quoteId}/history` | Built | [`epx quotes history`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/quotes#epx-quotes-history) |
+| `GET /quote/{tenant}/quotes/{quoteId}` | Built | [`epx quotes get`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/quotes#epx-quotes-get) |
+| `PATCH /quote/{tenant}/quotes/{quoteId}` | Built | [`epx quotes patch`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/quotes#epx-quotes-patch) |
+| `DELETE /quote/{tenant}/quotes/{quoteId}` | Built | [`epx quotes delete`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/quotes#epx-quotes-delete) |
+| `POST /quote/{tenant}/quote-reasons` | Built | [`epx quotes reasons create`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/quotes#epx-quotes-reasons-create) |
+| `GET /quote/{tenant}/quote-reasons` | Built | [`epx quotes reasons list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/quotes#epx-quotes-reasons-list) |
+| `GET /quote/{tenant}/quote-reasons/{quoteReasonId}` | Built | [`epx quotes reasons get`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/quotes#epx-quotes-reasons-get) |
+| `PUT /quote/{tenant}/quote-reasons/{quoteReasonId}` | Built | [`epx quotes reasons update`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/quotes#epx-quotes-reasons-update) |
+| `DELETE /quote/{tenant}/quote-reasons/{quoteReasonId}` | Built | [`epx quotes reasons delete`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/quotes#epx-quotes-reasons-delete) |
 
-All services: [Emporix API coverage](/emporix-cli/coverage).
+All services: [Emporix API coverage](https://commerce-cloud-integrations.github.io/emporix-cli/coverage).

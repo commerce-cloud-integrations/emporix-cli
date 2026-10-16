@@ -7,12 +7,12 @@
 Reads, creates, activates and deletes the schemas that number orders, invoices, quotes,
 customers and similar records, and issues IDs from them.
 
-Its reads require the sequentialid.schema\_view scope.
+Its reads require the sequentialid.schema_view scope.
 Its writes require different OAuth scopes; the help of each names them.
 
 **Command:** `epx sequential-ids [flags]`, `epx sequential-ids [command]`
 
-**Flags:** only the [global flags](/emporix-cli/commands#global-flags).
+**Flags:** only the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Subcommands**
 
@@ -38,13 +38,13 @@ Its writes require different OAuth scopes; the help of each names them.
 Activate a sequential ID schema.
 
 Makes the sequence schema ID the active one, which numbers the records of its type.
-ID is the ID that [`epx sequential-ids list`](/emporix-cli/commands/sequential-ids#epx-sequential-ids-list) shows.
+ID is the ID that [`epx sequential-ids list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/sequential-ids#epx-sequential-ids-list) shows.
 
 Changes data: on a terminal, epx asks before it sends POST. `--yes` sends without
 asking (required without a terminal); `--dry-run` prints the request
 instead of sending it.
 
-Requires the sequentialid.schema\_manage scope.
+Requires the sequentialid.schema_manage scope.
 
 **Command:** `epx sequential-ids activate ID [flags]`
 
@@ -57,7 +57,7 @@ Requires the sequentialid.schema\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx sequential-ids create
 
@@ -66,9 +66,9 @@ Create a sequential ID schema.
 Creates the sequence schema in `--file`, a JSON object with its name, schemaType (such as
 orderNoSequence or invoiceNoSequence; letters and digits only), startValue, maxValue and
 numberOfDigits, and optionally preText and postText, the text around the number, and
-placeholders: each placeholder in that text, named with \_\_ at both ends such as \_\_year\_\_,
+placeholders: each placeholder in that text, named with __ at both ends such as __year__,
 with required and default, or sitePath, where in the data of a site its value is.
-[`epx sequential-ids activate ID`](/emporix-cli/commands/sequential-ids#epx-sequential-ids-activate) makes the schema the one that numbers its type.
+[`epx sequential-ids activate ID`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/sequential-ids#epx-sequential-ids-activate) makes the schema the one that numbers its type.
 
 Changes data: on a terminal, epx asks before it sends POST. `--yes` sends without
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
@@ -76,7 +76,7 @@ instead of sending it.
 
 Emporix answers with the new schema's ID as bare text, which epx prints as a JSON string.
 
-Requires the sequentialid.schema\_manage scope.
+Requires the sequentialid.schema_manage scope.
 
 **Command:** `epx sequential-ids create [flags]`
 
@@ -91,7 +91,7 @@ Requires the sequentialid.schema\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Examples**
 
@@ -103,14 +103,14 @@ epx sequential-ids create --file order-numbers.json --dry-run
 
 Delete a sequential ID schema.
 
-Deletes the sequence schema ID. ID is the ID that [`epx sequential-ids list`](/emporix-cli/commands/sequential-ids#epx-sequential-ids-list) shows.
+Deletes the sequence schema ID. ID is the ID that [`epx sequential-ids list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/sequential-ids#epx-sequential-ids-list) shows.
 
 Deletes data, which cannot be undone.
 On a terminal, epx sends DELETE only once you type ID at its prompt.
 `--yes` sends without asking (required without a terminal);
 `--dry-run` prints the request instead of sending it.
 
-Requires the sequentialid.schema\_manage scope.
+Requires the sequentialid.schema_manage scope.
 
 **Command:** `epx sequential-ids delete ID [flags]`
 
@@ -123,21 +123,21 @@ Requires the sequentialid.schema\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx sequential-ids for-type
 
 List the sequential ID schemas of a type.
 
 Reads the schemas of one TYPE, such as orderNoSequence, invoiceNoSequence or
-customerNoSequence ([`epx sequential-ids list`](/emporix-cli/commands/sequential-ids#epx-sequential-ids-list) shows the tenant's types); an unknown type
+customerNoSequence ([`epx sequential-ids list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/sequential-ids#epx-sequential-ids-list) shows the tenant's types); an unknown type
 lists nothing.
 TYPE is what a schema numbers, PREFIX and SUFFIX the text around the number
-(placeholders such as \_\_year\_\_ are filled in when an ID is issued), DIGITS the number's
+(placeholders such as __year__ are filled in when an ID is issued), DIGITS the number's
 length, COUNTER the schema's current counter (it starts at the schema's start value) and
 MAX the highest number it can reach.
 
-Requires the sequentialid.schema\_view scope.
+Requires the sequentialid.schema_view scope.
 
 **Command:** `epx sequential-ids for-type TYPE [flags]`
 
@@ -154,7 +154,7 @@ Requires the sequentialid.schema\_view scope.
 - `--stream`\
   Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx sequential-ids get
 
@@ -162,14 +162,14 @@ Show one sequential ID schema.
 
 Reads the schemas that number orders, invoices, quotes, customers and similar records:
 TYPE is what a schema numbers, PREFIX and SUFFIX the text around the number
-(placeholders such as \_\_year\_\_ are filled in when an ID is issued), DIGITS the number's
+(placeholders such as __year__ are filled in when an ID is issued), DIGITS the number's
 length, COUNTER the schema's current counter (it starts at the schema's start value) and
 MAX the highest number it can reach.
 The service returns the schemas whole, so they are read with one request. An unknown
 ID is not found (exit 4); Emporix answers an ID that is not 24 hexadecimal digits with an
 internal error (500 Internal Server Error, exit 1).
 
-Requires the sequentialid.schema\_view scope.
+Requires the sequentialid.schema_view scope.
 
 **Command:** `epx sequential-ids get ID [flags]`
 
@@ -182,7 +182,7 @@ Requires the sequentialid.schema\_view scope.
 - `-o, --output <format>`\
   Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx sequential-ids list
 
@@ -190,14 +190,14 @@ List sequential ID schemas.
 
 Reads the schemas that number orders, invoices, quotes, customers and similar records:
 TYPE is what a schema numbers, PREFIX and SUFFIX the text around the number
-(placeholders such as \_\_year\_\_ are filled in when an ID is issued), DIGITS the number's
+(placeholders such as __year__ are filled in when an ID is issued), DIGITS the number's
 length, COUNTER the schema's current counter (it starts at the schema's start value) and
 MAX the highest number it can reach.
 The service returns the schemas whole, so they are read with one request. An unknown
 ID is not found (exit 4); Emporix answers an ID that is not 24 hexadecimal digits with an
 internal error (500 Internal Server Error, exit 1).
 
-Requires the sequentialid.schema\_view scope.
+Requires the sequentialid.schema_view scope.
 
 **Command:** `epx sequential-ids list [flags]`
 
@@ -214,13 +214,13 @@ Requires the sequentialid.schema\_view scope.
 - `--stream`\
   Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx sequential-ids next-id
 
 Issue the next ID of a sequential ID schema type.
 
-Issues the next ID of the active schema of TYPE, such as orderNoSequence ([`epx sequential-ids list`](/emporix-cli/commands/sequential-ids#epx-sequential-ids-list) shows the types), and prints it. `--sequence-key` numbers in a sequence
+Issues the next ID of the active schema of TYPE, such as orderNoSequence ([`epx sequential-ids list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/sequential-ids#epx-sequential-ids-list) shows the types), and prints it. `--sequence-key` numbers in a sequence
 of its own, such as one per month, instead of the default one; `--file` gives the body
 whole, with the values of placeholders, e.g. `{"sequenceKey": "2026-10", "placeholders": {"__year__": "2026"}}`. With `--site`, Emporix fills in the placeholders
 that the body leaves out from that site's data.
@@ -231,7 +231,7 @@ Changes data: on a terminal, epx asks before it sends POST. `--yes` sends withou
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the sequentialid.schema\_view scope.
+Requires the sequentialid.schema_view scope.
 
 **Command:** `epx sequential-ids next-id TYPE [flags]`
 
@@ -250,7 +250,7 @@ Requires the sequentialid.schema\_view scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Examples**
 
@@ -274,7 +274,7 @@ Changes data: on a terminal, epx asks before it sends POST. `--yes` sends withou
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the sequentialid.schema\_view scope.
+Requires the sequentialid.schema_view scope.
 
 **Command:** `epx sequential-ids next-ids [flags]`
 
@@ -291,7 +291,7 @@ Requires the sequentialid.schema\_view scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Examples**
 

@@ -6,7 +6,7 @@
 
 **Command:** `epx auth [flags]`, `epx auth [command]`
 
-**Flags:** only the [global flags](/emporix-cli/commands#global-flags).
+**Flags:** only the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Subcommands**
 
@@ -34,7 +34,7 @@ a missing scope fails with exit code 3. The token itself is never printed.
 - `--scope <strings>`\
   Scope the credential must grant (repeatable).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Examples**
 

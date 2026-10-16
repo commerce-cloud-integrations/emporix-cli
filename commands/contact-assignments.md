@@ -8,12 +8,12 @@ Reads and changes contact assignments, the customers that act as contacts of a l
 entity, personal data included.
 create and update ID (an upsert) send the JSON body of `--file`; delete ID sends none.
 
-Its reads require the customermanagement.contactassignment\_read scope.
-Its writes require the customermanagement.contactassignment\_manage scope.
+Its reads require the customermanagement.contactassignment_read scope.
+Its writes require the customermanagement.contactassignment_manage scope.
 
 **Command:** `epx contact-assignments [flags]`, `epx contact-assignments [command]`
 
-**Flags:** only the [global flags](/emporix-cli/commands#global-flags).
+**Flags:** only the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Subcommands**
 
@@ -33,7 +33,7 @@ Its writes require the customermanagement.contactassignment\_manage scope.
 Create one contact assignment.
 
 Creates the contact assignment that the JSON body of `--file` describes, shaped as
-[`epx contact-assignments get ID -o json`](/emporix-cli/commands/contact-assignments#epx-contact-assignments-get) prints one:
+[`epx contact-assignments get ID -o json`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/contact-assignments#epx-contact-assignments-get) prints one:
 legalEntity and customer (required, each as `{"id": ...}` of one that exists: 400 Bad Request,
 exit 1, otherwise; the customer's id, not its number), type (PRIMARY, BILLING, LOGISTICS
 or CONTACT, the default) and primary (true or false).
@@ -47,7 +47,7 @@ Changes data: on a terminal, epx asks before it sends POST. `--yes` sends withou
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the customermanagement.contactassignment\_manage scope.
+Requires the customermanagement.contactassignment_manage scope.
 
 **Command:** `epx contact-assignments create [flags]`
 
@@ -62,21 +62,21 @@ Requires the customermanagement.contactassignment\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx contact-assignments delete
 
 Delete one contact assignment.
 
 Deletes the contact assignment ID; it sends no body.
-ID is the ID that [`epx contact-assignments list`](/emporix-cli/commands/contact-assignments#epx-contact-assignments-list) shows; an unknown one is not found.
+ID is the ID that [`epx contact-assignments list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/contact-assignments#epx-contact-assignments-list) shows; an unknown one is not found.
 
 Deletes data, which cannot be undone.
 On a terminal, epx sends DELETE only once you type ID at its prompt.
 `--yes` sends without asking (required without a terminal);
 `--dry-run` prints the request instead of sending it.
 
-Requires the customermanagement.contactassignment\_manage scope.
+Requires the customermanagement.contactassignment_manage scope.
 
 **Command:** `epx contact-assignments delete ID [flags]`
 
@@ -89,18 +89,18 @@ Requires the customermanagement.contactassignment\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx contact-assignments get
 
 Show one contact assignment.
 
 Reads contact assignments, the customers that act as contacts of a legal entity,
-personal data included. CUSTOMER is the customer's id, not the NUMBER that [`epx customers get`](/emporix-cli/commands/customers#epx-customers-get) takes. TYPE is PRIMARY, BILLING, LOGISTICS or CONTACT; the PRIMARY column is the
+personal data included. CUSTOMER is the customer's id, not the NUMBER that [`epx customers get`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/customers#epx-customers-get) takes. TYPE is PRIMARY, BILLING, LOGISTICS or CONTACT; the PRIMARY column is the
 assignment's primary flag, separate from the TYPE PRIMARY. Phone numbers and the legal
 entity's details are only in `-o json`.
 
-Requires the customermanagement.contactassignment\_read scope.
+Requires the customermanagement.contactassignment_read scope.
 
 **Command:** `epx contact-assignments get ID [flags]`
 
@@ -113,18 +113,18 @@ Requires the customermanagement.contactassignment\_read scope.
 - `-o, --output <format>`\
   Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx contact-assignments list
 
 List contact assignments.
 
 Reads contact assignments, the customers that act as contacts of a legal entity,
-personal data included. CUSTOMER is the customer's id, not the NUMBER that [`epx customers get`](/emporix-cli/commands/customers#epx-customers-get) takes. TYPE is PRIMARY, BILLING, LOGISTICS or CONTACT; the PRIMARY column is the
+personal data included. CUSTOMER is the customer's id, not the NUMBER that [`epx customers get`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/customers#epx-customers-get) takes. TYPE is PRIMARY, BILLING, LOGISTICS or CONTACT; the PRIMARY column is the
 assignment's primary flag, separate from the TYPE PRIMARY. Phone numbers and the legal
 entity's details are only in `-o json`.
 
-Requires the customermanagement.contactassignment\_read scope.
+Requires the customermanagement.contactassignment_read scope.
 
 **Command:** `epx contact-assignments list [flags]`
 
@@ -145,7 +145,7 @@ Requires the customermanagement.contactassignment\_read scope.
 - `--stream`\
   Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx contact-assignments update
 
@@ -154,16 +154,16 @@ Upsert one contact assignment.
 Replaces the contact assignment ID with the JSON body of `--file`, shaped as create takes it
 but without an id, or creates it with that id where none exists (an upsert); it requires
 legalEntity and customer; a type left out becomes CONTACT, a primary left out false.
-With metadata.version as [`epx contact-assignments get ID -o json`](/emporix-cli/commands/contact-assignments#epx-contact-assignments-get) prints it, Emporix
+With metadata.version as [`epx contact-assignments get ID -o json`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/contact-assignments#epx-contact-assignments-get) prints it, Emporix
 replaces it only if nobody changed it since, and answers 409 Conflict (exit 5) otherwise;
 without metadata.version, it replaces it whatever its version.
-ID is the ID that [`epx contact-assignments list`](/emporix-cli/commands/contact-assignments#epx-contact-assignments-list) shows.
+ID is the ID that [`epx contact-assignments list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/contact-assignments#epx-contact-assignments-list) shows.
 
 Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the customermanagement.contactassignment\_manage scope.
+Requires the customermanagement.contactassignment_manage scope.
 
 **Command:** `epx contact-assignments update ID [flags]`
 
@@ -178,4 +178,4 @@ Requires the customermanagement.contactassignment\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).

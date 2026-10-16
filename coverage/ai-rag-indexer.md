@@ -10,8 +10,8 @@ Operations of the Emporix API reference file [`artificial-intelligence/ai-rag-in
 
 | Operation | Status | Details |
 | --- | --- | --- |
-| `POST /ai-rag-indexer/{tenant}/{type}/reindex` | Built | [`epx ai rag reindex`](/emporix-cli/commands/ai#epx-ai-rag-reindex) |
-| `GET /ai-rag-indexer/{tenant}/{type}/rag-metadata` | Built | [`epx ai rag fields`](/emporix-cli/commands/ai#epx-ai-rag-fields) |
-| `GET /ai-rag-indexer/{tenant}/{type}/filter-metadata` | Built | [`epx ai rag filter-fields`](/emporix-cli/commands/ai#epx-ai-rag-filter-fields) |
+| `POST /ai-rag-indexer/{tenant}/{type}/reindex` | Built | [`epx ai rag reindex`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/ai#epx-ai-rag-reindex) |
+| `GET /ai-rag-indexer/{tenant}/{type}/rag-metadata` | Built | [`epx ai rag fields`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/ai#epx-ai-rag-fields) |
+| `GET /ai-rag-indexer/{tenant}/{type}/filter-metadata` | Built | [`epx ai rag filter-fields`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/ai#epx-ai-rag-filter-fields) |
 
-All services: [Emporix API coverage](/emporix-cli/coverage).
+All services: [Emporix API coverage](https://commerce-cloud-integrations.github.io/emporix-cli/coverage).

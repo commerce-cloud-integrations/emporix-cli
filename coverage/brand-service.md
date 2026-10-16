@@ -10,11 +10,11 @@ Operations of the Emporix API reference file [`products-labels-and-brands/brand-
 
 | Operation | Status | Details |
 | --- | --- | --- |
-| `GET /brand/brands` | Built | [`epx brands list`](/emporix-cli/commands/brands#epx-brands-list) |
-| `POST /brand/brands` | Built | [`epx brands create`](/emporix-cli/commands/brands#epx-brands-create) |
-| `GET /brand/brands/{brandId}` | Built | [`epx brands get`](/emporix-cli/commands/brands#epx-brands-get) |
-| `PUT /brand/brands/{brandId}` | Built | [`epx brands update`](/emporix-cli/commands/brands#epx-brands-update) |
-| `PATCH /brand/brands/{brandId}` | Built | [`epx brands patch`](/emporix-cli/commands/brands#epx-brands-patch) |
-| `DELETE /brand/brands/{brandId}` | Built | [`epx brands delete`](/emporix-cli/commands/brands#epx-brands-delete) |
+| `GET /brand/brands` | Built | [`epx brands list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/brands#epx-brands-list) |
+| `POST /brand/brands` | Built | [`epx brands create`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/brands#epx-brands-create) |
+| `GET /brand/brands/{brandId}` | Built | [`epx brands get`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/brands#epx-brands-get) |
+| `PUT /brand/brands/{brandId}` | Built | [`epx brands update`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/brands#epx-brands-update) |
+| `PATCH /brand/brands/{brandId}` | Built | [`epx brands patch`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/brands#epx-brands-patch) |
+| `DELETE /brand/brands/{brandId}` | Built | [`epx brands delete`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/brands#epx-brands-delete) |
 
-All services: [Emporix API coverage](/emporix-cli/coverage).
+All services: [Emporix API coverage](https://commerce-cloud-integrations.github.io/emporix-cli/coverage).

@@ -76,7 +76,7 @@ Products, for example, sort by creation date as `metadataCreatedAt`. Check the
 ## How paging works
 
 A list reads 100 items per page, up to 1,000 pages (10,000 with
-[`--stream`](/emporix-cli/guides/output#json-lines)). It fails with exit code 1 when paging is visibly
+[`--stream`](https://commerce-cloud-integrations.github.io/emporix-cli/guides/output#json-lines)). It fails with exit code 1 when paging is visibly
 inconsistent: an item read twice, or a count that differs from the total Emporix
 reports. Without `--stream`, it prints nothing unless every check passes.
 

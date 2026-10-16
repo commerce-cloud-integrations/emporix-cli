@@ -10,11 +10,11 @@ the availability of a product on a site, bulk-create, bulk-update and bulk-delet
 many.
 
 Its reads need no OAuth scope.
-Its writes require the availability.availability\_manage scope.
+Its writes require the availability.availability_manage scope.
 
 **Command:** `epx availability [flags]`, `epx availability [command]`
 
-**Flags:** only the [global flags](/emporix-cli/commands#global-flags).
+**Flags:** only the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Subcommands**
 
@@ -55,7 +55,7 @@ Changes data: on a terminal, epx asks before it sends POST. `--yes` sends withou
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the availability.availability\_manage scope.
+Requires the availability.availability_manage scope.
 
 **Command:** `epx availability bulk-create [flags]`
 
@@ -70,7 +70,7 @@ Requires the availability.availability\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx availability bulk-delete
 
@@ -91,7 +91,7 @@ On a terminal, epx sends DELETE only once you type the tenant at its prompt.
 `--yes` sends without asking (required without a terminal, or with `--file` -);
 `--dry-run` prints the request instead of sending it.
 
-Requires the availability.availability\_manage scope.
+Requires the availability.availability_manage scope.
 
 **Command:** `epx availability bulk-delete [flags]`
 
@@ -106,7 +106,7 @@ Requires the availability.availability\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx availability bulk-update
 
@@ -125,7 +125,7 @@ Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the availability.availability\_manage scope.
+Requires the availability.availability_manage scope.
 
 **Command:** `epx availability bulk-update [flags]`
 
@@ -140,25 +140,25 @@ Requires the availability.availability\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx availability create
 
 Create the availability of a product on a site.
 
-Creates the availability of the product PRODUCT\_ID on the site `--site` names, from `--file`:
+Creates the availability of the product PRODUCT_ID on the site `--site` names, from `--file`:
 a JSON object with stockLevel, available, popularity and distributionChannel (ASSORTMENT,
-HOME\_DELIVERY or PICKUP), as [`epx availability get PRODUCT_ID --site S -o json`](/emporix-cli/commands/availability#epx-availability-get) prints
+HOME_DELIVERY or PICKUP), as [`epx availability get PRODUCT_ID --site S -o json`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/availability#epx-availability-get) prints
 them. Emporix answers 409 Conflict when the product has one on that site already. It
 advises against a record on a site named main, which aggregates the availability of the
 other sites.
-PRODUCT\_ID is the product id (as in [`epx products list`](/emporix-cli/commands/products#epx-products-list)), not its code.
+PRODUCT_ID is the product id (as in [`epx products list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/products#epx-products-list)), not its code.
 
 Changes data: on a terminal, epx asks before it sends POST. `--yes` sends without
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the availability.availability\_manage scope.
+Requires the availability.availability_manage scope.
 
 **Command:** `epx availability create PRODUCT_ID [flags]`
 
@@ -175,22 +175,22 @@ Requires the availability.availability\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx availability delete
 
 Delete the availability of a product on a site.
 
-Deletes the availability of the product PRODUCT\_ID on the site `--site` names.
+Deletes the availability of the product PRODUCT_ID on the site `--site` names.
 The availability of a bundle is that of its scarcest product and cannot be deleted.
-PRODUCT\_ID is the product id (as in [`epx products list`](/emporix-cli/commands/products#epx-products-list)), not its code.
+PRODUCT_ID is the product id (as in [`epx products list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/products#epx-products-list)), not its code.
 
 Deletes data, which cannot be undone.
-On a terminal, epx sends DELETE only once you type PRODUCT\_ID at its prompt.
+On a terminal, epx sends DELETE only once you type PRODUCT_ID at its prompt.
 `--yes` sends without asking (required without a terminal);
 `--dry-run` prints the request instead of sending it.
 
-Requires the availability.availability\_manage scope.
+Requires the availability.availability_manage scope.
 
 **Command:** `epx availability delete PRODUCT_ID [flags]`
 
@@ -205,7 +205,7 @@ Requires the availability.availability\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx availability get
 
@@ -213,7 +213,7 @@ Show the availability of a product on a site.
 
 Reads product availability (stock) on the site `--site` names, the tenant's own
 availability.
-PRODUCT\_ID is the product id (as in [`epx products list`](/emporix-cli/commands/products#epx-products-list)), not its code.
+PRODUCT_ID is the product id (as in [`epx products list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/products#epx-products-list)), not its code.
 The availability of a bundle's products is only in `-o json` (bundleAvailabilities).
 
 No OAuth scope is needed.
@@ -231,7 +231,7 @@ No OAuth scope is needed.
 - `--site <site>`\
   Site code, e.g. main (required).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx availability list
 
@@ -264,7 +264,7 @@ No OAuth scope is needed.
 - `--stream`\
   Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx availability search
 
@@ -300,22 +300,22 @@ No OAuth scope is needed.
 - `--stream`\
   Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx availability update
 
 Upsert the availability of a product on a site.
 
-Replaces the availability of the product PRODUCT\_ID on the site `--site` names with the one
+Replaces the availability of the product PRODUCT_ID on the site `--site` names with the one
 in `--file`, a JSON object as create takes it, or creates it where there is none (an
 upsert). The availability of a bundle is that of its scarcest product and cannot be set.
-PRODUCT\_ID is the product id (as in [`epx products list`](/emporix-cli/commands/products#epx-products-list)), not its code.
+PRODUCT_ID is the product id (as in [`epx products list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/products#epx-products-list)), not its code.
 
 Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the availability.availability\_manage scope.
+Requires the availability.availability_manage scope.
 
 **Command:** `epx availability update PRODUCT_ID [flags]`
 
@@ -332,4 +332,4 @@ Requires the availability.availability\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).

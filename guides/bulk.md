@@ -3,7 +3,7 @@
 > Write many items in one request, import files of any size, run cart command chains, and wait for jobs.
 
 Some writes change many items at once, or start work that Emporix finishes later. They
-follow the same rules as [every write](/emporix-cli/guides/writes), and they report each item that
+follow the same rules as [every write](https://commerce-cloud-integrations.github.io/emporix-cli/guides/writes), and they report each item that
 failed so you know exactly what to send again.
 
 ## Bulk writes
@@ -55,7 +55,7 @@ which product on nothing was sent.
 epx carts execute CART_ID --file commands.json
 ```
 
-[`epx carts execute`](/emporix-cli/commands/carts#epx-carts-execute) sends up to 10 cart commands,
+[`epx carts execute`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/carts#epx-carts-execute) sends up to 10 cart commands,
 which Emporix runs in order on one cart. By default, Emporix stops at the first command
 that fails but keeps what the commands before it changed; pass `--on-error resume` to run
 the rest anyway.

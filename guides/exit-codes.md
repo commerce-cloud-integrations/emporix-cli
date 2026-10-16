@@ -11,7 +11,7 @@ a missing scope.
 | Code | Meaning | Examples |
 | --- | --- | --- |
 | `0` | Success | The command printed its result. |
-| `1` | Error | Emporix answered with an error such as 400 or 500, a network failure or timeout, a [paging check](/emporix-cli/guides/lists#how-paging-works) that failed, a declined confirmation, or a write that may have been carried out. |
+| `1` | Error | Emporix answered with an error such as 400 or 500, a network failure or timeout, a [paging check](https://commerce-cloud-integrations.github.io/emporix-cli/guides/lists#how-paging-works) that failed, a declined confirmation, or a write that may have been carried out. |
 | `2` | Invalid usage or configuration | An unknown command or flag, a bad flag value, missing API key settings, a body that isn't JSON, or a write without `--yes` where epx can't ask. Nothing was sent. |
 | `3` | Authentication failed or scopes missing | Emporix rejected the API key, the token belongs to another tenant, a scope wasn't granted, or Emporix answered 401 or 403. |
 | `4` | Not found | Emporix doesn't know the item, such as `epx products get` with an unknown ID. |
@@ -89,4 +89,4 @@ epx products list -o json > products.json
 
 In CI, set the `EMPORIX_` variables from your CI system's secrets. Profiles keep their
 client secret in an OS keychain, which CI runners usually don't have. See
-[Authenticate](/emporix-cli/configure).
+[Authenticate](https://commerce-cloud-integrations.github.io/emporix-cli/configure).

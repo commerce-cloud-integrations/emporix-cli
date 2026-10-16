@@ -142,11 +142,11 @@ default site of your profile.
 
 ## Uninstall epx
 
-1. If you use [profiles](/emporix-cli/configure#store-keys-in-profiles), remove each one with
+1. If you use [profiles](https://commerce-cloud-integrations.github.io/emporix-cli/configure#store-keys-in-profiles), remove each one with
    `epx profile remove`, which also deletes its client secret from the OS keychain.
 2. Remove epx: `npm uninstall --global epx-cli`, or delete the `epx` binary you installed
    from an archive or with Go.
 3. Delete the `epx` folder from your configuration directory.
 
-Once epx is installed, you can [authenticate](/emporix-cli/configure) with an API key and take the
-[quickstart](/emporix-cli/quickstart).
+Once epx is installed, you can [authenticate](https://commerce-cloud-integrations.github.io/emporix-cli/configure) with an API key and take the
+[quickstart](https://commerce-cloud-integrations.github.io/emporix-cli/quickstart).

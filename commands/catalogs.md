@@ -8,11 +8,11 @@ Reads catalogs, visible or not. STATUS and VISIBLE are separate Emporix fields a
 disagree. ROOT CATEGORIES counts the categories assigned directly to the catalog.
 
 Its reads need no OAuth scope.
-Its writes require the catalog.catalog\_manage scope.
+Its writes require the catalog.catalog_manage scope.
 
 **Command:** `epx catalogs [flags]`, `epx catalogs [command]`
 
-**Flags:** only the [global flags](/emporix-cli/commands#global-flags).
+**Flags:** only the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Subcommands**
 
@@ -35,7 +35,7 @@ Its writes require the catalog.catalog\_manage scope.
 
 Create a catalog.
 
-Creates a catalog from the JSON in `--file`, shaped as [`epx catalogs get ID -o json`](/emporix-cli/commands/catalogs#epx-catalogs-get) shows
+Creates a catalog from the JSON in `--file`, shaped as [`epx catalogs get ID -o json`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/catalogs#epx-catalogs-get) shows
 one: name and description (maps of languages to text), visibility, publishedSites and
 categoryIds (root categories); Emporix generates the id unless the body gives one. It
 answers with the id; an id that exists already is a conflict (exit 5).
@@ -44,7 +44,7 @@ Changes data: on a terminal, epx asks before it sends POST. `--yes` sends withou
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the catalog.catalog\_manage scope.
+Requires the catalog.catalog_manage scope.
 
 **Command:** `epx catalogs create [flags]`
 
@@ -59,20 +59,20 @@ Requires the catalog.catalog\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx catalogs delete
 
 Delete a catalog.
 
-Deletes the catalog ID, as [`epx catalogs list`](/emporix-cli/commands/catalogs#epx-catalogs-list) shows it.
+Deletes the catalog ID, as [`epx catalogs list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/catalogs#epx-catalogs-list) shows it.
 
 Deletes data, which cannot be undone.
 On a terminal, epx sends DELETE only once you type ID at its prompt.
 `--yes` sends without asking (required without a terminal);
 `--dry-run` prints the request instead of sending it.
 
-Requires the catalog.catalog\_manage scope.
+Requires the catalog.catalog_manage scope.
 
 **Command:** `epx catalogs delete ID [flags]`
 
@@ -85,7 +85,7 @@ Requires the catalog.catalog\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx catalogs for-category
 
@@ -93,8 +93,8 @@ List the catalogs a category is assigned to.
 
 Reads catalogs, visible or not. STATUS and VISIBLE are separate Emporix fields and can
 disagree. ROOT CATEGORIES counts the categories assigned directly to the catalog.
-CATEGORY\_ID is the id of a category assigned to catalogs directly, a root category
-(an unindented row of [`epx category-trees list`](/emporix-cli/commands/category-trees#epx-category-trees-list)); a category below one, or an unknown
+CATEGORY_ID is the id of a category assigned to catalogs directly, a root category
+(an unindented row of [`epx category-trees list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/category-trees#epx-category-trees-list)); a category below one, or an unknown
 id, lists nothing.
 
 No OAuth scope is needed.
@@ -118,7 +118,7 @@ No OAuth scope is needed.
 - `--stream`\
   Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx catalogs get
 
@@ -142,7 +142,7 @@ No OAuth scope is needed.
 - `-o, --output <format>`\
   Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx catalogs list
 
@@ -172,14 +172,14 @@ No OAuth scope is needed.
 - `--stream`\
   Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx catalogs patch
 
 Change members of a catalog.
 
 Changes the members of the catalog ID that the JSON in `--file` gives, and keeps the
-others. Emporix requires metadata.version in the body, as [`epx catalogs get ID -o json`](/emporix-cli/commands/catalogs#epx-catalogs-get)
+others. Emporix requires metadata.version in the body, as [`epx catalogs get ID -o json`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/catalogs#epx-catalogs-get)
 shows it, and answers a version that is not the catalog's as it answers an unknown
 catalog, with 404 Not Found: epx then exits with 5, a conflict (read the catalog again
 before you retry), also for an unknown ID, and with 4 without a version.
@@ -188,7 +188,7 @@ Changes data: on a terminal, epx asks before it sends PATCH. `--yes` sends witho
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the catalog.catalog\_manage scope.
+Requires the catalog.catalog_manage scope.
 
 **Command:** `epx catalogs patch ID [flags]`
 
@@ -203,7 +203,7 @@ Requires the catalog.catalog\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx catalogs update
 
@@ -211,14 +211,14 @@ Upsert a catalog.
 
 Replaces the catalog ID with the JSON in `--file`, or creates it with that id when there
 is none (an upsert); the body has the members of create's but the id.
-With metadata.version, as [`epx catalogs get ID -o json`](/emporix-cli/commands/catalogs#epx-catalogs-get) shows it, Emporix refuses
+With metadata.version, as [`epx catalogs get ID -o json`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/catalogs#epx-catalogs-get) shows it, Emporix refuses
 the write as a conflict (exit 5) when the catalog changed since it was read.
 
 Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the catalog.catalog\_manage scope.
+Requires the catalog.catalog_manage scope.
 
 **Command:** `epx catalogs update ID [flags]`
 
@@ -233,4 +233,4 @@ Requires the catalog.catalog\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).

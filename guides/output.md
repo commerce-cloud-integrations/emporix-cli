@@ -95,7 +95,7 @@ and checked. Long lists start printing at once and aren't held in memory.
 - It works with `--limit`, `--query`, and `--sort`, but not with `-o`, `--columns`, or
   `--no-headers`.
 - It reads up to 10,000 pages, where other lists stop at 1,000.
-- The [paging checks](/emporix-cli/guides/lists#how-paging-works) still run. If a later page fails a
+- The [paging checks](https://commerce-cloud-integrations.github.io/emporix-cli/guides/lists#how-paging-works) still run. If a later page fails a
   check, the command exits with code 1 after printing the pages before it. Without
   `--stream`, a list prints nothing unless every check passes.
 
@@ -121,7 +121,7 @@ epx quotes pdf Q1001 --out Q1001.pdf --language de
 epx quotes pdf Q1001 --out - | lpr
 ```
 
-[`epx quotes pdf`](/emporix-cli/commands/quotes#epx-quotes-pdf) saves the quote's PDF with `--out`
+[`epx quotes pdf`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/quotes#epx-quotes-pdf) saves the quote's PDF with `--out`
 instead of printing it. `--out -` writes the file to standard
 output, but only when standard output isn't a terminal. epx writes the file readable by
 you only, and replaces an existing file only once the new one is complete.
@@ -135,4 +135,4 @@ you only, and replaces an existing file only once the new one is complete.
 
 Characters that a terminal could act on, such as escape sequences, are replaced with
 spaces in tables, CSV, and error messages, and escaped in JSON and YAML. See the
-[security model](/emporix-cli/security#output).
+[security model](https://commerce-cloud-integrations.github.io/emporix-cli/security#output).

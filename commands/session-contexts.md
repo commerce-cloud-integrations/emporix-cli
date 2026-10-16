@@ -11,13 +11,13 @@ first cart; before that, the session's ID is not found (exit 4). The context of 
 anonymous cart may name the tenant's default site rather than the cart's, and
 names no cart once the cart was merged into a customer's.
 
-Its reads require the sessioncontext.context\_manage scope.
+Its reads require the sessioncontext.context_manage scope.
 Opt-in: epx requests a write-capable scope for a read only when given `--allow-write-scope`.
-Its writes require the sessioncontext.context\_manage scope.
+Its writes require the sessioncontext.context_manage scope.
 
 **Command:** `epx session-contexts [flags]`, `epx session-contexts [command]`
 
-**Flags:** only the [global flags](/emporix-cli/commands#global-flags).
+**Flags:** only the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Subcommands**
 
@@ -33,13 +33,13 @@ Its writes require the sessioncontext.context\_manage scope.
 Add and delete custom attributes of session contexts.
 
 Adds and deletes the custom attributes of a session context, as its context member holds
-them ([`epx session-contexts get ID -o json`](/emporix-cli/commands/session-contexts#epx-session-contexts-get)).
+them ([`epx session-contexts get ID -o json`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/session-contexts#epx-session-contexts-get)).
 
-Requires the sessioncontext.context\_manage scope.
+Requires the sessioncontext.context_manage scope.
 
 **Command:** `epx session-contexts attributes [flags]`, `epx session-contexts attributes [command]`
 
-**Flags:** only the [global flags](/emporix-cli/commands#global-flags).
+**Flags:** only the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Subcommands**
 
@@ -53,16 +53,16 @@ Requires the sessioncontext.context\_manage scope.
 Add a custom attribute to a session context.
 
 Adds the custom attribute `--key` with the string `--value` to the context of the storefront
-session SESSION\_ID; `--file` gives the body instead, e.g. `{"key": "k", "value": {"a": "b"}}` for a
+session SESSION_ID; `--file` gives the body instead, e.g. `{"key": "k", "value": {"a": "b"}}` for a
 value that is a JSON object.
-SESSION\_ID is the ID of [`epx session-contexts get`](/emporix-cli/commands/session-contexts#epx-session-contexts-get); an unknown one is not found (exit 4).
+SESSION_ID is the ID of [`epx session-contexts get`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/session-contexts#epx-session-contexts-get); an unknown one is not found (exit 4).
 Emporix does not check the version of the context for it.
 
 Changes data: on a terminal, epx asks before it sends POST. `--yes` sends without
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the sessioncontext.context\_manage scope.
+Requires the sessioncontext.context_manage scope.
 
 **Command:** `epx session-contexts attributes create SESSION_ID [flags]`
 
@@ -81,14 +81,14 @@ Requires the sessioncontext.context\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx session-contexts attributes delete
 
 Delete a custom attribute of a session context.
 
-Deletes the custom attribute KEY of the context of the storefront session SESSION\_ID.
-SESSION\_ID is the ID of [`epx session-contexts get`](/emporix-cli/commands/session-contexts#epx-session-contexts-get); an unknown one is not found (exit 4).
+Deletes the custom attribute KEY of the context of the storefront session SESSION_ID.
+SESSION_ID is the ID of [`epx session-contexts get`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/session-contexts#epx-session-contexts-get); an unknown one is not found (exit 4).
 Emporix does not check the version of the context for it.
 
 Deletes data, which cannot be undone.
@@ -96,7 +96,7 @@ On a terminal, epx sends DELETE only once you type KEY at its prompt.
 `--yes` sends without asking (required without a terminal);
 `--dry-run` prints the request instead of sending it.
 
-Requires the sessioncontext.context\_manage scope.
+Requires the sessioncontext.context_manage scope.
 
 **Command:** `epx session-contexts attributes delete SESSION_ID KEY [flags]`
 
@@ -109,7 +109,7 @@ Requires the sessioncontext.context\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx session-contexts get
 
@@ -122,7 +122,7 @@ first cart; before that, the session's ID is not found (exit 4). The context of 
 anonymous cart may name the tenant's default site rather than the cart's, and
 names no cart once the cart was merged into a customer's.
 
-Requires the sessioncontext.context\_manage scope.
+Requires the sessioncontext.context_manage scope.
 Opt-in: epx requests a write-capable scope for a read only when given `--allow-write-scope`.
 
 **Command:** `epx session-contexts get ID [flags]`
@@ -130,7 +130,7 @@ Opt-in: epx requests a write-capable scope for a read only when given `--allow-w
 **Flags**
 
 - `--allow-write-scope`\
-  Opt in to requesting sessioncontext.context\_manage, which can also change data (required).
+  Opt in to requesting sessioncontext.context_manage, which can also change data (required).
 - `--columns <names>`\
   Print only these columns of table and csv, in this order: comma-separated names (any case) among ID, CUSTOMER, SITE, CURRENCY, LANGUAGE, LOCATION, CART.
 - `--no-headers`\
@@ -138,14 +138,14 @@ Opt-in: epx requests a write-capable scope for a read only when given `--allow-w
 - `-o, --output <format>`\
   Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx session-contexts update
 
 Replace a session context.
 
 Replaces the context of the storefront session ID with the JSON in `--file`, as
-[`epx session-contexts get ID -o json`](/emporix-cli/commands/session-contexts#epx-session-contexts-get) prints it, with its metadata.version as read, which
+[`epx session-contexts get ID -o json`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/session-contexts#epx-session-contexts-get) prints it, with its metadata.version as read, which
 Emporix requires. With `--upsert`, Emporix creates the context where the session has none
 (an upsert). Emporix answers an anonymous or unknown session with 400 Bad Request (exit 1)
 that requires the header saas-token, with or without `--upsert`, which epx does not send; a
@@ -155,7 +155,7 @@ Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the sessioncontext.context\_manage scope.
+Requires the sessioncontext.context_manage scope.
 
 **Command:** `epx session-contexts update ID [flags]`
 
@@ -172,4 +172,4 @@ Requires the sessioncontext.context\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).

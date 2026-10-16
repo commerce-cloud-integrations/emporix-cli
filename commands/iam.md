@@ -14,7 +14,7 @@ Its writes require different OAuth scopes; the help of each names them.
 
 **Command:** `epx iam [flags]`, `epx iam [command]`
 
-**Flags:** only the [global flags](/emporix-cli/commands#global-flags).
+**Flags:** only the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Subcommands**
 
@@ -43,12 +43,12 @@ Reads IAM access controls, the scopes they grant the users of the groups that ho
 upserts and deletes them.
 Its writes change who may do what in the tenant.
 
-Its reads require the iam.access\_read scope.
-Its writes require the iam.access\_manage scope.
+Its reads require the iam.access_read scope.
+Its writes require the iam.access_manage scope.
 
 **Command:** `epx iam access-controls [flags]`, `epx iam access-controls [command]`
 
-**Flags:** only the [global flags](/emporix-cli/commands#global-flags).
+**Flags:** only the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Subcommands**
 
@@ -66,7 +66,7 @@ Its writes require the iam.access\_manage scope.
 Delete an access control.
 
 Deletes the access control ID. Emporix deletes only those made for the tenant, not the
-predefined ones (PREDEFINED in [`epx iam access-controls list`](/emporix-cli/commands/iam#epx-iam-access-controls-list)).
+predefined ones (PREDEFINED in [`epx iam access-controls list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/iam#epx-iam-access-controls-list)).
 It changes who may do what in the tenant.
 
 Deletes data, which cannot be undone.
@@ -74,7 +74,7 @@ On a terminal, epx sends DELETE only once you type ID at its prompt.
 `--yes` sends without asking (required without a terminal);
 `--dry-run` prints the request instead of sending it.
 
-Requires the iam.access\_manage scope.
+Requires the iam.access_manage scope.
 
 **Command:** `epx iam access-controls delete ID [flags]`
 
@@ -87,7 +87,7 @@ Requires the iam.access\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx iam access-controls get
 
@@ -99,7 +99,7 @@ and ROLE are the ids of the resource and role older access controls refer to.
 list sorts by id unless `--sort` says otherwise; end another order with ,id:asc (e.g.
 name.en:asc,id:asc), as Emporix wants a direction on every field, so pages do not overlap.
 
-Requires the iam.access\_read scope.
+Requires the iam.access_read scope.
 
 **Command:** `epx iam access-controls get ID [flags]`
 
@@ -114,7 +114,7 @@ Requires the iam.access\_read scope.
 - `-o, --output <format>`\
   Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx iam access-controls list
 
@@ -126,7 +126,7 @@ and ROLE are the ids of the resource and role older access controls refer to.
 list sorts by id unless `--sort` says otherwise; end another order with ,id:asc (e.g.
 name.en:asc,id:asc), as Emporix wants a direction on every field, so pages do not overlap.
 
-Requires the iam.access\_read scope.
+Requires the iam.access_read scope.
 
 **Command:** `epx iam access-controls list [flags]`
 
@@ -149,7 +149,7 @@ Requires the iam.access\_read scope.
 - `--stream`\
   Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx iam access-controls update
 
@@ -171,7 +171,7 @@ Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the iam.access\_manage scope.
+Requires the iam.access_manage scope.
 
 **Command:** `epx iam access-controls update ID [flags]`
 
@@ -186,7 +186,7 @@ Requires the iam.access\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx iam groups
 
@@ -201,7 +201,7 @@ Its writes require different OAuth scopes; the help of each names them.
 
 **Command:** `epx iam groups [flags]`, `epx iam groups [command]`
 
-**Flags:** only the [global flags](/emporix-cli/commands#global-flags).
+**Flags:** only the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Subcommands**
 
@@ -227,11 +227,11 @@ List the access controls of a group.
 Reads the access controls a group grants its users.
 SCOPES counts the scopes an access control grants (`-o json` lists them); RESOURCE
 and ROLE are the ids of the resource and role older access controls refer to.
-A group's ACCESS CONTROLS in [`epx iam groups list`](/emporix-cli/commands/iam#epx-iam-groups-list) may also count removed access controls,
+A group's ACCESS CONTROLS in [`epx iam groups list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/iam#epx-iam-groups-list) may also count removed access controls,
 which this leaves out.
-GROUP\_ID is the ID that [`epx iam groups list`](/emporix-cli/commands/iam#epx-iam-groups-list) shows; an unknown one is not found.
+GROUP_ID is the ID that [`epx iam groups list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/iam#epx-iam-groups-list) shows; an unknown one is not found.
 
-Requires the iam.access\_read scope.
+Requires the iam.access_read scope.
 
 **Command:** `epx iam groups access-controls GROUP_ID [flags]`
 
@@ -250,14 +250,14 @@ Requires the iam.access\_read scope.
 - `--stream`\
   Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx iam groups create
 
 Create a group.
 
 Creates the group in `--file`, a JSON object with its name and the ids of the access controls
-that its users get (accessControls, from [`epx iam access-controls list`](/emporix-cli/commands/iam#epx-iam-access-controls-list)), and optionally
+that its users get (accessControls, from [`epx iam access-controls list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/iam#epx-iam-access-controls-list)), and optionally
 its id (Emporix makes one otherwise), description, userType (CUSTOMER, or EMPLOYEE, the
 default), templates, b2b.legalEntityId, restrictions and mixins. Emporix answers with the
 group's id; a group with the id exists already: a conflict (exit 5).
@@ -271,7 +271,7 @@ Changes data: on a terminal, epx asks before it sends POST. `--yes` sends withou
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the iam.group\_manage scope.
+Requires the iam.group_manage scope.
 
 **Command:** `epx iam groups create [flags]`
 
@@ -286,14 +286,14 @@ Requires the iam.group\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx iam groups delete
 
 Delete a group.
 
 Deletes the group ID. Emporix refuses to delete a group that users belong to (400 Bad
-Request, exit 1; [`epx iam groups users list ID`](/emporix-cli/commands/iam#epx-iam-groups-users-list) lists them) unless `--force-delete` is
+Request, exit 1; [`epx iam groups users list ID`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/iam#epx-iam-groups-users-list) lists them) unless `--force-delete` is
 given, which removes every user from it too.
 It changes who may do what in the tenant.
 
@@ -303,9 +303,9 @@ On a terminal, epx sends DELETE only once you type ID at its prompt.
 `--yes` sends without asking (required without a terminal);
 `--dry-run` prints the request instead of sending it.
 
-`--force-delete` also requests the iam.assignment\_manage scope.
+`--force-delete` also requests the iam.assignment_manage scope.
 
-Requires the iam.group\_manage scope.
+Requires the iam.group_manage scope.
 
 **Command:** `epx iam groups delete ID [flags]`
 
@@ -314,13 +314,13 @@ Requires the iam.group\_manage scope.
 - `--dry-run`\
   Print the request instead of sending it (excludes `-o`).
 - `--force-delete`\
-  Delete the group also when users belong to it, removing every user from it (requests iam.assignment\_manage too).
+  Delete the group also when users belong to it, removing every user from it (requests iam.assignment_manage too).
 - `-o, --output <format>`\
   Format of the response: json or yaml. Default: `json`.
 - `--yes`\
   Send without asking (required without a terminal).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx iam groups get
 
@@ -328,9 +328,9 @@ Show one group.
 
 Reads the tenant's user groups. TYPE is the kind of user a group is for (e.g. EMPLOYEE,
 CUSTOMER), and ACCESS CONTROLS counts the access controls it grants (`-o json` lists their
-ids, [`epx iam groups access-controls`](/emporix-cli/commands/iam#epx-iam-groups-access-controls) reads them).
+ids, [`epx iam groups access-controls`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/iam#epx-iam-groups-access-controls) reads them).
 
-Requires the iam.group\_read scope.
+Requires the iam.group_read scope.
 
 **Command:** `epx iam groups get ID [flags]`
 
@@ -345,7 +345,7 @@ Requires the iam.group\_read scope.
 - `-o, --output <format>`\
   Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx iam groups list
 
@@ -353,9 +353,9 @@ List IAM groups.
 
 Reads the tenant's user groups. TYPE is the kind of user a group is for (e.g. EMPLOYEE,
 CUSTOMER), and ACCESS CONTROLS counts the access controls it grants (`-o json` lists their
-ids, [`epx iam groups access-controls`](/emporix-cli/commands/iam#epx-iam-groups-access-controls) reads them).
+ids, [`epx iam groups access-controls`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/iam#epx-iam-groups-access-controls) reads them).
 
-Requires the iam.group\_read scope.
+Requires the iam.group_read scope.
 
 **Command:** `epx iam groups list [flags]`
 
@@ -378,7 +378,7 @@ Requires the iam.group\_read scope.
 - `--stream`\
   Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx iam groups update
 
@@ -386,7 +386,7 @@ Upsert a group.
 
 Replaces the group ID with the JSON in `--file`, as create takes it without id, or
 creates it with that id where none exists (an upsert): give its name and every other
-member to keep, as [`epx iam groups get ID -o json`](/emporix-cli/commands/iam#epx-iam-groups-get) prints it.
+member to keep, as [`epx iam groups get ID -o json`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/iam#epx-iam-groups-get) prints it.
 With metadata.version as read, Emporix changes it only if that is still its version.
 Emporix answers with the id of one it created, and with nothing when it replaced one.
 It changes who may do what in the tenant.
@@ -399,7 +399,7 @@ Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the iam.group\_manage scope.
+Requires the iam.group_manage scope.
 
 **Command:** `epx iam groups update ID [flags]`
 
@@ -414,7 +414,7 @@ Requires the iam.group\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx iam groups users
 
@@ -423,12 +423,12 @@ Read the users of a group, add and remove them.
 Reads the users of a group, adds users to it and removes them from it.
 Its writes change who may do what in the tenant.
 
-Its reads require the iam.user\_read scope.
-Its writes require the iam.assignment\_manage scope.
+Its reads require the iam.user_read scope.
+Its writes require the iam.assignment_manage scope.
 
 **Command:** `epx iam groups users [flags]`, `epx iam groups users [command]`
 
-**Flags:** only the [global flags](/emporix-cli/commands#global-flags).
+**Flags:** only the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Subcommands**
 
@@ -448,20 +448,20 @@ Its writes require the iam.assignment\_manage scope.
 Add a user to a group.
 
 Adds the user that `--user` names, of the kind that `--user-type` names (EMPLOYEE when left
-out), to the group GROUP\_ID, or the one in `--file`, a JSON object with its userId and
+out), to the group GROUP_ID, or the one in `--file`, a JSON object with its userId and
 userType. Emporix answers with the id of the membership; a user already in the group is
 answered with a new id that is not the listed membership's, and no second membership is made
-(read the members with [`epx iam groups users list`](/emporix-cli/commands/iam#epx-iam-groups-users-list)).
+(read the members with [`epx iam groups users list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/iam#epx-iam-groups-users-list)).
 The user then gets the scopes of the group's access controls; a group of a vendor takes
 only the vendor's employees.
-GROUP\_ID is the ID that [`epx iam groups list`](/emporix-cli/commands/iam#epx-iam-groups-list) shows; an unknown one is not found.
+GROUP_ID is the ID that [`epx iam groups list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/iam#epx-iam-groups-list) shows; an unknown one is not found.
 It changes who may do what in the tenant.
 
 Changes data: on a terminal, epx asks before it sends POST. `--yes` sends without
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the iam.assignment\_manage scope.
+Requires the iam.assignment_manage scope.
 
 **Command:** `epx iam groups users create GROUP_ID [flags]`
 
@@ -474,29 +474,29 @@ Requires the iam.assignment\_manage scope.
 - `-o, --output <format>`\
   Format of the response: json or yaml. Default: `json`.
 - `--user <USER_ID>`\
-  The USER\_ID of the user to add: the ID that [`epx iam users list`](/emporix-cli/commands/iam#epx-iam-users-list) shows, or a customer's id (required without `--file`).
+  The USER_ID of the user to add: the ID that [`epx iam users list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/iam#epx-iam-users-list) shows, or a customer's id (required without `--file`).
 - `--user-type <TYPE>`\
   The TYPE of user: CUSTOMER or EMPLOYEE.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx iam groups users delete
 
 Remove a user from a group.
 
-Removes the user USER\_ID from the group GROUP\_ID: the user no longer gets the scopes of
+Removes the user USER_ID from the group GROUP_ID: the user no longer gets the scopes of
 its access controls.
-GROUP\_ID is the ID that [`epx iam groups list`](/emporix-cli/commands/iam#epx-iam-groups-list) shows; an unknown GROUP\_ID or USER\_ID is answered as one that Emporix deleted (204 No Content).
+GROUP_ID is the ID that [`epx iam groups list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/iam#epx-iam-groups-list) shows; an unknown GROUP_ID or USER_ID is answered as one that Emporix deleted (204 No Content).
 It changes who may do what in the tenant.
 
 Deletes data, which cannot be undone.
-On a terminal, epx sends DELETE only once you type USER\_ID at its prompt.
+On a terminal, epx sends DELETE only once you type USER_ID at its prompt.
 `--yes` sends without asking (required without a terminal);
 `--dry-run` prints the request instead of sending it.
 
-Requires the iam.assignment\_manage scope.
+Requires the iam.assignment_manage scope.
 
 **Command:** `epx iam groups users delete GROUP_ID USER_ID [flags]`
 
@@ -509,22 +509,22 @@ Requires the iam.assignment\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx iam groups users delete-all
 
 Remove every user from a group.
 
-Removes every user from the group GROUP\_ID, which stays.
-GROUP\_ID is the ID that [`epx iam groups list`](/emporix-cli/commands/iam#epx-iam-groups-list) shows; an unknown one is answered as one that Emporix deleted (204 No Content).
+Removes every user from the group GROUP_ID, which stays.
+GROUP_ID is the ID that [`epx iam groups list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/iam#epx-iam-groups-list) shows; an unknown one is answered as one that Emporix deleted (204 No Content).
 It changes who may do what in the tenant.
 
 Deletes the membership of every user of the group with one request, which cannot be undone.
-On a terminal, epx sends DELETE only once you type GROUP\_ID at its prompt.
+On a terminal, epx sends DELETE only once you type GROUP_ID at its prompt.
 `--yes` sends without asking (required without a terminal);
 `--dry-run` prints the request instead of sending it.
 
-Requires the iam.assignment\_manage scope.
+Requires the iam.assignment_manage scope.
 
 **Command:** `epx iam groups users delete-all GROUP_ID [flags]`
 
@@ -537,16 +537,16 @@ Requires the iam.assignment\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx iam groups users list
 
 List the users of a group.
 
 Reads the members of a group: USER is a user's id and TYPE the kind of user.
-GROUP\_ID is the ID that [`epx iam groups list`](/emporix-cli/commands/iam#epx-iam-groups-list) shows; an unknown one lists nothing.
+GROUP_ID is the ID that [`epx iam groups list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/iam#epx-iam-groups-list) shows; an unknown one lists nothing.
 
-Requires the iam.user\_read scope.
+Requires the iam.user_read scope.
 
 **Command:** `epx iam groups users list GROUP_ID [flags]`
 
@@ -563,25 +563,25 @@ Requires the iam.user\_read scope.
 - `--stream`\
   Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx iam groups users update
 
 Upsert the membership of a user in a group.
 
-Adds the user USER\_ID, of the kind USER\_TYPE (CUSTOMER or EMPLOYEE), to the group GROUP\_ID
+Adds the user USER_ID, of the kind USER_TYPE (CUSTOMER or EMPLOYEE), to the group GROUP_ID
 unless it belongs to it already (an upsert): Emporix answers with the id of the membership
 it made, and with nothing when there was one, which it leaves as it is.
 The user then gets the scopes of the group's access controls; a group of a vendor takes
 only the vendor's employees.
-GROUP\_ID is the ID that [`epx iam groups list`](/emporix-cli/commands/iam#epx-iam-groups-list) shows; an unknown one is not found.
+GROUP_ID is the ID that [`epx iam groups list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/iam#epx-iam-groups-list) shows; an unknown one is not found.
 It changes who may do what in the tenant.
 
 Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without
 asking (required without a terminal); `--dry-run` prints the request
 instead of sending it.
 
-Requires the iam.assignment\_manage scope.
+Requires the iam.assignment_manage scope.
 
 **Command:** `epx iam groups users update GROUP_ID USER_TYPE USER_ID [flags]`
 
@@ -594,7 +594,7 @@ Requires the iam.assignment\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx iam permissions
 
@@ -605,11 +605,11 @@ Emporix has deprecated the endpoints this reads; they may be removed.
 list sorts by id unless `--sort` says otherwise; end another order with ,id:asc (e.g.
 name.en:asc,id:asc), as Emporix wants a direction on every field, so pages do not overlap.
 
-Requires the iam.permission\_read scope.
+Requires the iam.permission_read scope.
 
 **Command:** `epx iam permissions [flags]`, `epx iam permissions [command]`
 
-**Flags:** only the [global flags](/emporix-cli/commands#global-flags).
+**Flags:** only the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Subcommands**
 
@@ -627,7 +627,7 @@ Emporix has deprecated the endpoints this reads; they may be removed.
 list sorts by id unless `--sort` says otherwise; end another order with ,id:asc (e.g.
 name.en:asc,id:asc), as Emporix wants a direction on every field, so pages do not overlap.
 
-Requires the iam.permission\_read scope.
+Requires the iam.permission_read scope.
 
 **Command:** `epx iam permissions get ID [flags]`
 
@@ -642,7 +642,7 @@ Requires the iam.permission\_read scope.
 - `-o, --output <format>`\
   Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx iam permissions list
 
@@ -653,7 +653,7 @@ Emporix has deprecated the endpoints this reads; they may be removed.
 list sorts by id unless `--sort` says otherwise; end another order with ,id:asc (e.g.
 name.en:asc,id:asc), as Emporix wants a direction on every field, so pages do not overlap.
 
-Requires the iam.permission\_read scope.
+Requires the iam.permission_read scope.
 
 **Command:** `epx iam permissions list [flags]`
 
@@ -674,7 +674,7 @@ Requires the iam.permission\_read scope.
 - `--stream`\
   Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx iam resources
 
@@ -685,11 +685,11 @@ Emporix has deprecated the endpoints this reads; they may be removed.
 list sorts by id unless `--sort` says otherwise; end another order with ,id:asc (e.g.
 name.en:asc,id:asc), as Emporix wants a direction on every field, so pages do not overlap.
 
-Requires the iam.resource\_read scope.
+Requires the iam.resource_read scope.
 
 **Command:** `epx iam resources [flags]`, `epx iam resources [command]`
 
-**Flags:** only the [global flags](/emporix-cli/commands#global-flags).
+**Flags:** only the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Subcommands**
 
@@ -707,7 +707,7 @@ Emporix has deprecated the endpoints this reads; they may be removed.
 list sorts by id unless `--sort` says otherwise; end another order with ,id:asc (e.g.
 name.en:asc,id:asc), as Emporix wants a direction on every field, so pages do not overlap.
 
-Requires the iam.resource\_read scope.
+Requires the iam.resource_read scope.
 
 **Command:** `epx iam resources get ID [flags]`
 
@@ -722,7 +722,7 @@ Requires the iam.resource\_read scope.
 - `-o, --output <format>`\
   Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx iam resources list
 
@@ -733,7 +733,7 @@ Emporix has deprecated the endpoints this reads; they may be removed.
 list sorts by id unless `--sort` says otherwise; end another order with ,id:asc (e.g.
 name.en:asc,id:asc), as Emporix wants a direction on every field, so pages do not overlap.
 
-Requires the iam.resource\_read scope.
+Requires the iam.resource_read scope.
 
 **Command:** `epx iam resources list [flags]`
 
@@ -754,7 +754,7 @@ Requires the iam.resource\_read scope.
 - `--stream`\
   Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx iam roles
 
@@ -765,11 +765,11 @@ Emporix has deprecated the endpoints this reads; they may be removed.
 list sorts by id unless `--sort` says otherwise; end another order with ,id:asc (e.g.
 name.en:asc,id:asc), as Emporix wants a direction on every field, so pages do not overlap.
 
-Requires the iam.role\_read scope.
+Requires the iam.role_read scope.
 
 **Command:** `epx iam roles [flags]`, `epx iam roles [command]`
 
-**Flags:** only the [global flags](/emporix-cli/commands#global-flags).
+**Flags:** only the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Subcommands**
 
@@ -787,7 +787,7 @@ Emporix has deprecated the endpoints this reads; they may be removed.
 list sorts by id unless `--sort` says otherwise; end another order with ,id:asc (e.g.
 name.en:asc,id:asc), as Emporix wants a direction on every field, so pages do not overlap.
 
-Requires the iam.role\_read scope.
+Requires the iam.role_read scope.
 
 **Command:** `epx iam roles get ID [flags]`
 
@@ -802,7 +802,7 @@ Requires the iam.role\_read scope.
 - `-o, --output <format>`\
   Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx iam roles list
 
@@ -813,7 +813,7 @@ Emporix has deprecated the endpoints this reads; they may be removed.
 list sorts by id unless `--sort` says otherwise; end another order with ,id:asc (e.g.
 name.en:asc,id:asc), as Emporix wants a direction on every field, so pages do not overlap.
 
-Requires the iam.role\_read scope.
+Requires the iam.role_read scope.
 
 **Command:** `epx iam roles list [flags]`
 
@@ -834,7 +834,7 @@ Requires the iam.role\_read scope.
 - `--stream`\
   Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx iam scopes
 
@@ -843,12 +843,12 @@ Read, upsert and delete OAuth scopes.
 Reads the OAuth scopes the tenant knows, and upserts and deletes its custom scopes.
 Its writes change who may do what in the tenant.
 
-Its reads require the iam.scope\_read scope.
-Its writes require the iam.scope\_manage scope.
+Its reads require the iam.scope_read scope.
+Its writes require the iam.scope_manage scope.
 
 **Command:** `epx iam scopes [flags]`, `epx iam scopes [command]`
 
-**Flags:** only the [global flags](/emporix-cli/commands#global-flags).
+**Flags:** only the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Subcommands**
 
@@ -867,7 +867,7 @@ Delete a custom scope.
 
 Deletes the custom scope ID: it can no longer be used, though API keys made before may
 still show it. Emporix deletes only custom scopes, not the predefined ones (PREDEFINED in
-[`epx iam scopes list`](/emporix-cli/commands/iam#epx-iam-scopes-list)).
+[`epx iam scopes list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/iam#epx-iam-scopes-list)).
 It changes who may do what in the tenant.
 
 Deletes data, which cannot be undone.
@@ -875,7 +875,7 @@ On a terminal, epx sends DELETE only once you type ID at its prompt.
 `--yes` sends without asking (required without a terminal);
 `--dry-run` prints the request instead of sending it.
 
-Requires the iam.scope\_manage scope.
+Requires the iam.scope_manage scope.
 
 **Command:** `epx iam scopes delete ID [flags]`
 
@@ -888,7 +888,7 @@ Requires the iam.scope\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx iam scopes get
 
@@ -899,7 +899,7 @@ and PREDEFINED whether Emporix defines it.
 list sorts by id unless `--sort` says otherwise; end another order with ,id:asc (e.g.
 name.en:asc,id:asc), as Emporix wants a direction on every field, so pages do not overlap.
 
-Requires the iam.scope\_read scope.
+Requires the iam.scope_read scope.
 
 **Command:** `epx iam scopes get ID [flags]`
 
@@ -914,7 +914,7 @@ Requires the iam.scope\_read scope.
 - `-o, --output <format>`\
   Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx iam scopes list
 
@@ -925,7 +925,7 @@ and PREDEFINED whether Emporix defines it.
 list sorts by id unless `--sort` says otherwise; end another order with ,id:asc (e.g.
 name.en:asc,id:asc), as Emporix wants a direction on every field, so pages do not overlap.
 
-Requires the iam.scope\_read scope.
+Requires the iam.scope_read scope.
 
 **Command:** `epx iam scopes list [flags]`
 
@@ -948,25 +948,25 @@ Requires the iam.scope\_read scope.
 - `--stream`\
   Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx iam scopes update
 
 Upsert a custom scope.
 
-Replaces the custom scope ID, e.g. acme.vehicle\_manage, with the JSON in `--file`, or creates
+Replaces the custom scope ID, e.g. acme.vehicle_manage, with the JSON in `--file`, or creates
 it where none exists (an upsert): its domain and description, a map of translations such
 as `{"en": "Manage vehicles"}`.
 With metadata.version as read, Emporix changes it only if that is still its version.
 Emporix answers with the id of one it created, and with nothing when it replaced one.
-Access controls grant scopes ([`epx iam access-controls update`](/emporix-cli/commands/iam#epx-iam-access-controls-update)).
+Access controls grant scopes ([`epx iam access-controls update`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/iam#epx-iam-access-controls-update)).
 It changes who may do what in the tenant.
 
 Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the iam.scope\_manage scope.
+Requires the iam.scope_manage scope.
 
 **Command:** `epx iam scopes update ID [flags]`
 
@@ -981,7 +981,7 @@ Requires the iam.scope\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx iam templates
 
@@ -992,11 +992,11 @@ Reads IAM access control templates: sets of access controls that groups are buil
 list sorts by id unless `--sort` says otherwise; end another order with ,id:asc (e.g.
 name.en:asc,id:asc), as Emporix wants a direction on every field, so pages do not overlap.
 
-Requires the iam.template\_read scope.
+Requires the iam.template_read scope.
 
 **Command:** `epx iam templates [flags]`, `epx iam templates [command]`
 
-**Flags:** only the [global flags](/emporix-cli/commands#global-flags).
+**Flags:** only the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Subcommands**
 
@@ -1012,7 +1012,7 @@ Reads IAM access control templates: sets of access controls that groups are buil
 list sorts by id unless `--sort` says otherwise; end another order with ,id:asc (e.g.
 name.en:asc,id:asc), as Emporix wants a direction on every field, so pages do not overlap.
 
-Requires the iam.template\_read scope.
+Requires the iam.template_read scope.
 
 **Command:** `epx iam templates list [flags]`
 
@@ -1033,7 +1033,7 @@ Requires the iam.template\_read scope.
 - `--stream`\
   Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx iam users
 
@@ -1049,7 +1049,7 @@ Its writes require different OAuth scopes; the help of each names them.
 
 **Command:** `epx iam users [flags]`, `epx iam users [command]`
 
-**Flags:** only the [global flags](/emporix-cli/commands#global-flags).
+**Flags:** only the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Subcommands**
 
@@ -1085,9 +1085,9 @@ SCOPES counts the scopes an access control grants (`-o json` lists them); RESOUR
 and ROLE are the ids of the resource and role older access controls refer to.
 Emporix lists them on one page only, so they are read as one page of up to 1000: a user
 with more fails.
-USER\_ID is the ID that [`epx iam users list`](/emporix-cli/commands/iam#epx-iam-users-list) shows; an unknown one lists nothing.
+USER_ID is the ID that [`epx iam users list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/iam#epx-iam-users-list) shows; an unknown one lists nothing.
 
-Requires the iam.access\_read scope.
+Requires the iam.access_read scope.
 
 **Command:** `epx iam users access-controls USER_ID [flags]`
 
@@ -1106,7 +1106,7 @@ Requires the iam.access\_read scope.
 - `--stream`\
   Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx iam users create
 
@@ -1114,7 +1114,7 @@ Create a user.
 
 Creates a Management Dashboard user (an employee) from the JSON in `--file`, which gives each
 of firstName, lastName, preferredSite, preferredCurrency, preferredLanguage, department,
-contactEmail and groupIds (the groups that the user belongs to, from [`epx iam groups list`](/emporix-cli/commands/iam#epx-iam-groups-list)).
+contactEmail and groupIds (the groups that the user belongs to, from [`epx iam groups list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/iam#epx-iam-groups-list)).
 Emporix emails the user to confirm the address and set a password. An e-mail that a user of the
 tenant has already is a conflict (exit 5): Emporix creates no user. It answers with the user's id.
 It changes who may do what in the tenant.
@@ -1123,7 +1123,7 @@ Changes data: on a terminal, epx asks before it sends POST. `--yes` sends withou
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the iam.user\_create scope.
+Requires the iam.user_create scope.
 
 **Command:** `epx iam users create [flags]`
 
@@ -1138,7 +1138,7 @@ Requires the iam.user\_create scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx iam users delete
 
@@ -1153,7 +1153,7 @@ On a terminal, epx sends DELETE only once you type ID at its prompt.
 `--yes` sends without asking (required without a terminal);
 `--dry-run` prints the request instead of sending it.
 
-Requires the iam.user\_delete scope.
+Requires the iam.user_delete scope.
 
 **Command:** `epx iam users delete ID [flags]`
 
@@ -1166,17 +1166,17 @@ Requires the iam.user\_delete scope.
 - `--yes`\
   Send without asking (required without a terminal).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx iam users for-vendor
 
 List the users of a vendor.
 
-Reads the users of a vendor ([`epx vendors list`](/emporix-cli/commands/vendors#epx-vendors-list)), personal data included, with the columns
-of [`epx iam users list`](/emporix-cli/commands/iam#epx-iam-users-list).
-VENDOR\_ID is the ID that [`epx vendors list`](/emporix-cli/commands/vendors#epx-vendors-list) shows; an unknown one lists nothing.
+Reads the users of a vendor ([`epx vendors list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/vendors#epx-vendors-list)), personal data included, with the columns
+of [`epx iam users list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/iam#epx-iam-users-list).
+VENDOR_ID is the ID that [`epx vendors list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/vendors#epx-vendors-list) shows; an unknown one lists nothing.
 
-Requires the iam.user\_read scope.
+Requires the iam.user_read scope.
 
 **Command:** `epx iam users for-vendor VENDOR_ID [flags]`
 
@@ -1193,7 +1193,7 @@ Requires the iam.user\_read scope.
 - `--stream`\
   Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx iam users get
 
@@ -1201,11 +1201,11 @@ Show one user.
 
 Reads the tenant's users (such as employees), personal data included. STATUS and LOCKED
 tell whether a user can sign in, and GROUPS counts the groups a user belongs to
-([`epx iam users groups list`](/emporix-cli/commands/iam#epx-iam-users-groups-list) lists them). Emporix orders users differently on every
+([`epx iam users groups list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/iam#epx-iam-users-groups-list) lists them). Emporix orders users differently on every
 request and fails on most second pages, so list reads them as one page of up to 500: the
 order, and the users `--limit` keeps, vary per run, and a tenant with more users fails.
 
-Requires the iam.user\_read scope.
+Requires the iam.user_read scope.
 
 **Command:** `epx iam users get ID [flags]`
 
@@ -1218,7 +1218,7 @@ Requires the iam.user\_read scope.
 - `-o, --output <format>`\
   Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx iam users groups
 
@@ -1227,12 +1227,12 @@ Read the groups of a user, remove a user from them.
 Reads the groups a user belongs to, all or one, and removes a user from every group.
 Its writes change who may do what in the tenant.
 
-Its reads require the iam.group\_read scope.
-Its writes require the iam.assignment\_manage scope.
+Its reads require the iam.group_read scope.
+Its writes require the iam.assignment_manage scope.
 
 **Command:** `epx iam users groups [flags]`, `epx iam users groups [command]`
 
-**Flags:** only the [global flags](/emporix-cli/commands#global-flags).
+**Flags:** only the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Subcommands**
 
@@ -1247,17 +1247,17 @@ Its writes require the iam.assignment\_manage scope.
 
 Remove a user from every group.
 
-Removes the user USER\_ID from every group: the user keeps their account, but no
+Removes the user USER_ID from every group: the user keeps their account, but no
 group grants them access any more.
-USER\_ID is the ID that [`epx iam users list`](/emporix-cli/commands/iam#epx-iam-users-list) shows; an unknown one is answered as one that Emporix deleted (204 No Content).
+USER_ID is the ID that [`epx iam users list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/iam#epx-iam-users-list) shows; an unknown one is answered as one that Emporix deleted (204 No Content).
 It changes who may do what in the tenant.
 
 Deletes the user's membership of every group with one request, which cannot be undone.
-On a terminal, epx sends DELETE only once you type USER\_ID at its prompt.
+On a terminal, epx sends DELETE only once you type USER_ID at its prompt.
 `--yes` sends without asking (required without a terminal);
 `--dry-run` prints the request instead of sending it.
 
-Requires the iam.assignment\_manage scope.
+Requires the iam.assignment_manage scope.
 
 **Command:** `epx iam users groups delete-all USER_ID [flags]`
 
@@ -1270,17 +1270,17 @@ Requires the iam.assignment\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx iam users groups get
 
 Show one group of a user.
 
 Reads one group a user belongs to; one the user does not belong to is not found.
-USER\_ID is the ID that [`epx iam users list`](/emporix-cli/commands/iam#epx-iam-users-list) shows; an unknown one is not found.
-ID is the ID that [`epx iam users groups list USER_ID`](/emporix-cli/commands/iam#epx-iam-users-groups-list) shows; an unknown one is not found.
+USER_ID is the ID that [`epx iam users list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/iam#epx-iam-users-list) shows; an unknown one is not found.
+ID is the ID that [`epx iam users groups list USER_ID`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/iam#epx-iam-users-groups-list) shows; an unknown one is not found.
 
-Requires the iam.group\_read scope.
+Requires the iam.group_read scope.
 
 **Command:** `epx iam users groups get USER_ID ID [flags]`
 
@@ -1295,16 +1295,16 @@ Requires the iam.group\_read scope.
 - `-o, --output <format>`\
   Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx iam users groups list
 
 List the groups of a user.
 
 Reads the groups a user belongs to.
-USER\_ID is the ID that [`epx iam users list`](/emporix-cli/commands/iam#epx-iam-users-list) shows; an unknown one lists nothing.
+USER_ID is the ID that [`epx iam users list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/iam#epx-iam-users-list) shows; an unknown one lists nothing.
 
-Requires the iam.group\_read scope.
+Requires the iam.group_read scope.
 
 **Command:** `epx iam users groups list USER_ID [flags]`
 
@@ -1323,7 +1323,7 @@ Requires the iam.group\_read scope.
 - `--stream`\
   Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx iam users list
 
@@ -1331,11 +1331,11 @@ List IAM users.
 
 Reads the tenant's users (such as employees), personal data included. STATUS and LOCKED
 tell whether a user can sign in, and GROUPS counts the groups a user belongs to
-([`epx iam users groups list`](/emporix-cli/commands/iam#epx-iam-users-groups-list) lists them). Emporix orders users differently on every
+([`epx iam users groups list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/iam#epx-iam-users-groups-list) lists them). Emporix orders users differently on every
 request and fails on most second pages, so list reads them as one page of up to 500: the
 order, and the users `--limit` keeps, vary per run, and a tenant with more users fails.
 
-Requires the iam.user\_read scope.
+Requires the iam.user_read scope.
 
 **Command:** `epx iam users list [flags]`
 
@@ -1352,7 +1352,7 @@ Requires the iam.user\_read scope.
 - `--stream`\
   Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx iam users resource-access-controls
 
@@ -1361,11 +1361,11 @@ List the access controls of a user on a resource.
 Reads the access controls a user is granted on one resource.
 SCOPES counts the scopes an access control grants (`-o json` lists them); RESOURCE
 and ROLE are the ids of the resource and role older access controls refer to.
-USER\_ID and RESOURCE\_ID are the IDs that [`epx iam users list`](/emporix-cli/commands/iam#epx-iam-users-list) and [`epx iam resources list`](/emporix-cli/commands/iam#epx-iam-resources-list) show;
+USER_ID and RESOURCE_ID are the IDs that [`epx iam users list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/iam#epx-iam-users-list) and [`epx iam resources list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/iam#epx-iam-resources-list) show;
 an unknown one, or a resource the user has no access to, lists nothing.
 Emporix has deprecated the endpoints this reads; they may be removed.
 
-Requires the iam.access\_read scope.
+Requires the iam.access_read scope.
 
 **Command:** `epx iam users resource-access-controls USER_ID RESOURCE_ID [flags]`
 
@@ -1384,7 +1384,7 @@ Requires the iam.access\_read scope.
 - `--stream`\
   Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx iam users resource-permissions
 
@@ -1392,11 +1392,11 @@ List the permissions of a user on a resource.
 
 Reads the permissions a user has on one resource through the roles that their groups'
 access controls grant there: RESOURCES counts the resources a permission applies to.
-USER\_ID and RESOURCE\_ID are the IDs that [`epx iam users list`](/emporix-cli/commands/iam#epx-iam-users-list) and [`epx iam resources list`](/emporix-cli/commands/iam#epx-iam-resources-list) show;
+USER_ID and RESOURCE_ID are the IDs that [`epx iam users list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/iam#epx-iam-users-list) and [`epx iam resources list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/iam#epx-iam-resources-list) show;
 an unknown one, or a resource the user has no access to, lists nothing.
 Emporix has deprecated the endpoints this reads; they may be removed.
 
-Requires the iam.permission\_read scope.
+Requires the iam.permission_read scope.
 
 **Command:** `epx iam users resource-permissions USER_ID RESOURCE_ID [flags]`
 
@@ -1415,7 +1415,7 @@ Requires the iam.permission\_read scope.
 - `--stream`\
   Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx iam users scopes
 
@@ -1423,9 +1423,9 @@ List the scopes of a user.
 
 Reads the scopes a user is granted through their groups, sorted, without the tenant
 entry; a user without scopes lists nothing, like an unknown one.
-USER\_ID is the ID that [`epx iam users list`](/emporix-cli/commands/iam#epx-iam-users-list) shows; an unknown one lists nothing.
+USER_ID is the ID that [`epx iam users list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/iam#epx-iam-users-list) shows; an unknown one lists nothing.
 
-Requires the iam.scope\_read scope.
+Requires the iam.scope_read scope.
 
 **Command:** `epx iam users scopes USER_ID [flags]`
 
@@ -1438,7 +1438,7 @@ Requires the iam.scope\_read scope.
 - `-o, --output <format>`\
   Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx iam users update
 
@@ -1449,15 +1449,15 @@ firstName, lastName, preferredSite, preferredCurrency, preferredLanguage, depart
 backofficeUserNumber and groupIds: Emporix removes the user from every group and adds them
 to those of groupIds.
 An unknown ID is not refused: Emporix answers 204 No Content and adds that ID as a member of
-each group of groupIds, so those groups take effect for it. Check the ID with [`epx iam users get`](/emporix-cli/commands/iam#epx-iam-users-get)
-first; [`epx iam users groups delete-all ID`](/emporix-cli/commands/iam#epx-iam-users-groups-delete-all) removes it from every group it is in.
+each group of groupIds, so those groups take effect for it. Check the ID with [`epx iam users get`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/iam#epx-iam-users-get)
+first; [`epx iam users groups delete-all ID`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/iam#epx-iam-users-groups-delete-all) removes it from every group it is in.
 It changes who may do what in the tenant.
 
 Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the iam.user\_update scope.
+Requires the iam.user_update scope.
 
 **Command:** `epx iam users update ID [flags]`
 
@@ -1472,4 +1472,4 @@ Requires the iam.user\_update scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).

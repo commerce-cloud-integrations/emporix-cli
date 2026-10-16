@@ -10,7 +10,7 @@ Operations of the Emporix API reference file [`orders/invoice/api-reference/api.
 
 | Operation | Status | Details |
 | --- | --- | --- |
-| `POST /invoice/{tenant}/jobs/invoices` | Built | [`epx invoice-jobs create`](/emporix-cli/commands/invoice-jobs#epx-invoice-jobs-create) |
-| `GET /invoice/{tenant}/jobs/invoices/{jobId}` | Built | [`epx invoice-jobs get`](/emporix-cli/commands/invoice-jobs#epx-invoice-jobs-get) |
+| `POST /invoice/{tenant}/jobs/invoices` | Built | [`epx invoice-jobs create`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/invoice-jobs#epx-invoice-jobs-create) |
+| `GET /invoice/{tenant}/jobs/invoices/{jobId}` | Built | [`epx invoice-jobs get`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/invoice-jobs#epx-invoice-jobs-get) |
 
-All services: [Emporix API coverage](/emporix-cli/coverage).
+All services: [Emporix API coverage](https://commerce-cloud-integrations.github.io/emporix-cli/coverage).

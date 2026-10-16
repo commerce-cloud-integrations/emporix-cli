@@ -11,12 +11,12 @@ Emporix numbered, the two are the same); get takes it, and a customer without sh
 lists is not found.
 create, update and delete create, replace and delete a customer's lists.
 
-Its reads require the shoppinglist.shoppinglist\_read scope.
-Its writes require the shoppinglist.shoppinglist\_manage scope.
+Its reads require the shoppinglist.shoppinglist_read scope.
+Its writes require the shoppinglist.shoppinglist_manage scope.
 
 **Command:** `epx shopping-lists [flags]`, `epx shopping-lists [command]`
 
-**Flags:** only the [global flags](/emporix-cli/commands#global-flags).
+**Flags:** only the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Subcommands**
 
@@ -47,7 +47,7 @@ Changes data: on a terminal, epx asks before it sends POST. `--yes` sends withou
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the shoppinglist.shoppinglist\_manage scope.
+Requires the shoppinglist.shoppinglist_manage scope.
 
 **Command:** `epx shopping-lists create [flags]`
 
@@ -62,7 +62,7 @@ Requires the shoppinglist.shoppinglist\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Examples**
 
@@ -76,14 +76,14 @@ Delete a shopping list of a customer.
 
 Deletes the shopping list `--name` of CUSTOMER; its other lists stay.
 A customer without shopping lists, or without a list of that name, is not found (exit 4).
-[`epx shopping-lists get CUSTOMER`](/emporix-cli/commands/shopping-lists#epx-shopping-lists-get) shows the lists that are left.
+[`epx shopping-lists get CUSTOMER`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/shopping-lists#epx-shopping-lists-get) shows the lists that are left.
 
 Deletes data, which cannot be undone.
 On a terminal, epx sends DELETE only once you type CUSTOMER at its prompt.
 `--yes` sends without asking (required without a terminal);
 `--dry-run` prints the request instead of sending it.
 
-Requires the shoppinglist.shoppinglist\_manage scope.
+Requires the shoppinglist.shoppinglist_manage scope.
 
 **Command:** `epx shopping-lists delete CUSTOMER [flags]`
 
@@ -98,7 +98,7 @@ Requires the shoppinglist.shoppinglist\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx shopping-lists delete-all
 
@@ -112,7 +112,7 @@ On a terminal, epx sends DELETE only once you type CUSTOMER at its prompt.
 `--yes` sends without asking (required without a terminal);
 `--dry-run` prints the request instead of sending it.
 
-Requires the shoppinglist.shoppinglist\_manage scope.
+Requires the shoppinglist.shoppinglist_manage scope.
 
 **Command:** `epx shopping-lists delete-all CUSTOMER [flags]`
 
@@ -125,7 +125,7 @@ Requires the shoppinglist.shoppinglist\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx shopping-lists get
 
@@ -137,7 +137,7 @@ lists are kept under (the reference calls it the customer number; for a customer
 Emporix numbered, the two are the same); get takes it, and a customer without shopping
 lists is not found.
 
-Requires the shoppinglist.shoppinglist\_read scope.
+Requires the shoppinglist.shoppinglist_read scope.
 
 **Command:** `epx shopping-lists get CUSTOMER [flags]`
 
@@ -150,7 +150,7 @@ Requires the shoppinglist.shoppinglist\_read scope.
 - `-o, --output <format>`\
   Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx shopping-lists list
 
@@ -162,7 +162,7 @@ lists are kept under (the reference calls it the customer number; for a customer
 Emporix numbered, the two are the same); get takes it, and a customer without shopping
 lists is not found.
 
-Requires the shoppinglist.shoppinglist\_read scope.
+Requires the shoppinglist.shoppinglist_read scope.
 
 **Command:** `epx shopping-lists list [flags]`
 
@@ -179,7 +179,7 @@ Requires the shoppinglist.shoppinglist\_read scope.
 - `--stream`\
   Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx shopping-lists update
 
@@ -195,7 +195,7 @@ Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the shoppinglist.shoppinglist\_manage scope.
+Requires the shoppinglist.shoppinglist_manage scope.
 
 **Command:** `epx shopping-lists update CUSTOMER [flags]`
 
@@ -210,4 +210,4 @@ Requires the shoppinglist.shoppinglist\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).

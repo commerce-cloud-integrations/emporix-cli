@@ -7,11 +7,11 @@
 Reads the tenant's currencies.
 
 Its reads need no OAuth scope.
-Its writes require the currency.currency\_manage scope.
+Its writes require the currency.currency_manage scope.
 
 **Command:** `epx currencies [flags]`, `epx currencies [command]`
 
-**Flags:** only the [global flags](/emporix-cli/commands#global-flags).
+**Flags:** only the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Subcommands**
 
@@ -43,7 +43,7 @@ Changes data: on a terminal, epx asks before it sends POST. `--yes` sends withou
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the currency.currency\_manage scope.
+Requires the currency.currency_manage scope.
 
 **Command:** `epx currencies create [flags]`
 
@@ -60,7 +60,7 @@ Requires the currency.currency\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx currencies delete
 
@@ -77,7 +77,7 @@ On a terminal, epx sends DELETE only once you type CODE at its prompt.
 `--yes` sends without asking (required without a terminal);
 `--dry-run` prints the request instead of sending it.
 
-Requires the currency.currency\_manage scope.
+Requires the currency.currency_manage scope.
 
 **Command:** `epx currencies delete CODE [flags]`
 
@@ -90,7 +90,7 @@ Requires the currency.currency\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx currencies get
 
@@ -113,7 +113,7 @@ No OAuth scope is needed.
 - `-o, --output <format>`\
   Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx currencies list
 
@@ -142,14 +142,14 @@ No OAuth scope is needed.
 - `--stream`\
   Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx currencies update
 
 Rename a currency.
 
 Replaces the name of the currency CODE with the one in the JSON of `--file`, which also
-needs the currency's metadata.version as read ([`epx currencies get CODE -o json`](/emporix-cli/commands/currencies#epx-currencies-get)), e.g.
+needs the currency's metadata.version as read ([`epx currencies get CODE -o json`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/currencies#epx-currencies-get)), e.g.
 `{"name": {"en": "Swiss franc"}, "metadata": {"version": 1}}`; the code cannot change. A
 stale version and an unknown CODE are both not found (exit 4): Emporix answers 404 to both.
 
@@ -161,7 +161,7 @@ Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the currency.currency\_manage scope.
+Requires the currency.currency_manage scope.
 
 **Command:** `epx currencies update CODE [flags]`
 
@@ -178,4 +178,4 @@ Requires the currency.currency\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).

@@ -10,19 +10,19 @@ Operations of the Emporix API reference file [`rewards-and-promotions/reward-poi
 
 | Operation | Status | Details |
 | --- | --- | --- |
-| `GET /reward-points/summaryBatch` | Built | [`epx reward-points list`](/emporix-cli/commands/reward-points#epx-reward-points-list) |
-| `GET /reward-points/customer/{customerId}` | Built | [`epx reward-points balance`](/emporix-cli/commands/reward-points#epx-reward-points-balance) |
-| `POST /reward-points/customer/{customerId}` | Built | [`epx reward-points create`](/emporix-cli/commands/reward-points#epx-reward-points-create) |
-| `DELETE /reward-points/customer/{customerId}` | Built | [`epx reward-points delete`](/emporix-cli/commands/reward-points#epx-reward-points-delete) |
-| `GET /reward-points/customer/{customerId}/summary` | Built | [`epx reward-points get`](/emporix-cli/commands/reward-points#epx-reward-points-get) |
-| `POST /reward-points/customer/{customerId}/addPoints` | Built | [`epx reward-points add`](/emporix-cli/commands/reward-points#epx-reward-points-add) |
-| `POST /reward-points/customer/{customerId}/redeemPoints` | Built | [`epx reward-points redeem`](/emporix-cli/commands/reward-points#epx-reward-points-redeem) |
+| `GET /reward-points/summaryBatch` | Built | [`epx reward-points list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/reward-points#epx-reward-points-list) |
+| `GET /reward-points/customer/{customerId}` | Built | [`epx reward-points balance`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/reward-points#epx-reward-points-balance) |
+| `POST /reward-points/customer/{customerId}` | Built | [`epx reward-points create`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/reward-points#epx-reward-points-create) |
+| `DELETE /reward-points/customer/{customerId}` | Built | [`epx reward-points delete`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/reward-points#epx-reward-points-delete) |
+| `GET /reward-points/customer/{customerId}/summary` | Built | [`epx reward-points get`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/reward-points#epx-reward-points-get) |
+| `POST /reward-points/customer/{customerId}/addPoints` | Built | [`epx reward-points add`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/reward-points#epx-reward-points-add) |
+| `POST /reward-points/customer/{customerId}/redeemPoints` | Built | [`epx reward-points redeem`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/reward-points#epx-reward-points-redeem) |
 | `GET /reward-points/public/customer` | Not applicable | Needs a signed-in customer's token, which a service token is not. |
 | `GET /reward-points/public/customer/summary` | Not applicable | Needs a signed-in customer's token, which a service token is not. |
-| `POST /reward-points/{tenant}/redeemOptions` | Built | [`epx reward-points redeem-option-create`](/emporix-cli/commands/reward-points#epx-reward-points-redeem-option-create) |
-| `GET /reward-points/{tenant}/redeemOptions` | Built | [`epx reward-points redeem-options`](/emporix-cli/commands/reward-points#epx-reward-points-redeem-options) |
-| `DELETE /reward-points/{tenant}/redeemOptions/{redeemOptionId}` | Built | [`epx reward-points redeem-option-delete`](/emporix-cli/commands/reward-points#epx-reward-points-redeem-option-delete) |
-| `PUT /reward-points/{tenant}/redeemOptions/{redeemOptionId}` | Built | [`epx reward-points redeem-option-update`](/emporix-cli/commands/reward-points#epx-reward-points-redeem-option-update) |
+| `POST /reward-points/{tenant}/redeemOptions` | Built | [`epx reward-points redeem-option-create`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/reward-points#epx-reward-points-redeem-option-create) |
+| `GET /reward-points/{tenant}/redeemOptions` | Built | [`epx reward-points redeem-options`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/reward-points#epx-reward-points-redeem-options) |
+| `DELETE /reward-points/{tenant}/redeemOptions/{redeemOptionId}` | Built | [`epx reward-points redeem-option-delete`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/reward-points#epx-reward-points-redeem-option-delete) |
+| `PUT /reward-points/{tenant}/redeemOptions/{redeemOptionId}` | Built | [`epx reward-points redeem-option-update`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/reward-points#epx-reward-points-redeem-option-update) |
 | `POST /reward-points/public/customer/redeem` | Not applicable | Needs a signed-in customer's token, which a service token is not. |
 
-All services: [Emporix API coverage](/emporix-cli/coverage).
+All services: [Emporix API coverage](https://commerce-cloud-integrations.github.io/emporix-cli/coverage).

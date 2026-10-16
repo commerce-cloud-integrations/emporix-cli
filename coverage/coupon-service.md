@@ -10,18 +10,18 @@ Operations of the Emporix API reference file [`rewards-and-promotions/coupon/api
 
 | Operation | Status | Details |
 | --- | --- | --- |
-| `GET /coupon/{tenant}/coupons` | Built | [`epx coupons list`](/emporix-cli/commands/coupons#epx-coupons-list) |
-| `POST /coupon/{tenant}/coupons` | Built | [`epx coupons create`](/emporix-cli/commands/coupons#epx-coupons-create) |
-| `GET /coupon/{tenant}/coupons/{code}` | Built | [`epx coupons get`](/emporix-cli/commands/coupons#epx-coupons-get) |
-| `PUT /coupon/{tenant}/coupons/{code}` | Built | [`epx coupons update`](/emporix-cli/commands/coupons#epx-coupons-update) |
-| `PATCH /coupon/{tenant}/coupons/{code}` | Built | [`epx coupons patch`](/emporix-cli/commands/coupons#epx-coupons-patch) |
-| `DELETE /coupon/{tenant}/coupons/{code}` | Built | [`epx coupons delete`](/emporix-cli/commands/coupons#epx-coupons-delete) |
-| `POST /coupon/{tenant}/coupons/{code}/validation` | Built | [`epx coupons validate`](/emporix-cli/commands/coupons#epx-coupons-validate) |
-| `GET /coupon/{tenant}/coupons/{code}/redemptions` | Built | [`epx coupons redemptions`](/emporix-cli/commands/coupons#epx-coupons-redemptions) |
-| `POST /coupon/{tenant}/coupons/{code}/redemptions` | Built | [`epx coupons redeem`](/emporix-cli/commands/coupons#epx-coupons-redeem) |
-| `GET /coupon/{tenant}/coupons/{code}/redemptions/{id}` | Built | [`epx coupons redemption`](/emporix-cli/commands/coupons#epx-coupons-redemption) |
-| `DELETE /coupon/{tenant}/coupons/{code}/redemptions/{id}` | Built | [`epx coupons redemption-delete`](/emporix-cli/commands/coupons#epx-coupons-redemption-delete) |
-| `GET /coupon/{tenant}/referral-coupons/{customerNumber}` | Built | [`epx coupons referral`](/emporix-cli/commands/coupons#epx-coupons-referral) |
-| `POST /coupon/{tenant}/referral-coupons/{customerNumber}` | Built | [`epx coupons referral-create`](/emporix-cli/commands/coupons#epx-coupons-referral-create) |
+| `GET /coupon/{tenant}/coupons` | Built | [`epx coupons list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/coupons#epx-coupons-list) |
+| `POST /coupon/{tenant}/coupons` | Built | [`epx coupons create`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/coupons#epx-coupons-create) |
+| `GET /coupon/{tenant}/coupons/{code}` | Built | [`epx coupons get`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/coupons#epx-coupons-get) |
+| `PUT /coupon/{tenant}/coupons/{code}` | Built | [`epx coupons update`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/coupons#epx-coupons-update) |
+| `PATCH /coupon/{tenant}/coupons/{code}` | Built | [`epx coupons patch`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/coupons#epx-coupons-patch) |
+| `DELETE /coupon/{tenant}/coupons/{code}` | Built | [`epx coupons delete`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/coupons#epx-coupons-delete) |
+| `POST /coupon/{tenant}/coupons/{code}/validation` | Built | [`epx coupons validate`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/coupons#epx-coupons-validate) |
+| `GET /coupon/{tenant}/coupons/{code}/redemptions` | Built | [`epx coupons redemptions`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/coupons#epx-coupons-redemptions) |
+| `POST /coupon/{tenant}/coupons/{code}/redemptions` | Built | [`epx coupons redeem`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/coupons#epx-coupons-redeem) |
+| `GET /coupon/{tenant}/coupons/{code}/redemptions/{id}` | Built | [`epx coupons redemption`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/coupons#epx-coupons-redemption) |
+| `DELETE /coupon/{tenant}/coupons/{code}/redemptions/{id}` | Built | [`epx coupons redemption-delete`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/coupons#epx-coupons-redemption-delete) |
+| `GET /coupon/{tenant}/referral-coupons/{customerNumber}` | Built | [`epx coupons referral`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/coupons#epx-coupons-referral) |
+| `POST /coupon/{tenant}/referral-coupons/{customerNumber}` | Built | [`epx coupons referral-create`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/coupons#epx-coupons-referral-create) |
 
-All services: [Emporix API coverage](/emporix-cli/coverage).
+All services: [Emporix API coverage](https://commerce-cloud-integrations.github.io/emporix-cli/coverage).

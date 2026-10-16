@@ -8,12 +8,12 @@ Reads and changes legal entities, the companies of B2B customers and their subsi
 personal data included.
 create and update ID (an upsert) send the JSON body of `--file`; delete ID sends none.
 
-Its reads require the customermanagement.legalentity\_read scope.
-Its writes require the customermanagement.legalentity\_manage scope.
+Its reads require the customermanagement.legalentity_read scope.
+Its writes require the customermanagement.legalentity_manage scope.
 
 **Command:** `epx legal-entities [flags]`, `epx legal-entities [command]`
 
-**Flags:** only the [global flags](/emporix-cli/commands#global-flags).
+**Flags:** only the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Subcommands**
 
@@ -37,7 +37,7 @@ Its writes require the customermanagement.legalentity\_manage scope.
 Create one legal entity.
 
 Creates the legal entity that the JSON body of `--file` describes, shaped as
-[`epx legal-entities get ID -o json`](/emporix-cli/commands/legal-entities#epx-legal-entities-get) prints one:
+[`epx legal-entities get ID -o json`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/legal-entities#epx-legal-entities-get) prints one:
 name (required), type (COMPANY, the default, or SUBSIDIARY), parentId (the legal
 entity a subsidiary belongs to), legalInfo, accountLimit, customerGroups (IAM groups),
 entitiesAddresses and approvalGroup (its customer locations and contact assignments),
@@ -53,7 +53,7 @@ Changes data: on a terminal, epx asks before it sends POST. `--yes` sends withou
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the customermanagement.legalentity\_manage scope.
+Requires the customermanagement.legalentity_manage scope.
 
 **Command:** `epx legal-entities create [flags]`
 
@@ -68,14 +68,14 @@ Requires the customermanagement.legalentity\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx legal-entities delete
 
 Delete one legal entity.
 
 Deletes the legal entity ID; it sends no body.
-ID is the ID that [`epx legal-entities list`](/emporix-cli/commands/legal-entities#epx-legal-entities-list) shows; an unknown one is answered as one that Emporix deleted (204 No Content).
+ID is the ID that [`epx legal-entities list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/legal-entities#epx-legal-entities-list) shows; an unknown one is answered as one that Emporix deleted (204 No Content).
 The assignments are the contact assignments of it and of its subsidiaries and the segment
 assignments that name it; the IAM customer groups those still in its customerGroups. Its
 customer locations stay, and its customers no longer name it (one with no other legal
@@ -86,7 +86,7 @@ On a terminal, epx sends DELETE only once you type ID at its prompt.
 `--yes` sends without asking (required without a terminal);
 `--dry-run` prints the request instead of sending it.
 
-Requires the customermanagement.legalentity\_manage scope.
+Requires the customermanagement.legalentity_manage scope.
 
 **Command:** `epx legal-entities delete ID [flags]`
 
@@ -99,7 +99,7 @@ Requires the customermanagement.legalentity\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx legal-entities get
 
@@ -110,7 +110,7 @@ included (approval groups name customers). TYPE is COMPANY or SUBSIDIARY, PARENT
 entity a subsidiary belongs to, COUNTRY the country of registration. Registration details,
 addresses, customer groups, approval groups and restrictions are only in `-o json`.
 
-Requires the customermanagement.legalentity\_read scope.
+Requires the customermanagement.legalentity_read scope.
 
 **Command:** `epx legal-entities get ID [flags]`
 
@@ -123,17 +123,17 @@ Requires the customermanagement.legalentity\_read scope.
 - `-o, --output <format>`\
   Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx legal-entities hierarchy
 
 List a legal entity and its parents.
 
 Reads a legal entity and every one above it, up to its company, in the order Emporix
-sends them, personal data included; the columns are those of [`epx legal-entities list`](/emporix-cli/commands/legal-entities#epx-legal-entities-list).
-LEGAL\_ENTITY\_ID is the ID that [`epx legal-entities list`](/emporix-cli/commands/legal-entities#epx-legal-entities-list) shows; an unknown one lists nothing.
+sends them, personal data included; the columns are those of [`epx legal-entities list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/legal-entities#epx-legal-entities-list).
+LEGAL_ENTITY_ID is the ID that [`epx legal-entities list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/legal-entities#epx-legal-entities-list) shows; an unknown one lists nothing.
 
-Requires the customermanagement.legalentity\_read scope.
+Requires the customermanagement.legalentity_read scope.
 
 **Command:** `epx legal-entities hierarchy LEGAL_ENTITY_ID [flags]`
 
@@ -150,7 +150,7 @@ Requires the customermanagement.legalentity\_read scope.
 - `--stream`\
   Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx legal-entities list
 
@@ -161,7 +161,7 @@ included (approval groups name customers). TYPE is COMPANY or SUBSIDIARY, PARENT
 entity a subsidiary belongs to, COUNTRY the country of registration. Registration details,
 addresses, customer groups, approval groups and restrictions are only in `-o json`.
 
-Requires the customermanagement.legalentity\_read scope.
+Requires the customermanagement.legalentity_read scope.
 
 **Command:** `epx legal-entities list [flags]`
 
@@ -182,7 +182,7 @@ Requires the customermanagement.legalentity\_read scope.
 - `--stream`\
   Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx legal-entities search
 
@@ -190,12 +190,12 @@ Search legal entities.
 
 Reads the legal entities, personal data included, that an Emporix q filter finds (`--query`;
 without it, every legal entity).
-It reads and shows them as [`epx legal-entities list`](/emporix-cli/commands/legal-entities#epx-legal-entities-list) does.
+It reads and shows them as [`epx legal-entities list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/legal-entities#epx-legal-entities-list) does.
 
 Changes nothing: Emporix serves this read as POST with a JSON body, which the
 flags make or `--body` gives whole.
 
-Requires the customermanagement.legalentity\_read scope.
+Requires the customermanagement.legalentity_read scope.
 
 **Command:** `epx legal-entities search [flags]`
 
@@ -218,7 +218,7 @@ Requires the customermanagement.legalentity\_read scope.
 - `--stream`\
   Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx legal-entities update
 
@@ -227,10 +227,10 @@ Upsert one legal entity.
 Replaces the legal entity ID with the JSON body of `--file`, shaped as create takes it
 but without an id, or creates it with that id where none exists (an upsert); it requires
 name and type.
-With metadata.version as [`epx legal-entities get ID -o json`](/emporix-cli/commands/legal-entities#epx-legal-entities-get) prints it, Emporix
+With metadata.version as [`epx legal-entities get ID -o json`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/legal-entities#epx-legal-entities-get) prints it, Emporix
 replaces it only if nobody changed it since, and answers 409 Conflict (exit 5) otherwise;
 without metadata.version, it replaces it whatever its version.
-ID is the ID that [`epx legal-entities list`](/emporix-cli/commands/legal-entities#epx-legal-entities-list) shows.
+ID is the ID that [`epx legal-entities list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/legal-entities#epx-legal-entities-list) shows.
 Keep every customer group that Emporix made for the legal entity (Admin, Buyer, Requester
 and Contact) in customerGroups: without the Contact group, Emporix deletes that group from
 IAM; without another, it leaves that group in IAM, where deleting the legal entity no
@@ -240,7 +240,7 @@ Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the customermanagement.legalentity\_manage scope.
+Requires the customermanagement.legalentity_manage scope.
 
 **Command:** `epx legal-entities update ID [flags]`
 
@@ -255,4 +255,4 @@ Requires the customermanagement.legalentity\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).

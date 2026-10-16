@@ -9,12 +9,12 @@ tenant's payment providers: authorize starts a transaction for an order, capture
 an authorized amount, refund returns a captured one and cancel voids an authorization.
 Capture, refund and cancel move money.
 
-Its reads require the payment-gateway.paymenttransactions\_read scope.
+Its reads require the payment-gateway.paymenttransactions_read scope.
 Its writes require different OAuth scopes; the help of each names them.
 
 **Command:** `epx payment-transactions [flags]`, `epx payment-transactions [command]`
 
-**Flags:** only the [global flags](/emporix-cli/commands#global-flags).
+**Flags:** only the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Subcommands**
 
@@ -49,7 +49,7 @@ Changes data: on a terminal, epx asks before it sends POST. `--yes` sends withou
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the payment-gateway.authorize\_manage scope.
+Requires the payment-gateway.authorize_manage scope.
 
 **Command:** `epx payment-transactions authorize [flags]`
 
@@ -64,7 +64,7 @@ Requires the payment-gateway.authorize\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Examples**
 
@@ -80,7 +80,7 @@ Cancels the authorized payment of transaction ID: the provider releases the amou
 it reserved.
 
 This moves money: the confirmation names the transaction in the URL that it shows. ID is
-the ID that [`epx payment-transactions list`](/emporix-cli/commands/payment-transactions#epx-payment-transactions-list) shows; an unknown one is not found (exit 4).
+the ID that [`epx payment-transactions list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/payment-transactions#epx-payment-transactions-list) shows; an unknown one is not found (exit 4).
 
 Emporix answers whether the operation succeeded (successful). epx prints the response and
 exits with 1 unless it says that it did: where it says that it failed (successful false,
@@ -90,7 +90,7 @@ Changes data: on a terminal, epx asks before it sends POST. `--yes` sends withou
 asking (required without a terminal); `--dry-run` prints the request
 instead of sending it.
 
-Requires the payment-gateway.cancel\_manage scope.
+Requires the payment-gateway.cancel_manage scope.
 
 **Command:** `epx payment-transactions cancel ID [flags]`
 
@@ -103,7 +103,7 @@ Requires the payment-gateway.cancel\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Examples**
 
@@ -120,7 +120,7 @@ amount authorized: the provider collects it from the customer. Emporix answers w
 provider's captureId, which refund `--capture-id` takes.
 
 This moves money: the confirmation names the transaction in the URL that it shows. ID is
-the ID that [`epx payment-transactions list`](/emporix-cli/commands/payment-transactions#epx-payment-transactions-list) shows; an unknown one is not found (exit 4).
+the ID that [`epx payment-transactions list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/payment-transactions#epx-payment-transactions-list) shows; an unknown one is not found (exit 4).
 
 Emporix answers whether the operation succeeded (successful). epx prints the response and
 exits with 1 unless it says that it did: where it says that it failed (successful false,
@@ -130,7 +130,7 @@ Changes data: on a terminal, epx asks before it sends POST. `--yes` sends withou
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the payment-gateway.capture\_manage scope.
+Requires the payment-gateway.capture_manage scope.
 
 **Command:** `epx payment-transactions capture ID [flags]`
 
@@ -149,7 +149,7 @@ Requires the payment-gateway.capture\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Examples**
 
@@ -167,7 +167,7 @@ marked failed when they failed. Payment details (such as bank details and pay-by
 card tokens and the provider's requests and responses are only in `-o json`. list's `--sort`
 takes only createdDate (e.g. createdDate:desc); Emporix rejects other and several fields.
 
-Requires the payment-gateway.paymenttransactions\_read scope.
+Requires the payment-gateway.paymenttransactions_read scope.
 
 **Command:** `epx payment-transactions get ID [flags]`
 
@@ -180,7 +180,7 @@ Requires the payment-gateway.paymenttransactions\_read scope.
 - `-o, --output <format>`\
   Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx payment-transactions list
 
@@ -192,7 +192,7 @@ marked failed when they failed. Payment details (such as bank details and pay-by
 card tokens and the provider's requests and responses are only in `-o json`. list's `--sort`
 takes only createdDate (e.g. createdDate:desc); Emporix rejects other and several fields.
 
-Requires the payment-gateway.paymenttransactions\_read scope.
+Requires the payment-gateway.paymenttransactions_read scope.
 
 **Command:** `epx payment-transactions list [flags]`
 
@@ -211,7 +211,7 @@ Requires the payment-gateway.paymenttransactions\_read scope.
 - `--stream`\
   Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx payment-transactions refund
 
@@ -222,7 +222,7 @@ amount captured: the provider returns it to the customer. Where the payment was 
 more than once, `--capture-id` names the capture to refund.
 
 This moves money: the confirmation names the transaction in the URL that it shows. ID is
-the ID that [`epx payment-transactions list`](/emporix-cli/commands/payment-transactions#epx-payment-transactions-list) shows; an unknown one is not found (exit 4).
+the ID that [`epx payment-transactions list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/payment-transactions#epx-payment-transactions-list) shows; an unknown one is not found (exit 4).
 
 Emporix answers whether the operation succeeded (successful). epx prints the response and
 exits with 1 unless it says that it did: where it says that it failed (successful false,
@@ -232,7 +232,7 @@ Changes data: on a terminal, epx asks before it sends POST. `--yes` sends withou
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the payment-gateway.refund\_manage scope.
+Requires the payment-gateway.refund_manage scope.
 
 **Command:** `epx payment-transactions refund ID [flags]`
 
@@ -253,7 +253,7 @@ Requires the payment-gateway.refund\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Examples**
 

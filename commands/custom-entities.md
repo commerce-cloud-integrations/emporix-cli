@@ -7,7 +7,7 @@
 Reads and changes custom entity types: entities a tenant defines. create, update
 and delete change types; export exports types with their schemas (opt-in), which
 import imports.
-[`epx custom-entities instances`](/emporix-cli/commands/custom-entities#epx-custom-entities-instances) reads and changes the instances of a type.
+[`epx custom-entities instances`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/custom-entities#epx-custom-entities-instances) reads and changes the instances of a type.
 
 Its reads require different OAuth scopes; the help of each names them.
 Opt-in: epx requests a write-capable scope for a read only when given `--allow-write-scope`.
@@ -15,7 +15,7 @@ Its writes require different OAuth scopes; the help of each names them.
 
 **Command:** `epx custom-entities [flags]`, `epx custom-entities [command]`
 
-**Flags:** only the [global flags](/emporix-cli/commands#global-flags).
+**Flags:** only the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Subcommands**
 
@@ -44,7 +44,7 @@ Creates the custom entity type in `--file`, a JSON object with its id and name, 
 `{"id": "CUSTOM_DOCUMENT", "name": {"en": "Document"}}`, and prints the id that Emporix answers
 with; one that exists already is a conflict. The id has capital letters, digits and
 underscores, the first a letter. Emporix also creates the scopes that read and manage the
-instances of the type, such as custom.custom\_document\_manage, which it grants only minutes
+instances of the type, such as custom.custom_document_manage, which it grants only minutes
 later: until then, the instance commands of the type exit with code 3.
 Built-in types, such as AVAILABILITY and LOCATION, cannot be created.
 
@@ -56,7 +56,7 @@ Changes data: on a terminal, epx asks before it sends POST. `--yes` sends withou
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the schema.schema\_manage scope.
+Requires the schema.schema_manage scope.
 
 **Command:** `epx custom-entities create [flags]`
 
@@ -71,7 +71,7 @@ Requires the schema.schema\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx custom-entities delete
 
@@ -87,7 +87,7 @@ On a terminal, epx sends DELETE only once you type ID at its prompt.
 `--yes` sends without asking (required without a terminal);
 `--dry-run` prints the request instead of sending it.
 
-Requires the schema.schema\_manage scope.
+Requires the schema.schema_manage scope.
 
 **Command:** `epx custom-entities delete ID [flags]`
 
@@ -100,14 +100,14 @@ Requires the schema.schema\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx custom-entities export
 
 Export custom entity types with their schemas.
 
 Reads an export package of the custom entity types that `--type` names (the ID that
-[`epx custom-entities list`](/emporix-cli/commands/custom-entities#epx-custom-entities-list) shows): each type with its schemas, without metadata, and
+[`epx custom-entities list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/custom-entities#epx-custom-entities-list) shows): each type with its schemas, without metadata, and
 none of their instances. Emporix leaves out an ID that names no custom entity type (a
 built-in type such as PRODUCT too); if none is left, it answers with an empty package
 (exit 0).
@@ -118,7 +118,7 @@ flags make or `--body` gives whole.
 DATA is the package, base64-encoded and cut in the table; `-o json` prints the package
 whole, as an import on another tenant takes it.
 
-Requires the schema.schema\_manage scope.
+Requires the schema.schema_manage scope.
 Opt-in: epx requests a write-capable scope for a read only when given `--allow-write-scope`.
 
 **Command:** `epx custom-entities export [flags]`
@@ -126,7 +126,7 @@ Opt-in: epx requests a write-capable scope for a read only when given `--allow-w
 **Flags**
 
 - `--allow-write-scope`\
-  Opt in to requesting schema.schema\_manage, which can also change data (required).
+  Opt in to requesting schema.schema_manage, which can also change data (required).
 - `--body <FILE>`\
   Send the JSON request body in FILE as given (- reads standard input) instead of the one the other flags make.
 - `--columns <names>`\
@@ -138,14 +138,14 @@ Opt-in: epx requests a write-capable scope for a read only when given `--allow-w
 - `--type <ID>`\
   A custom entity type ID to export (repeatable; required without `--body`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx custom-entities get
 
 Show one custom entity.
 
 Reads custom entity types: entities a tenant defines.
-[`epx custom-entities instances`](/emporix-cli/commands/custom-entities#epx-custom-entities-instances) reads and changes the instances of a type.
+[`epx custom-entities instances`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/custom-entities#epx-custom-entities-instances) reads and changes the instances of a type.
 
 No OAuth scope is needed.
 
@@ -162,22 +162,22 @@ No OAuth scope is needed.
 - `-o, --output <format>`\
   Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx custom-entities import
 
 Import custom entity types with their schemas.
 
 Imports the custom entity types and their schemas of the export package in `--file`, as
-[`epx custom-entities export -o json`](/emporix-cli/commands/custom-entities#epx-custom-entities-export) prints it, e.g. on another tenant. A type or schema
-that exists already is created again, its id followed by \_COPY, such as
-CUSTOM\_DOCUMENT\_COPY, and the references of its schemas then name the copy.
+[`epx custom-entities export -o json`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/custom-entities#epx-custom-entities-export) prints it, e.g. on another tenant. A type or schema
+that exists already is created again, its id followed by _COPY, such as
+CUSTOM_DOCUMENT_COPY, and the references of its schemas then name the copy.
 
 Changes data: on a terminal, epx asks before it sends POST. `--yes` sends without
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the schema.schema\_manage scope.
+Requires the schema.schema_manage scope.
 
 **Command:** `epx custom-entities import [flags]`
 
@@ -192,7 +192,7 @@ Requires the schema.schema\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx custom-entities instances
 
@@ -201,13 +201,13 @@ Read and change the instances of a custom entity type.
 Reads the instances of a custom entity type, every one (list), those a filter finds
 (search) or one (get), and creates, changes and deletes them, one at a time or in bulk.
 
-Its reads require the custom.&lt;type\>\_read scope.
-Its writes require the custom.&lt;type\>\_manage scope.
-&lt;type\> is the custom entity type in lower case (custom.document\_manage, custom.document\_read for DOCUMENT).
+Its reads require the custom.&lt;type\>_read scope.
+Its writes require the custom.&lt;type\>_manage scope.
+&lt;type\> is the custom entity type in lower case (custom.document_manage, custom.document_read for DOCUMENT).
 
 **Command:** `epx custom-entities instances [flags]`, `epx custom-entities instances [command]`
 
-**Flags:** only the [global flags](/emporix-cli/commands#global-flags).
+**Flags:** only the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Subcommands**
 
@@ -238,12 +238,12 @@ Its writes require the custom.&lt;type\>\_manage scope.
 
 Create instances of a custom entity type in bulk.
 
-Creates instances of the custom entity type CUSTOM\_ENTITY\_ID from `--file`, a JSON array of
+Creates instances of the custom entity type CUSTOM_ENTITY_ID from `--file`, a JSON array of
 instances, each as create takes it.
-CUSTOM\_ENTITY\_ID is the ID that [`epx custom-entities list`](/emporix-cli/commands/custom-entities#epx-custom-entities-list) shows.
+CUSTOM_ENTITY_ID is the ID that [`epx custom-entities list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/custom-entities#epx-custom-entities-list) shows.
 
 With `--validate-references` true, Emporix checks the items that the references of each
-instance name with epx's token, which reads the instances of CUSTOM\_ENTITY\_ID alone: an
+instance name with epx's token, which reads the instances of CUSTOM_ENTITY_ID alone: an
 instance with a reference to an item that does not exist fails with 500 Internal Server
 Error (nothing is created), as one with a reference to an instance of
 another custom entity type is expected to, and one with a reference to another kind of
@@ -264,10 +264,10 @@ asking (required without a terminal, or with `--file` -); `--dry-run` prints the
 instead of sending it.
 
 Where `--validate-references` is true, epx also requests
-the custom.&lt;type\>\_read scope.
+the custom.&lt;type\>_read scope.
 
-Requires the custom.&lt;type\>\_manage scope.
-&lt;type\> is the custom entity type in lower case (custom.document\_manage for DOCUMENT).
+Requires the custom.&lt;type\>_manage scope.
+&lt;type\> is the custom entity type in lower case (custom.document_manage for DOCUMENT).
 
 **Command:** `epx custom-entities instances bulk-create CUSTOM_ENTITY_ID [flags]`
 
@@ -280,19 +280,19 @@ Requires the custom.&lt;type\>\_manage scope.
 - `-o, --output <format>`\
   Format of the response: json or yaml. Default: `json`.
 - `--validate-references <string>`\
-  Whether Emporix checks that the items that references in the body name exist (false without it), requesting custom.&lt;type\>\_read where it is true: true or false.
+  Whether Emporix checks that the items that references in the body name exist (false without it), requesting custom.&lt;type\>_read where it is true: true or false.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx custom-entities instances bulk-delete
 
 Delete instances of a custom entity type in bulk.
 
-Deletes the instances of the custom entity type CUSTOM\_ENTITY\_ID whose ids `--file` lists, a
+Deletes the instances of the custom entity type CUSTOM_ENTITY_ID whose ids `--file` lists, a
 JSON array of strings, such as `["123", "124"]`; Emporix answers an unknown id as deleted.
-CUSTOM\_ENTITY\_ID is the ID that [`epx custom-entities list`](/emporix-cli/commands/custom-entities#epx-custom-entities-list) shows.
+CUSTOM_ENTITY_ID is the ID that [`epx custom-entities list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/custom-entities#epx-custom-entities-list) shows.
 
 Emporix takes up to 1000 items in one request (epx refuses more), carries out each on
 its own and answers with the result of each: when one failed, epx prints the response,
@@ -301,12 +301,12 @@ may have been carried out all the same) and exits with the code that their failu
 share (for example 5 for a 409 Conflict, 4 for a 404), else 1.
 
 Deletes the instances of a custom entity type that `--file` names with one request, which cannot be undone.
-On a terminal, epx sends DELETE only once you type CUSTOM\_ENTITY\_ID at its prompt.
+On a terminal, epx sends DELETE only once you type CUSTOM_ENTITY_ID at its prompt.
 `--yes` sends without asking (required without a terminal, or with `--file` -);
 `--dry-run` prints the request instead of sending it.
 
-Requires the custom.&lt;type\>\_manage scope.
-&lt;type\> is the custom entity type in lower case (custom.document\_manage for DOCUMENT).
+Requires the custom.&lt;type\>_manage scope.
+&lt;type\> is the custom entity type in lower case (custom.document_manage for DOCUMENT).
 
 **Command:** `epx custom-entities instances bulk-delete CUSTOM_ENTITY_ID [flags]`
 
@@ -321,20 +321,20 @@ Requires the custom.&lt;type\>\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx custom-entities instances bulk-patch
 
 Change instances of a custom entity type in bulk.
 
-Changes instances of the custom entity type CUSTOM\_ENTITY\_ID as `--file` says: a JSON array
+Changes instances of the custom entity type CUSTOM_ENTITY_ID as `--file` says: a JSON array
 with the id of each instance and the JSON Patch operations that change it, as patch takes
 them, such as
 `[{"id": "123", "data": [{"op": "replace", "path": "/name/en", "value": "Report"}]}]`.
-CUSTOM\_ENTITY\_ID is the ID that [`epx custom-entities list`](/emporix-cli/commands/custom-entities#epx-custom-entities-list) shows.
+CUSTOM_ENTITY_ID is the ID that [`epx custom-entities list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/custom-entities#epx-custom-entities-list) shows.
 
 With `--validate-references` true, Emporix checks the items that the references of each
-instance name with epx's token, which reads the instances of CUSTOM\_ENTITY\_ID alone: an
+instance name with epx's token, which reads the instances of CUSTOM_ENTITY_ID alone: an
 instance with a reference to an item that does not exist fails with 500 Internal Server
 Error (nothing is created), as one with a reference to an instance of
 another custom entity type is expected to, and one with a reference to another kind of
@@ -355,10 +355,10 @@ asking (required without a terminal, or with `--file` -); `--dry-run` prints the
 instead of sending it.
 
 Where `--validate-references` is true, epx also requests
-the custom.&lt;type\>\_read scope.
+the custom.&lt;type\>_read scope.
 
-Requires the custom.&lt;type\>\_manage scope.
-&lt;type\> is the custom entity type in lower case (custom.document\_manage for DOCUMENT).
+Requires the custom.&lt;type\>_manage scope.
+&lt;type\> is the custom entity type in lower case (custom.document_manage for DOCUMENT).
 
 **Command:** `epx custom-entities instances bulk-patch CUSTOM_ENTITY_ID [flags]`
 
@@ -371,23 +371,23 @@ Requires the custom.&lt;type\>\_manage scope.
 - `-o, --output <format>`\
   Format of the response: json or yaml. Default: `json`.
 - `--validate-references <string>`\
-  Whether Emporix checks that the items that references in the body name exist (false without it, although its reference says true), requesting custom.&lt;type\>\_read where it is true: true or false.
+  Whether Emporix checks that the items that references in the body name exist (false without it, although its reference says true), requesting custom.&lt;type\>_read where it is true: true or false.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx custom-entities instances bulk-update
 
 Upsert instances of a custom entity type in bulk.
 
-Replaces the instances of the custom entity type CUSTOM\_ENTITY\_ID in `--file`, a JSON array of
+Replaces the instances of the custom entity type CUSTOM_ENTITY_ID in `--file`, a JSON array of
 instances, each with its id and as update takes it, or creates those that do not exist
 (an upsert).
-CUSTOM\_ENTITY\_ID is the ID that [`epx custom-entities list`](/emporix-cli/commands/custom-entities#epx-custom-entities-list) shows.
+CUSTOM_ENTITY_ID is the ID that [`epx custom-entities list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/custom-entities#epx-custom-entities-list) shows.
 
 With `--validate-references` true, Emporix checks the items that the references of each
-instance name with epx's token, which reads the instances of CUSTOM\_ENTITY\_ID alone: an
+instance name with epx's token, which reads the instances of CUSTOM_ENTITY_ID alone: an
 instance with a reference to an item that does not exist fails with 500 Internal Server
 Error (nothing is created), as one with a reference to an instance of
 another custom entity type is expected to, and one with a reference to another kind of
@@ -408,10 +408,10 @@ asking (required without a terminal, or with `--file` -); `--dry-run` prints the
 instead of sending it.
 
 Where `--validate-references` is true, epx also requests
-the custom.&lt;type\>\_read scope.
+the custom.&lt;type\>_read scope.
 
-Requires the custom.&lt;type\>\_manage scope.
-&lt;type\> is the custom entity type in lower case (custom.document\_manage for DOCUMENT).
+Requires the custom.&lt;type\>_manage scope.
+&lt;type\> is the custom entity type in lower case (custom.document_manage for DOCUMENT).
 
 **Command:** `epx custom-entities instances bulk-update CUSTOM_ENTITY_ID [flags]`
 
@@ -424,29 +424,29 @@ Requires the custom.&lt;type\>\_manage scope.
 - `-o, --output <format>`\
   Format of the response: json or yaml. Default: `json`.
 - `--validate-references <string>`\
-  Whether Emporix checks that the items that references in the body name exist (false without it), requesting custom.&lt;type\>\_read where it is true: true or false.
+  Whether Emporix checks that the items that references in the body name exist (false without it), requesting custom.&lt;type\>_read where it is true: true or false.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx custom-entities instances create
 
 Create an instance of a custom entity type.
 
-Creates an instance of the custom entity type CUSTOM\_ENTITY\_ID from the JSON object in
+Creates an instance of the custom entity type CUSTOM_ENTITY_ID from the JSON object in
 `--file`, such as `{"id": "123", "name": {"en": "Report"}, "mixins": {…}}`, and prints the id
 that Emporix answers with; it makes one unless the object names it, and an id that exists
 already is a conflict. An owner, such as `{"type": "EMPLOYEE", "userId": "…"}`, cannot change
 once set. The attributes of a schema go under its id, which metadata.mixins maps to its
 URL: `{"mixins": {"SCHEMA_ID": {…}}, "metadata": {"mixins": {"SCHEMA_ID": "URL"}}}`, the URL
-being the metadata.url that [`epx schemas get SCHEMA_ID -o json`](/emporix-cli/commands/schemas#epx-schemas-get) prints. A localized
+being the metadata.url that [`epx schemas get SCHEMA_ID -o json`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/schemas#epx-schemas-get) prints. A localized
 attribute, unlike the name, is a list of translations, such as
 `[{"language": "en", "value": "Report"}]`.
-CUSTOM\_ENTITY\_ID is the ID that [`epx custom-entities list`](/emporix-cli/commands/custom-entities#epx-custom-entities-list) shows.
+CUSTOM_ENTITY_ID is the ID that [`epx custom-entities list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/custom-entities#epx-custom-entities-list) shows.
 
 Emporix checks the items that the references of the instance name (unless
-`--validate-references` false) with epx's token, which reads the instances of CUSTOM\_ENTITY\_ID
+`--validate-references` false) with epx's token, which reads the instances of CUSTOM_ENTITY_ID
 alone: a reference to an instance of another custom entity type is then expected to fail
 with 400 Bad Request, as one to the type fails without that scope, and one to another kind
 of item, such as a product, may fail too.
@@ -460,10 +460,10 @@ asking (required without a terminal, or with `--file` -); `--dry-run` prints the
 instead of sending it.
 
 Where `--validate-references` is true or not given, epx also requests
-the custom.&lt;type\>\_read scope.
+the custom.&lt;type\>_read scope.
 
-Requires the custom.&lt;type\>\_manage scope.
-&lt;type\> is the custom entity type in lower case (custom.document\_manage for DOCUMENT).
+Requires the custom.&lt;type\>_manage scope.
+&lt;type\> is the custom entity type in lower case (custom.document_manage for DOCUMENT).
 
 **Command:** `epx custom-entities instances create CUSTOM_ENTITY_ID [flags]`
 
@@ -476,28 +476,28 @@ Requires the custom.&lt;type\>\_manage scope.
 - `-o, --output <format>`\
   Format of the response: json or yaml. Default: `json`.
 - `--validate-references <string>`\
-  Whether Emporix checks that the items that references in the body name exist (true without it), requesting custom.&lt;type\>\_read where it is true or not given: true or false.
+  Whether Emporix checks that the items that references in the body name exist (true without it), requesting custom.&lt;type\>_read where it is true or not given: true or false.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx custom-entities instances delete
 
 Delete an instance of a custom entity type.
 
-Deletes the instance ID of the custom entity type CUSTOM\_ENTITY\_ID; Emporix answers an
+Deletes the instance ID of the custom entity type CUSTOM_ENTITY_ID; Emporix answers an
 unknown ID as deleted, not as not found.
-CUSTOM\_ENTITY\_ID is the ID that [`epx custom-entities list`](/emporix-cli/commands/custom-entities#epx-custom-entities-list) shows, and ID the one that
-[`epx custom-entities instances list CUSTOM_ENTITY_ID`](/emporix-cli/commands/custom-entities#epx-custom-entities-instances-list) shows.
+CUSTOM_ENTITY_ID is the ID that [`epx custom-entities list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/custom-entities#epx-custom-entities-list) shows, and ID the one that
+[`epx custom-entities instances list CUSTOM_ENTITY_ID`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/custom-entities#epx-custom-entities-instances-list) shows.
 
 Deletes data, which cannot be undone.
 On a terminal, epx sends DELETE only once you type ID at its prompt.
 `--yes` sends without asking (required without a terminal);
 `--dry-run` prints the request instead of sending it.
 
-Requires the custom.&lt;type\>\_manage scope.
-&lt;type\> is the custom entity type in lower case (custom.document\_manage for DOCUMENT).
+Requires the custom.&lt;type\>_manage scope.
+&lt;type\> is the custom entity type in lower case (custom.document_manage for DOCUMENT).
 
 **Command:** `epx custom-entities instances delete CUSTOM_ENTITY_ID ID [flags]`
 
@@ -510,22 +510,22 @@ Requires the custom.&lt;type\>\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx custom-entities instances get
 
 Show one instance of a custom entity type.
 
 Reads one instance of a custom entity type.
-CUSTOM\_ENTITY\_ID is the ID that [`epx custom-entities list`](/emporix-cli/commands/custom-entities#epx-custom-entities-list) shows; an unknown one has no scope that Emporix grants (exit code 3), and a type created in the last minutes has none yet.
-ID is the ID that [`epx custom-entities instances list CUSTOM_ENTITY_ID`](/emporix-cli/commands/custom-entities#epx-custom-entities-instances-list) shows; an unknown one is not found.
+CUSTOM_ENTITY_ID is the ID that [`epx custom-entities list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/custom-entities#epx-custom-entities-list) shows; an unknown one has no scope that Emporix grants (exit code 3), and a type created in the last minutes has none yet.
+ID is the ID that [`epx custom-entities instances list CUSTOM_ENTITY_ID`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/custom-entities#epx-custom-entities-instances-list) shows; an unknown one is not found.
 OWNER is an instance's owner, by default who created it (EMPLOYEE, CUSTOMER or SERVICE,
 and the user or client id); attribute values (mixins) are only in `-o json`. epx requests
-the scope of the type, not the tenant-wide schema.custominstance\_read that Emporix also
+the scope of the type, not the tenant-wide schema.custominstance_read that Emporix also
 accepts.
 
-Requires the custom.&lt;type\>\_read scope.
-&lt;type\> is the custom entity type in lower case (custom.document\_read for DOCUMENT).
+Requires the custom.&lt;type\>_read scope.
+&lt;type\> is the custom entity type in lower case (custom.document_read for DOCUMENT).
 
 **Command:** `epx custom-entities instances get CUSTOM_ENTITY_ID ID [flags]`
 
@@ -540,21 +540,21 @@ Requires the custom.&lt;type\>\_read scope.
 - `-o, --output <format>`\
   Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx custom-entities instances list
 
 List the instances of a custom entity type.
 
-Reads the instances of a custom entity type ([`epx custom-entities instances get`](/emporix-cli/commands/custom-entities#epx-custom-entities-instances-get) shows one).
-CUSTOM\_ENTITY\_ID is the ID that [`epx custom-entities list`](/emporix-cli/commands/custom-entities#epx-custom-entities-list) shows; an unknown one has no scope that Emporix grants (exit code 3), and a type created in the last minutes has none yet.
+Reads the instances of a custom entity type ([`epx custom-entities instances get`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/custom-entities#epx-custom-entities-instances-get) shows one).
+CUSTOM_ENTITY_ID is the ID that [`epx custom-entities list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/custom-entities#epx-custom-entities-list) shows; an unknown one has no scope that Emporix grants (exit code 3), and a type created in the last minutes has none yet.
 OWNER is an instance's owner, by default who created it (EMPLOYEE, CUSTOMER or SERVICE,
 and the user or client id); attribute values (mixins) are only in `-o json`. epx requests
-the scope of the type, not the tenant-wide schema.custominstance\_read that Emporix also
+the scope of the type, not the tenant-wide schema.custominstance_read that Emporix also
 accepts.
 
-Requires the custom.&lt;type\>\_read scope.
-&lt;type\> is the custom entity type in lower case (custom.document\_read for DOCUMENT).
+Requires the custom.&lt;type\>_read scope.
+&lt;type\> is the custom entity type in lower case (custom.document_read for DOCUMENT).
 
 **Command:** `epx custom-entities instances list CUSTOM_ENTITY_ID [flags]`
 
@@ -577,21 +577,21 @@ Requires the custom.&lt;type\>\_read scope.
 - `--stream`\
   Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx custom-entities instances patch
 
 Change an instance of a custom entity type.
 
-Changes the instance ID of the custom entity type CUSTOM\_ENTITY\_ID with the JSON array of
+Changes the instance ID of the custom entity type CUSTOM_ENTITY_ID with the JSON array of
 JSON Patch (RFC 6902) operations in `--file`, such as
 `[{"op": "replace", "path": "/name", "value": {"en": "Report"}}]`; an add whose path ends in
 /- appends to an array. An unknown ID is not found.
-CUSTOM\_ENTITY\_ID is the ID that [`epx custom-entities list`](/emporix-cli/commands/custom-entities#epx-custom-entities-list) shows, and ID the one that
-[`epx custom-entities instances list CUSTOM_ENTITY_ID`](/emporix-cli/commands/custom-entities#epx-custom-entities-instances-list) shows.
+CUSTOM_ENTITY_ID is the ID that [`epx custom-entities list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/custom-entities#epx-custom-entities-list) shows, and ID the one that
+[`epx custom-entities instances list CUSTOM_ENTITY_ID`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/custom-entities#epx-custom-entities-instances-list) shows.
 
 Emporix checks the items that the references of the instance name (unless
-`--validate-references` false) with epx's token, which reads the instances of CUSTOM\_ENTITY\_ID
+`--validate-references` false) with epx's token, which reads the instances of CUSTOM_ENTITY_ID
 alone: a reference to an instance of another custom entity type is then expected to fail
 with 400 Bad Request, as one to the type fails without that scope, and one to another kind
 of item, such as a product, may fail too.
@@ -605,10 +605,10 @@ asking (required without a terminal, or with `--file` -); `--dry-run` prints the
 instead of sending it.
 
 Where `--validate-references` is true or not given, epx also requests
-the custom.&lt;type\>\_read scope.
+the custom.&lt;type\>_read scope.
 
-Requires the custom.&lt;type\>\_manage scope.
-&lt;type\> is the custom entity type in lower case (custom.document\_manage for DOCUMENT).
+Requires the custom.&lt;type\>_manage scope.
+&lt;type\> is the custom entity type in lower case (custom.document_manage for DOCUMENT).
 
 **Command:** `epx custom-entities instances patch CUSTOM_ENTITY_ID ID [flags]`
 
@@ -621,11 +621,11 @@ Requires the custom.&lt;type\>\_manage scope.
 - `-o, --output <format>`\
   Format of the response: json or yaml. Default: `json`.
 - `--validate-references <string>`\
-  Whether Emporix checks that the items that references in the body name exist (true without it), requesting custom.&lt;type\>\_read where it is true or not given: true or false.
+  Whether Emporix checks that the items that references in the body name exist (true without it), requesting custom.&lt;type\>_read where it is true or not given: true or false.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx custom-entities instances search
 
@@ -633,18 +633,18 @@ Search the instances of a custom entity type.
 
 Reads the instances of a custom entity type that an Emporix q filter finds (`--query`;
 without it, every one).
-It reads and shows them as [`epx custom-entities instances list CUSTOM_ENTITY_ID`](/emporix-cli/commands/custom-entities#epx-custom-entities-instances-list) does.
-CUSTOM\_ENTITY\_ID is the ID that [`epx custom-entities list`](/emporix-cli/commands/custom-entities#epx-custom-entities-list) shows; an unknown one has no scope that Emporix grants (exit code 3), and a type created in the last minutes has none yet.
+It reads and shows them as [`epx custom-entities instances list CUSTOM_ENTITY_ID`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/custom-entities#epx-custom-entities-instances-list) does.
+CUSTOM_ENTITY_ID is the ID that [`epx custom-entities list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/custom-entities#epx-custom-entities-list) shows; an unknown one has no scope that Emporix grants (exit code 3), and a type created in the last minutes has none yet.
 
 Changes nothing: Emporix serves this read as POST with a JSON body, which the
 flags make or `--body` gives whole.
 OWNER is an instance's owner, by default who created it (EMPLOYEE, CUSTOMER or SERVICE,
 and the user or client id); attribute values (mixins) are only in `-o json`. epx requests
-the scope of the type, not the tenant-wide schema.custominstance\_read that Emporix also
+the scope of the type, not the tenant-wide schema.custominstance_read that Emporix also
 accepts.
 
-Requires the custom.&lt;type\>\_read scope.
-&lt;type\> is the custom entity type in lower case (custom.document\_read for DOCUMENT).
+Requires the custom.&lt;type\>_read scope.
+&lt;type\> is the custom entity type in lower case (custom.document_read for DOCUMENT).
 
 **Command:** `epx custom-entities instances search CUSTOM_ENTITY_ID [flags]`
 
@@ -669,20 +669,20 @@ Requires the custom.&lt;type\>\_read scope.
 - `--stream`\
   Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx custom-entities instances update
 
 Upsert an instance of a custom entity type.
 
-Replaces the instance ID of the custom entity type CUSTOM\_ENTITY\_ID with the JSON object in
+Replaces the instance ID of the custom entity type CUSTOM_ENTITY_ID with the JSON object in
 `--file`, as create takes it without the id, or creates it with that id where none exists
-(an upsert). With metadata.version, as [`epx custom-entities instances get CUSTOM_ENTITY_ID ID -o json`](/emporix-cli/commands/custom-entities#epx-custom-entities-instances-get) prints it, Emporix replaces only that version: an older one is a conflict.
-CUSTOM\_ENTITY\_ID is the ID that [`epx custom-entities list`](/emporix-cli/commands/custom-entities#epx-custom-entities-list) shows, and ID the one that
-[`epx custom-entities instances list CUSTOM_ENTITY_ID`](/emporix-cli/commands/custom-entities#epx-custom-entities-instances-list) shows.
+(an upsert). With metadata.version, as [`epx custom-entities instances get CUSTOM_ENTITY_ID ID -o json`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/custom-entities#epx-custom-entities-instances-get) prints it, Emporix replaces only that version: an older one is a conflict.
+CUSTOM_ENTITY_ID is the ID that [`epx custom-entities list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/custom-entities#epx-custom-entities-list) shows, and ID the one that
+[`epx custom-entities instances list CUSTOM_ENTITY_ID`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/custom-entities#epx-custom-entities-instances-list) shows.
 
 Emporix checks the items that the references of the instance name (unless
-`--validate-references` false) with epx's token, which reads the instances of CUSTOM\_ENTITY\_ID
+`--validate-references` false) with epx's token, which reads the instances of CUSTOM_ENTITY_ID
 alone: a reference to an instance of another custom entity type is then expected to fail
 with 400 Bad Request, as one to the type fails without that scope, and one to another kind
 of item, such as a product, may fail too.
@@ -696,10 +696,10 @@ asking (required without a terminal, or with `--file` -); `--dry-run` prints the
 instead of sending it.
 
 Where `--validate-references` is true or not given, epx also requests
-the custom.&lt;type\>\_read scope.
+the custom.&lt;type\>_read scope.
 
-Requires the custom.&lt;type\>\_manage scope.
-&lt;type\> is the custom entity type in lower case (custom.document\_manage for DOCUMENT).
+Requires the custom.&lt;type\>_manage scope.
+&lt;type\> is the custom entity type in lower case (custom.document_manage for DOCUMENT).
 
 **Command:** `epx custom-entities instances update CUSTOM_ENTITY_ID ID [flags]`
 
@@ -712,18 +712,18 @@ Requires the custom.&lt;type\>\_manage scope.
 - `-o, --output <format>`\
   Format of the response: json or yaml. Default: `json`.
 - `--validate-references <string>`\
-  Whether Emporix checks that the items that references in the body name exist (true without it), requesting custom.&lt;type\>\_read where it is true or not given: true or false.
+  Whether Emporix checks that the items that references in the body name exist (true without it), requesting custom.&lt;type\>_read where it is true or not given: true or false.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx custom-entities list
 
 List custom entity types.
 
 Reads custom entity types: entities a tenant defines.
-[`epx custom-entities instances`](/emporix-cli/commands/custom-entities#epx-custom-entities-instances) reads and changes the instances of a type.
+[`epx custom-entities instances`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/custom-entities#epx-custom-entities-instances) reads and changes the instances of a type.
 
 No OAuth scope is needed.
 
@@ -748,7 +748,7 @@ No OAuth scope is needed.
 - `--stream`\
   Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx custom-entities update
 
@@ -756,7 +756,7 @@ Upsert a custom entity type.
 
 Replaces the name of the custom entity type ID with the one in `--file`, a JSON object such
 as `{"name": {"en": "Document"}, "metadata": {"version": 1}}`, or creates the type where none
-exists (an upsert). With metadata.version, as [`epx custom-entities get ID -o json`](/emporix-cli/commands/custom-entities#epx-custom-entities-get) prints
+exists (an upsert). With metadata.version, as [`epx custom-entities get ID -o json`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/custom-entities#epx-custom-entities-get) prints
 it, Emporix replaces only that version: an older one is a conflict.
 
 Localized text in the body is a map of translations, e.g. `{"en": "Acme", "de": "Acme"}`,
@@ -767,7 +767,7 @@ Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the schema.schema\_manage scope.
+Requires the schema.schema_manage scope.
 
 **Command:** `epx custom-entities update ID [flags]`
 
@@ -782,4 +782,4 @@ Requires the schema.schema\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).

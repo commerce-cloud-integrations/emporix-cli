@@ -5,16 +5,16 @@
 ## epx products
 
 Reads and changes products. Reads find products published and unpublished (without the
-product.product\_read\_unpublished scope, Emporix would silently omit unpublished products).
+product.product_read_unpublished scope, Emporix would silently omit unpublished products).
 create, update and patch change one product, bulk-create and bulk-update up to 200,
 
 Its reads require different OAuth scopes; the help of each names them.
 Opt-in: epx requests a write-capable scope for a read only when given `--allow-write-scope`.
-Its writes require the product.product\_manage scope.
+Its writes require the product.product_manage scope.
 
 **Command:** `epx products [flags]`, `epx products [command]`
 
-**Flags:** only the [global flags](/emporix-cli/commands#global-flags).
+**Flags:** only the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Subcommands**
 
@@ -65,17 +65,17 @@ Changes data: on a terminal, epx asks before it sends POST. `--yes` sends withou
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-`--allow-publish` also requests the product.product\_publish scope. Without it, Emporix
+`--allow-publish` also requests the product.product_publish scope. Without it, Emporix
 refuses a product that the write publishes (403 Forbidden, exit 3).
 
-Requires the product.product\_manage scope.
+Requires the product.product_manage scope.
 
 **Command:** `epx products bulk-create [flags]`
 
 **Flags**
 
 - `--allow-publish`\
-  Allow the write to publish products, which needs a scope of its own (requests product.product\_publish too).
+  Allow the write to publish products, which needs a scope of its own (requests product.product_publish too).
 - `--content-language <LANGUAGE>`\
   The LANGUAGE of localized text in the body, or \* for maps of translations. Default: `*`.
 - `--do-index <string>`\
@@ -89,11 +89,11 @@ Requires the product.product\_manage scope.
 - `--skip-related-items-validation`\
   Do not check that related products exist, as when they are written later (a tenant may ignore it and refuse unknown related products all the same).
 - `--skip-variant-generation`\
-  Do not generate the variants of a PARENT\_VARIANT product from its variant attributes.
+  Do not generate the variants of a PARENT_VARIANT product from its variant attributes.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx products bulk-update
 
@@ -118,21 +118,21 @@ Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-`--allow-publish` also requests the product.product\_publish scope. Without it, Emporix
+`--allow-publish` also requests the product.product_publish scope. Without it, Emporix
 refuses a product that the write publishes (403 Forbidden, exit 3).
-`--allow-unpublish` also requests the product.product\_unpublish scope. Without it, Emporix
+`--allow-unpublish` also requests the product.product_unpublish scope. Without it, Emporix
 refuses a product that the write unpublishes (403 Forbidden, exit 3).
 
-Requires the product.product\_manage scope.
+Requires the product.product_manage scope.
 
 **Command:** `epx products bulk-update [flags]`
 
 **Flags**
 
 - `--allow-publish`\
-  Allow the write to publish products, which needs a scope of its own (requests product.product\_publish too).
+  Allow the write to publish products, which needs a scope of its own (requests product.product_publish too).
 - `--allow-unpublish`\
-  Allow the write to unpublish products, which needs a scope of its own (requests product.product\_unpublish too).
+  Allow the write to unpublish products, which needs a scope of its own (requests product.product_unpublish too).
 - `--content-language <LANGUAGE>`\
   The LANGUAGE of localized text in the body, or \* for maps of translations. Default: `*`.
 - `--do-index <string>`\
@@ -146,11 +146,11 @@ Requires the product.product\_manage scope.
 - `--skip-related-items-validation`\
   Do not check that related products exist, as when they are written later (a tenant may ignore it and refuse unknown related products all the same).
 - `--skip-variant-generation`\
-  Do not generate the variants of a PARENT\_VARIANT product from its variant attributes.
+  Do not generate the variants of a PARENT_VARIANT product from its variant attributes.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx products create
 
@@ -168,17 +168,17 @@ Changes data: on a terminal, epx asks before it sends POST. `--yes` sends withou
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-`--allow-publish` also requests the product.product\_publish scope. Without it, Emporix
+`--allow-publish` also requests the product.product_publish scope. Without it, Emporix
 refuses a product that the write publishes (403 Forbidden, exit 3).
 
-Requires the product.product\_manage scope.
+Requires the product.product_manage scope.
 
 **Command:** `epx products create [flags]`
 
 **Flags**
 
 - `--allow-publish`\
-  Allow the write to publish products, which needs a scope of its own (requests product.product\_publish too).
+  Allow the write to publish products, which needs a scope of its own (requests product.product_publish too).
 - `--content-language <LANGUAGE>`\
   The LANGUAGE of localized text in the body, or \* for maps of translations. Default: `*`.
 - `--do-index <string>`\
@@ -192,17 +192,17 @@ Requires the product.product\_manage scope.
 - `--skip-related-items-validation`\
   Do not check that related products exist, as when they are written later (a tenant may ignore it and refuse unknown related products all the same).
 - `--skip-variant-generation`\
-  Do not generate the variants of a PARENT\_VARIANT product from its variant attributes.
+  Do not generate the variants of a PARENT_VARIANT product from its variant attributes.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx products delete
 
 Delete a product.
 
-Deletes the product ID. A parent variant product (PARENT\_VARIANT, or DYNAMIC\_VARIANT with
+Deletes the product ID. A parent variant product (PARENT_VARIANT, or DYNAMIC_VARIANT with
 variants below it) is deleted only with `--force`, with every variant below it
 (without it, Emporix answers 400 Bad Request, exit 1). An unknown ID is no error: Emporix
 answers as for a deleted product.
@@ -213,7 +213,7 @@ On a terminal, epx sends DELETE only once you type ID at its prompt.
 `--yes` sends without asking (required without a terminal);
 `--dry-run` prints the request instead of sending it.
 
-Requires the product.product\_manage scope.
+Requires the product.product_manage scope.
 
 **Command:** `epx products delete ID [flags]`
 
@@ -228,16 +228,16 @@ Requires the product.product\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx products get
 
 Show one product.
 
-Reads products, published and unpublished (without the product.product\_read\_unpublished
+Reads products, published and unpublished (without the product.product_read_unpublished
 scope, Emporix would silently omit unpublished products).
 
-Requires the product.product\_read\_unpublished scope.
+Requires the product.product_read_unpublished scope.
 
 **Command:** `epx products get ID [flags]`
 
@@ -252,7 +252,7 @@ Requires the product.product\_read\_unpublished scope.
 - `-o, --output <format>`\
   Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx products import
 
@@ -280,21 +280,21 @@ Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-`--allow-publish` also requests the product.product\_publish scope. Without it, Emporix
+`--allow-publish` also requests the product.product_publish scope. Without it, Emporix
 refuses a product that the write publishes (403 Forbidden, exit 3).
-`--allow-unpublish` also requests the product.product\_unpublish scope. Without it, Emporix
+`--allow-unpublish` also requests the product.product_unpublish scope. Without it, Emporix
 refuses a product that the write unpublishes (403 Forbidden, exit 3).
 
-Requires the product.product\_manage scope.
+Requires the product.product_manage scope.
 
 **Command:** `epx products import [flags]`
 
 **Flags**
 
 - `--allow-publish`\
-  Allow the write to publish products, which needs a scope of its own (requests product.product\_publish too).
+  Allow the write to publish products, which needs a scope of its own (requests product.product_publish too).
 - `--allow-unpublish`\
-  Allow the write to unpublish products, which needs a scope of its own (requests product.product\_unpublish too).
+  Allow the write to unpublish products, which needs a scope of its own (requests product.product_unpublish too).
 - `--content-language <LANGUAGE>`\
   The LANGUAGE of localized text in the body, or \* for maps of translations. Default: `*`.
 - `--do-index <string>`\
@@ -308,20 +308,20 @@ Requires the product.product\_manage scope.
 - `--skip-related-items-validation`\
   Do not check that related products exist, as when they are written later (a tenant may ignore it and refuse unknown related products all the same).
 - `--skip-variant-generation`\
-  Do not generate the variants of a PARENT\_VARIANT product from its variant attributes.
+  Do not generate the variants of a PARENT_VARIANT product from its variant attributes.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx products list
 
 List products.
 
-Reads products, published and unpublished (without the product.product\_read\_unpublished
+Reads products, published and unpublished (without the product.product_read_unpublished
 scope, Emporix would silently omit unpublished products).
 
-Requires the product.product\_read\_unpublished scope.
+Requires the product.product_read_unpublished scope.
 
 **Command:** `epx products list [flags]`
 
@@ -344,7 +344,7 @@ Requires the product.product\_read\_unpublished scope.
 - `--stream`\
   Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx products patch
 
@@ -363,21 +363,21 @@ Changes data: on a terminal, epx asks before it sends PATCH. `--yes` sends witho
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-`--allow-publish` also requests the product.product\_publish scope. Without it, Emporix
+`--allow-publish` also requests the product.product_publish scope. Without it, Emporix
 refuses a product that the write publishes (403 Forbidden, exit 3).
-`--allow-unpublish` also requests the product.product\_unpublish scope. Without it, Emporix
+`--allow-unpublish` also requests the product.product_unpublish scope. Without it, Emporix
 refuses a product that the write unpublishes (403 Forbidden, exit 3).
 
-Requires the product.product\_manage scope.
+Requires the product.product_manage scope.
 
 **Command:** `epx products patch ID [flags]`
 
 **Flags**
 
 - `--allow-publish`\
-  Allow the write to publish products, which needs a scope of its own (requests product.product\_publish too).
+  Allow the write to publish products, which needs a scope of its own (requests product.product_publish too).
 - `--allow-unpublish`\
-  Allow the write to unpublish products, which needs a scope of its own (requests product.product\_unpublish too).
+  Allow the write to unpublish products, which needs a scope of its own (requests product.product_unpublish too).
 - `--content-language <LANGUAGE>`\
   The LANGUAGE of localized text in the body, or \* for maps of translations. Default: `*`.
 - `--do-index <string>`\
@@ -391,21 +391,21 @@ Requires the product.product\_manage scope.
 - `--skip-related-items-validation`\
   Do not check that related products exist, as when they are written later (a tenant may ignore it and refuse unknown related products all the same).
 - `--skip-variant-generation`\
-  Do not generate the variants of a PARENT\_VARIANT product from its variant attributes.
+  Do not generate the variants of a PARENT_VARIANT product from its variant attributes.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx products recalculate
 
 Recalculate the variant trees of dynamic variant products.
 
-Starts the recalculation of the variant trees of DYNAMIC\_VARIANT products once their products
+Starts the recalculation of the variant trees of DYNAMIC_VARIANT products once their products
 are written in bulk (a write of one product updates its tree at once). Emporix finds the root
 product of each ID, at any level, and starts one job per root, which
-[`epx products recalculation-jobs list`](/emporix-cli/commands/products#epx-products-recalculation-jobs-list) shows (jobs). An ID that is unknown, is not of a
-DYNAMIC\_VARIANT product, or whose root has a job pending or processing is skipped
+[`epx products recalculation-jobs list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/products#epx-products-recalculation-jobs-list) shows (jobs). An ID that is unknown, is not of a
+DYNAMIC_VARIANT product, or whose root has a job pending or processing is skipped
 (skippedProductIds, left out when none is); where every ID is, the answer has no jobs.
 Takes up to 1000 IDs, given with `--product` or in the JSON object of `--file`
 (`{"productIds": [...]}`).
@@ -414,7 +414,7 @@ Changes data: on a terminal, epx asks before it sends POST. `--yes` sends withou
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the product.product\_manage scope.
+Requires the product.product_manage scope.
 
 **Command:** `epx products recalculate [flags]`
 
@@ -431,25 +431,25 @@ Requires the product.product\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx products recalculation-jobs
 
 Read variant recalculation jobs.
 
-Reads the jobs that rebuild the variant tree of a DYNAMIC\_VARIANT product once a
+Reads the jobs that rebuild the variant tree of a DYNAMIC_VARIANT product once a
 recalculation was triggered, one per ROOT PRODUCT (an id). STATUS is PENDING, PROCESSING,
-FINISHED, FAILED or FAILED\_PERMANENT, ATTEMPTS counts processing attempts and ERROR says why a
+FINISHED, FAILED or FAILED_PERMANENT, ATTEMPTS counts processing attempts and ERROR says why a
 job failed; `-o json` adds the product ids it was requested for and when processing started,
 and leaves out each of processingStartedAt, finishedAt and error until it is set.
-Emporix removes jobs about 30 days after they end. The jobs of one status: [`epx api get /product/{tenant}/products/recalculate/jobs -p status=FAILED --scope product.product_manage`](/emporix-cli/commands/api#epx-api-get).
+Emporix removes jobs about 30 days after they end. The jobs of one status: [`epx api get /product/{tenant}/products/recalculate/jobs -p status=FAILED --scope product.product_manage`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/api#epx-api-get).
 
-Requires the product.product\_manage scope.
+Requires the product.product_manage scope.
 Opt-in: epx requests a write-capable scope for a read only when given `--allow-write-scope`.
 
 **Command:** `epx products recalculation-jobs [flags]`, `epx products recalculation-jobs [command]`
 
-**Flags:** only the [global flags](/emporix-cli/commands#global-flags).
+**Flags:** only the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Subcommands**
 
@@ -462,14 +462,14 @@ Opt-in: epx requests a write-capable scope for a read only when given `--allow-w
 
 Show one recalculation job.
 
-Reads the jobs that rebuild the variant tree of a DYNAMIC\_VARIANT product once a
+Reads the jobs that rebuild the variant tree of a DYNAMIC_VARIANT product once a
 recalculation was triggered, one per ROOT PRODUCT (an id). STATUS is PENDING, PROCESSING,
-FINISHED, FAILED or FAILED\_PERMANENT, ATTEMPTS counts processing attempts and ERROR says why a
+FINISHED, FAILED or FAILED_PERMANENT, ATTEMPTS counts processing attempts and ERROR says why a
 job failed; `-o json` adds the product ids it was requested for and when processing started,
 and leaves out each of processingStartedAt, finishedAt and error until it is set.
-Emporix removes jobs about 30 days after they end. The jobs of one status: [`epx api get /product/{tenant}/products/recalculate/jobs -p status=FAILED --scope product.product_manage`](/emporix-cli/commands/api#epx-api-get).
+Emporix removes jobs about 30 days after they end. The jobs of one status: [`epx api get /product/{tenant}/products/recalculate/jobs -p status=FAILED --scope product.product_manage`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/api#epx-api-get).
 
-Requires the product.product\_manage scope.
+Requires the product.product_manage scope.
 Opt-in: epx requests a write-capable scope for a read only when given `--allow-write-scope`.
 
 **Command:** `epx products recalculation-jobs get ID [flags]`
@@ -477,7 +477,7 @@ Opt-in: epx requests a write-capable scope for a read only when given `--allow-w
 **Flags**
 
 - `--allow-write-scope`\
-  Opt in to requesting product.product\_manage, which can also change data (required).
+  Opt in to requesting product.product_manage, which can also change data (required).
 - `--columns <names>`\
   Print only these columns of table and csv, in this order: comma-separated names (any case) among ID, ROOT PRODUCT, STATUS, ATTEMPTS, CREATED, FINISHED, ERROR.
 - `--no-headers`\
@@ -485,20 +485,20 @@ Opt-in: epx requests a write-capable scope for a read only when given `--allow-w
 - `-o, --output <format>`\
   Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx products recalculation-jobs list
 
 List variant recalculation jobs.
 
-Reads the jobs that rebuild the variant tree of a DYNAMIC\_VARIANT product once a
+Reads the jobs that rebuild the variant tree of a DYNAMIC_VARIANT product once a
 recalculation was triggered, one per ROOT PRODUCT (an id). STATUS is PENDING, PROCESSING,
-FINISHED, FAILED or FAILED\_PERMANENT, ATTEMPTS counts processing attempts and ERROR says why a
+FINISHED, FAILED or FAILED_PERMANENT, ATTEMPTS counts processing attempts and ERROR says why a
 job failed; `-o json` adds the product ids it was requested for and when processing started,
 and leaves out each of processingStartedAt, finishedAt and error until it is set.
-Emporix removes jobs about 30 days after they end. The jobs of one status: [`epx api get /product/{tenant}/products/recalculate/jobs -p status=FAILED --scope product.product_manage`](/emporix-cli/commands/api#epx-api-get).
+Emporix removes jobs about 30 days after they end. The jobs of one status: [`epx api get /product/{tenant}/products/recalculate/jobs -p status=FAILED --scope product.product_manage`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/api#epx-api-get).
 
-Requires the product.product\_manage scope.
+Requires the product.product_manage scope.
 Opt-in: epx requests a write-capable scope for a read only when given `--allow-write-scope`.
 
 **Command:** `epx products recalculation-jobs list [flags]`
@@ -506,7 +506,7 @@ Opt-in: epx requests a write-capable scope for a read only when given `--allow-w
 **Flags**
 
 - `--allow-write-scope`\
-  Opt in to requesting product.product\_manage, which can also change data (required).
+  Opt in to requesting product.product_manage, which can also change data (required).
 - `--columns <names>`\
   Print only these columns of table and csv, in this order: comma-separated names (any case) among ID, ROOT PRODUCT, STATUS, ATTEMPTS, CREATED, FINISHED, ERROR.
 - `--limit <n>`\
@@ -518,7 +518,7 @@ Opt-in: epx requests a write-capable scope for a read only when given `--allow-w
 - `--stream`\
   Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx products search
 
@@ -526,12 +526,12 @@ Search products.
 
 Reads the products, published and unpublished, that an Emporix q filter finds (`--query`;
 without it, every product).
-It reads and shows them as [`epx products list`](/emporix-cli/commands/products#epx-products-list) does.
+It reads and shows them as [`epx products list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/products#epx-products-list) does.
 
 Changes nothing: Emporix serves this read as POST with a JSON body, which the
 flags make or `--body` gives whole.
 
-Requires the product.product\_read\_unpublished scope.
+Requires the product.product_read_unpublished scope.
 
 **Command:** `epx products search [flags]`
 
@@ -556,7 +556,7 @@ Requires the product.product\_read\_unpublished scope.
 - `--stream`\
   Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx products update
 
@@ -576,21 +576,21 @@ Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-`--allow-publish` also requests the product.product\_publish scope. Without it, Emporix
+`--allow-publish` also requests the product.product_publish scope. Without it, Emporix
 refuses a product that the write publishes (403 Forbidden, exit 3).
-`--allow-unpublish` also requests the product.product\_unpublish scope. Without it, Emporix
+`--allow-unpublish` also requests the product.product_unpublish scope. Without it, Emporix
 refuses a product that the write unpublishes (403 Forbidden, exit 3).
 
-Requires the product.product\_manage scope.
+Requires the product.product_manage scope.
 
 **Command:** `epx products update ID [flags]`
 
 **Flags**
 
 - `--allow-publish`\
-  Allow the write to publish products, which needs a scope of its own (requests product.product\_publish too).
+  Allow the write to publish products, which needs a scope of its own (requests product.product_publish too).
 - `--allow-unpublish`\
-  Allow the write to unpublish products, which needs a scope of its own (requests product.product\_unpublish too).
+  Allow the write to unpublish products, which needs a scope of its own (requests product.product_unpublish too).
 - `--content-language <LANGUAGE>`\
   The LANGUAGE of localized text in the body, or \* for maps of translations. Default: `*`.
 - `--do-index <string>`\
@@ -604,8 +604,8 @@ Requires the product.product\_manage scope.
 - `--skip-related-items-validation`\
   Do not check that related products exist, as when they are written later (a tenant may ignore it and refuse unknown related products all the same).
 - `--skip-variant-generation`\
-  Do not generate the variants of a PARENT\_VARIANT product from its variant attributes.
+  Do not generate the variants of a PARENT_VARIANT product from its variant attributes.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).

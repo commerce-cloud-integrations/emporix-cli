@@ -10,16 +10,16 @@ Operations of the Emporix API reference file [`companies-and-customers/vendor-se
 
 | Operation | Status | Details |
 | --- | --- | --- |
-| `POST /vendor/{tenant}/vendors` | Built | [`epx vendors create`](/emporix-cli/commands/vendors#epx-vendors-create) |
-| `GET /vendor/{tenant}/vendors` | Built | [`epx vendors list`](/emporix-cli/commands/vendors#epx-vendors-list) |
-| `POST /vendor/{tenant}/vendors/search` | Built | [`epx vendors search`](/emporix-cli/commands/vendors#epx-vendors-search) |
-| `GET /vendor/{tenant}/vendors/{vendorId}` | Built | [`epx vendors get`](/emporix-cli/commands/vendors#epx-vendors-get) |
-| `PUT /vendor/{tenant}/vendors/{vendorId}` | Built | [`epx vendors update`](/emporix-cli/commands/vendors#epx-vendors-update) |
-| `DELETE /vendor/{tenant}/vendors/{vendorId}` | Built | [`epx vendors delete`](/emporix-cli/commands/vendors#epx-vendors-delete) |
-| `POST /vendor/{tenant}/locations` | Built | [`epx vendor-locations create`](/emporix-cli/commands/vendor-locations#epx-vendor-locations-create) |
-| `GET /vendor/{tenant}/locations` | Built | [`epx vendor-locations list`](/emporix-cli/commands/vendor-locations#epx-vendor-locations-list) |
-| `GET /vendor/{tenant}/locations/{locationId}` | Built | [`epx vendor-locations get`](/emporix-cli/commands/vendor-locations#epx-vendor-locations-get) |
-| `PUT /vendor/{tenant}/locations/{locationId}` | Built | [`epx vendor-locations update`](/emporix-cli/commands/vendor-locations#epx-vendor-locations-update) |
-| `DELETE /vendor/{tenant}/locations/{locationId}` | Built | [`epx vendor-locations delete`](/emporix-cli/commands/vendor-locations#epx-vendor-locations-delete) |
+| `POST /vendor/{tenant}/vendors` | Built | [`epx vendors create`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/vendors#epx-vendors-create) |
+| `GET /vendor/{tenant}/vendors` | Built | [`epx vendors list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/vendors#epx-vendors-list) |
+| `POST /vendor/{tenant}/vendors/search` | Built | [`epx vendors search`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/vendors#epx-vendors-search) |
+| `GET /vendor/{tenant}/vendors/{vendorId}` | Built | [`epx vendors get`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/vendors#epx-vendors-get) |
+| `PUT /vendor/{tenant}/vendors/{vendorId}` | Built | [`epx vendors update`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/vendors#epx-vendors-update) |
+| `DELETE /vendor/{tenant}/vendors/{vendorId}` | Built | [`epx vendors delete`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/vendors#epx-vendors-delete) |
+| `POST /vendor/{tenant}/locations` | Built | [`epx vendor-locations create`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/vendor-locations#epx-vendor-locations-create) |
+| `GET /vendor/{tenant}/locations` | Built | [`epx vendor-locations list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/vendor-locations#epx-vendor-locations-list) |
+| `GET /vendor/{tenant}/locations/{locationId}` | Built | [`epx vendor-locations get`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/vendor-locations#epx-vendor-locations-get) |
+| `PUT /vendor/{tenant}/locations/{locationId}` | Built | [`epx vendor-locations update`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/vendor-locations#epx-vendor-locations-update) |
+| `DELETE /vendor/{tenant}/locations/{locationId}` | Built | [`epx vendor-locations delete`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/vendor-locations#epx-vendor-locations-delete) |
 
-All services: [Emporix API coverage](/emporix-cli/coverage).
+All services: [Emporix API coverage](https://commerce-cloud-integrations.github.io/emporix-cli/coverage).

@@ -10,18 +10,18 @@ Operations of the Emporix API reference file [`configuration/site-settings-servi
 
 | Operation | Status | Details |
 | --- | --- | --- |
-| `GET /site/{tenant}/sites` | Built | [`epx sites list`](/emporix-cli/commands/sites#epx-sites-list) |
-| `POST /site/{tenant}/sites` | Built | [`epx sites create`](/emporix-cli/commands/sites#epx-sites-create) |
-| `GET /site/{tenant}/sites/{siteCode}` | Built | [`epx sites get`](/emporix-cli/commands/sites#epx-sites-get) |
-| `PUT /site/{tenant}/sites/{siteCode}` | Built | [`epx sites update`](/emporix-cli/commands/sites#epx-sites-update) |
-| `DELETE /site/{tenant}/sites/{siteCode}` | Built | [`epx sites delete`](/emporix-cli/commands/sites#epx-sites-delete) |
-| `PATCH /site/{tenant}/sites/{siteCode}` | Built | [`epx sites patch`](/emporix-cli/commands/sites#epx-sites-patch) |
-| `GET /site/{tenant}/siteslist` | Built | [`epx sites codes`](/emporix-cli/commands/sites#epx-sites-codes) |
-| `GET /site/{tenant}/sites/{siteCode}/mixins` | Built | [`epx sites mixins list`](/emporix-cli/commands/sites#epx-sites-mixins-list) |
-| `POST /site/{tenant}/sites/{siteCode}/mixins` | Built | [`epx sites mixins create`](/emporix-cli/commands/sites#epx-sites-mixins-create) |
-| `GET /site/{tenant}/sites/{siteCode}/mixins/{mixinName}` | Built | [`epx sites mixins get`](/emporix-cli/commands/sites#epx-sites-mixins-get) |
-| `DELETE /site/{tenant}/sites/{siteCode}/mixins/{mixinName}` | Built | [`epx sites mixins delete`](/emporix-cli/commands/sites#epx-sites-mixins-delete) |
-| `PUT /site/{tenant}/sites/{siteCode}/mixins/{mixinName}` | Built | [`epx sites mixins update`](/emporix-cli/commands/sites#epx-sites-mixins-update) |
-| `PATCH /site/{tenant}/sites/{siteCode}/mixins/{mixinName}` | Built | [`epx sites mixins patch`](/emporix-cli/commands/sites#epx-sites-mixins-patch) |
+| `GET /site/{tenant}/sites` | Built | [`epx sites list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/sites#epx-sites-list) |
+| `POST /site/{tenant}/sites` | Built | [`epx sites create`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/sites#epx-sites-create) |
+| `GET /site/{tenant}/sites/{siteCode}` | Built | [`epx sites get`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/sites#epx-sites-get) |
+| `PUT /site/{tenant}/sites/{siteCode}` | Built | [`epx sites update`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/sites#epx-sites-update) |
+| `DELETE /site/{tenant}/sites/{siteCode}` | Built | [`epx sites delete`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/sites#epx-sites-delete) |
+| `PATCH /site/{tenant}/sites/{siteCode}` | Built | [`epx sites patch`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/sites#epx-sites-patch) |
+| `GET /site/{tenant}/siteslist` | Built | [`epx sites codes`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/sites#epx-sites-codes) |
+| `GET /site/{tenant}/sites/{siteCode}/mixins` | Built | [`epx sites mixins list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/sites#epx-sites-mixins-list) |
+| `POST /site/{tenant}/sites/{siteCode}/mixins` | Built | [`epx sites mixins create`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/sites#epx-sites-mixins-create) |
+| `GET /site/{tenant}/sites/{siteCode}/mixins/{mixinName}` | Built | [`epx sites mixins get`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/sites#epx-sites-mixins-get) |
+| `DELETE /site/{tenant}/sites/{siteCode}/mixins/{mixinName}` | Built | [`epx sites mixins delete`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/sites#epx-sites-mixins-delete) |
+| `PUT /site/{tenant}/sites/{siteCode}/mixins/{mixinName}` | Built | [`epx sites mixins update`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/sites#epx-sites-mixins-update) |
+| `PATCH /site/{tenant}/sites/{siteCode}/mixins/{mixinName}` | Built | [`epx sites mixins patch`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/sites#epx-sites-mixins-patch) |
 
-All services: [Emporix API coverage](/emporix-cli/coverage).
+All services: [Emporix API coverage](https://commerce-cloud-integrations.github.io/emporix-cli/coverage).

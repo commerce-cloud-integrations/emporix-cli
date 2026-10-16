@@ -10,17 +10,17 @@ Operations of the Emporix API reference file [`configuration/configuration-servi
 
 | Operation | Status | Details |
 | --- | --- | --- |
-| `GET /configuration/{tenant}/global-configurations` | Built | [`epx configurations global`](/emporix-cli/commands/configurations#epx-configurations-global) |
-| `GET /configuration/{tenant}/configurations` | Built | [`epx configurations list`](/emporix-cli/commands/configurations#epx-configurations-list) |
-| `POST /configuration/{tenant}/configurations` | Built | [`epx configurations create`](/emporix-cli/commands/configurations#epx-configurations-create) |
-| `GET /configuration/{tenant}/configurations/{propertyKey}` | Built | [`epx configurations get`](/emporix-cli/commands/configurations#epx-configurations-get) |
-| `PUT /configuration/{tenant}/configurations/{propertyKey}` | Built | [`epx configurations update`](/emporix-cli/commands/configurations#epx-configurations-update) |
-| `DELETE /configuration/{tenant}/configurations/{propertyKey}` | Built | [`epx configurations delete`](/emporix-cli/commands/configurations#epx-configurations-delete) |
-| `GET /configuration/{tenant}/clients` | Built | [`epx configurations clients`](/emporix-cli/commands/configurations#epx-configurations-clients) |
-| `GET /configuration/{tenant}/clients/{client}/configurations` | Built | [`epx configurations for-client`](/emporix-cli/commands/configurations#epx-configurations-for-client) |
-| `POST /configuration/{tenant}/clients/{client}/configurations` | Built | [`epx configurations client-create`](/emporix-cli/commands/configurations#epx-configurations-client-create) |
-| `GET /configuration/{tenant}/clients/{client}/configurations/{propertyKey}` | Built | [`epx configurations client-setting`](/emporix-cli/commands/configurations#epx-configurations-client-setting) |
-| `PUT /configuration/{tenant}/clients/{client}/configurations/{propertyKey}` | Built | [`epx configurations client-update`](/emporix-cli/commands/configurations#epx-configurations-client-update) |
-| `DELETE /configuration/{tenant}/clients/{client}/configurations/{propertyKey}` | Built | [`epx configurations client-delete`](/emporix-cli/commands/configurations#epx-configurations-client-delete) |
+| `GET /configuration/{tenant}/global-configurations` | Built | [`epx configurations global`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/configurations#epx-configurations-global) |
+| `GET /configuration/{tenant}/configurations` | Built | [`epx configurations list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/configurations#epx-configurations-list) |
+| `POST /configuration/{tenant}/configurations` | Built | [`epx configurations create`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/configurations#epx-configurations-create) |
+| `GET /configuration/{tenant}/configurations/{propertyKey}` | Built | [`epx configurations get`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/configurations#epx-configurations-get) |
+| `PUT /configuration/{tenant}/configurations/{propertyKey}` | Built | [`epx configurations update`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/configurations#epx-configurations-update) |
+| `DELETE /configuration/{tenant}/configurations/{propertyKey}` | Built | [`epx configurations delete`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/configurations#epx-configurations-delete) |
+| `GET /configuration/{tenant}/clients` | Built | [`epx configurations clients`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/configurations#epx-configurations-clients) |
+| `GET /configuration/{tenant}/clients/{client}/configurations` | Built | [`epx configurations for-client`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/configurations#epx-configurations-for-client) |
+| `POST /configuration/{tenant}/clients/{client}/configurations` | Built | [`epx configurations client-create`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/configurations#epx-configurations-client-create) |
+| `GET /configuration/{tenant}/clients/{client}/configurations/{propertyKey}` | Built | [`epx configurations client-setting`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/configurations#epx-configurations-client-setting) |
+| `PUT /configuration/{tenant}/clients/{client}/configurations/{propertyKey}` | Built | [`epx configurations client-update`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/configurations#epx-configurations-client-update) |
+| `DELETE /configuration/{tenant}/clients/{client}/configurations/{propertyKey}` | Built | [`epx configurations client-delete`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/configurations#epx-configurations-client-delete) |
 
-All services: [Emporix API coverage](/emporix-cli/coverage).
+All services: [Emporix API coverage](https://commerce-cloud-integrations.github.io/emporix-cli/coverage).

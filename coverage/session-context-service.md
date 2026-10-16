@@ -10,13 +10,13 @@ Operations of the Emporix API reference file [`users-and-permissions/session-con
 
 | Operation | Status | Details |
 | --- | --- | --- |
-| `GET /session-context/{tenant}/context/{sessionId}` | Built | [`epx session-contexts get`](/emporix-cli/commands/session-contexts#epx-session-contexts-get) |
-| `PUT /session-context/{tenant}/context/{sessionId}` | Built | [`epx session-contexts update`](/emporix-cli/commands/session-contexts#epx-session-contexts-update) |
-| `DELETE /session-context/{tenant}/context/{sessionId}/attributes/{attributeName}` | Built | [`epx session-contexts attributes delete`](/emporix-cli/commands/session-contexts#epx-session-contexts-attributes-delete) |
-| `POST /session-context/{tenant}/context/{sessionId}/attributes` | Built | [`epx session-contexts attributes create`](/emporix-cli/commands/session-contexts#epx-session-contexts-attributes-create) |
+| `GET /session-context/{tenant}/context/{sessionId}` | Built | [`epx session-contexts get`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/session-contexts#epx-session-contexts-get) |
+| `PUT /session-context/{tenant}/context/{sessionId}` | Built | [`epx session-contexts update`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/session-contexts#epx-session-contexts-update) |
+| `DELETE /session-context/{tenant}/context/{sessionId}/attributes/{attributeName}` | Built | [`epx session-contexts attributes delete`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/session-contexts#epx-session-contexts-attributes-delete) |
+| `POST /session-context/{tenant}/context/{sessionId}/attributes` | Built | [`epx session-contexts attributes create`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/session-contexts#epx-session-contexts-attributes-create) |
 | `GET /session-context/{tenant}/me/context` | Not applicable | Needs a signed-in customer's token, which a service token is not. |
 | `PATCH /session-context/{tenant}/me/context` | Not applicable | Needs a signed-in customer's token, which a service token is not. |
 | `DELETE /session-context/{tenant}/me/context/attributes/{attributeName}` | Not applicable | Needs a signed-in customer's token, which a service token is not. |
 | `POST /session-context/{tenant}/me/context/attributes` | Not applicable | Needs a signed-in customer's token, which a service token is not. |
 
-All services: [Emporix API coverage](/emporix-cli/coverage).
+All services: [Emporix API coverage](https://commerce-cloud-integrations.github.io/emporix-cli/coverage).

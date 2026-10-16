@@ -12,7 +12,7 @@ as searches, shipping quotes, and coupon validation.
 
 ## Writes are explicit
 
-Every [write](/emporix-cli/guides/writes) sends only what you give it, shows its exact request with
+Every [write](https://commerce-cloud-integrations.github.io/emporix-cli/guides/writes) sends only what you give it, shows its exact request with
 `--dry-run`, and asks before it sends. A delete asks you to type what it deletes. In
 scripts, writes require `--yes`. epx never sends a write again once it may have reached
 Emporix.
@@ -28,12 +28,12 @@ epx checks every token it receives:
 - epx never falls back to broader scopes.
 
 Reads that Emporix allows only with a write-capable scope request it only when you pass
-`--allow-write-scope`. See [Authenticate](/emporix-cli/configure#write-capable-scopes-for-reads).
+`--allow-write-scope`. See [Authenticate](https://commerce-cloud-integrations.github.io/emporix-cli/configure#write-capable-scopes-for-reads).
 
 ## Credentials
 
 - epx reads its API key from environment variables or from a
-  [profile](/emporix-cli/configure#store-keys-in-profiles), never from flags.
+  [profile](https://commerce-cloud-integrations.github.io/emporix-cli/configure#store-keys-in-profiles), never from flags.
 - A profile's client secret is stored in the OS keychain, never in a file.
 - epx never prints its token or client secret.
 - When epx rejects a setting, such as an API URL without HTTPS or an invalid tenant, the

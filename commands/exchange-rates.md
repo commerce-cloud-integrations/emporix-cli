@@ -4,14 +4,14 @@
 
 ## epx exchange-rates
 
-Reads currency exchange rates. CODE names a rate, e.g. EUR\_CHF.
+Reads currency exchange rates. CODE names a rate, e.g. EUR_CHF.
 
-Its reads require the currency.currency\_read scope.
-Its writes require the currency.currency\_manage scope.
+Its reads require the currency.currency_read scope.
+Its writes require the currency.currency_manage scope.
 
 **Command:** `epx exchange-rates [flags]`, `epx exchange-rates [command]`
 
-**Flags:** only the [global flags](/emporix-cli/commands#global-flags).
+**Flags:** only the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Subcommands**
 
@@ -31,14 +31,14 @@ Its writes require the currency.currency\_manage scope.
 Create an exchange rate.
 
 Creates the exchange rate from the currency `--source` into `--target` (both defined in the
-tenant, as [`epx currencies list`](/emporix-cli/commands/currencies#epx-currencies-list) shows them), or the one in the JSON of `--file`. Emporix
-answers with its code, SOURCE\_TARGET; a rate that exists already is a conflict (exit 5).
+tenant, as [`epx currencies list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/currencies#epx-currencies-list) shows them), or the one in the JSON of `--file`. Emporix
+answers with its code, SOURCE_TARGET; a rate that exists already is a conflict (exit 5).
 
 Changes data: on a terminal, epx asks before it sends POST. `--yes` sends without
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the currency.currency\_manage scope.
+Requires the currency.currency_manage scope.
 
 **Command:** `epx exchange-rates create [flags]`
 
@@ -59,7 +59,7 @@ Requires the currency.currency\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Examples**
 
@@ -79,7 +79,7 @@ On a terminal, epx sends DELETE only once you type CODE at its prompt.
 `--yes` sends without asking (required without a terminal);
 `--dry-run` prints the request instead of sending it.
 
-Requires the currency.currency\_manage scope.
+Requires the currency.currency_manage scope.
 
 **Command:** `epx exchange-rates delete CODE [flags]`
 
@@ -92,15 +92,15 @@ Requires the currency.currency\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx exchange-rates get
 
 Show one exchange rate.
 
-Reads currency exchange rates. CODE names a rate, e.g. EUR\_CHF.
+Reads currency exchange rates. CODE names a rate, e.g. EUR_CHF.
 
-Requires the currency.currency\_read scope.
+Requires the currency.currency_read scope.
 
 **Command:** `epx exchange-rates get CODE [flags]`
 
@@ -113,15 +113,15 @@ Requires the currency.currency\_read scope.
 - `-o, --output <format>`\
   Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx exchange-rates list
 
 List exchange rates.
 
-Reads currency exchange rates. CODE names a rate, e.g. EUR\_CHF.
+Reads currency exchange rates. CODE names a rate, e.g. EUR_CHF.
 
-Requires the currency.currency\_read scope.
+Requires the currency.currency_read scope.
 
 **Command:** `epx exchange-rates list [flags]`
 
@@ -140,14 +140,14 @@ Requires the currency.currency\_read scope.
 - `--stream`\
   Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx exchange-rates update
 
 Change an exchange rate.
 
 Changes the rate of the exchange rate CODE (its currencies cannot change) to `--rate`, with
-its metadata.version as read (`--version`, as [`epx exchange-rates get CODE -o json`](/emporix-cli/commands/exchange-rates#epx-exchange-rates-get) prints
+its metadata.version as read (`--version`, as [`epx exchange-rates get CODE -o json`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/exchange-rates#epx-exchange-rates-get) prints
 it), or to the JSON of `--file`. A stale version and an unknown CODE are both not found (exit 4):
 Emporix answers 404 to both.
 
@@ -155,7 +155,7 @@ Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the currency.currency\_manage scope.
+Requires the currency.currency_manage scope.
 
 **Command:** `epx exchange-rates update CODE [flags]`
 
@@ -174,7 +174,7 @@ Requires the currency.currency\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Examples**
 

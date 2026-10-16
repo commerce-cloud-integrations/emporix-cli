@@ -7,12 +7,12 @@
 Reads and changes product templates, the attribute sets shared by products based on them:
 create makes one, update replaces one, each from `--file`; delete deletes one.
 
-Its reads require the product.product\_template\_read scope.
-Its writes require the product.product\_template\_manage scope.
+Its reads require the product.product_template_read scope.
+Its writes require the product.product_template_manage scope.
 
 **Command:** `epx product-templates [flags]`, `epx product-templates [command]`
 
-**Flags:** only the [global flags](/emporix-cli/commands#global-flags).
+**Flags:** only the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Subcommands**
 
@@ -41,7 +41,7 @@ Changes data: on a terminal, epx asks before it sends POST. `--yes` sends withou
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the product.product\_template\_manage scope.
+Requires the product.product_template_manage scope.
 
 **Command:** `epx product-templates create [flags]`
 
@@ -58,7 +58,7 @@ Requires the product.product\_template\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx product-templates delete
 
@@ -73,7 +73,7 @@ On a terminal, epx sends DELETE only once you type ID at its prompt.
 `--yes` sends without asking (required without a terminal);
 `--dry-run` prints the request instead of sending it.
 
-Requires the product.product\_template\_manage scope.
+Requires the product.product_template_manage scope.
 
 **Command:** `epx product-templates delete ID [flags]`
 
@@ -86,7 +86,7 @@ Requires the product.product\_template\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx product-templates get
 
@@ -95,7 +95,7 @@ Show one product template.
 Reads product templates, the attribute sets shared by products based on them.
 ATTRIBUTES counts the template's attributes (`-o json` prints their definitions).
 
-Requires the product.product\_template\_read scope.
+Requires the product.product_template_read scope.
 
 **Command:** `epx product-templates get ID [flags]`
 
@@ -110,7 +110,7 @@ Requires the product.product\_template\_read scope.
 - `-o, --output <format>`\
   Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx product-templates list
 
@@ -119,7 +119,7 @@ List product templates.
 Reads product templates, the attribute sets shared by products based on them.
 ATTRIBUTES counts the template's attributes (`-o json` prints their definitions).
 
-Requires the product.product\_template\_read scope.
+Requires the product.product_template_read scope.
 
 **Command:** `epx product-templates list [flags]`
 
@@ -142,7 +142,7 @@ Requires the product.product\_template\_read scope.
 - `--stream`\
   Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx product-templates update
 
@@ -161,7 +161,7 @@ Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the product.product\_template\_manage scope.
+Requires the product.product_template_manage scope.
 
 **Command:** `epx product-templates update ID [flags]`
 
@@ -178,4 +178,4 @@ Requires the product.product\_template\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).

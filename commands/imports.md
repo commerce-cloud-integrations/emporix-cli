@@ -8,15 +8,15 @@ Reads the Import Service, which imports master data from external sources into E
 configurations, their streams (each imports one source entity into an Emporix type),
 schedules and runs, the errors and diagnostics of a run, the records imported, statistics,
 job groups, health thresholds and the tenant's import limits. Emporix allows these reads
-only with importtool.import\_trigger, with which epx also starts, retries, cancels and schedules runs.
+only with importtool.import_trigger, with which epx also starts, retries, cancels and schedules runs.
 
-Its reads require the importtool.import\_trigger scope.
+Its reads require the importtool.import_trigger scope.
 Opt-in: epx requests a write-capable scope for a read only when given `--allow-write-scope`.
-Its writes require the importtool.import\_trigger scope.
+Its writes require the importtool.import_trigger scope.
 
 **Command:** `epx imports [flags]`, `epx imports [command]`
 
-**Flags:** only the [global flags](/emporix-cli/commands#global-flags).
+**Flags:** only the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Subcommands**
 
@@ -48,13 +48,13 @@ whether it is active, VERSION counts its changes and MODIFIED is when it last ch
 description, source connection, creator and health thresholds are only in `-o json`. The
 service returns the configurations whole, so they are read with one request.
 
-Its reads require the importtool.import\_trigger scope.
+Its reads require the importtool.import_trigger scope.
 Opt-in: epx requests a write-capable scope for a read only when given `--allow-write-scope`.
-Its writes require the importtool.import\_trigger scope.
+Its writes require the importtool.import_trigger scope.
 
 **Command:** `epx imports configurations [flags]`, `epx imports configurations [command]`
 
-**Flags:** only the [global flags](/emporix-cli/commands#global-flags).
+**Flags:** only the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Subcommands**
 
@@ -81,16 +81,16 @@ Its writes require the importtool.import\_trigger scope.
 
 Delete the run schedule of a configuration.
 
-Deletes the schedule of the configuration CONFIGURATION\_ID, which then runs only when it
+Deletes the schedule of the configuration CONFIGURATION_ID, which then runs only when it
 is triggered. Emporix answers alike when there is no schedule, also of a configuration that
 was deleted.
 
 Deletes data, which cannot be undone.
-On a terminal, epx sends DELETE only once you type CONFIGURATION\_ID at its prompt.
+On a terminal, epx sends DELETE only once you type CONFIGURATION_ID at its prompt.
 `--yes` sends without asking (required without a terminal);
 `--dry-run` prints the request instead of sending it.
 
-Requires the importtool.import\_trigger scope.
+Requires the importtool.import_trigger scope.
 
 **Command:** `epx imports configurations delete-schedule CONFIGURATION_ID [flags]`
 
@@ -103,7 +103,7 @@ Requires the importtool.import\_trigger scope.
 - `--yes`\
   Send without asking (required without a terminal).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx imports configurations get
 
@@ -114,7 +114,7 @@ whether it is active, VERSION counts its changes and MODIFIED is when it last ch
 description, source connection, creator and health thresholds are only in `-o json`. The
 service returns the configurations whole, so they are read with one request.
 
-Requires the importtool.import\_trigger scope.
+Requires the importtool.import_trigger scope.
 Opt-in: epx requests a write-capable scope for a read only when given `--allow-write-scope`.
 
 **Command:** `epx imports configurations get ID [flags]`
@@ -122,7 +122,7 @@ Opt-in: epx requests a write-capable scope for a read only when given `--allow-w
 **Flags**
 
 - `--allow-write-scope`\
-  Opt in to requesting importtool.import\_trigger, which can also change data (required).
+  Opt in to requesting importtool.import_trigger, which can also change data (required).
 - `--columns <names>`\
   Print only these columns of table and csv, in this order: comma-separated names (any case) among ID, NAME, ENABLED, VERSION, MODIFIED.
 - `--no-headers`\
@@ -130,7 +130,7 @@ Opt-in: epx requests a write-capable scope for a read only when given `--allow-w
 - `-o, --output <format>`\
   Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx imports configurations list
 
@@ -141,7 +141,7 @@ whether it is active, VERSION counts its changes and MODIFIED is when it last ch
 description, source connection, creator and health thresholds are only in `-o json`. The
 service returns the configurations whole, so they are read with one request.
 
-Requires the importtool.import\_trigger scope.
+Requires the importtool.import_trigger scope.
 Opt-in: epx requests a write-capable scope for a read only when given `--allow-write-scope`.
 
 **Command:** `epx imports configurations list [flags]`
@@ -149,7 +149,7 @@ Opt-in: epx requests a write-capable scope for a read only when given `--allow-w
 **Flags**
 
 - `--allow-write-scope`\
-  Opt in to requesting importtool.import\_trigger, which can also change data (required).
+  Opt in to requesting importtool.import_trigger, which can also change data (required).
 - `--columns <names>`\
   Print only these columns of table and csv, in this order: comma-separated names (any case) among ID, NAME, ENABLED, VERSION, MODIFIED.
 - `--limit <n>`\
@@ -161,21 +161,21 @@ Opt-in: epx requests a write-capable scope for a read only when given `--allow-w
 - `--stream`\
   Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx imports configurations runs
 
 List the runs of a configuration.
 
 Reads the run history of an import configuration, most recent first.
-CONFIGURATION\_ID is the ID that [`epx imports configurations list`](/emporix-cli/commands/imports#epx-imports-configurations-list) shows; an unknown one lists nothing.
+CONFIGURATION_ID is the ID that [`epx imports configurations list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/imports#epx-imports-configurations-list) shows; an unknown one lists nothing.
 STATUS is QUEUED, RUNNING, RESUMABLE (interrupted; it resumes by itself), SUCCEEDED,
 PARTIAL (records failed or a limit skipped some, or a stream did not run), FAILED, CANCELLED
 or ABORTED (refused: nothing was read), MODE FULL or DELTA, followed by dry run for a run that
 wrote nothing, STARTED when the run was requested, FINISHED when it ended, READ the records it
 read and FAILED those that failed. `-o json` adds its other counters, message and queue position.
 
-Requires the importtool.import\_trigger scope.
+Requires the importtool.import_trigger scope.
 Opt-in: epx requests a write-capable scope for a read only when given `--allow-write-scope`.
 
 **Command:** `epx imports configurations runs CONFIGURATION_ID [flags]`
@@ -183,7 +183,7 @@ Opt-in: epx requests a write-capable scope for a read only when given `--allow-w
 **Flags**
 
 - `--allow-write-scope`\
-  Opt in to requesting importtool.import\_trigger, which can also change data (required).
+  Opt in to requesting importtool.import_trigger, which can also change data (required).
 - `--columns <names>`\
   Print only these columns of table and csv, in this order: comma-separated names (any case) among ID, STATUS, MODE, STARTED, FINISHED, READ, FAILED.
 - `--limit <n>`\
@@ -195,7 +195,7 @@ Opt-in: epx requests a write-capable scope for a read only when given `--allow-w
 - `--stream`\
   Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx imports configurations schedule
 
@@ -204,9 +204,9 @@ Show the run schedule of a configuration.
 Reads when an import configuration runs by itself: CRON is a cron expression with six fields
 (seconds first), evaluated in TIME ZONE, and NEXT RUN when it fires next. A configuration
 without a schedule is not found (exit 4).
-CONFIGURATION\_ID is the ID that [`epx imports configurations list`](/emporix-cli/commands/imports#epx-imports-configurations-list) shows; an unknown one is not found.
+CONFIGURATION_ID is the ID that [`epx imports configurations list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/imports#epx-imports-configurations-list) shows; an unknown one is not found.
 
-Requires the importtool.import\_trigger scope.
+Requires the importtool.import_trigger scope.
 Opt-in: epx requests a write-capable scope for a read only when given `--allow-write-scope`.
 
 **Command:** `epx imports configurations schedule CONFIGURATION_ID [flags]`
@@ -214,7 +214,7 @@ Opt-in: epx requests a write-capable scope for a read only when given `--allow-w
 **Flags**
 
 - `--allow-write-scope`\
-  Opt in to requesting importtool.import\_trigger, which can also change data (required).
+  Opt in to requesting importtool.import_trigger, which can also change data (required).
 - `--columns <names>`\
   Print only these columns of table and csv, in this order: comma-separated names (any case) among CRON, TIME ZONE, ENABLED, NEXT RUN.
 - `--no-headers`\
@@ -222,7 +222,7 @@ Opt-in: epx requests a write-capable scope for a read only when given `--allow-w
 - `-o, --output <format>`\
   Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx imports configurations stream-order
 
@@ -231,9 +231,9 @@ Show the order the streams of a configuration run in.
 Reads the order in which the streams of an import configuration run, which the service
 derives from their dependencies (also those their mappings add) and sequence: each STREAM
 runs after the streams that AFTER names.
-CONFIGURATION\_ID is the ID that [`epx imports configurations list`](/emporix-cli/commands/imports#epx-imports-configurations-list) shows; an unknown one lists nothing.
+CONFIGURATION_ID is the ID that [`epx imports configurations list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/imports#epx-imports-configurations-list) shows; an unknown one lists nothing.
 
-Requires the importtool.import\_trigger scope.
+Requires the importtool.import_trigger scope.
 Opt-in: epx requests a write-capable scope for a read only when given `--allow-write-scope`.
 
 **Command:** `epx imports configurations stream-order CONFIGURATION_ID [flags]`
@@ -241,7 +241,7 @@ Opt-in: epx requests a write-capable scope for a read only when given `--allow-w
 **Flags**
 
 - `--allow-write-scope`\
-  Opt in to requesting importtool.import\_trigger, which can also change data (required).
+  Opt in to requesting importtool.import_trigger, which can also change data (required).
 - `--columns <names>`\
   Print only these columns of table and csv, in this order: comma-separated names (any case) among STREAM, AFTER.
 - `--no-headers`\
@@ -249,17 +249,17 @@ Opt-in: epx requests a write-capable scope for a read only when given `--allow-w
 - `-o, --output <format>`\
   Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx imports configurations streams
 
 List the streams of a configuration.
 
 Reads the streams of an import configuration, in their sequence, with the columns of
-[`epx imports streams get`](/emporix-cli/commands/imports#epx-imports-streams-get). The service returns them whole, so they are read with one request.
-CONFIGURATION\_ID is the ID that [`epx imports configurations list`](/emporix-cli/commands/imports#epx-imports-configurations-list) shows; an unknown one lists nothing.
+[`epx imports streams get`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/imports#epx-imports-streams-get). The service returns them whole, so they are read with one request.
+CONFIGURATION_ID is the ID that [`epx imports configurations list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/imports#epx-imports-configurations-list) shows; an unknown one lists nothing.
 
-Requires the importtool.import\_trigger scope.
+Requires the importtool.import_trigger scope.
 Opt-in: epx requests a write-capable scope for a read only when given `--allow-write-scope`.
 
 **Command:** `epx imports configurations streams CONFIGURATION_ID [flags]`
@@ -267,7 +267,7 @@ Opt-in: epx requests a write-capable scope for a read only when given `--allow-w
 **Flags**
 
 - `--allow-write-scope`\
-  Opt in to requesting importtool.import\_trigger, which can also change data (required).
+  Opt in to requesting importtool.import_trigger, which can also change data (required).
 - `--columns <names>`\
   Print only these columns of table and csv, in this order: comma-separated names (any case) among ID, NAME, SOURCE, TARGET TYPE, MODE, ENABLED.
 - `--limit <n>`\
@@ -279,33 +279,33 @@ Opt-in: epx requests a write-capable scope for a read only when given `--allow-w
 - `--stream`\
   Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx imports configurations trigger
 
 Start an import run of a configuration.
 
-Starts an import run of the configuration CONFIGURATION\_ID, a DELTA run unless `--mode` FULL,
+Starts an import run of the configuration CONFIGURATION_ID, a DELTA run unless `--mode` FULL,
 and prints the run, QUEUED until a worker of the Import Service takes it. `--file` gives the
 body instead, e.g. `{"mode": "FULL", "dryRun": true, "streamIds": ["ID"]}` for a dry run of
 some streams, which maps and checks records but writes none. A configuration that has a run
 QUEUED, RUNNING or RESUMABLE already is a conflict (exit 5). Emporix answers a run that it
 refuses, e.g. of streams whose mappings were never published, as any other: the run ends
 ABORTED, which `--wait` reports.
-CONFIGURATION\_ID is the ID that [`epx imports configurations list`](/emporix-cli/commands/imports#epx-imports-configurations-list) shows.
+CONFIGURATION_ID is the ID that [`epx imports configurations list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/imports#epx-imports-configurations-list) shows.
 
 Changes data: on a terminal, epx asks before it sends POST. `--yes` sends without
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-`--wait` then reads the job again every `--poll-interval`, as [`epx imports runs get`](/emporix-cli/commands/imports#epx-imports-runs-get)
-does and with the importtool.import\_trigger scope too, saying on standard error how its status
+`--wait` then reads the job again every `--poll-interval`, as [`epx imports runs get`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/imports#epx-imports-runs-get)
+does and with the importtool.import_trigger scope too, saying on standard error how its status
 changes, until it ends: then it prints the job and exits 0 if it ended SUCCEEDED, else 1.
 When `--wait-timeout` passes first, it prints the job as last read and exits 1; the job goes
 on. When a read of the job fails, it prints the job as last read and exits as that read
 does, e.g. 4 when the job is not found.
 
-Requires the importtool.import\_trigger scope.
+Requires the importtool.import_trigger scope.
 
 **Command:** `epx imports configurations trigger CONFIGURATION_ID [flags]`
 
@@ -328,7 +328,7 @@ Requires the importtool.import\_trigger scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Examples**
 
@@ -340,20 +340,20 @@ epx imports configurations trigger 7c9e6679-7425-40de-944b-e07fc1f90ae7 --mode F
 
 Upsert the run schedule of a configuration.
 
-Sets when the configuration CONFIGURATION\_ID runs by itself, creating its schedule where
+Sets when the configuration CONFIGURATION_ID runs by itself, creating its schedule where
 it has none (an upsert), and prints the schedule. `--cron` is a Spring cron expression with
 six fields, seconds first, e.g. `"0 0 2 * * *"` for 02:00 every day (Emporix refuses one with
 five: 400 Bad Request), evaluated in `--timezone`, an IANA time zone such as Europe/Berlin.
 The schedule runs the configuration unless `--enabled=false`, which keeps it without running
 it: epx always sends enabled, as the schedule is replaced whole. `--file` gives the body
 instead.
-CONFIGURATION\_ID is the ID that [`epx imports configurations list`](/emporix-cli/commands/imports#epx-imports-configurations-list) shows.
+CONFIGURATION_ID is the ID that [`epx imports configurations list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/imports#epx-imports-configurations-list) shows.
 
 Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the importtool.import\_trigger scope.
+Requires the importtool.import_trigger scope.
 
 **Command:** `epx imports configurations update-schedule CONFIGURATION_ID [flags]`
 
@@ -374,7 +374,7 @@ Requires the importtool.import\_trigger scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Examples**
 
@@ -392,7 +392,7 @@ AMBER or RED once this share of its records failed (FAILURE RATIO, 0 to 1) or it
 is this many hours old (STALE HOURS), and RED after a failed run when FAILED RUN RED is true.
 A configuration or stream may set its own (in their `-o json`).
 
-Requires the importtool.import\_trigger scope.
+Requires the importtool.import_trigger scope.
 Opt-in: epx requests a write-capable scope for a read only when given `--allow-write-scope`.
 
 **Command:** `epx imports health-thresholds [flags]`
@@ -400,7 +400,7 @@ Opt-in: epx requests a write-capable scope for a read only when given `--allow-w
 **Flags**
 
 - `--allow-write-scope`\
-  Opt in to requesting importtool.import\_trigger, which can also change data (required).
+  Opt in to requesting importtool.import_trigger, which can also change data (required).
 - `--columns <names>`\
   Print only these columns of table and csv, in this order: comma-separated names (any case) among LEVEL, FAILURE RATIO AMBER, FAILURE RATIO RED, STALE HOURS AMBER, STALE HOURS RED, FAILED RUN RED.
 - `--no-headers`\
@@ -408,7 +408,7 @@ Opt-in: epx requests a write-capable scope for a read only when given `--allow-w
 - `-o, --output <format>`\
   Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx imports job-groups
 
@@ -418,7 +418,7 @@ Reads the tenant's job groups, named sets of import configurations that the impo
 statistics can be scoped to: CONFIGURATIONS counts them (`-o json` lists their IDs). The
 service returns them whole, so they are read with one request.
 
-Requires the importtool.import\_trigger scope.
+Requires the importtool.import_trigger scope.
 Opt-in: epx requests a write-capable scope for a read only when given `--allow-write-scope`.
 
 **Command:** `epx imports job-groups [flags]`
@@ -426,7 +426,7 @@ Opt-in: epx requests a write-capable scope for a read only when given `--allow-w
 **Flags**
 
 - `--allow-write-scope`\
-  Opt in to requesting importtool.import\_trigger, which can also change data (required).
+  Opt in to requesting importtool.import_trigger, which can also change data (required).
 - `--columns <names>`\
   Print only these columns of table and csv, in this order: comma-separated names (any case) among ID, NAME, CONFIGURATIONS, MODIFIED.
 - `--limit <n>`\
@@ -438,7 +438,7 @@ Opt-in: epx requests a write-capable scope for a read only when given `--allow-w
 - `--stream`\
   Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx imports license
 
@@ -449,7 +449,7 @@ target type (it skips the rest and ends PARTIAL), at most MAX CONCURRENT RUNS ru
 once (others wait, QUEUED), and BATCH SIZE records are written per request, by WORKERS
 writers in parallel. Emporix support raises a limit on request.
 
-Requires the importtool.import\_trigger scope.
+Requires the importtool.import_trigger scope.
 Opt-in: epx requests a write-capable scope for a read only when given `--allow-write-scope`.
 
 **Command:** `epx imports license [flags]`
@@ -457,7 +457,7 @@ Opt-in: epx requests a write-capable scope for a read only when given `--allow-w
 **Flags**
 
 - `--allow-write-scope`\
-  Opt in to requesting importtool.import\_trigger, which can also change data (required).
+  Opt in to requesting importtool.import_trigger, which can also change data (required).
 - `--columns <names>`\
   Print only these columns of table and csv, in this order: comma-separated names (any case) among MAX RECORDS PER TYPE, MAX CONCURRENT RUNS, BATCH SIZE, WORKERS.
 - `--no-headers`\
@@ -465,20 +465,20 @@ Opt-in: epx requests a write-capable scope for a read only when given `--allow-w
 - `-o, --output <format>`\
   Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx imports records
 
 List the imported records of a type.
 
 Reads the records imported into a target type: KEY is a record's natural key in the source,
-OUTCOME how it was last imported (UPSERTED, DELETED at the source, DELETED\_TARGET in
-Emporix, FAILED or DRY\_RUN) and IMPORTED when. `-o json` adds its stored fields, the Emporix
+OUTCOME how it was last imported (UPSERTED, DELETED at the source, DELETED_TARGET in
+Emporix, FAILED or DRY_RUN) and IMPORTED when. `-o json` adds its stored fields, the Emporix
 id it was written under, and its configuration, stream and run. TYPE is one that
-[`epx imports types`](/emporix-cli/commands/imports#epx-imports-types) shows; an unknown one lists nothing. To search keys or filter by
-outcome, one page at a time: [`epx api get /importtool/{tenant}/data/records -p type=TYPE -p search=TEXT -p outcome=FAILED --scope importtool.import_trigger`](/emporix-cli/commands/api#epx-api-get).
+[`epx imports types`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/imports#epx-imports-types) shows; an unknown one lists nothing. To search keys or filter by
+outcome, one page at a time: [`epx api get /importtool/{tenant}/data/records -p type=TYPE -p search=TEXT -p outcome=FAILED --scope importtool.import_trigger`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/api#epx-api-get).
 
-Requires the importtool.import\_trigger scope.
+Requires the importtool.import_trigger scope.
 Opt-in: epx requests a write-capable scope for a read only when given `--allow-write-scope`.
 
 **Command:** `epx imports records TYPE [flags]`
@@ -486,7 +486,7 @@ Opt-in: epx requests a write-capable scope for a read only when given `--allow-w
 **Flags**
 
 - `--allow-write-scope`\
-  Opt in to requesting importtool.import\_trigger, which can also change data (required).
+  Opt in to requesting importtool.import_trigger, which can also change data (required).
 - `--columns <names>`\
   Print only these columns of table and csv, in this order: comma-separated names (any case) among ID, KEY, TYPE, OUTCOME, IMPORTED.
 - `--limit <n>`\
@@ -498,22 +498,22 @@ Opt-in: epx requests a write-capable scope for a read only when given `--allow-w
 - `--stream`\
   Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx imports runs
 
 Read, cancel and retry import runs.
 
-Reads import runs; a run's ID is the one that [`epx imports configurations runs CONFIGURATION_ID`](/emporix-cli/commands/imports#epx-imports-configurations-runs) shows.
-Its `-o json` adds the progress of each stream of the run, which [`epx imports runs streams`](/emporix-cli/commands/imports#epx-imports-runs-streams) shows.
+Reads import runs; a run's ID is the one that [`epx imports configurations runs CONFIGURATION_ID`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/imports#epx-imports-configurations-runs) shows.
+Its `-o json` adds the progress of each stream of the run, which [`epx imports runs streams`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/imports#epx-imports-runs-streams) shows.
 
-Its reads require the importtool.import\_trigger scope.
+Its reads require the importtool.import_trigger scope.
 Opt-in: epx requests a write-capable scope for a read only when given `--allow-write-scope`.
-Its writes require the importtool.import\_trigger scope.
+Its writes require the importtool.import_trigger scope.
 
 **Command:** `epx imports runs [flags]`, `epx imports runs [command]`
 
-**Flags:** only the [global flags](/emporix-cli/commands#global-flags).
+**Flags:** only the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Subcommands**
 
@@ -539,13 +539,13 @@ cancellation. A QUEUED run is CANCELLED at once; a running one stops when it can
 `--force` at once, which also unblocks its configuration. A RESUMABLE run stops only with
 `--force`: without it, a conflict (exit 5). Emporix answers a run that is unknown or ended
 already with 409 Conflict and `"accepted"`: false, which epx prints as the answer (exit 5).
-ID is the one that [`epx imports configurations runs CONFIGURATION_ID`](/emporix-cli/commands/imports#epx-imports-configurations-runs) shows.
+ID is the one that [`epx imports configurations runs CONFIGURATION_ID`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/imports#epx-imports-configurations-runs) shows.
 
 Changes data: on a terminal, epx asks before it sends POST. `--yes` sends without
 asking (required without a terminal); `--dry-run` prints the request
 instead of sending it.
 
-Requires the importtool.import\_trigger scope.
+Requires the importtool.import_trigger scope.
 
 **Command:** `epx imports runs cancel ID [flags]`
 
@@ -560,23 +560,23 @@ Requires the importtool.import\_trigger scope.
 - `--yes`\
   Send without asking (required without a terminal).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx imports runs diagnostics
 
 List the source rows behind a run's repeated keys and missing parents.
 
 Reads the source rows behind a run's feed-quality counters, which do not fail a run: KIND is
-REPEATED\_KEY for a row whose KEY the run had already imported (OCCURRENCE times before), or
-UNRESOLVED\_PARENT for a child line whose parent was missing: LINKING FIELD and LINKING VALUE
+REPEATED_KEY for a row whose KEY the run had already imported (OCCURRENCE times before), or
+UNRESOLVED_PARENT for a child line whose parent was missing: LINKING FIELD and LINKING VALUE
 are the parent key it points at, WAITING LINES the lines waiting for that parent. The service
 keeps a capped sample per stream and kind; `-o json` says how many rows it recorded, its cap
 and whether a stream reached it (the run's counters give the totals). Every recorded row is
 read, up to 50000; a run that recorded more fails, and its rows are read per stream:
-[`epx api get /importtool/{tenant}/runs/RUN_ID/diagnostics -p streamId=ID -p limit=50000 --scope importtool.import_trigger`](/emporix-cli/commands/api#epx-api-get).
-RUN\_ID is the ID that [`epx imports configurations runs CONFIGURATION_ID`](/emporix-cli/commands/imports#epx-imports-configurations-runs) shows; an unknown one lists nothing.
+[`epx api get /importtool/{tenant}/runs/RUN_ID/diagnostics -p streamId=ID -p limit=50000 --scope importtool.import_trigger`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/api#epx-api-get).
+RUN_ID is the ID that [`epx imports configurations runs CONFIGURATION_ID`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/imports#epx-imports-configurations-runs) shows; an unknown one lists nothing.
 
-Requires the importtool.import\_trigger scope.
+Requires the importtool.import_trigger scope.
 Opt-in: epx requests a write-capable scope for a read only when given `--allow-write-scope`.
 
 **Command:** `epx imports runs diagnostics RUN_ID [flags]`
@@ -584,7 +584,7 @@ Opt-in: epx requests a write-capable scope for a read only when given `--allow-w
 **Flags**
 
 - `--allow-write-scope`\
-  Opt in to requesting importtool.import\_trigger, which can also change data (required).
+  Opt in to requesting importtool.import_trigger, which can also change data (required).
 - `--columns <names>`\
   Print only these columns of table and csv, in this order: comma-separated names (any case) among KIND, STREAM, KEY, LINKING FIELD, LINKING VALUE, WAITING LINES, OCCURRENCE.
 - `--no-headers`\
@@ -592,7 +592,7 @@ Opt-in: epx requests a write-capable scope for a read only when given `--allow-w
 - `-o, --output <format>`\
   Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx imports runs errors
 
@@ -601,9 +601,9 @@ List the errors of a run.
 Reads the errors recorded during an import run: KEY is the natural key of the record that
 failed, STAGE the step it failed in (such as MAPPING or UPSERT), CODE the error code and
 MESSAGE what went wrong. Its stream and time are only in `-o json`.
-RUN\_ID is the ID that [`epx imports configurations runs CONFIGURATION_ID`](/emporix-cli/commands/imports#epx-imports-configurations-runs) shows; an unknown one lists nothing.
+RUN_ID is the ID that [`epx imports configurations runs CONFIGURATION_ID`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/imports#epx-imports-configurations-runs) shows; an unknown one lists nothing.
 
-Requires the importtool.import\_trigger scope.
+Requires the importtool.import_trigger scope.
 Opt-in: epx requests a write-capable scope for a read only when given `--allow-write-scope`.
 
 **Command:** `epx imports runs errors RUN_ID [flags]`
@@ -611,7 +611,7 @@ Opt-in: epx requests a write-capable scope for a read only when given `--allow-w
 **Flags**
 
 - `--allow-write-scope`\
-  Opt in to requesting importtool.import\_trigger, which can also change data (required).
+  Opt in to requesting importtool.import_trigger, which can also change data (required).
 - `--columns <names>`\
   Print only these columns of table and csv, in this order: comma-separated names (any case) among ID, KEY, STAGE, CODE, MESSAGE.
 - `--limit <n>`\
@@ -623,21 +623,21 @@ Opt-in: epx requests a write-capable scope for a read only when given `--allow-w
 - `--stream`\
   Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx imports runs get
 
 Show one run.
 
-Reads import runs; a run's ID is the one that [`epx imports configurations runs CONFIGURATION_ID`](/emporix-cli/commands/imports#epx-imports-configurations-runs) shows.
-Its `-o json` adds the progress of each stream of the run, which [`epx imports runs streams`](/emporix-cli/commands/imports#epx-imports-runs-streams) shows.
+Reads import runs; a run's ID is the one that [`epx imports configurations runs CONFIGURATION_ID`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/imports#epx-imports-configurations-runs) shows.
+Its `-o json` adds the progress of each stream of the run, which [`epx imports runs streams`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/imports#epx-imports-runs-streams) shows.
 STATUS is QUEUED, RUNNING, RESUMABLE (interrupted; it resumes by itself), SUCCEEDED,
 PARTIAL (records failed or a limit skipped some, or a stream did not run), FAILED, CANCELLED
 or ABORTED (refused: nothing was read), MODE FULL or DELTA, followed by dry run for a run that
 wrote nothing, STARTED when the run was requested, FINISHED when it ended, READ the records it
 read and FAILED those that failed. `-o json` adds its other counters, message and queue position.
 
-Requires the importtool.import\_trigger scope.
+Requires the importtool.import_trigger scope.
 Opt-in: epx requests a write-capable scope for a read only when given `--allow-write-scope`.
 
 **Command:** `epx imports runs get ID [flags]`
@@ -645,7 +645,7 @@ Opt-in: epx requests a write-capable scope for a read only when given `--allow-w
 **Flags**
 
 - `--allow-write-scope`\
-  Opt in to requesting importtool.import\_trigger, which can also change data (required).
+  Opt in to requesting importtool.import_trigger, which can also change data (required).
 - `--columns <names>`\
   Print only these columns of table and csv, in this order: comma-separated names (any case) among ID, STATUS, MODE, STARTED, FINISHED, READ, FAILED.
 - `--no-headers`\
@@ -653,7 +653,7 @@ Opt-in: epx requests a write-capable scope for a read only when given `--allow-w
 - `-o, --output <format>`\
   Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx imports runs retry
 
@@ -662,20 +662,20 @@ Run the failed records of an import run again.
 Starts a run that imports again only the records that failed in the import run ID, and
 prints it, QUEUED until a worker takes it; the run ID keeps its counters. A configuration
 that has a run QUEUED, RUNNING or RESUMABLE already is a conflict (exit 5).
-ID is the one that [`epx imports configurations runs CONFIGURATION_ID`](/emporix-cli/commands/imports#epx-imports-configurations-runs) shows.
+ID is the one that [`epx imports configurations runs CONFIGURATION_ID`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/imports#epx-imports-configurations-runs) shows.
 
 Changes data: on a terminal, epx asks before it sends POST. `--yes` sends without
 asking (required without a terminal); `--dry-run` prints the request
 instead of sending it.
 
-`--wait` then reads the job again every `--poll-interval`, as [`epx imports runs get`](/emporix-cli/commands/imports#epx-imports-runs-get)
-does and with the importtool.import\_trigger scope too, saying on standard error how its status
+`--wait` then reads the job again every `--poll-interval`, as [`epx imports runs get`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/imports#epx-imports-runs-get)
+does and with the importtool.import_trigger scope too, saying on standard error how its status
 changes, until it ends: then it prints the job and exits 0 if it ended SUCCEEDED, else 1.
 When `--wait-timeout` passes first, it prints the job as last read and exits 1; the job goes
 on. When a read of the job fails, it prints the job as last read and exits as that read
 does, e.g. 4 when the job is not found.
 
-Requires the importtool.import\_trigger scope.
+Requires the importtool.import_trigger scope.
 
 **Command:** `epx imports runs retry ID [flags]`
 
@@ -694,7 +694,7 @@ Requires the importtool.import\_trigger scope.
 - `--yes`\
   Send without asking (required without a terminal).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx imports runs streams
 
@@ -704,9 +704,9 @@ Reads the progress of each stream of an import run: STATUS is QUEUED, RUNNING, S
 PARTIAL, FAILED, SKIPPED or ABORTED (not run because of its configuration, such as mappings
 never published, as MESSAGE says), then the records the stream read, created, updated,
 skipped as unchanged, deleted and failed to import. A queued run lists nothing yet.
-RUN\_ID is the ID that [`epx imports configurations runs CONFIGURATION_ID`](/emporix-cli/commands/imports#epx-imports-configurations-runs) shows; an unknown one is not found.
+RUN_ID is the ID that [`epx imports configurations runs CONFIGURATION_ID`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/imports#epx-imports-configurations-runs) shows; an unknown one is not found.
 
-Requires the importtool.import\_trigger scope.
+Requires the importtool.import_trigger scope.
 Opt-in: epx requests a write-capable scope for a read only when given `--allow-write-scope`.
 
 **Command:** `epx imports runs streams RUN_ID [flags]`
@@ -714,7 +714,7 @@ Opt-in: epx requests a write-capable scope for a read only when given `--allow-w
 **Flags**
 
 - `--allow-write-scope`\
-  Opt in to requesting importtool.import\_trigger, which can also change data (required).
+  Opt in to requesting importtool.import_trigger, which can also change data (required).
 - `--columns <names>`\
   Print only these columns of table and csv, in this order: comma-separated names (any case) among STREAM, STATUS, READ, CREATED, UPDATED, SKIPPED, DELETED, FAILED, MESSAGE.
 - `--no-headers`\
@@ -722,7 +722,7 @@ Opt-in: epx requests a write-capable scope for a read only when given `--allow-w
 - `-o, --output <format>`\
   Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx imports statistics
 
@@ -732,10 +732,10 @@ Reads the import statistics of the last 30 days for the whole tenant: RUNS count
 started, SUCCEEDED, PARTIAL, FAILED and CANCELLED how they ended, ACTIVE those queued or
 running now, and RECORDS READ and RECORDS FAILED the records. `-o json` adds the rates, a daily
 series, each stream's health, the failing streams, an error breakdown and the streams added
-or removed. Another window or scope, e.g. one configuration ([`epx imports job-groups`](/emporix-cli/commands/imports#epx-imports-job-groups) lists
-sets of them): [`epx api get /importtool/{tenant}/stats -p configId=ID -p from=2026-09-01T00:00:00Z -p granularity=WEEK --scope importtool.import_trigger`](/emporix-cli/commands/api#epx-api-get).
+or removed. Another window or scope, e.g. one configuration ([`epx imports job-groups`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/imports#epx-imports-job-groups) lists
+sets of them): [`epx api get /importtool/{tenant}/stats -p configId=ID -p from=2026-09-01T00:00:00Z -p granularity=WEEK --scope importtool.import_trigger`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/api#epx-api-get).
 
-Requires the importtool.import\_trigger scope.
+Requires the importtool.import_trigger scope.
 Opt-in: epx requests a write-capable scope for a read only when given `--allow-write-scope`.
 
 **Command:** `epx imports statistics [flags]`
@@ -743,7 +743,7 @@ Opt-in: epx requests a write-capable scope for a read only when given `--allow-w
 **Flags**
 
 - `--allow-write-scope`\
-  Opt in to requesting importtool.import\_trigger, which can also change data (required).
+  Opt in to requesting importtool.import_trigger, which can also change data (required).
 - `--columns <names>`\
   Print only these columns of table and csv, in this order: comma-separated names (any case) among RUNS, SUCCEEDED, PARTIAL, FAILED, CANCELLED, ACTIVE, RECORDS READ, RECORDS FAILED.
 - `--no-headers`\
@@ -751,7 +751,7 @@ Opt-in: epx requests a write-capable scope for a read only when given `--allow-w
 - `-o, --output <format>`\
   Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx imports streams
 
@@ -759,16 +759,16 @@ Read import streams and the records they imported.
 
 Reads an import stream, which imports one source entity of a configuration: SOURCE is that
 entity, TARGET TYPE the Emporix type it writes to (a discriminator, in `-o json`, may route
-records to others), MODE STANDALONE, or COMPOSITE\_CHILD or COMPOSITE\_MERGE for a stream that
+records to others), MODE STANDALONE, or COMPOSITE_CHILD or COMPOSITE_MERGE for a stream that
 adds to the records of another. Its delta, delete, write and health settings are only in
-`-o json`. A stream's ID is the one that [`epx imports configurations streams CONFIGURATION_ID`](/emporix-cli/commands/imports#epx-imports-configurations-streams) shows.
+`-o json`. A stream's ID is the one that [`epx imports configurations streams CONFIGURATION_ID`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/imports#epx-imports-configurations-streams) shows.
 
-Requires the importtool.import\_trigger scope.
+Requires the importtool.import_trigger scope.
 Opt-in: epx requests a write-capable scope for a read only when given `--allow-write-scope`.
 
 **Command:** `epx imports streams [flags]`, `epx imports streams [command]`
 
-**Flags:** only the [global flags](/emporix-cli/commands#global-flags).
+**Flags:** only the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Subcommands**
 
@@ -783,11 +783,11 @@ Show one stream.
 
 Reads an import stream, which imports one source entity of a configuration: SOURCE is that
 entity, TARGET TYPE the Emporix type it writes to (a discriminator, in `-o json`, may route
-records to others), MODE STANDALONE, or COMPOSITE\_CHILD or COMPOSITE\_MERGE for a stream that
+records to others), MODE STANDALONE, or COMPOSITE_CHILD or COMPOSITE_MERGE for a stream that
 adds to the records of another. Its delta, delete, write and health settings are only in
-`-o json`. A stream's ID is the one that [`epx imports configurations streams CONFIGURATION_ID`](/emporix-cli/commands/imports#epx-imports-configurations-streams) shows.
+`-o json`. A stream's ID is the one that [`epx imports configurations streams CONFIGURATION_ID`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/imports#epx-imports-configurations-streams) shows.
 
-Requires the importtool.import\_trigger scope.
+Requires the importtool.import_trigger scope.
 Opt-in: epx requests a write-capable scope for a read only when given `--allow-write-scope`.
 
 **Command:** `epx imports streams get ID [flags]`
@@ -795,7 +795,7 @@ Opt-in: epx requests a write-capable scope for a read only when given `--allow-w
 **Flags**
 
 - `--allow-write-scope`\
-  Opt in to requesting importtool.import\_trigger, which can also change data (required).
+  Opt in to requesting importtool.import_trigger, which can also change data (required).
 - `--columns <names>`\
   Print only these columns of table and csv, in this order: comma-separated names (any case) among ID, NAME, SOURCE, TARGET TYPE, MODE, ENABLED.
 - `--no-headers`\
@@ -803,16 +803,16 @@ Opt-in: epx requests a write-capable scope for a read only when given `--allow-w
 - `-o, --output <format>`\
   Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx imports streams records
 
 List the records a stream imported.
 
-Reads the records a stream imported, with the columns of [`epx imports records`](/emporix-cli/commands/imports#epx-imports-records).
-STREAM\_ID is the ID that [`epx imports configurations streams CONFIGURATION_ID`](/emporix-cli/commands/imports#epx-imports-configurations-streams) shows; an unknown one lists nothing.
+Reads the records a stream imported, with the columns of [`epx imports records`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/imports#epx-imports-records).
+STREAM_ID is the ID that [`epx imports configurations streams CONFIGURATION_ID`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/imports#epx-imports-configurations-streams) shows; an unknown one lists nothing.
 
-Requires the importtool.import\_trigger scope.
+Requires the importtool.import_trigger scope.
 Opt-in: epx requests a write-capable scope for a read only when given `--allow-write-scope`.
 
 **Command:** `epx imports streams records STREAM_ID [flags]`
@@ -820,7 +820,7 @@ Opt-in: epx requests a write-capable scope for a read only when given `--allow-w
 **Flags**
 
 - `--allow-write-scope`\
-  Opt in to requesting importtool.import\_trigger, which can also change data (required).
+  Opt in to requesting importtool.import_trigger, which can also change data (required).
 - `--columns <names>`\
   Print only these columns of table and csv, in this order: comma-separated names (any case) among ID, KEY, TYPE, OUTCOME, IMPORTED.
 - `--limit <n>`\
@@ -832,16 +832,16 @@ Opt-in: epx requests a write-capable scope for a read only when given `--allow-w
 - `--stream`\
   Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx imports types
 
 List the types that hold imported records.
 
-Reads the target types that hold imported records ([`epx imports records`](/emporix-cli/commands/imports#epx-imports-records) lists those of
+Reads the target types that hold imported records ([`epx imports records`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/imports#epx-imports-records) lists those of
 one). The service returns them whole, so they are read with one request.
 
-Requires the importtool.import\_trigger scope.
+Requires the importtool.import_trigger scope.
 Opt-in: epx requests a write-capable scope for a read only when given `--allow-write-scope`.
 
 **Command:** `epx imports types [flags]`
@@ -849,7 +849,7 @@ Opt-in: epx requests a write-capable scope for a read only when given `--allow-w
 **Flags**
 
 - `--allow-write-scope`\
-  Opt in to requesting importtool.import\_trigger, which can also change data (required).
+  Opt in to requesting importtool.import_trigger, which can also change data (required).
 - `--columns <names>`\
   Print only these columns of table and csv, in this order: comma-separated names (any case) among TYPE.
 - `--limit <n>`\
@@ -861,4 +861,4 @@ Opt-in: epx requests a write-capable scope for a read only when given `--allow-w
 - `--stream`\
   Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).

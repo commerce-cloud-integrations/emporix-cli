@@ -10,10 +10,10 @@ Operations of the Emporix API reference file [`checkout/shopping-list/api-refere
 
 | Operation | Status | Details |
 | --- | --- | --- |
-| `POST /shoppinglist/{tenant}/shopping-lists` | Built | [`epx shopping-lists create`](/emporix-cli/commands/shopping-lists#epx-shopping-lists-create) |
-| `GET /shoppinglist/{tenant}/shopping-lists` | Built | [`epx shopping-lists list`](/emporix-cli/commands/shopping-lists#epx-shopping-lists-list) |
-| `PUT /shoppinglist/{tenant}/shopping-lists/{customerId}` | Built | [`epx shopping-lists update`](/emporix-cli/commands/shopping-lists#epx-shopping-lists-update) |
-| `GET /shoppinglist/{tenant}/shopping-lists/{customerId}` | Built | [`epx shopping-lists get`](/emporix-cli/commands/shopping-lists#epx-shopping-lists-get) |
-| `DELETE /shoppinglist/{tenant}/shopping-lists/{customerId}` | Built | [`epx shopping-lists delete`](/emporix-cli/commands/shopping-lists#epx-shopping-lists-delete), [`epx shopping-lists delete-all`](/emporix-cli/commands/shopping-lists#epx-shopping-lists-delete-all) |
+| `POST /shoppinglist/{tenant}/shopping-lists` | Built | [`epx shopping-lists create`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/shopping-lists#epx-shopping-lists-create) |
+| `GET /shoppinglist/{tenant}/shopping-lists` | Built | [`epx shopping-lists list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/shopping-lists#epx-shopping-lists-list) |
+| `PUT /shoppinglist/{tenant}/shopping-lists/{customerId}` | Built | [`epx shopping-lists update`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/shopping-lists#epx-shopping-lists-update) |
+| `GET /shoppinglist/{tenant}/shopping-lists/{customerId}` | Built | [`epx shopping-lists get`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/shopping-lists#epx-shopping-lists-get) |
+| `DELETE /shoppinglist/{tenant}/shopping-lists/{customerId}` | Built | [`epx shopping-lists delete`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/shopping-lists#epx-shopping-lists-delete), [`epx shopping-lists delete-all`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/shopping-lists#epx-shopping-lists-delete-all) |
 
-All services: [Emporix API coverage](/emporix-cli/coverage).
+All services: [Emporix API coverage](https://commerce-cloud-integrations.github.io/emporix-cli/coverage).

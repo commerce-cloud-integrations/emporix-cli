@@ -7,11 +7,11 @@
 Reads brands.
 
 Its reads need no OAuth scope.
-Its writes require the brand.brand\_manage scope.
+Its writes require the brand.brand_manage scope.
 
 **Command:** `epx brands [flags]`, `epx brands [command]`
 
-**Flags:** only the [global flags](/emporix-cli/commands#global-flags).
+**Flags:** only the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Subcommands**
 
@@ -46,7 +46,7 @@ Changes data: on a terminal, epx asks before it sends POST. `--yes` sends withou
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the brand.brand\_manage scope.
+Requires the brand.brand_manage scope.
 
 **Command:** `epx brands create [flags]`
 
@@ -61,7 +61,7 @@ Requires the brand.brand\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx brands delete
 
@@ -74,7 +74,7 @@ On a terminal, epx sends DELETE only once you type ID at its prompt.
 `--yes` sends without asking (required without a terminal);
 `--dry-run` prints the request instead of sending it.
 
-Requires the brand.brand\_manage scope.
+Requires the brand.brand_manage scope.
 
 **Command:** `epx brands delete ID [flags]`
 
@@ -87,7 +87,7 @@ Requires the brand.brand\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx brands get
 
@@ -110,7 +110,7 @@ No OAuth scope is needed.
 - `-o, --output <format>`\
   Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx brands list
 
@@ -141,7 +141,7 @@ No OAuth scope is needed.
 - `--stream`\
   Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx brands patch
 
@@ -160,7 +160,7 @@ Changes data: on a terminal, epx asks before it sends PATCH. `--yes` sends witho
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the brand.brand\_manage scope.
+Requires the brand.brand_manage scope.
 
 **Command:** `epx brands patch ID [flags]`
 
@@ -175,7 +175,7 @@ Requires the brand.brand\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx brands update
 
@@ -192,7 +192,7 @@ Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the brand.brand\_manage scope.
+Requires the brand.brand_manage scope.
 
 **Command:** `epx brands update ID [flags]`
 
@@ -207,4 +207,4 @@ Requires the brand.brand\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).

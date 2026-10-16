@@ -5,18 +5,18 @@
 ## epx coupons
 
 Reads coupons, customer ids included (issuedTo, validFor in `-o json`). DISCOUNT is a
-percentage, an amount or FREE\_SHIPPING. STATUS is VALID, INACTIVE, EXPIRED or USED, as
+percentage, an amount or FREE_SHIPPING. STATUS is VALID, INACTIVE, EXPIRED or USED, as
 Emporix computes it: `--query` status:VALUE matches no coupon and `--sort` status is ignored.
 REDEEMED counts redemptions, out of the maximum when there is one; Emporix counts those for
 a legal entity apart, per legal entity (legalEntityRedemptions, only in `-o json`). Other
 restrictions (valid from, minimum order value, customers, categories, segments) are only in
 `-o json`.
-[`epx coupons redemptions`](/emporix-cli/commands/coupons#epx-coupons-redemptions) and `redemption` read the redemptions of a coupon, all or one.
-[`epx coupons list`](/emporix-cli/commands/coupons#epx-coupons-list) leaves out deleted coupons; [`epx coupons get CODE`](/emporix-cli/commands/coupons#epx-coupons-get) still shows one, in
+[`epx coupons redemptions`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/coupons#epx-coupons-redemptions) and `redemption` read the redemptions of a coupon, all or one.
+[`epx coupons list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/coupons#epx-coupons-list) leaves out deleted coupons; [`epx coupons get CODE`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/coupons#epx-coupons-get) still shows one, in
 the table as a live one (`-o json` has deleted: true). Deleted coupons are listed too, one
 page at a time, by
-[`epx api get /coupon/{tenant}/coupons -p showDeleted=true --scope coupon.coupon_read`](/emporix-cli/commands/api#epx-api-get).
-[`epx coupons create`](/emporix-cli/commands/coupons#epx-coupons-create), `update`, `patch` and `delete` change coupons, `redeem` redeems one
+[`epx api get /coupon/{tenant}/coupons -p showDeleted=true --scope coupon.coupon_read`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/api#epx-api-get).
+[`epx coupons create`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/coupons#epx-coupons-create), `update`, `patch` and `delete` change coupons, `redeem` redeems one
 outside a checkout, `redemption-delete` deletes a redemption, and `referral-create` creates
 the referral coupon of a customer.
 
@@ -26,7 +26,7 @@ Its writes require different OAuth scopes; the help of each names them.
 
 **Command:** `epx coupons [flags]`, `epx coupons [command]`
 
-**Flags:** only the [global flags](/emporix-cli/commands#global-flags).
+**Flags:** only the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Subcommands**
 
@@ -63,7 +63,7 @@ Create a coupon.
 
 Creates the coupon in `--file`, a JSON object with at least its name and, for a discount,
 discountType (PERCENT with discountPercentage, ABSOLUTE with discountAbsolute, or
-FREE\_SHIPPING), and prints `{"id": CODE}`: the code of the JSON, or one that Emporix makes
+FREE_SHIPPING), and prints `{"id": CODE}`: the code of the JSON, or one that Emporix makes
 without one. Emporix saves codes in upper case unless the tenant configuration
 enableCouponCodeCaseSensitivity is true. A coupon with the code exists already: a conflict
 (exit 5), also for a deleted one, whose code stays taken.
@@ -72,7 +72,7 @@ Changes data: on a terminal, epx asks before it sends POST. `--yes` sends withou
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the coupon.coupon\_manage scope.
+Requires the coupon.coupon_manage scope.
 
 **Command:** `epx coupons create [flags]`
 
@@ -87,7 +87,7 @@ Requires the coupon.coupon\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Examples**
 
@@ -99,8 +99,8 @@ epx coupons create --file coupon.json --dry-run
 
 Delete a coupon.
 
-Deletes the coupon CODE, which [`epx coupons list`](/emporix-cli/commands/coupons#epx-coupons-list) then leaves out. Emporix keeps it as
-deleted: [`epx coupons get CODE`](/emporix-cli/commands/coupons#epx-coupons-get) still shows it, and its code stays taken. An unknown CODE is
+Deletes the coupon CODE, which [`epx coupons list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/coupons#epx-coupons-list) then leaves out. Emporix keeps it as
+deleted: [`epx coupons get CODE`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/coupons#epx-coupons-get) still shows it, and its code stays taken. An unknown CODE is
 not found (exit 4).
 Emporix refuses a deleted coupon with 403 Forbidden (exit 1).
 
@@ -109,7 +109,7 @@ On a terminal, epx sends DELETE only once you type CODE at its prompt.
 `--yes` sends without asking (required without a terminal);
 `--dry-run` prints the request instead of sending it.
 
-Requires the coupon.coupon\_manage scope.
+Requires the coupon.coupon_manage scope.
 
 **Command:** `epx coupons delete CODE [flags]`
 
@@ -122,26 +122,26 @@ Requires the coupon.coupon\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx coupons get
 
 Show one coupon.
 
 Reads coupons, customer ids included (issuedTo, validFor in `-o json`). DISCOUNT is a
-percentage, an amount or FREE\_SHIPPING. STATUS is VALID, INACTIVE, EXPIRED or USED, as
+percentage, an amount or FREE_SHIPPING. STATUS is VALID, INACTIVE, EXPIRED or USED, as
 Emporix computes it: `--query` status:VALUE matches no coupon and `--sort` status is ignored.
 REDEEMED counts redemptions, out of the maximum when there is one; Emporix counts those for
 a legal entity apart, per legal entity (legalEntityRedemptions, only in `-o json`). Other
 restrictions (valid from, minimum order value, customers, categories, segments) are only in
 `-o json`.
-[`epx coupons redemptions`](/emporix-cli/commands/coupons#epx-coupons-redemptions) and `redemption` read the redemptions of a coupon, all or one.
-[`epx coupons list`](/emporix-cli/commands/coupons#epx-coupons-list) leaves out deleted coupons; [`epx coupons get CODE`](/emporix-cli/commands/coupons#epx-coupons-get) still shows one, in
+[`epx coupons redemptions`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/coupons#epx-coupons-redemptions) and `redemption` read the redemptions of a coupon, all or one.
+[`epx coupons list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/coupons#epx-coupons-list) leaves out deleted coupons; [`epx coupons get CODE`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/coupons#epx-coupons-get) still shows one, in
 the table as a live one (`-o json` has deleted: true). Deleted coupons are listed too, one
 page at a time, by
-[`epx api get /coupon/{tenant}/coupons -p showDeleted=true --scope coupon.coupon_read`](/emporix-cli/commands/api#epx-api-get).
+[`epx api get /coupon/{tenant}/coupons -p showDeleted=true --scope coupon.coupon_read`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/api#epx-api-get).
 
-Requires the coupon.coupon\_read scope.
+Requires the coupon.coupon_read scope.
 
 **Command:** `epx coupons get CODE [flags]`
 
@@ -154,26 +154,26 @@ Requires the coupon.coupon\_read scope.
 - `-o, --output <format>`\
   Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx coupons list
 
 List coupons.
 
 Reads coupons, customer ids included (issuedTo, validFor in `-o json`). DISCOUNT is a
-percentage, an amount or FREE\_SHIPPING. STATUS is VALID, INACTIVE, EXPIRED or USED, as
+percentage, an amount or FREE_SHIPPING. STATUS is VALID, INACTIVE, EXPIRED or USED, as
 Emporix computes it: `--query` status:VALUE matches no coupon and `--sort` status is ignored.
 REDEEMED counts redemptions, out of the maximum when there is one; Emporix counts those for
 a legal entity apart, per legal entity (legalEntityRedemptions, only in `-o json`). Other
 restrictions (valid from, minimum order value, customers, categories, segments) are only in
 `-o json`.
-[`epx coupons redemptions`](/emporix-cli/commands/coupons#epx-coupons-redemptions) and `redemption` read the redemptions of a coupon, all or one.
-[`epx coupons list`](/emporix-cli/commands/coupons#epx-coupons-list) leaves out deleted coupons; [`epx coupons get CODE`](/emporix-cli/commands/coupons#epx-coupons-get) still shows one, in
+[`epx coupons redemptions`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/coupons#epx-coupons-redemptions) and `redemption` read the redemptions of a coupon, all or one.
+[`epx coupons list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/coupons#epx-coupons-list) leaves out deleted coupons; [`epx coupons get CODE`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/coupons#epx-coupons-get) still shows one, in
 the table as a live one (`-o json` has deleted: true). Deleted coupons are listed too, one
 page at a time, by
-[`epx api get /coupon/{tenant}/coupons -p showDeleted=true --scope coupon.coupon_read`](/emporix-cli/commands/api#epx-api-get).
+[`epx api get /coupon/{tenant}/coupons -p showDeleted=true --scope coupon.coupon_read`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/api#epx-api-get).
 
-Requires the coupon.coupon\_read scope.
+Requires the coupon.coupon_read scope.
 
 **Command:** `epx coupons list [flags]`
 
@@ -194,7 +194,7 @@ Requires the coupon.coupon\_read scope.
 - `--stream`\
   Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx coupons patch
 
@@ -211,7 +211,7 @@ Changes data: on a terminal, epx asks before it sends PATCH. `--yes` sends witho
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the coupon.coupon\_manage scope.
+Requires the coupon.coupon_manage scope.
 
 **Command:** `epx coupons patch CODE [flags]`
 
@@ -226,7 +226,7 @@ Requires the coupon.coupon\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx coupons redeem
 
@@ -242,23 +242,23 @@ not redeem, or that needs a customer where `--customer` is not given, with
 `--legal-entity` names the legal entity that the customer is assigned to: Emporix
 refuses it, with 400 Bad Request (exit 1), for a customer without a legal entity and for an
 unknown one.
-[`epx coupons validate`](/emporix-cli/commands/coupons#epx-coupons-validate) runs the same checks without redeeming it.
-`--customer` needs the scope below: Emporix refuses it to a token with coupon.coupon\_manage
+[`epx coupons validate`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/coupons#epx-coupons-validate) runs the same checks without redeeming it.
+`--customer` needs the scope below: Emporix refuses it to a token with coupon.coupon_manage
 alone (403 Forbidden).
-COUPON\_CODE is the CODE that [`epx coupons list`](/emporix-cli/commands/coupons#epx-coupons-list) shows.
+COUPON_CODE is the CODE that [`epx coupons list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/coupons#epx-coupons-list) shows.
 
 Changes data: on a terminal, epx asks before it sends POST. `--yes` sends without
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the coupon.coupon\_redeem\_on\_behalf scope.
+Requires the coupon.coupon_redeem_on_behalf scope.
 
 **Command:** `epx coupons redeem COUPON_CODE [flags]`
 
 **Flags**
 
 - `--customer <CUSTOMER_NUMBER>`\
-  The CUSTOMER\_NUMBER of the customer who redeems it.
+  The CUSTOMER_NUMBER of the customer who redeems it.
 - `--discount <AMOUNT CURRENCY>`\
   What the coupon takes off as AMOUNT CURRENCY (required without `--file`).
 - `--dry-run`\
@@ -276,7 +276,7 @@ Requires the coupon.coupon\_redeem\_on\_behalf scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Examples**
 
@@ -289,12 +289,12 @@ epx coupons redeem SAVE7 --order-total "100 EUR" --discount "7 EUR" --customer 1
 Show one redemption of a coupon.
 
 Reads one redemption of a coupon (personal data).
-COUPON\_CODE is the CODE that [`epx coupons list`](/emporix-cli/commands/coupons#epx-coupons-list) shows; an unknown one is not found.
-ID is the ID that [`epx coupons redemptions COUPON_CODE`](/emporix-cli/commands/coupons#epx-coupons-redemptions) shows; an unknown one is not found.
+COUPON_CODE is the CODE that [`epx coupons list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/coupons#epx-coupons-list) shows; an unknown one is not found.
+ID is the ID that [`epx coupons redemptions COUPON_CODE`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/coupons#epx-coupons-redemptions) shows; an unknown one is not found.
 ORDER TOTAL is the order's value and DISCOUNT the amount the coupon took off it. The
-narrower coupon.coupon\_redeem scope reads only the redemptions a caller made itself.
+narrower coupon.coupon_redeem scope reads only the redemptions a caller made itself.
 
-Requires the coupon.coupon\_manage scope.
+Requires the coupon.coupon_manage scope.
 Opt-in: epx requests a write-capable scope for a read only when given `--allow-write-scope`.
 
 **Command:** `epx coupons redemption COUPON_CODE ID [flags]`
@@ -302,7 +302,7 @@ Opt-in: epx requests a write-capable scope for a read only when given `--allow-w
 **Flags**
 
 - `--allow-write-scope`\
-  Opt in to requesting coupon.coupon\_manage, which can also change data (required).
+  Opt in to requesting coupon.coupon_manage, which can also change data (required).
 - `--columns <names>`\
   Print only these columns of table and csv, in this order: comma-separated names (any case) among ID, ORDER, CUSTOMER, LEGAL ENTITY, ORDER TOTAL, DISCOUNT, REDEEMED AT.
 - `--no-headers`\
@@ -310,7 +310,7 @@ Opt-in: epx requests a write-capable scope for a read only when given `--allow-w
 - `-o, --output <format>`\
   Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx coupons redemption-delete
 
@@ -318,15 +318,15 @@ Delete a redemption of a coupon.
 
 Deletes the redemption ID of a coupon, which then counts one redemption less: one that was
 redeemed as often as it may be can be redeemed again.
-COUPON\_CODE is the CODE that [`epx coupons list`](/emporix-cli/commands/coupons#epx-coupons-list) shows; an unknown one is not found.
-ID is the ID that [`epx coupons redemptions COUPON_CODE`](/emporix-cli/commands/coupons#epx-coupons-redemptions) shows; an unknown one is not found.
+COUPON_CODE is the CODE that [`epx coupons list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/coupons#epx-coupons-list) shows; an unknown one is not found.
+ID is the ID that [`epx coupons redemptions COUPON_CODE`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/coupons#epx-coupons-redemptions) shows; an unknown one is not found.
 
 Deletes data, which cannot be undone.
 On a terminal, epx sends DELETE only once you type ID at its prompt.
 `--yes` sends without asking (required without a terminal);
 `--dry-run` prints the request instead of sending it.
 
-Requires the coupon.coupon\_manage scope.
+Requires the coupon.coupon_manage scope.
 
 **Command:** `epx coupons redemption-delete COUPON_CODE ID [flags]`
 
@@ -339,19 +339,19 @@ Requires the coupon.coupon\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx coupons redemptions
 
 List the redemptions of a coupon.
 
 Reads the redemptions of a coupon (personal data): the order, customer and legal entity
-of each, and when it was redeemed ([`epx coupons redemption`](/emporix-cli/commands/coupons#epx-coupons-redemption) shows one).
-COUPON\_CODE is the CODE that [`epx coupons list`](/emporix-cli/commands/coupons#epx-coupons-list) shows; an unknown one is not found.
+of each, and when it was redeemed ([`epx coupons redemption`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/coupons#epx-coupons-redemption) shows one).
+COUPON_CODE is the CODE that [`epx coupons list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/coupons#epx-coupons-list) shows; an unknown one is not found.
 ORDER TOTAL is the order's value and DISCOUNT the amount the coupon took off it. The
-narrower coupon.coupon\_redeem scope reads only the redemptions a caller made itself.
+narrower coupon.coupon_redeem scope reads only the redemptions a caller made itself.
 
-Requires the coupon.coupon\_manage scope.
+Requires the coupon.coupon_manage scope.
 Opt-in: epx requests a write-capable scope for a read only when given `--allow-write-scope`.
 
 **Command:** `epx coupons redemptions COUPON_CODE [flags]`
@@ -359,7 +359,7 @@ Opt-in: epx requests a write-capable scope for a read only when given `--allow-w
 **Flags**
 
 - `--allow-write-scope`\
-  Opt in to requesting coupon.coupon\_manage, which can also change data (required).
+  Opt in to requesting coupon.coupon_manage, which can also change data (required).
 - `--columns <names>`\
   Print only these columns of table and csv, in this order: comma-separated names (any case) among ID, ORDER, CUSTOMER, LEGAL ENTITY, ORDER TOTAL, DISCOUNT, REDEEMED AT.
 - `--limit <n>`\
@@ -375,7 +375,7 @@ Opt-in: epx requests a write-capable scope for a read only when given `--allow-w
 - `--stream`\
   Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx coupons referral
 
@@ -383,8 +383,8 @@ Show the referral coupon of a customer.
 
 Reads the referral coupon of a customer: the coupon issued to the customer (issuedTo in
 `-o json`) to share with the people they refer, also a deleted one, which the table shows as
-a live one (`-o json` has deleted: true). Its columns are those of [`epx coupons list`](/emporix-cli/commands/coupons#epx-coupons-list).
-CUSTOMER\_NUMBER is the NUMBER that [`epx customers list`](/emporix-cli/commands/customers#epx-customers-list) shows; a customer without a
+a live one (`-o json` has deleted: true). Its columns are those of [`epx coupons list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/coupons#epx-coupons-list).
+CUSTOMER_NUMBER is the NUMBER that [`epx customers list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/customers#epx-customers-list) shows; a customer without a
 referral coupon, or an unknown one, is not found (exit 4).
 
 No OAuth scope is needed.
@@ -400,7 +400,7 @@ No OAuth scope is needed.
 - `-o, --output <format>`\
   Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx coupons referral-create
 
@@ -409,10 +409,10 @@ Create the referral coupon of a customer.
 Creates the referral coupon of a customer, from the referral settings of the main site,
 and prints it; a customer has one referral coupon at most, so where it exists, Emporix
 answers with it and creates none. A deleted referral coupon stays the customer's: Emporix
-answers with it and makes no new one ([`epx coupons referral`](/emporix-cli/commands/coupons#epx-coupons-referral) shows it as VALID). Emporix
+answers with it and makes no new one ([`epx coupons referral`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/coupons#epx-coupons-referral) shows it as VALID). Emporix
 keeps the referral settings in the site's couponSettings mixin; where the main site has
-none, it answers 400 Bad Request (exit 1). CUSTOMER\_NUMBER is the NUMBER that
-[`epx customers list`](/emporix-cli/commands/customers#epx-customers-list) shows; an unknown one is not found (exit 4).
+none, it answers 400 Bad Request (exit 1). CUSTOMER_NUMBER is the NUMBER that
+[`epx customers list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/customers#epx-customers-list) shows; an unknown one is not found (exit 4).
 It changes data although Emporix needs no write-capable scope for it.
 
 Changes data: on a terminal, epx asks before it sends POST. `--yes` sends without
@@ -432,14 +432,14 @@ No OAuth scope is needed.
 - `--yes`\
   Send without asking (required without a terminal).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx coupons update
 
 Replace a coupon.
 
-Replaces the coupon CODE with the JSON in `--file`, as [`epx coupons get CODE -o json`](/emporix-cli/commands/coupons#epx-coupons-get)
-prints it: a member that it leaves out is removed. [`epx coupons patch`](/emporix-cli/commands/coupons#epx-coupons-patch) changes some
+Replaces the coupon CODE with the JSON in `--file`, as [`epx coupons get CODE -o json`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/coupons#epx-coupons-get)
+prints it: a member that it leaves out is removed. [`epx coupons patch`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/coupons#epx-coupons-patch) changes some
 members only. An unknown CODE is not found (exit 4), as Emporix creates no coupon here.
 Send its metadata.version as read to change it only if nobody changed it since:
 Emporix answers 409 Conflict (exit 5) otherwise.
@@ -450,7 +450,7 @@ Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the coupon.coupon\_manage scope.
+Requires the coupon.coupon_manage scope.
 
 **Command:** `epx coupons update CODE [flags]`
 
@@ -465,7 +465,7 @@ Requires the coupon.coupon\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx coupons validate
 
@@ -482,12 +482,12 @@ unknown one.
 Emporix answers a redeemable coupon without a body; `-o json` prints true then. The scope,
 which epx requests also without `--customer`, lets a credential redeem coupons on a
 customer's behalf too.
-COUPON\_CODE is the CODE that [`epx coupons list`](/emporix-cli/commands/coupons#epx-coupons-list) shows.
+COUPON_CODE is the CODE that [`epx coupons list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/coupons#epx-coupons-list) shows.
 
 Changes nothing: Emporix serves this read as POST with a JSON body, which the
 flags make or `--body` gives whole.
 
-Requires the coupon.coupon\_redeem\_on\_behalf scope.
+Requires the coupon.coupon_redeem_on_behalf scope.
 Opt-in: epx requests a write-capable scope for a read only when given `--allow-write-scope`.
 
 **Command:** `epx coupons validate COUPON_CODE [flags]`
@@ -495,13 +495,13 @@ Opt-in: epx requests a write-capable scope for a read only when given `--allow-w
 **Flags**
 
 - `--allow-write-scope`\
-  Opt in to requesting coupon.coupon\_redeem\_on\_behalf, which can also change data (required).
+  Opt in to requesting coupon.coupon_redeem_on_behalf, which can also change data (required).
 - `--body <FILE>`\
   Send the JSON request body in FILE as given (- reads standard input) instead of the one the other flags make.
 - `--columns <names>`\
   Print only these columns of table and csv, in this order: comma-separated names (any case) among REDEEMABLE.
 - `--customer <CUSTOMER_NUMBER>`\
-  The CUSTOMER\_NUMBER of the customer who redeems it.
+  The CUSTOMER_NUMBER of the customer who redeems it.
 - `--discount <AMOUNT CURRENCY>`\
   What the coupon takes off as AMOUNT CURRENCY (required without `--body`).
 - `--legal-entity <ID>`\
@@ -515,4 +515,4 @@ Opt-in: epx requests a write-capable scope for a read only when given `--allow-w
 - `-o, --output <format>`\
   Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).

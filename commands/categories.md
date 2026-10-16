@@ -6,12 +6,12 @@
 
 Reads categories, published and unpublished.
 
-Its reads require the category.category\_read\_unpublished scope.
+Its reads require the category.category_read_unpublished scope.
 Its writes require different OAuth scopes; the help of each names them.
 
 **Command:** `epx categories [flags]`, `epx categories [command]`
 
-**Flags:** only the [global flags](/emporix-cli/commands#global-flags).
+**Flags:** only the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Subcommands**
 
@@ -44,12 +44,12 @@ Read and change the products assigned to a category.
 
 Reads the products assigned to a category, assigns products to it and unassigns them.
 
-Its reads require the category.category\_read\_unpublished scope.
+Its reads require the category.category_read_unpublished scope.
 Its writes require different OAuth scopes; the help of each names them.
 
 **Command:** `epx categories assignments [flags]`, `epx categories assignments [command]`
 
-**Flags:** only the [global flags](/emporix-cli/commands#global-flags).
+**Flags:** only the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Subcommands**
 
@@ -78,7 +78,7 @@ Assign products to a category.
 
 Assigns products to a category: the JSON in `--file` is an array of assignments, each as
 in `{"ref": {"id": "100200", "type": "PRODUCT"}}`.
-CATEGORY\_ID is the ID that [`epx categories list`](/emporix-cli/commands/categories#epx-categories-list) shows; an unknown one is not found.
+CATEGORY_ID is the ID that [`epx categories list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/categories#epx-categories-list) shows; an unknown one is not found.
 
 Emporix takes up to 200 items in one request (epx refuses more), carries out each on
 its own and answers with the result of each: when one failed, epx prints the response,
@@ -90,7 +90,7 @@ Changes data: on a terminal, epx asks before it sends POST. `--yes` sends withou
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the category.category\_manage scope.
+Requires the category.category_manage scope.
 
 **Command:** `epx categories assignments bulk-create CATEGORY_ID [flags]`
 
@@ -105,7 +105,7 @@ Requires the category.category\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx categories assignments bulk-update
 
@@ -114,7 +114,7 @@ Upsert the assignments of products to a category.
 Assigns products to a category, or updates the assignments that exist (an upsert): the
 JSON in `--file` is an array of assignments, each naming a product by its id, as in
 `{"ref": {"id": "100200"}}`.
-CATEGORY\_ID is the ID that [`epx categories list`](/emporix-cli/commands/categories#epx-categories-list) shows; an unknown one is not found.
+CATEGORY_ID is the ID that [`epx categories list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/categories#epx-categories-list) shows; an unknown one is not found.
 
 Emporix takes up to 200 items in one request (epx refuses more), carries out each on
 its own and answers with the result of each: when one failed, epx prints the response,
@@ -126,7 +126,7 @@ Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the category.category\_manage scope.
+Requires the category.category_manage scope.
 
 **Command:** `epx categories assignments bulk-update CATEGORY_ID [flags]`
 
@@ -141,7 +141,7 @@ Requires the category.category\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx categories assignments create
 
@@ -149,14 +149,14 @@ Assign a product to a category.
 
 Assigns a product to a category: the JSON in `--file` names it by its id, as in
 `{"ref": {"id": "100200", "type": "PRODUCT"}}`. Emporix answers with the id of the assignment.
-[`epx categories assignments update CATEGORY_ID PRODUCT_ID`](/emporix-cli/commands/categories#epx-categories-assignments-update) assigns one without a body.
-CATEGORY\_ID is the ID that [`epx categories list`](/emporix-cli/commands/categories#epx-categories-list) shows; an unknown one is not found.
+[`epx categories assignments update CATEGORY_ID PRODUCT_ID`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/categories#epx-categories-assignments-update) assigns one without a body.
+CATEGORY_ID is the ID that [`epx categories list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/categories#epx-categories-list) shows; an unknown one is not found.
 
 Changes data: on a terminal, epx asks before it sends POST. `--yes` sends without
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the category.category\_manage scope.
+Requires the category.category_manage scope.
 
 **Command:** `epx categories assignments create CATEGORY_ID [flags]`
 
@@ -171,22 +171,22 @@ Requires the category.category\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx categories assignments delete
 
 Unassign a product from a category.
 
-Deletes the assignment of the product PRODUCT\_ID to the category CATEGORY\_ID: the PRODUCT
-that [`epx categories assignments list CATEGORY_ID`](/emporix-cli/commands/categories#epx-categories-assignments-list) shows, as update assigns it. The product and the category stay.
-PRODUCT\_ID is the product id (as in [`epx products list`](/emporix-cli/commands/products#epx-products-list)), not its code.
+Deletes the assignment of the product PRODUCT_ID to the category CATEGORY_ID: the PRODUCT
+that [`epx categories assignments list CATEGORY_ID`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/categories#epx-categories-assignments-list) shows, as update assigns it. The product and the category stay.
+PRODUCT_ID is the product id (as in [`epx products list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/products#epx-products-list)), not its code.
 
 Deletes data, which cannot be undone.
-On a terminal, epx sends DELETE only once you type PRODUCT\_ID at its prompt.
+On a terminal, epx sends DELETE only once you type PRODUCT_ID at its prompt.
 `--yes` sends without asking (required without a terminal);
 `--dry-run` prints the request instead of sending it.
 
-Requires the category.category\_manage scope.
+Requires the category.category_manage scope.
 
 **Command:** `epx categories assignments delete CATEGORY_ID PRODUCT_ID [flags]`
 
@@ -199,21 +199,21 @@ Requires the category.category\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx categories assignments delete-all
 
 Unassign every product from a category.
 
-Deletes the assignments of every product to the category CATEGORY\_ID, published or
-unpublished, as [`epx categories assignments list CATEGORY_ID`](/emporix-cli/commands/categories#epx-categories-assignments-list) lists them. The products and the category stay.
+Deletes the assignments of every product to the category CATEGORY_ID, published or
+unpublished, as [`epx categories assignments list CATEGORY_ID`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/categories#epx-categories-assignments-list) lists them. The products and the category stay.
 
 Deletes the assignments of every product to the category with one request, which cannot be undone.
-On a terminal, epx sends DELETE only once you type CATEGORY\_ID at its prompt.
+On a terminal, epx sends DELETE only once you type CATEGORY_ID at its prompt.
 `--yes` sends without asking (required without a terminal);
 `--dry-run` prints the request instead of sending it.
 
-Requires the category.category\_manage, category.category\_read\_unpublished scopes.
+Requires the category.category_manage, category.category_read_unpublished scopes.
 
 **Command:** `epx categories assignments delete-all CATEGORY_ID [flags]`
 
@@ -226,21 +226,21 @@ Requires the category.category\_manage, category.category\_read\_unpublished sco
 - `--yes`\
   Send without asking (required without a terminal).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx categories assignments delete-assignment
 
 Delete an assignment of a product to a category.
 
-Deletes the assignment ASSIGNMENT\_ID of a product to the category CATEGORY\_ID: the ID that
-[`epx categories assignments list CATEGORY_ID`](/emporix-cli/commands/categories#epx-categories-assignments-list) shows. The product and the category stay.
+Deletes the assignment ASSIGNMENT_ID of a product to the category CATEGORY_ID: the ID that
+[`epx categories assignments list CATEGORY_ID`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/categories#epx-categories-assignments-list) shows. The product and the category stay.
 
 Deletes data, which cannot be undone.
-On a terminal, epx sends DELETE only once you type ASSIGNMENT\_ID at its prompt.
+On a terminal, epx sends DELETE only once you type ASSIGNMENT_ID at its prompt.
 `--yes` sends without asking (required without a terminal);
 `--dry-run` prints the request instead of sending it.
 
-Requires the category.category\_manage scope.
+Requires the category.category_manage scope.
 
 **Command:** `epx categories assignments delete-assignment CATEGORY_ID ASSIGNMENT_ID [flags]`
 
@@ -253,22 +253,22 @@ Requires the category.category\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx categories assignments delete-product-everywhere
 
 Unassign a product from every category.
 
-Deletes the assignments of the product PRODUCT\_ID to every category, as
-[`epx categories for-product PRODUCT_ID`](/emporix-cli/commands/categories#epx-categories-for-product) lists them. The product and the categories stay.
-PRODUCT\_ID is the product id (as in [`epx products list`](/emporix-cli/commands/products#epx-products-list)), not its code.
+Deletes the assignments of the product PRODUCT_ID to every category, as
+[`epx categories for-product PRODUCT_ID`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/categories#epx-categories-for-product) lists them. The product and the categories stay.
+PRODUCT_ID is the product id (as in [`epx products list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/products#epx-products-list)), not its code.
 
 Deletes the assignments of the product to every category with one request, which cannot be undone.
-On a terminal, epx sends DELETE only once you type PRODUCT\_ID at its prompt.
+On a terminal, epx sends DELETE only once you type PRODUCT_ID at its prompt.
 `--yes` sends without asking (required without a terminal);
 `--dry-run` prints the request instead of sending it.
 
-Requires the category.category\_manage scope.
+Requires the category.category_manage scope.
 
 **Command:** `epx categories assignments delete-product-everywhere PRODUCT_ID [flags]`
 
@@ -281,17 +281,17 @@ Requires the category.category\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx categories assignments list
 
 List the products assigned to a category.
 
 Reads the products assigned to a category, published and unpublished. PRODUCT is the
-product id (as in [`epx products list`](/emporix-cli/commands/products#epx-products-list)) and TYPE the kind of item, a product.
-CATEGORY\_ID is the ID that [`epx categories list`](/emporix-cli/commands/categories#epx-categories-list) shows; an unknown one is not found.
+product id (as in [`epx products list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/products#epx-products-list)) and TYPE the kind of item, a product.
+CATEGORY_ID is the ID that [`epx categories list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/categories#epx-categories-list) shows; an unknown one is not found.
 
-Requires the category.category\_read\_unpublished scope.
+Requires the category.category_read_unpublished scope.
 
 **Command:** `epx categories assignments list CATEGORY_ID [flags]`
 
@@ -312,22 +312,22 @@ Requires the category.category\_read\_unpublished scope.
 - `--stream`\
   Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx categories assignments update
 
 Upsert the assignment of a product to a category.
 
-Assigns the product PRODUCT\_ID to a category, or updates its assignment when it exists (an
+Assigns the product PRODUCT_ID to a category, or updates its assignment when it exists (an
 upsert). It sends no body.
-PRODUCT\_ID is the product id (as in [`epx products list`](/emporix-cli/commands/products#epx-products-list)), not its code.
-CATEGORY\_ID is the ID that [`epx categories list`](/emporix-cli/commands/categories#epx-categories-list) shows; an unknown one is not found.
+PRODUCT_ID is the product id (as in [`epx products list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/products#epx-products-list)), not its code.
+CATEGORY_ID is the ID that [`epx categories list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/categories#epx-categories-list) shows; an unknown one is not found.
 
 Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without
 asking (required without a terminal); `--dry-run` prints the request
 instead of sending it.
 
-Requires the category.category\_manage scope.
+Requires the category.category_manage scope.
 
 **Command:** `epx categories assignments update CATEGORY_ID PRODUCT_ID [flags]`
 
@@ -340,13 +340,13 @@ Requires the category.category\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx categories create
 
 Create a category.
 
-Creates a category from the JSON in `--file`, shaped as [`epx categories get ID -o json`](/emporix-cli/commands/categories#epx-categories-get)
+Creates a category from the JSON in `--file`, shaped as [`epx categories get ID -o json`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/categories#epx-categories-get)
 shows one: localizedName (a map of languages to text, as are the other localized
 members), published, which Emporix requires, parentId (a root category without one)
 and the other members; Emporix generates the id unless the body gives one, and answers
@@ -358,9 +358,9 @@ Changes data: on a terminal, epx asks before it sends POST. `--yes` sends withou
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-`--publish` also requests the category.category\_publish scope.
+`--publish` also requests the category.category_publish scope.
 
-Requires the category.category\_manage scope.
+Requires the category.category_manage scope.
 
 **Command:** `epx categories create [flags]`
 
@@ -373,11 +373,11 @@ Requires the category.category\_manage scope.
 - `-o, --output <format>`\
   Format of the response: json or yaml. Default: `json`.
 - `--publish`\
-  Publish the category: sends publish=true, which needs published: true in the body (requests category.category\_publish too).
+  Publish the category: sends publish=true, which needs published: true in the body (requests category.category_publish too).
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx categories delete
 
@@ -394,7 +394,7 @@ On a terminal, epx sends DELETE only once you type ID at its prompt.
 `--yes` sends without asking (required without a terminal);
 `--dry-run` prints the request instead of sending it.
 
-Requires the category.category\_manage scope.
+Requires the category.category_manage scope.
 
 **Command:** `epx categories delete ID [flags]`
 
@@ -409,18 +409,18 @@ Requires the category.category\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx categories for-product
 
 List the categories a product is assigned to.
 
 Reads categories, published and unpublished.
-PRODUCT\_ID is the product id (as in [`epx products list`](/emporix-cli/commands/products#epx-products-list)), not its code.
+PRODUCT_ID is the product id (as in [`epx products list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/products#epx-products-list)), not its code.
 An unknown id lists nothing, because Emporix does not distinguish it
 from a product without assignments.
 
-Requires the category.category\_read\_unpublished scope.
+Requires the category.category_read_unpublished scope.
 
 **Command:** `epx categories for-product PRODUCT_ID [flags]`
 
@@ -441,7 +441,7 @@ Requires the category.category\_read\_unpublished scope.
 - `--stream`\
   Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx categories get
 
@@ -449,7 +449,7 @@ Show one category.
 
 Reads categories, published and unpublished.
 
-Requires the category.category\_read\_unpublished scope.
+Requires the category.category_read_unpublished scope.
 
 **Command:** `epx categories get ID [flags]`
 
@@ -464,7 +464,7 @@ Requires the category.category\_read\_unpublished scope.
 - `-o, --output <format>`\
   Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx categories list
 
@@ -472,7 +472,7 @@ List categories.
 
 Reads categories, published and unpublished.
 
-Requires the category.category\_read\_unpublished scope.
+Requires the category.category_read_unpublished scope.
 
 **Command:** `epx categories list [flags]`
 
@@ -495,7 +495,7 @@ Requires the category.category\_read\_unpublished scope.
 - `--stream`\
   Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx categories parents
 
@@ -503,9 +503,9 @@ List the categories above a category.
 
 Reads the categories above a category, published and unpublished, from its root down
 unless `--sort` says otherwise.
-CATEGORY\_ID is the ID that [`epx categories list`](/emporix-cli/commands/categories#epx-categories-list) shows; an unknown one is not found.
+CATEGORY_ID is the ID that [`epx categories list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/categories#epx-categories-list) shows; an unknown one is not found.
 
-Requires the category.category\_read\_unpublished scope.
+Requires the category.category_read_unpublished scope.
 
 **Command:** `epx categories parents CATEGORY_ID [flags]`
 
@@ -526,24 +526,24 @@ Requires the category.category\_read\_unpublished scope.
 - `--stream`\
   Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx categories patch
 
 Change members of a category.
 
 Changes the members of the category ID that the JSON in `--file` gives, and keeps the
-others. Emporix requires metadata.version in the body, as [`epx categories get ID -o json`](/emporix-cli/commands/categories#epx-categories-get)
+others. Emporix requires metadata.version in the body, as [`epx categories get ID -o json`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/categories#epx-categories-get)
 shows it, and refuses a version that is not the category's with 400 Bad Request (exit 1),
 not as a conflict. published in the body publishes or unpublishes the category as sent,
-without the publish scopes. A move (parentId) shows in [`epx categories parents`](/emporix-cli/commands/categories#epx-categories-parents) at once,
-in [`epx category-trees`](/emporix-cli/commands/category-trees#epx-category-trees) a few seconds later.
+without the publish scopes. A move (parentId) shows in [`epx categories parents`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/categories#epx-categories-parents) at once,
+in [`epx category-trees`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/category-trees#epx-category-trees) a few seconds later.
 
 Changes data: on a terminal, epx asks before it sends PATCH. `--yes` sends without
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the category.category\_manage scope.
+Requires the category.category_manage scope.
 
 **Command:** `epx categories patch ID [flags]`
 
@@ -558,7 +558,7 @@ Requires the category.category\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx categories search
 
@@ -566,12 +566,12 @@ Search categories.
 
 Reads the categories, published and unpublished, that an Emporix q filter finds
 (`--query`; without it, every category).
-It reads and shows them as [`epx categories list`](/emporix-cli/commands/categories#epx-categories-list) does.
+It reads and shows them as [`epx categories list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/categories#epx-categories-list) does.
 
 Changes nothing: Emporix serves this read as POST with a JSON body, which the
 flags make or `--body` gives whole.
 
-Requires the category.category\_read\_unpublished scope.
+Requires the category.category_read_unpublished scope.
 
 **Command:** `epx categories search [flags]`
 
@@ -596,7 +596,7 @@ Requires the category.category\_read\_unpublished scope.
 - `--stream`\
   Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx categories subcategories
 
@@ -604,9 +604,9 @@ List the categories below a category.
 
 Reads every category below a category, at all levels, published and unpublished; PARENT
 is the id of the category each one lies directly below.
-CATEGORY\_ID is the ID that [`epx categories list`](/emporix-cli/commands/categories#epx-categories-list) shows; an unknown one is not found.
+CATEGORY_ID is the ID that [`epx categories list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/categories#epx-categories-list) shows; an unknown one is not found.
 
-Requires the category.category\_read\_unpublished scope.
+Requires the category.category_read_unpublished scope.
 
 **Command:** `epx categories subcategories CATEGORY_ID [flags]`
 
@@ -627,7 +627,7 @@ Requires the category.category\_read\_unpublished scope.
 - `--stream`\
   Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx categories update
 
@@ -637,7 +637,7 @@ Replaces the category ID with the JSON in `--file`, or creates it with that id w
 there is none (an upsert); the body has the members of create's, published included, but
 id, type and ownClassificationMixins. Without parentId, the category becomes a root
 category.
-With metadata.version, as [`epx categories get ID -o json`](/emporix-cli/commands/categories#epx-categories-get) shows it, Emporix refuses
+With metadata.version, as [`epx categories get ID -o json`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/categories#epx-categories-get) shows it, Emporix refuses
 the write as a conflict (exit 5) when the category changed since it was read.
 To publish or unpublish it, give published in the body and `--publish` or `--unpublish`,
 which sends the publish parameter that Emporix requires to match it, with the scope it
@@ -648,10 +648,10 @@ Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-`--publish` also requests the category.category\_publish scope.
-`--unpublish` also requests the category.category\_unpublish scope.
+`--publish` also requests the category.category_publish scope.
+`--unpublish` also requests the category.category_unpublish scope.
 
-Requires the category.category\_manage scope.
+Requires the category.category_manage scope.
 
 **Command:** `epx categories update ID [flags]`
 
@@ -664,10 +664,10 @@ Requires the category.category\_manage scope.
 - `-o, --output <format>`\
   Format of the response: json or yaml. Default: `json`.
 - `--publish`\
-  Publish the category: sends publish=true, which needs published: true in the body (requests category.category\_publish too).
+  Publish the category: sends publish=true, which needs published: true in the body (requests category.category_publish too).
 - `--unpublish`\
-  Unpublish the category: sends publish=false, which needs published: false in the body (requests category.category\_unpublish too).
+  Unpublish the category: sends publish=false, which needs published: false in the body (requests category.category_unpublish too).
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).

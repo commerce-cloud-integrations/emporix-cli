@@ -6,15 +6,15 @@
 
 Reads the tenant's payment modes, and creates, updates and deletes them (create and
 update send the JSON of `--file`). Provider configurations hold credentials, which the reads
-show only in `-o json` and the writes send and print as given. [`epx payment-modes public`](/emporix-cli/commands/payment-modes#epx-payment-modes-public)
+show only in `-o json` and the writes send and print as given. [`epx payment-modes public`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/payment-modes#epx-payment-modes-public)
 shows what a storefront sees and needs no scope.
 
 Its reads require different OAuth scopes; the help of each names them.
-Its writes require the payment-gateway.paymentmodes\_manage scope.
+Its writes require the payment-gateway.paymentmodes_manage scope.
 
 **Command:** `epx payment-modes [flags]`, `epx payment-modes [command]`
 
-**Flags:** only the [global flags](/emporix-cli/commands#global-flags).
+**Flags:** only the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Subcommands**
 
@@ -45,7 +45,7 @@ Changes data: on a terminal, epx asks before it sends POST. `--yes` sends withou
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the payment-gateway.paymentmodes\_manage scope.
+Requires the payment-gateway.paymentmodes_manage scope.
 
 **Command:** `epx payment-modes create [flags]`
 
@@ -60,7 +60,7 @@ Requires the payment-gateway.paymentmodes\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Examples**
 
@@ -74,14 +74,14 @@ Delete a payment mode.
 
 Deletes the payment mode ID, which storefronts then no longer offer.
 
-ID is the ID that [`epx payment-modes list`](/emporix-cli/commands/payment-modes#epx-payment-modes-list) shows; an unknown one is not found (exit 4).
+ID is the ID that [`epx payment-modes list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/payment-modes#epx-payment-modes-list) shows; an unknown one is not found (exit 4).
 
 Deletes data, which cannot be undone.
 On a terminal, epx sends DELETE only once you type ID at its prompt.
 `--yes` sends without asking (required without a terminal);
 `--dry-run` prints the request instead of sending it.
 
-Requires the payment-gateway.paymentmodes\_manage scope.
+Requires the payment-gateway.paymentmodes_manage scope.
 
 **Command:** `epx payment-modes delete ID [flags]`
 
@@ -94,18 +94,18 @@ Requires the payment-gateway.paymentmodes\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx payment-modes get
 
 Show one payment mode.
 
-Reads the tenant's payment modes. PROVIDER is INVOICE, CASH\_ON\_DELIVERY, SPREEDLY,
-SPREEDLY\_SAFERPAY or UNZER. The provider configuration, credentials included (such as
-Spreedly/AccessSecret or Saferpay/BasicAuth), is only in `-o json`. [`epx payment-modes public`](/emporix-cli/commands/payment-modes#epx-payment-modes-public)
+Reads the tenant's payment modes. PROVIDER is INVOICE, CASH_ON_DELIVERY, SPREEDLY,
+SPREEDLY_SAFERPAY or UNZER. The provider configuration, credentials included (such as
+Spreedly/AccessSecret or Saferpay/BasicAuth), is only in `-o json`. [`epx payment-modes public`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/payment-modes#epx-payment-modes-public)
 shows what a storefront sees and needs no scope.
 
-Requires the payment-gateway.paymentmodes\_read scope.
+Requires the payment-gateway.paymentmodes_read scope.
 
 **Command:** `epx payment-modes get ID [flags]`
 
@@ -118,18 +118,18 @@ Requires the payment-gateway.paymentmodes\_read scope.
 - `-o, --output <format>`\
   Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx payment-modes list
 
 List payment modes.
 
-Reads the tenant's payment modes. PROVIDER is INVOICE, CASH\_ON\_DELIVERY, SPREEDLY,
-SPREEDLY\_SAFERPAY or UNZER. The provider configuration, credentials included (such as
-Spreedly/AccessSecret or Saferpay/BasicAuth), is only in `-o json`. [`epx payment-modes public`](/emporix-cli/commands/payment-modes#epx-payment-modes-public)
+Reads the tenant's payment modes. PROVIDER is INVOICE, CASH_ON_DELIVERY, SPREEDLY,
+SPREEDLY_SAFERPAY or UNZER. The provider configuration, credentials included (such as
+Spreedly/AccessSecret or Saferpay/BasicAuth), is only in `-o json`. [`epx payment-modes public`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/payment-modes#epx-payment-modes-public)
 shows what a storefront sees and needs no scope.
 
-Requires the payment-gateway.paymentmodes\_read scope.
+Requires the payment-gateway.paymentmodes_read scope.
 
 **Command:** `epx payment-modes list [flags]`
 
@@ -146,7 +146,7 @@ Requires the payment-gateway.paymentmodes\_read scope.
 - `--stream`\
   Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx payment-modes public
 
@@ -160,7 +160,7 @@ No OAuth scope is needed.
 
 **Command:** `epx payment-modes public [flags]`, `epx payment-modes public [command]`
 
-**Flags:** only the [global flags](/emporix-cli/commands#global-flags).
+**Flags:** only the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Subcommands**
 
@@ -190,7 +190,7 @@ No OAuth scope is needed.
 - `-o, --output <format>`\
   Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx payment-modes public list
 
@@ -217,7 +217,7 @@ No OAuth scope is needed.
 - `--stream`\
   Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx payment-modes update
 
@@ -228,13 +228,13 @@ object with active and configuration, the map of the provider's values that crea
 the code and provider stay as created. Emporix answers with the payment mode, its
 configuration included, and creates no missing mode.
 
-ID is the ID that [`epx payment-modes list`](/emporix-cli/commands/payment-modes#epx-payment-modes-list) shows; an unknown one is not found (exit 4).
+ID is the ID that [`epx payment-modes list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/payment-modes#epx-payment-modes-list) shows; an unknown one is not found (exit 4).
 
 Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the payment-gateway.paymentmodes\_manage scope.
+Requires the payment-gateway.paymentmodes_manage scope.
 
 **Command:** `epx payment-modes update ID [flags]`
 
@@ -249,4 +249,4 @@ Requires the payment-gateway.paymentmodes\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).

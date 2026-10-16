@@ -10,15 +10,15 @@ Operations of the Emporix API reference file [`configuration/currency-service/ap
 
 | Operation | Status | Details |
 | --- | --- | --- |
-| `POST /currency/{tenant}/currencies` | Built | [`epx currencies create`](/emporix-cli/commands/currencies#epx-currencies-create) |
-| `GET /currency/{tenant}/currencies` | Built | [`epx currencies list`](/emporix-cli/commands/currencies#epx-currencies-list) |
-| `GET /currency/{tenant}/currencies/{currencyCode}` | Built | [`epx currencies get`](/emporix-cli/commands/currencies#epx-currencies-get) |
-| `PUT /currency/{tenant}/currencies/{currencyCode}` | Built | [`epx currencies update`](/emporix-cli/commands/currencies#epx-currencies-update) |
-| `DELETE /currency/{tenant}/currencies/{currencyCode}` | Built | [`epx currencies delete`](/emporix-cli/commands/currencies#epx-currencies-delete) |
-| `POST /currency/{tenant}/exchanges` | Built | [`epx exchange-rates create`](/emporix-cli/commands/exchange-rates#epx-exchange-rates-create) |
-| `GET /currency/{tenant}/exchanges` | Built | [`epx exchange-rates list`](/emporix-cli/commands/exchange-rates#epx-exchange-rates-list) |
-| `GET /currency/{tenant}/exchanges/{code}` | Built | [`epx exchange-rates get`](/emporix-cli/commands/exchange-rates#epx-exchange-rates-get) |
-| `PUT /currency/{tenant}/exchanges/{code}` | Built | [`epx exchange-rates update`](/emporix-cli/commands/exchange-rates#epx-exchange-rates-update) |
-| `DELETE /currency/{tenant}/exchanges/{code}` | Built | [`epx exchange-rates delete`](/emporix-cli/commands/exchange-rates#epx-exchange-rates-delete) |
+| `POST /currency/{tenant}/currencies` | Built | [`epx currencies create`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/currencies#epx-currencies-create) |
+| `GET /currency/{tenant}/currencies` | Built | [`epx currencies list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/currencies#epx-currencies-list) |
+| `GET /currency/{tenant}/currencies/{currencyCode}` | Built | [`epx currencies get`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/currencies#epx-currencies-get) |
+| `PUT /currency/{tenant}/currencies/{currencyCode}` | Built | [`epx currencies update`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/currencies#epx-currencies-update) |
+| `DELETE /currency/{tenant}/currencies/{currencyCode}` | Built | [`epx currencies delete`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/currencies#epx-currencies-delete) |
+| `POST /currency/{tenant}/exchanges` | Built | [`epx exchange-rates create`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/exchange-rates#epx-exchange-rates-create) |
+| `GET /currency/{tenant}/exchanges` | Built | [`epx exchange-rates list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/exchange-rates#epx-exchange-rates-list) |
+| `GET /currency/{tenant}/exchanges/{code}` | Built | [`epx exchange-rates get`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/exchange-rates#epx-exchange-rates-get) |
+| `PUT /currency/{tenant}/exchanges/{code}` | Built | [`epx exchange-rates update`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/exchange-rates#epx-exchange-rates-update) |
+| `DELETE /currency/{tenant}/exchanges/{code}` | Built | [`epx exchange-rates delete`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/exchange-rates#epx-exchange-rates-delete) |
 
-All services: [Emporix API coverage](/emporix-cli/coverage).
+All services: [Emporix API coverage](https://commerce-cloud-integrations.github.io/emporix-cli/coverage).

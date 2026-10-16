@@ -7,14 +7,14 @@
 Reads media assets: files Emporix stores (BLOB) or links to files elsewhere (LINK). ACCESS
 is PUBLIC or PRIVATE; STATUS is PENDING until an upload completes, then READY or empty;
 BYTES is the file size as sent, and REFERENCES the items an asset belongs to (type and
-id). URLs are only in `-o json`; [`epx media download-url`](/emporix-cli/commands/media#epx-media-download-url) gives one that downloads the file.
+id). URLs are only in `-o json`; [`epx media download-url`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/media#epx-media-download-url) gives one that downloads the file.
 
-Its reads require the media.asset\_read scope.
-Its writes require the media.asset\_manage scope.
+Its reads require the media.asset_read scope.
+Its writes require the media.asset_manage scope.
 
 **Command:** `epx media [flags]`, `epx media [command]`
 
-**Flags:** only the [global flags](/emporix-cli/commands#global-flags).
+**Flags:** only the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Subcommands**
 
@@ -55,7 +55,7 @@ Changes data: on a terminal, epx asks before it sends POST. `--yes` sends withou
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the media.asset\_manage scope.
+Requires the media.asset_manage scope.
 
 **Command:** `epx media create [flags]`
 
@@ -72,7 +72,7 @@ Requires the media.asset\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Examples**
 
@@ -93,7 +93,7 @@ On a terminal, epx sends DELETE only once you type ID at its prompt.
 `--yes` sends without asking (required without a terminal);
 `--dry-run` prints the request instead of sending it.
 
-Requires the media.asset\_manage scope.
+Requires the media.asset_manage scope.
 
 **Command:** `epx media delete ID [flags]`
 
@@ -106,7 +106,7 @@ Requires the media.asset\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx media download-url
 
@@ -117,9 +117,9 @@ works without a token until EXPIRES (15 minutes by default), so treat it as a se
 a public file or a link, PROVIDER CLOUDINARY or LINK, it is the asset's permanent URL.
 Reading the URL of a pending upload whose file is stored makes Emporix complete it; one
 whose file is not stored yet fails.
-ASSET\_ID is the ID that [`epx media list`](/emporix-cli/commands/media#epx-media-list) shows; an unknown one is not found.
+ASSET_ID is the ID that [`epx media list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/media#epx-media-list) shows; an unknown one is not found.
 
-Requires the media.asset\_read scope.
+Requires the media.asset_read scope.
 
 **Command:** `epx media download-url ASSET_ID [flags]`
 
@@ -132,7 +132,7 @@ Requires the media.asset\_read scope.
 - `-o, --output <format>`\
   Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx media get
 
@@ -141,9 +141,9 @@ Show one asset.
 Reads media assets: files Emporix stores (BLOB) or links to files elsewhere (LINK). ACCESS
 is PUBLIC or PRIVATE; STATUS is PENDING until an upload completes, then READY or empty;
 BYTES is the file size as sent, and REFERENCES the items an asset belongs to (type and
-id). URLs are only in `-o json`; [`epx media download-url`](/emporix-cli/commands/media#epx-media-download-url) gives one that downloads the file.
+id). URLs are only in `-o json`; [`epx media download-url`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/media#epx-media-download-url) gives one that downloads the file.
 
-Requires the media.asset\_read scope.
+Requires the media.asset_read scope.
 
 **Command:** `epx media get ID [flags]`
 
@@ -156,7 +156,7 @@ Requires the media.asset\_read scope.
 - `-o, --output <format>`\
   Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx media list
 
@@ -165,9 +165,9 @@ List media assets.
 Reads media assets: files Emporix stores (BLOB) or links to files elsewhere (LINK). ACCESS
 is PUBLIC or PRIVATE; STATUS is PENDING until an upload completes, then READY or empty;
 BYTES is the file size as sent, and REFERENCES the items an asset belongs to (type and
-id). URLs are only in `-o json`; [`epx media download-url`](/emporix-cli/commands/media#epx-media-download-url) gives one that downloads the file.
+id). URLs are only in `-o json`; [`epx media download-url`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/media#epx-media-download-url) gives one that downloads the file.
 
-Requires the media.asset\_read scope.
+Requires the media.asset_read scope.
 
 **Command:** `epx media list [flags]`
 
@@ -188,7 +188,7 @@ Requires the media.asset\_read scope.
 - `--stream`\
   Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx media patch
 
@@ -203,7 +203,7 @@ Changes data: on a terminal, epx asks before it sends PATCH. `--yes` sends witho
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the media.asset\_manage scope.
+Requires the media.asset_manage scope.
 
 **Command:** `epx media patch ID [flags]`
 
@@ -218,7 +218,7 @@ Requires the media.asset\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx media start-upload
 
@@ -236,7 +236,7 @@ Changes data: on a terminal, epx asks before it sends POST. `--yes` sends withou
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the media.asset\_manage scope.
+Requires the media.asset_manage scope.
 
 **Command:** `epx media start-upload [flags]`
 
@@ -251,7 +251,7 @@ Requires the media.asset\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx media update
 
@@ -261,7 +261,7 @@ Replaces the media asset ID with the JSON in `--file`; its type and access canno
 The JSON of a LINK asset gives its url; a BLOB asset is replaced with its file: `--upload` PATH
 sends the new file in a multipart/form-data form, with the JSON as its body field
 (up to 30 MB including the form; a large file may need a longer
-`--timeout`, e.g. `--timeout` 5m). [`epx media patch`](/emporix-cli/commands/media#epx-media-patch) changes a BLOB asset without sending its
+`--timeout`, e.g. `--timeout` 5m). [`epx media patch`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/media#epx-media-patch) changes a BLOB asset without sending its
 file again.
 Without `--upload`, the JSON of a BLOB asset is refused before anything is sent, as Emporix
 takes one only with its file.
@@ -271,7 +271,7 @@ Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the media.asset\_manage scope.
+Requires the media.asset_manage scope.
 
 **Command:** `epx media update ID [flags]`
 
@@ -288,4 +288,4 @@ Requires the media.asset\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).

@@ -5,14 +5,14 @@
 ## epx taxes
 
 Reads tax configurations, one per location. CLASSES lists each tax class with its rate
-in percent (`-o json` adds their names). [`epx taxes calculate`](/emporix-cli/commands/taxes#epx-taxes-calculate) applies them to a price.
+in percent (`-o json` adds their names). [`epx taxes calculate`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/taxes#epx-taxes-calculate) applies them to a price.
 
 Its reads require different OAuth scopes; the help of each names them.
-Its writes require the tax.tax\_manage scope.
+Its writes require the tax.tax_manage scope.
 
 **Command:** `epx taxes [flags]`, `epx taxes [command]`
 
-**Flags:** only the [global flags](/emporix-cli/commands#global-flags).
+**Flags:** only the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Subcommands**
 
@@ -34,7 +34,7 @@ Its writes require the tax.tax\_manage scope.
 Calculate the net and gross value of a price.
 
 Calculates the net and gross value of a price with the tax configurations that
-[`epx taxes list`](/emporix-cli/commands/taxes#epx-taxes-list) shows: a net `--price` gets the rate of `--tax-class` in `--country`; with
+[`epx taxes list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/taxes#epx-taxes-list) shows: a net `--price` gets the rate of `--tax-class` in `--country`; with
 `--gross`, a gross price is reduced by that rate, or, with `--source-country` and
 `--source-tax-class`, by theirs before the rate of `--country` is added. SOURCE RATE and
 TARGET RATE are the rates applied, in percent. A country without a tax configuration is
@@ -70,7 +70,7 @@ No OAuth scope is needed.
 - `--tax-class <CLASS>`\
   The tax CLASS to apply, e.g. STANDARD (required without `--body`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx taxes create
 
@@ -89,7 +89,7 @@ Changes data: on a terminal, epx asks before it sends POST. `--yes` sends withou
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the tax.tax\_manage scope.
+Requires the tax.tax_manage scope.
 
 **Command:** `epx taxes create [flags]`
 
@@ -106,7 +106,7 @@ Requires the tax.tax\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx taxes delete
 
@@ -119,7 +119,7 @@ On a terminal, epx sends DELETE only once you type LOCATION at its prompt.
 `--yes` sends without asking (required without a terminal);
 `--dry-run` prints the request instead of sending it.
 
-Requires the tax.tax\_manage scope.
+Requires the tax.tax_manage scope.
 
 **Command:** `epx taxes delete LOCATION [flags]`
 
@@ -132,16 +132,16 @@ Requires the tax.tax\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx taxes get
 
 Show one tax configuration.
 
 Reads tax configurations, one per location. CLASSES lists each tax class with its rate
-in percent (`-o json` adds their names). [`epx taxes calculate`](/emporix-cli/commands/taxes#epx-taxes-calculate) applies them to a price.
+in percent (`-o json` adds their names). [`epx taxes calculate`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/taxes#epx-taxes-calculate) applies them to a price.
 
-Requires the tax.tax\_read scope.
+Requires the tax.tax_read scope.
 
 **Command:** `epx taxes get LOCATION [flags]`
 
@@ -154,16 +154,16 @@ Requires the tax.tax\_read scope.
 - `-o, --output <format>`\
   Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx taxes list
 
 List taxes.
 
 Reads tax configurations, one per location. CLASSES lists each tax class with its rate
-in percent (`-o json` adds their names). [`epx taxes calculate`](/emporix-cli/commands/taxes#epx-taxes-calculate) applies them to a price.
+in percent (`-o json` adds their names). [`epx taxes calculate`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/taxes#epx-taxes-calculate) applies them to a price.
 
-Requires the tax.tax\_read scope.
+Requires the tax.tax_read scope.
 
 **Command:** `epx taxes list [flags]`
 
@@ -182,14 +182,14 @@ Requires the tax.tax\_read scope.
 - `--stream`\
   Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx taxes update
 
 Replace a tax configuration.
 
 Replaces the tax configuration of LOCATION with the JSON in `--file`, shaped as
-[`epx taxes get LOCATION -o json`](/emporix-cli/commands/taxes#epx-taxes-get) prints it, with its metadata.version as read: a stale
+[`epx taxes get LOCATION -o json`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/taxes#epx-taxes-get) prints it, with its metadata.version as read: a stale
 version and an unknown LOCATION are both not found (exit 4): Emporix answers 404 to both. The
 country code cannot change.
 
@@ -201,7 +201,7 @@ Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the tax.tax\_manage scope.
+Requires the tax.tax_manage scope.
 
 **Command:** `epx taxes update LOCATION [flags]`
 
@@ -218,4 +218,4 @@ Requires the tax.tax\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).

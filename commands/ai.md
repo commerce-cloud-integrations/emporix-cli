@@ -9,14 +9,14 @@ OAuth configurations and MCP servers, the LLM models of the supported providers 
 commerce events that can trigger an agent; what agents did: their jobs, conversations,
 request and session logs and analytics; and which fields the AI RAG Indexer embeds.
 Upserts, changes and deletes agents and what they are built from, exports and imports
-agents, chats with them and generates texts, which consumes AI credits. [`epx ai rag reindex`](/emporix-cli/commands/ai#epx-ai-rag-reindex) embeds the entities of a type again.
+agents, chats with them and generates texts, which consumes AI credits. [`epx ai rag reindex`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/ai#epx-ai-rag-reindex) embeds the entities of a type again.
 
-Its reads require the ai.agent\_read scope.
+Its reads require the ai.agent_read scope.
 Its writes require different OAuth scopes; the help of each names them.
 
 **Command:** `epx ai [flags]`, `epx ai [command]`
 
-**Flags:** only the [global flags](/emporix-cli/commands#global-flags).
+**Flags:** only the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Subcommands**
 
@@ -59,16 +59,16 @@ Its writes require different OAuth scopes; the help of each names them.
 
 Read, create, upsert, change, delete, export and import AI agents.
 
-Reads AI agents: TYPE is generic, complaint or anti\_fraud, PROVIDER and MODEL the LLM an
-agent uses and TRIGGERS what starts it (endpoint, slack, teams or commerce\_events). Their
+Reads AI agents: TYPE is generic, complaint or anti_fraud, PROVIDER and MODEL the LLM an
+agent uses and TRIGGERS what starts it (endpoint, slack, teams or commerce_events). Their
 prompts, tools and MCP servers are only in `-o json`.
 
-Its reads require the ai.agent\_read scope.
+Its reads require the ai.agent_read scope.
 Its writes require different OAuth scopes; the help of each names them.
 
 **Command:** `epx ai agents [flags]`, `epx ai agents [command]`
 
-**Flags:** only the [global flags](/emporix-cli/commands#global-flags).
+**Flags:** only the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Subcommands**
 
@@ -98,16 +98,16 @@ Its writes require different OAuth scopes; the help of each names them.
 Attach a file to a chat with an agent.
 
 Uploads the file that `--upload` names (jpg, jpeg, png, pdf, csv, text or txt), or assigns the
-media asset that `--media` names ([`epx media list`](/emporix-cli/commands/media#epx-media-list)), to the agent AGENT\_ID, the ID that
-[`epx ai agents list`](/emporix-cli/commands/ai#epx-ai-agents-list) shows, in the session that `--session` names, or a new one. Emporix
-answers with the attachment's id and the sessionId, which [`epx ai chat`](/emporix-cli/commands/ai#epx-ai-chat) with that agent
+media asset that `--media` names ([`epx media list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/media#epx-media-list)), to the agent AGENT_ID, the ID that
+[`epx ai agents list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/ai#epx-ai-agents-list) shows, in the session that `--session` names, or a new one. Emporix
+answers with the attachment's id and the sessionId, which [`epx ai chat`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/ai#epx-ai-chat) with that agent
 takes as `--attachment` and `--session`.
 
 Changes data: on a terminal, epx asks before it sends POST. `--yes` sends without
 asking (required without a terminal); `--dry-run` prints the request
 instead of sending it.
 
-Requires the ai.agentexecution\_manage scope.
+Requires the ai.agentexecution_manage scope.
 
 **Command:** `epx ai agents attach AGENT_ID [flags]`
 
@@ -126,7 +126,7 @@ Requires the ai.agentexecution\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Examples**
 
@@ -138,7 +138,7 @@ epx ai agents attach complaint-agent --upload order.pdf --yes
 
 Create an agent from a template.
 
-Creates an agent from the agent template TEMPLATE\_ID, the ID that [`epx ai templates list`](/emporix-cli/commands/ai#epx-ai-templates-list)
+Creates an agent from the agent template TEMPLATE_ID, the ID that [`epx ai templates list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/ai#epx-ai-templates-list)
 shows, which must be enabled, with the JSON in `--file`: its name and description, its
 userPrompt and, optionally, its id. Emporix answers with the id of the agent.
 
@@ -150,7 +150,7 @@ Changes data: on a terminal, epx asks before it sends POST. `--yes` sends withou
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the ai.agent\_manage scope.
+Requires the ai.agent_manage scope.
 
 **Command:** `epx ai agents create TEMPLATE_ID [flags]`
 
@@ -167,7 +167,7 @@ Requires the ai.agent\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Examples**
 
@@ -181,14 +181,14 @@ Delete an agent.
 
 Deletes the agent ID. Emporix refuses to delete one that others use, unless
 `--force` unassigns it from them.
-ID is the ID that [`epx ai agents list`](/emporix-cli/commands/ai#epx-ai-agents-list) shows.
+ID is the ID that [`epx ai agents list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/ai#epx-ai-agents-list) shows.
 
 Deletes data, which cannot be undone.
 On a terminal, epx sends DELETE only once you type ID at its prompt.
 `--yes` sends without asking (required without a terminal);
 `--dry-run` prints the request instead of sending it.
 
-Requires the ai.agent\_manage scope.
+Requires the ai.agent_manage scope.
 
 **Command:** `epx ai agents delete ID [flags]`
 
@@ -203,7 +203,7 @@ Requires the ai.agent\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx ai agents export
 
@@ -211,15 +211,15 @@ Export agents, which creates an export job.
 
 Exports the agents that `--agent` names (up to 100) with the tools and MCP servers they use,
 and prints the export: data, the agents base64-encoded, and its checksum, which
-[`epx ai agents import`](/emporix-cli/commands/ai#epx-ai-agents-import) takes on another tenant. Emporix keeps each export as a job of type
-EXPORT, the jobId of the response, which [`epx ai jobs get JOB_ID`](/emporix-cli/commands/ai#epx-ai-jobs-get) reads.
+[`epx ai agents import`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/ai#epx-ai-agents-import) takes on another tenant. Emporix keeps each export as a job of type
+EXPORT, the jobId of the response, which [`epx ai jobs get JOB_ID`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/ai#epx-ai-jobs-get) reads.
 It changes data although Emporix needs no write-capable scope for it.
 
 Changes data: on a terminal, epx asks before it sends POST. `--yes` sends without
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the ai.agent\_read scope.
+Requires the ai.agent_read scope.
 
 **Command:** `epx ai agents export [flags]`
 
@@ -236,7 +236,7 @@ Requires the ai.agent\_read scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Examples**
 
@@ -248,11 +248,11 @@ epx ai agents export --agent complaint-agent --yes > agents.json
 
 Show one agent.
 
-Reads AI agents: TYPE is generic, complaint or anti\_fraud, PROVIDER and MODEL the LLM an
-agent uses and TRIGGERS what starts it (endpoint, slack, teams or commerce\_events). Their
+Reads AI agents: TYPE is generic, complaint or anti_fraud, PROVIDER and MODEL the LLM an
+agent uses and TRIGGERS what starts it (endpoint, slack, teams or commerce_events). Their
 prompts, tools and MCP servers are only in `-o json`.
 
-Requires the ai.agent\_read scope.
+Requires the ai.agent_read scope.
 
 **Command:** `epx ai agents get ID [flags]`
 
@@ -267,22 +267,22 @@ Requires the ai.agent\_read scope.
 - `-o, --output <format>`\
   Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx ai agents import
 
 Import agents.
 
 Imports the agents of an export, with the tools and MCP servers they use, from the JSON in
-`--file`: the data and checksum that [`epx ai agents export`](/emporix-cli/commands/ai#epx-ai-agents-export) prints, which Emporix checks.
+`--file`: the data and checksum that [`epx ai agents export`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/ai#epx-ai-agents-export) prints, which Emporix checks.
 Imported agents start disabled; Emporix answers with what it imported and the jobId of the
-IMPORT job that it keeps ([`epx ai jobs get JOB_ID`](/emporix-cli/commands/ai#epx-ai-jobs-get)).
+IMPORT job that it keeps ([`epx ai jobs get JOB_ID`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/ai#epx-ai-jobs-get)).
 
 Changes data: on a terminal, epx asks before it sends POST. `--yes` sends without
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the ai.agent\_manage scope.
+Requires the ai.agent_manage scope.
 
 **Command:** `epx ai agents import [flags]`
 
@@ -297,7 +297,7 @@ Requires the ai.agent\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Examples**
 
@@ -309,11 +309,11 @@ epx ai agents import --file agents.json --dry-run
 
 List AI agents.
 
-Reads AI agents: TYPE is generic, complaint or anti\_fraud, PROVIDER and MODEL the LLM an
-agent uses and TRIGGERS what starts it (endpoint, slack, teams or commerce\_events). Their
+Reads AI agents: TYPE is generic, complaint or anti_fraud, PROVIDER and MODEL the LLM an
+agent uses and TRIGGERS what starts it (endpoint, slack, teams or commerce_events). Their
 prompts, tools and MCP servers are only in `-o json`.
 
-Requires the ai.agent\_read scope.
+Requires the ai.agent_read scope.
 
 **Command:** `epx ai agents list [flags]`
 
@@ -336,7 +336,7 @@ Requires the ai.agent\_read scope.
 - `--stream`\
   Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx ai agents patch
 
@@ -346,13 +346,13 @@ Changes the agent ID with the JSON array of operations in `--file`, each with op
 (ADD, REMOVE or REPLACE), path and value, e.g.
 `[{"op": "REPLACE", "path": "/enabled", "value": false}]`; its other members keep their
 values.
-ID is the ID that [`epx ai agents list`](/emporix-cli/commands/ai#epx-ai-agents-list) shows; an unknown one is not found.
+ID is the ID that [`epx ai agents list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/ai#epx-ai-agents-list) shows; an unknown one is not found.
 
 Changes data: on a terminal, epx asks before it sends PATCH. `--yes` sends without
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the ai.agent\_manage scope.
+Requires the ai.agent_manage scope.
 
 **Command:** `epx ai agents patch ID [flags]`
 
@@ -367,7 +367,7 @@ Requires the ai.agent\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx ai agents search
 
@@ -375,12 +375,12 @@ Search AI agents.
 
 Reads the AI agents that an Emporix q filter finds (`--query`; without it,
 every one).
-It reads and shows them as [`epx ai agents list`](/emporix-cli/commands/ai#epx-ai-agents-list) does.
+It reads and shows them as [`epx ai agents list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/ai#epx-ai-agents-list) does.
 
 Changes nothing: Emporix serves this read as POST with a JSON body, which the
 flags make or `--body` gives whole.
 
-Requires the ai.agent\_read scope.
+Requires the ai.agent_read scope.
 
 **Command:** `epx ai agents search [flags]`
 
@@ -405,7 +405,7 @@ Requires the ai.agent\_read scope.
 - `--stream`\
   Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx ai agents update
 
@@ -413,11 +413,11 @@ Upsert an agent.
 
 Replaces the agent ID with the JSON in `--file`, or creates it with that ID where
 none exists (an upsert): Emporix answers with the id of one it created and nothing for one it
-replaced. With metadata.version, as [`epx ai agents get ID -o json`](/emporix-cli/commands/ai#epx-ai-agents-get) prints it,
+replaced. With metadata.version, as [`epx ai agents get ID -o json`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/ai#epx-ai-agents-get) prints it,
 Emporix replaces only that version: another is a conflict (exit 5).
 The JSON holds its name and description, userPrompt, llmConfig, triggers and mcpServers,
 and its nativeTools, agentCollaborations, enabledMemory and maxRecursionLimit.
-ID is the ID that [`epx ai agents list`](/emporix-cli/commands/ai#epx-ai-agents-list) shows.
+ID is the ID that [`epx ai agents list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/ai#epx-ai-agents-list) shows.
 
 Localized text in the body, such as a name, is a map of translations, e.g.
 `{"en": "gram", "de": "Gramm"}`, as `-o json` of a read prints it, or with `--content-language`
@@ -427,7 +427,7 @@ Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the ai.agent\_manage scope.
+Requires the ai.agent_manage scope.
 
 **Command:** `epx ai agents update ID [flags]`
 
@@ -444,7 +444,7 @@ Requires the ai.agent\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx ai analytics
 
@@ -452,11 +452,11 @@ Read the analytics of agents.
 
 Reads what Emporix counts of the requests and sessions of agents, as its dashboards show them.
 
-Requires the ai.agent\_read scope.
+Requires the ai.agent_read scope.
 
 **Command:** `epx ai analytics [flags]`, `epx ai analytics [command]`
 
-**Flags:** only the [global flags](/emporix-cli/commands#global-flags).
+**Flags:** only the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Subcommands**
 
@@ -471,13 +471,13 @@ Requires the ai.agent\_read scope.
 
 Show the request and session totals of one agent.
 
-Reads the totals of the requests and sessions of one agent: AGENT\_ID is the ID that
-[`epx ai agents list`](/emporix-cli/commands/ai#epx-ai-agents-list) shows; an unknown one counts nothing.
+Reads the totals of the requests and sessions of one agent: AGENT_ID is the ID that
+[`epx ai agents list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/ai#epx-ai-agents-list) shows; an unknown one counts nothing.
 LOGS is requests or sessions, TOTAL how many there were in the last four weeks, WARNING and
 ERROR how many of them had that severity and ERROR RATE their share with errors, as Emporix
 computes it. The requests per session and the weekly trends are only in `-o json`.
 
-Requires the ai.agent\_read scope.
+Requires the ai.agent_read scope.
 
 **Command:** `epx ai analytics agent AGENT_ID [flags]`
 
@@ -490,7 +490,7 @@ Requires the ai.agent\_read scope.
 - `-o, --output <format>`\
   Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx ai analytics executions
 
@@ -498,11 +498,11 @@ List how often agents ran per calendar quarter, month or week.
 
 Reads how often agents ran (their sessions) per calendar quarter, Emporix's default
 granularity, or per month or week (`--granularity`): each PERIOD that Emporix reports runs
-from FROM (inclusive) to TO (exclusive), in UTC. AGENT\_IDS are the IDs that
-[`epx ai agents list`](/emporix-cli/commands/ai#epx-ai-agents-list) shows, separated by commas without spaces (at most 100); an unknown
+from FROM (inclusive) to TO (exclusive), in UTC. AGENT_IDS are the IDs that
+[`epx ai agents list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/ai#epx-ai-agents-list) shows, separated by commas without spaces (at most 100); an unknown
 one ran 0 times.
 
-Requires the ai.agent\_read scope.
+Requires the ai.agent_read scope.
 
 **Command:** `epx ai analytics executions AGENT_IDS [flags]`
 
@@ -517,7 +517,7 @@ Requires the ai.agent\_read scope.
 - `-o, --output <format>`\
   Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx ai analytics tenant
 
@@ -528,7 +528,7 @@ LOGS is requests or sessions, TOTAL how many there were in the last four weeks, 
 ERROR how many of them had that severity and ERROR RATE their share with errors, as Emporix
 computes it. The requests per session and the weekly trends are only in `-o json`.
 
-Requires the ai.agent\_read scope.
+Requires the ai.agent_read scope.
 
 **Command:** `epx ai analytics tenant [flags]`
 
@@ -541,7 +541,7 @@ Requires the ai.agent\_read scope.
 - `-o, --output <format>`\
   Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx ai chat
 
@@ -556,23 +556,23 @@ It consumes AI credits: the LLM tokens of the agent's model, and of the agents i
 collaborates with.
 With `--session`, the chat goes on in that session, which the agent remembers where its
 enabledMemory is true; an attachment must be one of the session, attached to the same agent
-([`epx ai agents attach`](/emporix-cli/commands/ai#epx-ai-agents-attach)). `--file` gives the body instead, with the caption and purpose of
+([`epx ai agents attach`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/ai#epx-ai-agents-attach)). `--file` gives the body instead, with the caption and purpose of
 each attachment.
 
 Changes data: on a terminal, epx asks before it sends POST. `--yes` sends without
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the ai.agentexecution\_manage scope.
+Requires the ai.agentexecution_manage scope.
 
 **Command:** `epx ai chat [flags]`
 
 **Flags**
 
 - `--agent <ID>`\
-  The ID of the agent, as [`epx ai agents list`](/emporix-cli/commands/ai#epx-ai-agents-list) shows it (required without `--file`).
+  The ID of the agent, as [`epx ai agents list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/ai#epx-ai-agents-list) shows it (required without `--file`).
 - `--attachment <ID>`\
-  The ID of an attachment of the session to send with the message, as [`epx ai agents attach`](/emporix-cli/commands/ai#epx-ai-agents-attach) prints it (repeatable) (only with `--session`).
+  The ID of an attachment of the session to send with the message, as [`epx ai agents attach`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/ai#epx-ai-agents-attach) prints it (repeatable) (only with `--session`).
 - `--dry-run`\
   Print the request instead of sending it (excludes `-o`).
 - `--file <PATH>`\
@@ -586,7 +586,7 @@ Requires the ai.agentexecution\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Examples**
 
@@ -599,28 +599,28 @@ epx ai chat --agent complaint-agent --message "Find order EON1243" --yes
 Send a message to an agent, which replies in a job (consumes AI credits).
 
 Sends the message that `--message` gives to the agent `--agent`, which replies in a job of type
-AGENT\_CHAT: Emporix answers with its jobId, which [`epx ai jobs get JOB_ID`](/emporix-cli/commands/ai#epx-ai-jobs-get) reads.
+AGENT_CHAT: Emporix answers with its jobId, which [`epx ai jobs get JOB_ID`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/ai#epx-ai-jobs-get) reads.
 It consumes AI credits: the LLM tokens of the agent's model, and of the agents it
 collaborates with.
 With `--session`, the chat goes on in that session, which the agent remembers where its
 enabledMemory is true; an attachment must be one of the session, attached to the same agent
-([`epx ai agents attach`](/emporix-cli/commands/ai#epx-ai-agents-attach)). `--file` gives the body instead, with the caption and purpose of
+([`epx ai agents attach`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/ai#epx-ai-agents-attach)). `--file` gives the body instead, with the caption and purpose of
 each attachment.
 
 Changes data: on a terminal, epx asks before it sends POST. `--yes` sends without
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the ai.agentexecution\_manage scope.
+Requires the ai.agentexecution_manage scope.
 
 **Command:** `epx ai chat-async [flags]`
 
 **Flags**
 
 - `--agent <ID>`\
-  The ID of the agent, as [`epx ai agents list`](/emporix-cli/commands/ai#epx-ai-agents-list) shows it (required without `--file`).
+  The ID of the agent, as [`epx ai agents list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/ai#epx-ai-agents-list) shows it (required without `--file`).
 - `--attachment <ID>`\
-  The ID of an attachment of the session to send with the message, as [`epx ai agents attach`](/emporix-cli/commands/ai#epx-ai-agents-attach) prints it (repeatable) (only with `--session`).
+  The ID of an attachment of the session to send with the message, as [`epx ai agents attach`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/ai#epx-ai-agents-attach) prints it (repeatable) (only with `--session`).
 - `--dry-run`\
   Print the request instead of sending it (excludes `-o`).
 - `--file <PATH>`\
@@ -634,7 +634,7 @@ Requires the ai.agentexecution\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Examples**
 
@@ -646,9 +646,9 @@ epx ai chat-async --agent complaint-agent --message "Find order EON1243" --yes
 
 List the commerce events that can trigger an agent.
 
-Reads the commerce events that can start an agent with a commerce\_events trigger, sorted.
+Reads the commerce events that can start an agent with a commerce_events trigger, sorted.
 
-Requires the ai.agent\_read scope.
+Requires the ai.agent_read scope.
 
 **Command:** `epx ai commerce-events [flags]`
 
@@ -661,21 +661,21 @@ Requires the ai.agent\_read scope.
 - `-o, --output <format>`\
   Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx ai conversations
 
 Read agent conversations.
 
 Reads the conversations of agents in Microsoft Teams channels and group chats: ID is the
-conversation in Teams, NAME its channel or chat, SESSION the agent's session ([`epx ai logs sessions get`](/emporix-cli/commands/ai#epx-ai-logs-sessions-get)) and LAST MESSAGE when it was last active. The channel and the context
+conversation in Teams, NAME its channel or chat, SESSION the agent's session ([`epx ai logs sessions get`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/ai#epx-ai-logs-sessions-get)) and LAST MESSAGE when it was last active. The channel and the context
 reference are only in `-o json`.
 
-Requires the ai.agent\_read scope.
+Requires the ai.agent_read scope.
 
 **Command:** `epx ai conversations [flags]`, `epx ai conversations [command]`
 
-**Flags:** only the [global flags](/emporix-cli/commands#global-flags).
+**Flags:** only the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Subcommands**
 
@@ -689,10 +689,10 @@ Requires the ai.agent\_read scope.
 List agent conversations.
 
 Reads the conversations of agents in Microsoft Teams channels and group chats: ID is the
-conversation in Teams, NAME its channel or chat, SESSION the agent's session ([`epx ai logs sessions get`](/emporix-cli/commands/ai#epx-ai-logs-sessions-get)) and LAST MESSAGE when it was last active. The channel and the context
+conversation in Teams, NAME its channel or chat, SESSION the agent's session ([`epx ai logs sessions get`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/ai#epx-ai-logs-sessions-get)) and LAST MESSAGE when it was last active. The channel and the context
 reference are only in `-o json`.
 
-Requires the ai.agent\_read scope.
+Requires the ai.agent_read scope.
 
 **Command:** `epx ai conversations list [flags]`
 
@@ -713,7 +713,7 @@ Requires the ai.agent\_read scope.
 - `--stream`\
   Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx ai conversations search
 
@@ -721,12 +721,12 @@ Search agent conversations.
 
 Reads the agent conversations that an Emporix q filter finds (`--query`; without it,
 every one).
-It reads and shows them as [`epx ai conversations list`](/emporix-cli/commands/ai#epx-ai-conversations-list) does.
+It reads and shows them as [`epx ai conversations list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/ai#epx-ai-conversations-list) does.
 
 Changes nothing: Emporix serves this read as POST with a JSON body, which the
 flags make or `--body` gives whole.
 
-Requires the ai.agent\_read scope.
+Requires the ai.agent_read scope.
 
 **Command:** `epx ai conversations search [flags]`
 
@@ -749,7 +749,7 @@ Requires the ai.agent\_read scope.
 - `--stream`\
   Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx ai generate-completion
 
@@ -767,7 +767,7 @@ Changes data: on a terminal, epx asks before it sends POST. `--yes` sends withou
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the ai.completion\_manage scope.
+Requires the ai.completion_manage scope.
 
 **Command:** `epx ai generate-completion [flags]`
 
@@ -784,7 +784,7 @@ Requires the ai.completion\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Examples**
 
@@ -809,7 +809,7 @@ Changes data: on a terminal, epx asks before it sends POST. `--yes` sends withou
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the ai.text\_manage scope.
+Requires the ai.text_manage scope.
 
 **Command:** `epx ai generate-text [flags]`
 
@@ -828,7 +828,7 @@ Requires the ai.text\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Examples**
 
@@ -840,17 +840,17 @@ epx ai generate-text --prompt "Describe product 100200 in German" --max-tokens 5
 
 Read and delete agent jobs.
 
-Reads the jobs of the AI Service: TYPE is AGENT\_CHAT (an agent's run), IMPORT or EXPORT (of
-agents), STATUS in\_progress, success, failure or skipped, AGENT and SESSION the agent that
-ran and its session ([`epx ai logs sessions get`](/emporix-cli/commands/ai#epx-ai-logs-sessions-get)) and EVENT the commerce event that started
+Reads the jobs of the AI Service: TYPE is AGENT_CHAT (an agent's run), IMPORT or EXPORT (of
+agents), STATUS in_progress, success, failure or skipped, AGENT and SESSION the agent that
+ran and its session ([`epx ai logs sessions get`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/ai#epx-ai-logs-sessions-get)) and EVENT the commerce event that started
 it. The agent's message and an import's or export's result are only in `-o json`.
 
-Its reads require the ai.agent\_read scope.
-Its writes require the ai.agent\_manage scope.
+Its reads require the ai.agent_read scope.
+Its writes require the ai.agent_manage scope.
 
 **Command:** `epx ai jobs [flags]`, `epx ai jobs [command]`
 
-**Flags:** only the [global flags](/emporix-cli/commands#global-flags).
+**Flags:** only the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Subcommands**
 
@@ -868,14 +868,14 @@ Its writes require the ai.agent\_manage scope.
 Delete an agent job.
 
 Deletes the agent job ID.
-ID is the ID that [`epx ai jobs list`](/emporix-cli/commands/ai#epx-ai-jobs-list) shows; an unknown one is not found.
+ID is the ID that [`epx ai jobs list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/ai#epx-ai-jobs-list) shows; an unknown one is not found.
 
 Deletes data, which cannot be undone.
 On a terminal, epx sends DELETE only once you type ID at its prompt.
 `--yes` sends without asking (required without a terminal);
 `--dry-run` prints the request instead of sending it.
 
-Requires the ai.agent\_manage scope.
+Requires the ai.agent_manage scope.
 
 **Command:** `epx ai jobs delete ID [flags]`
 
@@ -888,18 +888,18 @@ Requires the ai.agent\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx ai jobs get
 
 Show one agent job.
 
-Reads the jobs of the AI Service: TYPE is AGENT\_CHAT (an agent's run), IMPORT or EXPORT (of
-agents), STATUS in\_progress, success, failure or skipped, AGENT and SESSION the agent that
-ran and its session ([`epx ai logs sessions get`](/emporix-cli/commands/ai#epx-ai-logs-sessions-get)) and EVENT the commerce event that started
+Reads the jobs of the AI Service: TYPE is AGENT_CHAT (an agent's run), IMPORT or EXPORT (of
+agents), STATUS in_progress, success, failure or skipped, AGENT and SESSION the agent that
+ran and its session ([`epx ai logs sessions get`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/ai#epx-ai-logs-sessions-get)) and EVENT the commerce event that started
 it. The agent's message and an import's or export's result are only in `-o json`.
 
-Requires the ai.agent\_read scope.
+Requires the ai.agent_read scope.
 
 **Command:** `epx ai jobs get ID [flags]`
 
@@ -912,18 +912,18 @@ Requires the ai.agent\_read scope.
 - `-o, --output <format>`\
   Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx ai jobs list
 
 List agent jobs.
 
-Reads the jobs of the AI Service: TYPE is AGENT\_CHAT (an agent's run), IMPORT or EXPORT (of
-agents), STATUS in\_progress, success, failure or skipped, AGENT and SESSION the agent that
-ran and its session ([`epx ai logs sessions get`](/emporix-cli/commands/ai#epx-ai-logs-sessions-get)) and EVENT the commerce event that started
+Reads the jobs of the AI Service: TYPE is AGENT_CHAT (an agent's run), IMPORT or EXPORT (of
+agents), STATUS in_progress, success, failure or skipped, AGENT and SESSION the agent that
+ran and its session ([`epx ai logs sessions get`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/ai#epx-ai-logs-sessions-get)) and EVENT the commerce event that started
 it. The agent's message and an import's or export's result are only in `-o json`.
 
-Requires the ai.agent\_read scope.
+Requires the ai.agent_read scope.
 
 **Command:** `epx ai jobs list [flags]`
 
@@ -944,7 +944,7 @@ Requires the ai.agent\_read scope.
 - `--stream`\
   Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx ai jobs search
 
@@ -952,12 +952,12 @@ Search agent jobs.
 
 Reads the agent jobs that an Emporix q filter finds (`--query`; without it,
 every one).
-It reads and shows them as [`epx ai jobs list`](/emporix-cli/commands/ai#epx-ai-jobs-list) does.
+It reads and shows them as [`epx ai jobs list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/ai#epx-ai-jobs-list) does.
 
 Changes nothing: Emporix serves this read as POST with a JSON body, which the
 flags make or `--body` gives whole.
 
-Requires the ai.agent\_read scope.
+Requires the ai.agent_read scope.
 
 **Command:** `epx ai jobs search [flags]`
 
@@ -980,7 +980,7 @@ Requires the ai.agent\_read scope.
 - `--stream`\
   Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx ai logs
 
@@ -989,11 +989,11 @@ Read the logs of agent requests and sessions.
 Reads the logs that agents write: one per request, and one per session, which holds the
 messages of its requests.
 
-Requires the ai.agent\_read scope.
+Requires the ai.agent_read scope.
 
 **Command:** `epx ai logs [flags]`, `epx ai logs [command]`
 
-**Flags:** only the [global flags](/emporix-cli/commands#global-flags).
+**Flags:** only the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Subcommands**
 
@@ -1012,11 +1012,11 @@ AGENT is the agent that was called, SEVERITY INFO, WARNING or ERROR, MESSAGES ho
 messages were logged (empty when a log comes without them) and SECONDS how long it took; the
 messages, the other agents that took part and the LLM tokens used are only in `-o json`.
 
-Requires the ai.agent\_read scope.
+Requires the ai.agent_read scope.
 
 **Command:** `epx ai logs requests [flags]`, `epx ai logs requests [command]`
 
-**Flags:** only the [global flags](/emporix-cli/commands#global-flags).
+**Flags:** only the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Subcommands**
 
@@ -1037,7 +1037,7 @@ AGENT is the agent that was called, SEVERITY INFO, WARNING or ERROR, MESSAGES ho
 messages were logged (empty when a log comes without them) and SECONDS how long it took; the
 messages, the other agents that took part and the LLM tokens used are only in `-o json`.
 
-Requires the ai.agent\_read scope.
+Requires the ai.agent_read scope.
 
 **Command:** `epx ai logs requests get ID [flags]`
 
@@ -1050,7 +1050,7 @@ Requires the ai.agent\_read scope.
 - `-o, --output <format>`\
   Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx ai logs requests list
 
@@ -1062,7 +1062,7 @@ AGENT is the agent that was called, SEVERITY INFO, WARNING or ERROR, MESSAGES ho
 messages were logged (empty when a log comes without them) and SECONDS how long it took; the
 messages, the other agents that took part and the LLM tokens used are only in `-o json`.
 
-Requires the ai.agent\_read scope.
+Requires the ai.agent_read scope.
 
 **Command:** `epx ai logs requests list [flags]`
 
@@ -1083,7 +1083,7 @@ Requires the ai.agent\_read scope.
 - `--stream`\
   Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx ai logs requests search
 
@@ -1091,12 +1091,12 @@ Search agent request logs.
 
 Reads the agent request logs that an Emporix q filter finds (`--query`; without it,
 every one).
-It reads and shows them as [`epx ai logs requests list`](/emporix-cli/commands/ai#epx-ai-logs-requests-list) does.
+It reads and shows them as [`epx ai logs requests list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/ai#epx-ai-logs-requests-list) does.
 
 Changes nothing: Emporix serves this read as POST with a JSON body, which the
 flags make or `--body` gives whole.
 
-Requires the ai.agent\_read scope.
+Requires the ai.agent_read scope.
 
 **Command:** `epx ai logs requests search [flags]`
 
@@ -1119,7 +1119,7 @@ Requires the ai.agent\_read scope.
 - `--stream`\
   Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx ai logs sessions
 
@@ -1131,11 +1131,11 @@ AGENT is the agent that was called, SEVERITY INFO, WARNING or ERROR, MESSAGES ho
 messages were logged (empty when a log comes without them) and SECONDS how long it took; the
 messages, the other agents that took part and the LLM tokens used are only in `-o json`.
 
-Requires the ai.agent\_read scope.
+Requires the ai.agent_read scope.
 
 **Command:** `epx ai logs sessions [flags]`, `epx ai logs sessions [command]`
 
-**Flags:** only the [global flags](/emporix-cli/commands#global-flags).
+**Flags:** only the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Subcommands**
 
@@ -1156,7 +1156,7 @@ AGENT is the agent that was called, SEVERITY INFO, WARNING or ERROR, MESSAGES ho
 messages were logged (empty when a log comes without them) and SECONDS how long it took; the
 messages, the other agents that took part and the LLM tokens used are only in `-o json`.
 
-Requires the ai.agent\_read scope.
+Requires the ai.agent_read scope.
 
 **Command:** `epx ai logs sessions get ID [flags]`
 
@@ -1169,7 +1169,7 @@ Requires the ai.agent\_read scope.
 - `-o, --output <format>`\
   Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx ai logs sessions list
 
@@ -1181,7 +1181,7 @@ AGENT is the agent that was called, SEVERITY INFO, WARNING or ERROR, MESSAGES ho
 messages were logged (empty when a log comes without them) and SECONDS how long it took; the
 messages, the other agents that took part and the LLM tokens used are only in `-o json`.
 
-Requires the ai.agent\_read scope.
+Requires the ai.agent_read scope.
 
 **Command:** `epx ai logs sessions list [flags]`
 
@@ -1202,7 +1202,7 @@ Requires the ai.agent\_read scope.
 - `--stream`\
   Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx ai logs sessions search
 
@@ -1210,12 +1210,12 @@ Search agent session logs.
 
 Reads the agent session logs that an Emporix q filter finds (`--query`; without it,
 every one).
-It reads and shows them as [`epx ai logs sessions list`](/emporix-cli/commands/ai#epx-ai-logs-sessions-list) does.
+It reads and shows them as [`epx ai logs sessions list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/ai#epx-ai-logs-sessions-list) does.
 
 Changes nothing: Emporix serves this read as POST with a JSON body, which the
 flags make or `--body` gives whole.
 
-Requires the ai.agent\_read scope.
+Requires the ai.agent_read scope.
 
 **Command:** `epx ai logs sessions search [flags]`
 
@@ -1238,7 +1238,7 @@ Requires the ai.agent\_read scope.
 - `--stream`\
   Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx ai mcp-servers
 
@@ -1246,14 +1246,14 @@ Read, upsert, change and delete MCP servers.
 
 Reads the tenant's MCP servers, whose tools agents can use: TYPE is custom (a server at URL)
 or dynamic (a preview at Emporix: tools that the server's configuration defines, only in
-`-o json`), TRANSPORT streamable\_http or sse.
+`-o json`), TRANSPORT streamable_http or sse.
 
-Its reads require the ai.agent\_read scope.
-Its writes require the ai.agent\_manage scope.
+Its reads require the ai.agent_read scope.
+Its writes require the ai.agent_manage scope.
 
 **Command:** `epx ai mcp-servers [flags]`, `epx ai mcp-servers [command]`
 
-**Flags:** only the [global flags](/emporix-cli/commands#global-flags).
+**Flags:** only the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Subcommands**
 
@@ -1276,14 +1276,14 @@ Delete an MCP server.
 
 Deletes the MCP server ID. Emporix refuses to delete one that others use, unless
 `--force` unassigns it from them.
-ID is the ID that [`epx ai mcp-servers list`](/emporix-cli/commands/ai#epx-ai-mcp-servers-list) shows.
+ID is the ID that [`epx ai mcp-servers list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/ai#epx-ai-mcp-servers-list) shows.
 
 Deletes data, which cannot be undone.
 On a terminal, epx sends DELETE only once you type ID at its prompt.
 `--yes` sends without asking (required without a terminal);
 `--dry-run` prints the request instead of sending it.
 
-Requires the ai.agent\_manage scope.
+Requires the ai.agent_manage scope.
 
 **Command:** `epx ai mcp-servers delete ID [flags]`
 
@@ -1298,7 +1298,7 @@ Requires the ai.agent\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx ai mcp-servers get
 
@@ -1306,9 +1306,9 @@ Show one MCP server.
 
 Reads the tenant's MCP servers, whose tools agents can use: TYPE is custom (a server at URL)
 or dynamic (a preview at Emporix: tools that the server's configuration defines, only in
-`-o json`), TRANSPORT streamable\_http or sse.
+`-o json`), TRANSPORT streamable_http or sse.
 
-Requires the ai.agent\_read scope.
+Requires the ai.agent_read scope.
 
 **Command:** `epx ai mcp-servers get ID [flags]`
 
@@ -1321,7 +1321,7 @@ Requires the ai.agent\_read scope.
 - `-o, --output <format>`\
   Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx ai mcp-servers list
 
@@ -1329,9 +1329,9 @@ List MCP servers.
 
 Reads the tenant's MCP servers, whose tools agents can use: TYPE is custom (a server at URL)
 or dynamic (a preview at Emporix: tools that the server's configuration defines, only in
-`-o json`), TRANSPORT streamable\_http or sse.
+`-o json`), TRANSPORT streamable_http or sse.
 
-Requires the ai.agent\_read scope.
+Requires the ai.agent_read scope.
 
 **Command:** `epx ai mcp-servers list [flags]`
 
@@ -1352,7 +1352,7 @@ Requires the ai.agent\_read scope.
 - `--stream`\
   Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx ai mcp-servers patch
 
@@ -1362,13 +1362,13 @@ Changes the MCP server ID with the JSON array of operations in `--file`, each wi
 (ADD, REMOVE or REPLACE), path and value, e.g.
 `[{"op": "REPLACE", "path": "/enabled", "value": false}]`; its other members keep their
 values.
-ID is the ID that [`epx ai mcp-servers list`](/emporix-cli/commands/ai#epx-ai-mcp-servers-list) shows; an unknown one is not found.
+ID is the ID that [`epx ai mcp-servers list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/ai#epx-ai-mcp-servers-list) shows; an unknown one is not found.
 
 Changes data: on a terminal, epx asks before it sends PATCH. `--yes` sends without
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the ai.agent\_manage scope.
+Requires the ai.agent_manage scope.
 
 **Command:** `epx ai mcp-servers patch ID [flags]`
 
@@ -1385,7 +1385,7 @@ Requires the ai.agent\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx ai mcp-servers search
 
@@ -1393,12 +1393,12 @@ Search MCP servers.
 
 Reads the MCP servers that an Emporix q filter finds (`--query`; without it,
 every one).
-It reads and shows them as [`epx ai mcp-servers list`](/emporix-cli/commands/ai#epx-ai-mcp-servers-list) does.
+It reads and shows them as [`epx ai mcp-servers list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/ai#epx-ai-mcp-servers-list) does.
 
 Changes nothing: Emporix serves this read as POST with a JSON body, which the
 flags make or `--body` gives whole.
 
-Requires the ai.agent\_read scope.
+Requires the ai.agent_read scope.
 
 **Command:** `epx ai mcp-servers search [flags]`
 
@@ -1421,7 +1421,7 @@ Requires the ai.agent\_read scope.
 - `--stream`\
   Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx ai mcp-servers update
 
@@ -1429,17 +1429,17 @@ Upsert an MCP server.
 
 Replaces the MCP server ID with the JSON in `--file`, or creates it with that ID where
 none exists (an upsert): Emporix answers with the id of one it created and nothing for one it
-replaced. With metadata.version, as [`epx ai mcp-servers get ID -o json`](/emporix-cli/commands/ai#epx-ai-mcp-servers-get) prints it,
+replaced. With metadata.version, as [`epx ai mcp-servers get ID -o json`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/ai#epx-ai-mcp-servers-get) prints it,
 Emporix replaces only that version: another is a conflict (exit 5).
 The JSON holds its type (custom: config with the server's url; dynamic: its tools), name
 and transport, and whether it is enabled.
-ID is the ID that [`epx ai mcp-servers list`](/emporix-cli/commands/ai#epx-ai-mcp-servers-list) shows.
+ID is the ID that [`epx ai mcp-servers list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/ai#epx-ai-mcp-servers-list) shows.
 
 Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the ai.agent\_manage scope.
+Requires the ai.agent_manage scope.
 
 **Command:** `epx ai mcp-servers update ID [flags]`
 
@@ -1456,7 +1456,7 @@ Requires the ai.agent\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx ai models
 
@@ -1466,7 +1466,7 @@ Reads the LLM models of every provider that agents can use (openai, anthropic an
 ID is what an agent's LLM configuration names and THINKING whether the model supports
 thinking; descriptions are only in `-o json`.
 
-Requires the ai.agent\_read scope.
+Requires the ai.agent_read scope.
 
 **Command:** `epx ai models [flags]`
 
@@ -1479,7 +1479,7 @@ Requires the ai.agent\_read scope.
 - `-o, --output <format>`\
   Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx ai oauths
 
@@ -1487,15 +1487,15 @@ Read, upsert, change and delete OAuth configurations.
 
 Reads OAuth configurations (a preview at Emporix): the OAuth 2.0 client credentials with which
 agents get a token for a self-hosted LLM from TOKEN URL. SECRET TOKEN is the ID of the token
-([`epx ai tokens list`](/emporix-cli/commands/ai#epx-ai-tokens-list)) that holds the client's secret; the scope is only in `-o json`, which
+([`epx ai tokens list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/ai#epx-ai-tokens-list)) that holds the client's secret; the scope is only in `-o json`, which
 prints the response as Emporix sends it.
 
-Its reads require the ai.agent\_read scope.
-Its writes require the ai.agent\_manage scope.
+Its reads require the ai.agent_read scope.
+Its writes require the ai.agent_manage scope.
 
 **Command:** `epx ai oauths [flags]`, `epx ai oauths [command]`
 
-**Flags:** only the [global flags](/emporix-cli/commands#global-flags).
+**Flags:** only the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Subcommands**
 
@@ -1518,14 +1518,14 @@ Delete an OAuth configuration.
 
 Deletes the OAuth configuration ID. Emporix refuses to delete one that others use, unless
 `--force` unassigns it from them.
-ID is the ID that [`epx ai oauths list`](/emporix-cli/commands/ai#epx-ai-oauths-list) shows.
+ID is the ID that [`epx ai oauths list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/ai#epx-ai-oauths-list) shows.
 
 Deletes data, which cannot be undone.
 On a terminal, epx sends DELETE only once you type ID at its prompt.
 `--yes` sends without asking (required without a terminal);
 `--dry-run` prints the request instead of sending it.
 
-Requires the ai.agent\_manage scope.
+Requires the ai.agent_manage scope.
 
 **Command:** `epx ai oauths delete ID [flags]`
 
@@ -1540,7 +1540,7 @@ Requires the ai.agent\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx ai oauths get
 
@@ -1548,10 +1548,10 @@ Show one OAuth configuration.
 
 Reads OAuth configurations (a preview at Emporix): the OAuth 2.0 client credentials with which
 agents get a token for a self-hosted LLM from TOKEN URL. SECRET TOKEN is the ID of the token
-([`epx ai tokens list`](/emporix-cli/commands/ai#epx-ai-tokens-list)) that holds the client's secret; the scope is only in `-o json`, which
+([`epx ai tokens list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/ai#epx-ai-tokens-list)) that holds the client's secret; the scope is only in `-o json`, which
 prints the response as Emporix sends it.
 
-Requires the ai.agent\_read scope.
+Requires the ai.agent_read scope.
 
 **Command:** `epx ai oauths get ID [flags]`
 
@@ -1564,7 +1564,7 @@ Requires the ai.agent\_read scope.
 - `-o, --output <format>`\
   Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx ai oauths list
 
@@ -1572,10 +1572,10 @@ List OAuth configurations.
 
 Reads OAuth configurations (a preview at Emporix): the OAuth 2.0 client credentials with which
 agents get a token for a self-hosted LLM from TOKEN URL. SECRET TOKEN is the ID of the token
-([`epx ai tokens list`](/emporix-cli/commands/ai#epx-ai-tokens-list)) that holds the client's secret; the scope is only in `-o json`, which
+([`epx ai tokens list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/ai#epx-ai-tokens-list)) that holds the client's secret; the scope is only in `-o json`, which
 prints the response as Emporix sends it.
 
-Requires the ai.agent\_read scope.
+Requires the ai.agent_read scope.
 
 **Command:** `epx ai oauths list [flags]`
 
@@ -1596,7 +1596,7 @@ Requires the ai.agent\_read scope.
 - `--stream`\
   Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx ai oauths patch
 
@@ -1606,13 +1606,13 @@ Changes the OAuth configuration ID with the JSON array of operations in `--file`
 (ADD, REMOVE or REPLACE), path and value, e.g.
 `[{"op": "REPLACE", "path": "/enabled", "value": false}]`; its other members keep their
 values.
-ID is the ID that [`epx ai oauths list`](/emporix-cli/commands/ai#epx-ai-oauths-list) shows; an unknown one is not found.
+ID is the ID that [`epx ai oauths list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/ai#epx-ai-oauths-list) shows; an unknown one is not found.
 
 Changes data: on a terminal, epx asks before it sends PATCH. `--yes` sends without
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the ai.agent\_manage scope.
+Requires the ai.agent_manage scope.
 
 **Command:** `epx ai oauths patch ID [flags]`
 
@@ -1629,7 +1629,7 @@ Requires the ai.agent\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx ai oauths search
 
@@ -1637,12 +1637,12 @@ Search OAuth configurations.
 
 Reads the OAuth configurations that an Emporix q filter finds (`--query`; without it,
 every one).
-It reads and shows them as [`epx ai oauths list`](/emporix-cli/commands/ai#epx-ai-oauths-list) does.
+It reads and shows them as [`epx ai oauths list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/ai#epx-ai-oauths-list) does.
 
 Changes nothing: Emporix serves this read as POST with a JSON body, which the
 flags make or `--body` gives whole.
 
-Requires the ai.agent\_read scope.
+Requires the ai.agent_read scope.
 
 **Command:** `epx ai oauths search [flags]`
 
@@ -1665,7 +1665,7 @@ Requires the ai.agent\_read scope.
 - `--stream`\
   Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx ai oauths update
 
@@ -1673,18 +1673,18 @@ Upsert an OAuth configuration.
 
 Replaces the OAuth configuration ID with the JSON in `--file`, or creates it with that ID where
 none exists (an upsert): Emporix answers with the id of one it created and nothing for one it
-replaced. With metadata.version, as [`epx ai oauths get ID -o json`](/emporix-cli/commands/ai#epx-ai-oauths-get) prints it,
+replaced. With metadata.version, as [`epx ai oauths get ID -o json`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/ai#epx-ai-oauths-get) prints it,
 Emporix replaces only that version: another is a conflict (exit 5).
-The JSON holds its url (the token URL), clientId and grantType (client\_credentials, the
+The JSON holds its url (the token URL), clientId and grantType (client_credentials, the
 only one), and its scope, clientSecretToken (the token that holds the secret) and whether it
 is enabled.
-ID is the ID that [`epx ai oauths list`](/emporix-cli/commands/ai#epx-ai-oauths-list) shows.
+ID is the ID that [`epx ai oauths list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/ai#epx-ai-oauths-list) shows.
 
 Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the ai.agent\_manage scope.
+Requires the ai.agent_manage scope.
 
 **Command:** `epx ai oauths update ID [flags]`
 
@@ -1701,7 +1701,7 @@ Requires the ai.agent\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx ai rag
 
@@ -1711,12 +1711,12 @@ Reads the AI RAG Indexer, which embeds the entities of a type in a vector databa
 retrieval-augmented generation (RAG) tools of agents: the fields it can embed and those a
 vector search can filter by; and embeds the entities of a type again.
 
-Its reads require the ai.agent\_read scope.
-Its writes require the ai.agent\_manage scope.
+Its reads require the ai.agent_read scope.
+Its writes require the ai.agent_manage scope.
 
 **Command:** `epx ai rag [flags]`, `epx ai rag [command]`
 
-**Flags:** only the [global flags](/emporix-cli/commands#global-flags).
+**Flags:** only the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Subcommands**
 
@@ -1732,10 +1732,10 @@ Its writes require the ai.agent\_manage scope.
 List the fields of an entity type that can be embedded for RAG search.
 
 Reads the fields of an entity type, by path, that the AI RAG Indexer can embed.
-TYPE is PRODUCT, ORDER or a custom entity type ([`epx custom-entities list`](/emporix-cli/commands/custom-entities#epx-custom-entities-list)). The fields come whole, so they are read with one
+TYPE is PRODUCT, ORDER or a custom entity type ([`epx custom-entities list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/custom-entities#epx-custom-entities-list)). The fields come whole, so they are read with one
 request.
 
-Requires the ai.agent\_read scope.
+Requires the ai.agent_read scope.
 
 **Command:** `epx ai rag fields TYPE [flags]`
 
@@ -1752,7 +1752,7 @@ Requires the ai.agent\_read scope.
 - `--stream`\
   Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx ai rag filter-fields
 
@@ -1761,10 +1761,10 @@ List the fields of an entity type that a vector search can filter by.
 Reads the fields of an entity type, by path, that a vector search can filter by before RAG
 retrieval, with their TYPE (string, integer, float, boolean, datetime, date, time,
 dictionary, list or object).
-TYPE is PRODUCT, ORDER or a custom entity type ([`epx custom-entities list`](/emporix-cli/commands/custom-entities#epx-custom-entities-list)). The fields come whole, so they are read with one
+TYPE is PRODUCT, ORDER or a custom entity type ([`epx custom-entities list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/custom-entities#epx-custom-entities-list)). The fields come whole, so they are read with one
 request.
 
-Requires the ai.agent\_read scope.
+Requires the ai.agent_read scope.
 
 **Command:** `epx ai rag filter-fields TYPE [flags]`
 
@@ -1781,23 +1781,23 @@ Requires the ai.agent\_read scope.
 - `--stream`\
   Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx ai rag reindex
 
 Embed every entity of a type again for RAG search (deprecated by Emporix).
 
 Embeds every entity of a type again in the vector database, replacing its records there;
-it sends no body. Emporix has deprecated this endpoint: [`epx indexing reindex-jobs create`](/emporix-cli/commands/indexing#epx-indexing-reindex-jobs-create)
+it sends no body. Emporix has deprecated this endpoint: [`epx indexing reindex-jobs create`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/indexing#epx-indexing-reindex-jobs-create)
 with `--rag` starts a reindex job that embeds products too, which its `--wait` follows.
-TYPE is PRODUCT, ORDER or a custom entity type ([`epx custom-entities list`](/emporix-cli/commands/custom-entities#epx-custom-entities-list)). Emporix answers an unknown TYPE with 204 No Content (exit 0),
+TYPE is PRODUCT, ORDER or a custom entity type ([`epx custom-entities list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/custom-entities#epx-custom-entities-list)). Emporix answers an unknown TYPE with 204 No Content (exit 0),
 so check the TYPE first.
 
 Changes data: on a terminal, epx asks before it sends POST. `--yes` sends without
 asking (required without a terminal); `--dry-run` prints the request
 instead of sending it.
 
-Requires the ai.agent\_manage scope.
+Requires the ai.agent_manage scope.
 
 **Command:** `epx ai rag reindex TYPE [flags]`
 
@@ -1810,7 +1810,7 @@ Requires the ai.agent\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Examples**
 
@@ -1822,15 +1822,15 @@ epx ai rag reindex PRODUCT --dry-run
 
 Read agent templates.
 
-Reads agent templates, from which agents are made: TYPE is generic, complaint or anti\_fraud,
+Reads agent templates, from which agents are made: TYPE is generic, complaint or anti_fraud,
 PROVIDER and MODEL the LLM a template uses. Emporix reads no single template:
-[`epx ai templates list --query id:ID -o json`](/emporix-cli/commands/ai#epx-ai-templates-list) shows one.
+[`epx ai templates list --query id:ID -o json`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/ai#epx-ai-templates-list) shows one.
 
-Requires the ai.agent\_read scope.
+Requires the ai.agent_read scope.
 
 **Command:** `epx ai templates [flags]`, `epx ai templates [command]`
 
-**Flags:** only the [global flags](/emporix-cli/commands#global-flags).
+**Flags:** only the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Subcommands**
 
@@ -1843,11 +1843,11 @@ Requires the ai.agent\_read scope.
 
 List agent templates.
 
-Reads agent templates, from which agents are made: TYPE is generic, complaint or anti\_fraud,
+Reads agent templates, from which agents are made: TYPE is generic, complaint or anti_fraud,
 PROVIDER and MODEL the LLM a template uses. Emporix reads no single template:
-[`epx ai templates list --query id:ID -o json`](/emporix-cli/commands/ai#epx-ai-templates-list) shows one.
+[`epx ai templates list --query id:ID -o json`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/ai#epx-ai-templates-list) shows one.
 
-Requires the ai.agent\_read scope.
+Requires the ai.agent_read scope.
 
 **Command:** `epx ai templates list [flags]`
 
@@ -1870,7 +1870,7 @@ Requires the ai.agent\_read scope.
 - `--stream`\
   Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx ai templates search
 
@@ -1878,12 +1878,12 @@ Search agent templates.
 
 Reads the agent templates that an Emporix q filter finds (`--query`; without it,
 every one).
-It reads and shows them as [`epx ai templates list`](/emporix-cli/commands/ai#epx-ai-templates-list) does.
+It reads and shows them as [`epx ai templates list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/ai#epx-ai-templates-list) does.
 
 Changes nothing: Emporix serves this read as POST with a JSON body, which the
 flags make or `--body` gives whole.
 
-Requires the ai.agent\_read scope.
+Requires the ai.agent_read scope.
 
 **Command:** `epx ai templates search [flags]`
 
@@ -1908,7 +1908,7 @@ Requires the ai.agent\_read scope.
 - `--stream`\
   Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx ai tokens
 
@@ -1918,12 +1918,12 @@ Reads the tokens that hold the API keys and secrets of LLMs, tools, OAuth config
 MCP servers, by name: the table shows no value, and the API reference documents none in a
 response; `-o json` prints the response as Emporix sends it.
 
-Its reads require the ai.agent\_read scope.
-Its writes require the ai.agent\_manage scope.
+Its reads require the ai.agent_read scope.
+Its writes require the ai.agent_manage scope.
 
 **Command:** `epx ai tokens [flags]`, `epx ai tokens [command]`
 
-**Flags:** only the [global flags](/emporix-cli/commands#global-flags).
+**Flags:** only the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Subcommands**
 
@@ -1946,14 +1946,14 @@ Delete an AI token.
 
 Deletes the token ID. Emporix refuses to delete one that others use, unless
 `--force` unassigns it from them.
-ID is the ID that [`epx ai tokens list`](/emporix-cli/commands/ai#epx-ai-tokens-list) shows.
+ID is the ID that [`epx ai tokens list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/ai#epx-ai-tokens-list) shows.
 
 Deletes data, which cannot be undone.
 On a terminal, epx sends DELETE only once you type ID at its prompt.
 `--yes` sends without asking (required without a terminal);
 `--dry-run` prints the request instead of sending it.
 
-Requires the ai.agent\_manage scope.
+Requires the ai.agent_manage scope.
 
 **Command:** `epx ai tokens delete ID [flags]`
 
@@ -1968,7 +1968,7 @@ Requires the ai.agent\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx ai tokens get
 
@@ -1978,7 +1978,7 @@ Reads the tokens that hold the API keys and secrets of LLMs, tools, OAuth config
 MCP servers, by name: the table shows no value, and the API reference documents none in a
 response; `-o json` prints the response as Emporix sends it.
 
-Requires the ai.agent\_read scope.
+Requires the ai.agent_read scope.
 
 **Command:** `epx ai tokens get ID [flags]`
 
@@ -1991,7 +1991,7 @@ Requires the ai.agent\_read scope.
 - `-o, --output <format>`\
   Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx ai tokens list
 
@@ -2001,7 +2001,7 @@ Reads the tokens that hold the API keys and secrets of LLMs, tools, OAuth config
 MCP servers, by name: the table shows no value, and the API reference documents none in a
 response; `-o json` prints the response as Emporix sends it.
 
-Requires the ai.agent\_read scope.
+Requires the ai.agent_read scope.
 
 **Command:** `epx ai tokens list [flags]`
 
@@ -2022,7 +2022,7 @@ Requires the ai.agent\_read scope.
 - `--stream`\
   Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx ai tokens patch
 
@@ -2032,13 +2032,13 @@ Changes the token ID with the JSON array of operations in `--file`, each with op
 (ADD, REMOVE or REPLACE), path and value, e.g.
 `[{"op": "REPLACE", "path": "/enabled", "value": false}]`; its other members keep their
 values.
-ID is the ID that [`epx ai tokens list`](/emporix-cli/commands/ai#epx-ai-tokens-list) shows; an unknown one is not found.
+ID is the ID that [`epx ai tokens list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/ai#epx-ai-tokens-list) shows; an unknown one is not found.
 
 Changes data: on a terminal, epx asks before it sends PATCH. `--yes` sends without
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the ai.agent\_manage scope.
+Requires the ai.agent_manage scope.
 
 **Command:** `epx ai tokens patch ID [flags]`
 
@@ -2053,7 +2053,7 @@ Requires the ai.agent\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx ai tokens search
 
@@ -2061,12 +2061,12 @@ Search AI tokens.
 
 Reads the AI tokens that an Emporix q filter finds (`--query`; without it,
 every one).
-It reads and shows them as [`epx ai tokens list`](/emporix-cli/commands/ai#epx-ai-tokens-list) does.
+It reads and shows them as [`epx ai tokens list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/ai#epx-ai-tokens-list) does.
 
 Changes nothing: Emporix serves this read as POST with a JSON body, which the
 flags make or `--body` gives whole.
 
-Requires the ai.agent\_read scope.
+Requires the ai.agent_read scope.
 
 **Command:** `epx ai tokens search [flags]`
 
@@ -2089,7 +2089,7 @@ Requires the ai.agent\_read scope.
 - `--stream`\
   Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx ai tokens update
 
@@ -2097,17 +2097,17 @@ Upsert an AI token.
 
 Replaces the token ID with the JSON in `--file`, or creates it with that ID where
 none exists (an upsert): Emporix answers with the id of one it created and nothing for one it
-replaced. With metadata.version, as [`epx ai tokens get ID -o json`](/emporix-cli/commands/ai#epx-ai-tokens-get) prints it,
+replaced. With metadata.version, as [`epx ai tokens get ID -o json`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/ai#epx-ai-tokens-get) prints it,
 Emporix replaces only that version: another is a conflict (exit 5).
 The JSON holds its name and value, the API key or secret, which cannot change once the
 token is created. A dry run prints the body, value included.
-ID is the ID that [`epx ai tokens list`](/emporix-cli/commands/ai#epx-ai-tokens-list) shows.
+ID is the ID that [`epx ai tokens list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/ai#epx-ai-tokens-list) shows.
 
 Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the ai.agent\_manage scope.
+Requires the ai.agent_manage scope.
 
 **Command:** `epx ai tokens update ID [flags]`
 
@@ -2122,22 +2122,22 @@ Requires the ai.agent\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx ai tools
 
 Read, upsert, change and delete agent tools.
 
-Reads the native tools that agents can use: TYPE is slack, teams, rag\_custom (retrieval-
-augmented generation over the tenant's own vector database) or rag\_emporix (over Emporix
+Reads the native tools that agents can use: TYPE is slack, teams, rag_custom (retrieval-
+augmented generation over the tenant's own vector database) or rag_emporix (over Emporix
 data); their configuration is only in `-o json`.
 
-Its reads require the ai.agent\_read scope.
-Its writes require the ai.agent\_manage scope.
+Its reads require the ai.agent_read scope.
+Its writes require the ai.agent_manage scope.
 
 **Command:** `epx ai tools [flags]`, `epx ai tools [command]`
 
-**Flags:** only the [global flags](/emporix-cli/commands#global-flags).
+**Flags:** only the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Subcommands**
 
@@ -2160,14 +2160,14 @@ Delete an agent tool.
 
 Deletes the tool ID. Emporix refuses to delete one that others use, unless
 `--force` unassigns it from them.
-ID is the ID that [`epx ai tools list`](/emporix-cli/commands/ai#epx-ai-tools-list) shows.
+ID is the ID that [`epx ai tools list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/ai#epx-ai-tools-list) shows.
 
 Deletes data, which cannot be undone.
 On a terminal, epx sends DELETE only once you type ID at its prompt.
 `--yes` sends without asking (required without a terminal);
 `--dry-run` prints the request instead of sending it.
 
-Requires the ai.agent\_manage scope.
+Requires the ai.agent_manage scope.
 
 **Command:** `epx ai tools delete ID [flags]`
 
@@ -2182,17 +2182,17 @@ Requires the ai.agent\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx ai tools get
 
 Show one tool.
 
-Reads the native tools that agents can use: TYPE is slack, teams, rag\_custom (retrieval-
-augmented generation over the tenant's own vector database) or rag\_emporix (over Emporix
+Reads the native tools that agents can use: TYPE is slack, teams, rag_custom (retrieval-
+augmented generation over the tenant's own vector database) or rag_emporix (over Emporix
 data); their configuration is only in `-o json`.
 
-Requires the ai.agent\_read scope.
+Requires the ai.agent_read scope.
 
 **Command:** `epx ai tools get ID [flags]`
 
@@ -2205,17 +2205,17 @@ Requires the ai.agent\_read scope.
 - `-o, --output <format>`\
   Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx ai tools list
 
 List agent tools.
 
-Reads the native tools that agents can use: TYPE is slack, teams, rag\_custom (retrieval-
-augmented generation over the tenant's own vector database) or rag\_emporix (over Emporix
+Reads the native tools that agents can use: TYPE is slack, teams, rag_custom (retrieval-
+augmented generation over the tenant's own vector database) or rag_emporix (over Emporix
 data); their configuration is only in `-o json`.
 
-Requires the ai.agent\_read scope.
+Requires the ai.agent_read scope.
 
 **Command:** `epx ai tools list [flags]`
 
@@ -2236,7 +2236,7 @@ Requires the ai.agent\_read scope.
 - `--stream`\
   Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx ai tools patch
 
@@ -2246,13 +2246,13 @@ Changes the tool ID with the JSON array of operations in `--file`, each with op
 (ADD, REMOVE or REPLACE), path and value, e.g.
 `[{"op": "REPLACE", "path": "/enabled", "value": false}]`; its other members keep their
 values.
-ID is the ID that [`epx ai tools list`](/emporix-cli/commands/ai#epx-ai-tools-list) shows; an unknown one is not found.
+ID is the ID that [`epx ai tools list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/ai#epx-ai-tools-list) shows; an unknown one is not found.
 
 Changes data: on a terminal, epx asks before it sends PATCH. `--yes` sends without
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the ai.agent\_manage scope.
+Requires the ai.agent_manage scope.
 
 **Command:** `epx ai tools patch ID [flags]`
 
@@ -2269,7 +2269,7 @@ Requires the ai.agent\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx ai tools search
 
@@ -2277,12 +2277,12 @@ Search agent tools.
 
 Reads the agent tools that an Emporix q filter finds (`--query`; without it,
 every one).
-It reads and shows them as [`epx ai tools list`](/emporix-cli/commands/ai#epx-ai-tools-list) does.
+It reads and shows them as [`epx ai tools list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/ai#epx-ai-tools-list) does.
 
 Changes nothing: Emporix serves this read as POST with a JSON body, which the
 flags make or `--body` gives whole.
 
-Requires the ai.agent\_read scope.
+Requires the ai.agent_read scope.
 
 **Command:** `epx ai tools search [flags]`
 
@@ -2305,7 +2305,7 @@ Requires the ai.agent\_read scope.
 - `--stream`\
   Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx ai tools update
 
@@ -2313,17 +2313,17 @@ Upsert an agent tool.
 
 Replaces the tool ID with the JSON in `--file`, or creates it with that ID where
 none exists (an upsert): Emporix answers with the id of one it created and nothing for one it
-replaced. With metadata.version, as [`epx ai tools get ID -o json`](/emporix-cli/commands/ai#epx-ai-tools-get) prints it,
+replaced. With metadata.version, as [`epx ai tools get ID -o json`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/ai#epx-ai-tools-get) prints it,
 Emporix replaces only that version: another is a conflict (exit 5).
-The JSON holds its type (slack, teams, rag\_custom or rag\_emporix), name and config, and
+The JSON holds its type (slack, teams, rag_custom or rag_emporix), name and config, and
 whether it is enabled.
-ID is the ID that [`epx ai tools list`](/emporix-cli/commands/ai#epx-ai-tools-list) shows.
+ID is the ID that [`epx ai tools list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/ai#epx-ai-tools-list) shows.
 
 Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the ai.agent\_manage scope.
+Requires the ai.agent_manage scope.
 
 **Command:** `epx ai tools update ID [flags]`
 
@@ -2340,4 +2340,4 @@ Requires the ai.agent\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).

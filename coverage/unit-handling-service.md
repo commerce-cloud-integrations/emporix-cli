@@ -10,14 +10,14 @@ Operations of the Emporix API reference file [`configuration/unit-handling-servi
 
 | Operation | Status | Details |
 | --- | --- | --- |
-| `POST /unit-handling/{tenant}/units` | Built | [`epx units create`](/emporix-cli/commands/units#epx-units-create) |
-| `GET /unit-handling/{tenant}/units` | Built | [`epx units list`](/emporix-cli/commands/units#epx-units-list) |
-| `DELETE /unit-handling/{tenant}/units` | Built | [`epx units bulk-delete`](/emporix-cli/commands/units#epx-units-bulk-delete) |
-| `GET /unit-handling/{tenant}/units/{unitCode}` | Built | [`epx units get`](/emporix-cli/commands/units#epx-units-get) |
-| `DELETE /unit-handling/{tenant}/units/{unitCode}` | Built | [`epx units delete`](/emporix-cli/commands/units#epx-units-delete) |
-| `PUT /unit-handling/{tenant}/units/{unitCode}` | Built | [`epx units update`](/emporix-cli/commands/units#epx-units-update) |
-| `PUT /unit-handling/{tenant}/units/conversion-factor-commands` | Built | [`epx units conversion-factor`](/emporix-cli/commands/units#epx-units-conversion-factor) |
-| `PUT /unit-handling/{tenant}/units/convert-unit-commands` | Built | [`epx units convert`](/emporix-cli/commands/units#epx-units-convert) |
-| `GET /unit-handling/{tenant}/types` | Built | [`epx units types`](/emporix-cli/commands/units#epx-units-types) |
+| `POST /unit-handling/{tenant}/units` | Built | [`epx units create`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/units#epx-units-create) |
+| `GET /unit-handling/{tenant}/units` | Built | [`epx units list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/units#epx-units-list) |
+| `DELETE /unit-handling/{tenant}/units` | Built | [`epx units bulk-delete`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/units#epx-units-bulk-delete) |
+| `GET /unit-handling/{tenant}/units/{unitCode}` | Built | [`epx units get`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/units#epx-units-get) |
+| `DELETE /unit-handling/{tenant}/units/{unitCode}` | Built | [`epx units delete`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/units#epx-units-delete) |
+| `PUT /unit-handling/{tenant}/units/{unitCode}` | Built | [`epx units update`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/units#epx-units-update) |
+| `PUT /unit-handling/{tenant}/units/conversion-factor-commands` | Built | [`epx units conversion-factor`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/units#epx-units-conversion-factor) |
+| `PUT /unit-handling/{tenant}/units/convert-unit-commands` | Built | [`epx units convert`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/units#epx-units-convert) |
+| `GET /unit-handling/{tenant}/types` | Built | [`epx units types`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/units#epx-units-types) |
 
-All services: [Emporix API coverage](/emporix-cli/coverage).
+All services: [Emporix API coverage](https://commerce-cloud-integrations.github.io/emporix-cli/coverage).

@@ -4,16 +4,16 @@
 
 ## epx vendors
 
-Reads and changes vendors, the sellers of a marketplace tenant; [`epx vendor-locations`](/emporix-cli/commands/vendor-locations#epx-vendor-locations)
+Reads and changes vendors, the sellers of a marketplace tenant; [`epx vendor-locations`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/vendor-locations#epx-vendor-locations)
 reads and changes their locations.
 create and update ID (an upsert) send the JSON body of `--file`; delete ID sends none.
 
-Its reads require the vendor.vendor\_read scope.
-Its writes require the vendor.vendor\_manage scope.
+Its reads require the vendor.vendor_read scope.
+Its writes require the vendor.vendor_manage scope.
 
 **Command:** `epx vendors [flags]`, `epx vendors [command]`
 
-**Flags:** only the [global flags](/emporix-cli/commands#global-flags).
+**Flags:** only the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Subcommands**
 
@@ -35,7 +35,7 @@ Its writes require the vendor.vendor\_manage scope.
 Create one vendor.
 
 Creates the vendor that the JSON body of `--file` describes, shaped as
-[`epx vendors get ID -o json`](/emporix-cli/commands/vendors#epx-vendors-get) prints one:
+[`epx vendors get ID -o json`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/vendors#epx-vendors-get) prints one:
 name (required), type (COMPANY, the default, or SUBSIDIARY), parentId (the vendor a
 subsidiary belongs to), legalInfo, contactDetails (a list of contacts, each as
 `{"email": ...}`, which is all Emporix keeps of one), locations (its vendor locations, each
@@ -48,7 +48,7 @@ Changes data: on a terminal, epx asks before it sends POST. `--yes` sends withou
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the vendor.vendor\_manage scope.
+Requires the vendor.vendor_manage scope.
 
 **Command:** `epx vendors create [flags]`
 
@@ -63,14 +63,14 @@ Requires the vendor.vendor\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx vendors delete
 
 Delete one vendor.
 
 Deletes the vendor ID; it sends no body.
-ID is the ID that [`epx vendors list`](/emporix-cli/commands/vendors#epx-vendors-list) shows; an unknown one is answered as one that Emporix deleted (204 No Content).
+ID is the ID that [`epx vendors list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/vendors#epx-vendors-list) shows; an unknown one is answered as one that Emporix deleted (204 No Content).
 Its subsidiaries stay and still name it as their parentId.
 
 Deletes data, which cannot be undone.
@@ -78,7 +78,7 @@ On a terminal, epx sends DELETE only once you type ID at its prompt.
 `--yes` sends without asking (required without a terminal);
 `--dry-run` prints the request instead of sending it.
 
-Requires the vendor.vendor\_manage scope.
+Requires the vendor.vendor_manage scope.
 
 **Command:** `epx vendors delete ID [flags]`
 
@@ -91,7 +91,7 @@ Requires the vendor.vendor\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx vendors get
 
@@ -99,10 +99,10 @@ Show one vendor.
 
 Reads vendors, the sellers of a marketplace tenant. TYPE is COMPANY or SUBSIDIARY, PARENT
 the vendor a subsidiary belongs to and COUNTRY the country of registration. Registration
-details, contact details and locations are only in `-o json`; [`epx vendor-locations`](/emporix-cli/commands/vendor-locations#epx-vendor-locations) lists
+details, contact details and locations are only in `-o json`; [`epx vendor-locations`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/vendor-locations#epx-vendor-locations) lists
 the locations.
 
-Requires the vendor.vendor\_read scope.
+Requires the vendor.vendor_read scope.
 
 **Command:** `epx vendors get ID [flags]`
 
@@ -115,7 +115,7 @@ Requires the vendor.vendor\_read scope.
 - `-o, --output <format>`\
   Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx vendors list
 
@@ -123,10 +123,10 @@ List vendors.
 
 Reads vendors, the sellers of a marketplace tenant. TYPE is COMPANY or SUBSIDIARY, PARENT
 the vendor a subsidiary belongs to and COUNTRY the country of registration. Registration
-details, contact details and locations are only in `-o json`; [`epx vendor-locations`](/emporix-cli/commands/vendor-locations#epx-vendor-locations) lists
+details, contact details and locations are only in `-o json`; [`epx vendor-locations`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/vendor-locations#epx-vendor-locations) lists
 the locations.
 
-Requires the vendor.vendor\_read scope.
+Requires the vendor.vendor_read scope.
 
 **Command:** `epx vendors list [flags]`
 
@@ -147,19 +147,19 @@ Requires the vendor.vendor\_read scope.
 - `--stream`\
   Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx vendors search
 
 Search vendors.
 
 Reads the vendors that an Emporix q filter finds (`--query`; without it, every vendor).
-It reads and shows them as [`epx vendors list`](/emporix-cli/commands/vendors#epx-vendors-list) does.
+It reads and shows them as [`epx vendors list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/vendors#epx-vendors-list) does.
 
 Changes nothing: Emporix serves this read as POST with a JSON body, which the
 flags make or `--body` gives whole.
 
-Requires the vendor.vendor\_read scope.
+Requires the vendor.vendor_read scope.
 
 **Command:** `epx vendors search [flags]`
 
@@ -182,7 +182,7 @@ Requires the vendor.vendor\_read scope.
 - `--stream`\
   Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx vendors update
 
@@ -191,16 +191,16 @@ Upsert one vendor.
 Replaces the vendor ID with the JSON body of `--file`, shaped as create takes it
 but without an id, or creates it with that id where none exists (an upsert); it requires
 name and type.
-With metadata.version as [`epx vendors get ID -o json`](/emporix-cli/commands/vendors#epx-vendors-get) prints it, Emporix
+With metadata.version as [`epx vendors get ID -o json`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/vendors#epx-vendors-get) prints it, Emporix
 replaces it only if nobody changed it since, and answers 409 Conflict (exit 5) otherwise;
 without metadata.version, it replaces it whatever its version.
-ID is the ID that [`epx vendors list`](/emporix-cli/commands/vendors#epx-vendors-list) shows.
+ID is the ID that [`epx vendors list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/vendors#epx-vendors-list) shows.
 
 Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the vendor.vendor\_manage scope.
+Requires the vendor.vendor_manage scope.
 
 **Command:** `epx vendors update ID [flags]`
 
@@ -215,4 +215,4 @@ Requires the vendor.vendor\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).

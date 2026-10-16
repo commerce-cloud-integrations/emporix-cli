@@ -10,6 +10,6 @@ Operations of the Emporix API reference file [`authentication/oauth-service/api-
 
 | Operation | Status | Details |
 | --- | --- | --- |
-| `POST /oauth/token` | Built | [every command](/emporix-cli/commands) (client credentials) |
+| `POST /oauth/token` | Built | [every command](https://commerce-cloud-integrations.github.io/emporix-cli/commands) (client credentials) |
 
-All services: [Emporix API coverage](/emporix-cli/coverage).
+All services: [Emporix API coverage](https://commerce-cloud-integrations.github.io/emporix-cli/coverage).

@@ -21,11 +21,11 @@ Write commands are named after what they send:
 | `update ID` | A PUT that replaces an item. Some services also create a missing one. |
 | `patch ID` | A PATCH that changes some fields of an item. |
 | `delete ID` | A DELETE. |
-| `bulk-create`, `bulk-update`, `bulk-patch`, `bulk-delete` | Many items in one request. See [Bulk writes](/emporix-cli/guides/bulk). |
+| `bulk-create`, `bulk-update`, `bulk-patch`, `bulk-delete` | Many items in one request. See [Bulk writes](https://commerce-cloud-integrations.github.io/emporix-cli/guides/bulk). |
 | An action's verb, such as `reindex`, `capture`, or `redeem` | The action. |
 
-The [CLI reference](/emporix-cli/commands) lists every write with its scopes. For an endpoint without
-a command of its own, use [`epx api post|put|patch|delete`](/emporix-cli/guides/api#send-a-write).
+The [CLI reference](https://commerce-cloud-integrations.github.io/emporix-cli/commands) lists every write with its scopes. For an endpoint without
+a command of its own, use [`epx api post|put|patch|delete`](https://commerce-cloud-integrations.github.io/emporix-cli/guides/api#send-a-write).
 
 ## Provide a request body
 
@@ -91,7 +91,7 @@ User-Agent: emporix-cli/...
 The output shows the method, the full URL with your tenant and query, every header except
 `Authorization`, and the body. For a multipart form, it shows each part's name, file
 name, content type, and size, and the content of JSON parts. A dry run still needs your
-[API key settings](/emporix-cli/configure), because it shows the request for your tenant.
+[API key settings](https://commerce-cloud-integrations.github.io/emporix-cli/configure), because it shows the request for your tenant.
 
 ## Confirm a write
 

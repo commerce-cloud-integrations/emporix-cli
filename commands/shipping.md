@@ -9,11 +9,11 @@ sites that ship to a postal code. Every command but find-sites requires `--site`
 unknown site, the lists show nothing and the quotes fail.
 
 Its reads need no OAuth scope.
-Its writes require the shipping.shipping\_manage scope.
+Its writes require the shipping.shipping_manage scope.
 
 **Command:** `epx shipping [flags]`, `epx shipping [command]`
 
-**Flags:** only the [global flags](/emporix-cli/commands#global-flags).
+**Flags:** only the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Subcommands**
 
@@ -39,11 +39,11 @@ Read and change which shipping group each customer belongs to.
 Reads and changes which shipping group each customer of a site belongs to.
 
 Its reads need no OAuth scope.
-Its writes require the shipping.shipping\_manage scope.
+Its writes require the shipping.shipping_manage scope.
 
 **Command:** `epx shipping customers [flags]`, `epx shipping customers [command]`
 
-**Flags:** only the [global flags](/emporix-cli/commands#global-flags).
+**Flags:** only the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Subcommands**
 
@@ -71,7 +71,7 @@ Changes data: on a terminal, epx asks before it sends POST. `--yes` sends withou
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the shipping.shipping\_manage scope.
+Requires the shipping.shipping_manage scope.
 
 **Command:** `epx shipping customers create [flags]`
 
@@ -88,7 +88,7 @@ Requires the shipping.shipping\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx shipping customers delete
 
@@ -103,7 +103,7 @@ On a terminal, epx sends DELETE only once you type CUSTOMER at its prompt.
 `--yes` sends without asking (required without a terminal);
 `--dry-run` prints the request instead of sending it.
 
-Requires the shipping.shipping\_manage scope.
+Requires the shipping.shipping_manage scope.
 
 **Command:** `epx shipping customers delete CUSTOMER [flags]`
 
@@ -118,7 +118,7 @@ Requires the shipping.shipping\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx shipping customers get
 
@@ -143,7 +143,7 @@ No OAuth scope is needed.
 - `--site <site>`\
   Site code, e.g. main (required).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx shipping customers list
 
@@ -172,7 +172,7 @@ No OAuth scope is needed.
 - `--stream`\
   Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx shipping customers update
 
@@ -182,13 +182,13 @@ Assigns the customer CUSTOMER (the customer id) to the shipping group that the J
 names, as create takes it, in place of the group it belongs to on the site `--site` names; a
 customerId in the JSON is ignored. Emporix answers a customer without a shipping group with
 409 Conflict (exit 5):
-the customer has no shipping group on the site: assign it one with [`epx shipping customers create`](/emporix-cli/commands/shipping#epx-shipping-customers-create).
+the customer has no shipping group on the site: assign it one with [`epx shipping customers create`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/shipping#epx-shipping-customers-create).
 
 Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the shipping.shipping\_manage scope.
+Requires the shipping.shipping_manage scope.
 
 **Command:** `epx shipping customers update CUSTOMER [flags]`
 
@@ -205,7 +205,7 @@ Requires the shipping.shipping\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx shipping find-sites
 
@@ -238,25 +238,25 @@ No OAuth scope is needed.
 - `-o, --output <format>`\
   Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
 - `--postal-code <POSTAL_CODE>`\
-  The POSTAL\_CODE to ship to (required without `--body`).
+  The POSTAL_CODE to ship to (required without `--body`).
 - `--stream`\
   Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx shipping groups
 
 Read and change shipping groups.
 
 Reads and changes the shipping groups of a site, which limit shipping fees to the customers
-assigned to them ([`epx shipping customers`](/emporix-cli/commands/shipping#epx-shipping-customers)).
+assigned to them ([`epx shipping customers`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/shipping#epx-shipping-customers)).
 
 Its reads need no OAuth scope.
-Its writes require the shipping.shipping\_manage scope.
+Its writes require the shipping.shipping_manage scope.
 
 **Command:** `epx shipping groups [flags]`, `epx shipping groups [command]`
 
-**Flags:** only the [global flags](/emporix-cli/commands#global-flags).
+**Flags:** only the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Subcommands**
 
@@ -277,7 +277,7 @@ Create a shipping group.
 
 Creates a shipping group of the site `--site` names from the JSON in `--file`: its id and
 description, as in `{"id": "vip", "description": {"en": "Free shipping"}}`. A fee of a
-shipping method applies to the customers of a group ([`epx shipping customers create`](/emporix-cli/commands/shipping#epx-shipping-customers-create)) when
+shipping method applies to the customers of a group ([`epx shipping customers create`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/shipping#epx-shipping-customers-create)) when
 it names the group as its shippingGroupId. Emporix answers with the group's id; a group
 with that id exists already: a conflict (exit 5).
 
@@ -291,7 +291,7 @@ Changes data: on a terminal, epx asks before it sends POST. `--yes` sends withou
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the shipping.shipping\_manage scope.
+Requires the shipping.shipping_manage scope.
 
 **Command:** `epx shipping groups create [flags]`
 
@@ -310,7 +310,7 @@ Requires the shipping.shipping\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx shipping groups delete
 
@@ -318,7 +318,7 @@ Delete a shipping group.
 
 Deletes the shipping group ID of the site `--site` names. Fees of shipping methods that name
 it as their shippingGroupId stay and still name it, and customers assigned to it stay assigned
-to it ([`epx shipping customers`](/emporix-cli/commands/shipping#epx-shipping-customers)).
+to it ([`epx shipping customers`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/shipping#epx-shipping-customers)).
 Emporix answers an unknown ID as one that it deleted (204 No Content).
 
 Deletes data, which cannot be undone.
@@ -326,7 +326,7 @@ On a terminal, epx sends DELETE only once you type ID at its prompt.
 `--yes` sends without asking (required without a terminal);
 `--dry-run` prints the request instead of sending it.
 
-Requires the shipping.shipping\_manage scope.
+Requires the shipping.shipping_manage scope.
 
 **Command:** `epx shipping groups delete ID [flags]`
 
@@ -341,14 +341,14 @@ Requires the shipping.shipping\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx shipping groups get
 
 Show one shipping group.
 
 Reads the shipping groups of a site, which limit shipping fees to the customers assigned
-to them ([`epx shipping customers`](/emporix-cli/commands/shipping#epx-shipping-customers)). Emporix answers an unknown group with 409 Conflict, so
+to them ([`epx shipping customers`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/shipping#epx-shipping-customers)). Emporix answers an unknown group with 409 Conflict, so
 get fails with exit code 1.
 
 No OAuth scope is needed.
@@ -368,14 +368,14 @@ No OAuth scope is needed.
 - `--site <site>`\
   Site code, e.g. main (required).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx shipping groups list
 
 List the shipping groups of a site.
 
 Reads the shipping groups of a site, which limit shipping fees to the customers assigned
-to them ([`epx shipping customers`](/emporix-cli/commands/shipping#epx-shipping-customers)). Emporix answers an unknown group with 409 Conflict, so
+to them ([`epx shipping customers`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/shipping#epx-shipping-customers)). Emporix answers an unknown group with 409 Conflict, so
 get fails with exit code 1.
 
 No OAuth scope is needed.
@@ -399,7 +399,7 @@ No OAuth scope is needed.
 - `--stream`\
   Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx shipping groups update
 
@@ -407,7 +407,7 @@ Replace a shipping group.
 
 Replaces the shipping group ID of the site `--site` names with the group in `--file`, as create
 takes it. Emporix answers an unknown ID with 409 Conflict (exit 5):
-the site has no shipping group with this ID: [`epx shipping groups list --site S`](/emporix-cli/commands/shipping#epx-shipping-groups-list) lists them.
+the site has no shipping group with this ID: [`epx shipping groups list --site S`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/shipping#epx-shipping-groups-list) lists them.
 
 Localized text in the body, such as a name, is a map of translations, e.g.
 `{"en": "Netherlands", "nl": "Nederland"}`, as `-o json` of a read prints it, sent without a
@@ -419,7 +419,7 @@ Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the shipping.shipping\_manage scope.
+Requires the shipping.shipping_manage scope.
 
 **Command:** `epx shipping groups update ID [flags]`
 
@@ -438,7 +438,7 @@ Requires the shipping.shipping\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx shipping quote
 
@@ -446,7 +446,7 @@ Calculate the shipping fee of each method to a destination.
 
 Calculates what each shipping method of a site's zones that ship to a destination costs for
 a cart total: one row per method, with its zone, its FEE and its shipping TAX CODE. With
-`--customer`, the fees of the customer's shipping group apply ([`epx shipping customers`](/emporix-cli/commands/shipping#epx-shipping-customers)).
+`--customer`, the fees of the customer's shipping group apply ([`epx shipping customers`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/shipping#epx-shipping-customers)).
 Emporix answers a destination or cart total that no method serves, or an
 unknown site, with 400 Bad Request (exit 1).
 
@@ -476,11 +476,11 @@ No OAuth scope is needed.
 - `-o, --output <format>`\
   Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
 - `--postal-code <POSTAL_CODE>`\
-  The destination POSTAL\_CODE (required without `--body`).
+  The destination POSTAL_CODE (required without `--body`).
 - `--site <site>`\
   Site code, e.g. main (required).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx shipping quote-minimum
 
@@ -515,18 +515,18 @@ No OAuth scope is needed.
 - `-o, --output <format>`\
   Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
 - `--postal-code <POSTAL_CODE>`\
-  The destination POSTAL\_CODE (required without `--body`).
+  The destination POSTAL_CODE (required without `--body`).
 - `--site <site>`\
   Site code, e.g. main (required).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx shipping quote-slot
 
 Calculate the shipping fee of a delivery time slot.
 
 Calculates the shipping fee of a delivery time slot for a cart total: `--delivery-time` and
-`--slot` are the IDs that [`epx delivery-times list`](/emporix-cli/commands/delivery-times#epx-delivery-times-list) and [`epx delivery-times slots list`](/emporix-cli/commands/delivery-times#epx-delivery-times-slots-list) show.
+`--slot` are the IDs that [`epx delivery-times list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/delivery-times#epx-delivery-times-list) and [`epx delivery-times slots list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/delivery-times#epx-delivery-times-slots-list) show.
 The destination is optional; `--country` and `--postal-code` go together. An unknown delivery
 time is not found (exit 4).
 
@@ -556,13 +556,13 @@ No OAuth scope is needed.
 - `-o, --output <format>`\
   Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
 - `--postal-code <POSTAL_CODE>`\
-  The destination POSTAL\_CODE.
+  The destination POSTAL_CODE.
 - `--site <site>`\
   Site code, e.g. main (required).
 - `--slot <ID>`\
   The ID of the delivery time's slot (required without `--body`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx shipping zones
 
@@ -571,11 +571,11 @@ Read and change shipping zones and their methods.
 Reads and changes the shipping zones of a site and the shipping methods of a zone.
 
 Its reads need no OAuth scope.
-Its writes require the shipping.shipping\_manage scope.
+Its writes require the shipping.shipping_manage scope.
 
 **Command:** `epx shipping zones [flags]`, `epx shipping zones [command]`
 
-**Flags:** only the [global flags](/emporix-cli/commands#global-flags).
+**Flags:** only the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Subcommands**
 
@@ -615,7 +615,7 @@ Changes data: on a terminal, epx asks before it sends POST. `--yes` sends withou
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the shipping.shipping\_manage scope.
+Requires the shipping.shipping_manage scope.
 
 **Command:** `epx shipping zones create [flags]`
 
@@ -634,14 +634,14 @@ Requires the shipping.shipping\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx shipping zones delete
 
 Delete a shipping zone.
 
 Deletes the shipping zone ID of the site `--site` names with its shipping methods. Delivery
-times of the zone stay and still name it: delete them with [`epx delivery-times delete ID`](/emporix-cli/commands/delivery-times#epx-delivery-times-delete).
+times of the zone stay and still name it: delete them with [`epx delivery-times delete ID`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/delivery-times#epx-delivery-times-delete).
 An unknown ID is not found (exit 4).
 
 Deletes data, which cannot be undone.
@@ -649,7 +649,7 @@ On a terminal, epx sends DELETE only once you type ID at its prompt.
 `--yes` sends without asking (required without a terminal);
 `--dry-run` prints the request instead of sending it.
 
-Requires the shipping.shipping\_manage scope.
+Requires the shipping.shipping_manage scope.
 
 **Command:** `epx shipping zones delete ID [flags]`
 
@@ -664,7 +664,7 @@ Requires the shipping.shipping\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx shipping zones get
 
@@ -691,7 +691,7 @@ No OAuth scope is needed.
 - `--site <site>`\
   Site code, e.g. main (required).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx shipping zones list
 
@@ -722,7 +722,7 @@ No OAuth scope is needed.
 - `--stream`\
   Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx shipping zones methods
 
@@ -731,11 +731,11 @@ Read and change the shipping methods of a zone.
 Reads and changes the shipping methods of a zone of a site.
 
 Its reads need no OAuth scope.
-Its writes require the shipping.shipping\_manage scope.
+Its writes require the shipping.shipping_manage scope.
 
 **Command:** `epx shipping zones methods [flags]`, `epx shipping zones methods [command]`
 
-**Flags:** only the [global flags](/emporix-cli/commands#global-flags).
+**Flags:** only the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Subcommands**
 
@@ -759,9 +759,9 @@ Create a shipping method of a zone.
 Creates a shipping method of a zone from the JSON in `--file`: its id, name, active, fees
 (each a cost from a minOrderValue, optionally for the customers of a shippingGroupId),
 maxOrderValue and shippingTaxCode, as
-[`epx shipping zones methods get SHIPPING_ZONE_ID ID -o json`](/emporix-cli/commands/shipping#epx-shipping-zones-methods-get) prints one. Emporix answers
+[`epx shipping zones methods get SHIPPING_ZONE_ID ID -o json`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/shipping#epx-shipping-zones-methods-get) prints one. Emporix answers
 with the method's id; a method with that id exists already: a conflict (exit 5).
-SHIPPING\_ZONE\_ID is the ID that [`epx shipping zones list --site S`](/emporix-cli/commands/shipping#epx-shipping-zones-list) shows; an unknown one is not found.
+SHIPPING_ZONE_ID is the ID that [`epx shipping zones list --site S`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/shipping#epx-shipping-zones-list) shows; an unknown one is not found.
 
 Localized text in the body, such as a name, is a map of translations, e.g.
 `{"en": "Netherlands", "nl": "Nederland"}`, as `-o json` of a read prints it, sent without a
@@ -773,7 +773,7 @@ Changes data: on a terminal, epx asks before it sends POST. `--yes` sends withou
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the shipping.shipping\_manage scope.
+Requires the shipping.shipping_manage scope.
 
 **Command:** `epx shipping zones methods create SHIPPING_ZONE_ID [flags]`
 
@@ -792,7 +792,7 @@ Requires the shipping.shipping\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx shipping zones methods delete
 
@@ -800,15 +800,15 @@ Delete a shipping method of a zone.
 
 Deletes the shipping method ID of a zone. The time slots of delivery times that name it
 stay and still name it.
-SHIPPING\_ZONE\_ID is the ID that [`epx shipping zones list --site S`](/emporix-cli/commands/shipping#epx-shipping-zones-list) shows; an unknown one is not found.
-ID is the ID that [`epx shipping zones methods list SHIPPING_ZONE_ID --site S`](/emporix-cli/commands/shipping#epx-shipping-zones-methods-list) shows; an unknown one is not found.
+SHIPPING_ZONE_ID is the ID that [`epx shipping zones list --site S`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/shipping#epx-shipping-zones-list) shows; an unknown one is not found.
+ID is the ID that [`epx shipping zones methods list SHIPPING_ZONE_ID --site S`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/shipping#epx-shipping-zones-methods-list) shows; an unknown one is not found.
 
 Deletes data, which cannot be undone.
 On a terminal, epx sends DELETE only once you type ID at its prompt.
 `--yes` sends without asking (required without a terminal);
 `--dry-run` prints the request instead of sending it.
 
-Requires the shipping.shipping\_manage scope.
+Requires the shipping.shipping_manage scope.
 
 **Command:** `epx shipping zones methods delete SHIPPING_ZONE_ID ID [flags]`
 
@@ -823,15 +823,15 @@ Requires the shipping.shipping\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx shipping zones methods get
 
 Show one shipping method of a zone.
 
 Reads one shipping method of a zone.
-SHIPPING\_ZONE\_ID is the ID that [`epx shipping zones list --site S`](/emporix-cli/commands/shipping#epx-shipping-zones-list) shows; an unknown one is not found.
-ID is the ID that [`epx shipping zones methods list SHIPPING_ZONE_ID --site S`](/emporix-cli/commands/shipping#epx-shipping-zones-methods-list) shows; an unknown one is not found.
+SHIPPING_ZONE_ID is the ID that [`epx shipping zones list --site S`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/shipping#epx-shipping-zones-list) shows; an unknown one is not found.
+ID is the ID that [`epx shipping zones methods list SHIPPING_ZONE_ID --site S`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/shipping#epx-shipping-zones-methods-list) shows; an unknown one is not found.
 FEES lists each fee as its cost from a minimum order value, with the shipping group it is
 limited to in parentheses; MAX ORDER is the highest order value the method accepts.
 
@@ -852,14 +852,14 @@ No OAuth scope is needed.
 - `--site <site>`\
   Site code, e.g. main (required).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx shipping zones methods list
 
 List the shipping methods of a zone.
 
 Reads the shipping methods of a zone.
-SHIPPING\_ZONE\_ID is the ID that [`epx shipping zones list --site S`](/emporix-cli/commands/shipping#epx-shipping-zones-list) shows; an unknown one is not found.
+SHIPPING_ZONE_ID is the ID that [`epx shipping zones list --site S`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/shipping#epx-shipping-zones-list) shows; an unknown one is not found.
 FEES lists each fee as its cost from a minimum order value, with the shipping group it is
 limited to in parentheses; MAX ORDER is the highest order value the method accepts.
 
@@ -884,7 +884,7 @@ No OAuth scope is needed.
 - `--stream`\
   Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx shipping zones methods patch
 
@@ -892,8 +892,8 @@ Change members of a shipping method of a zone.
 
 Changes the members of the shipping method ID of a zone that the JSON in `--file` names, such
 as active or fees; the others keep their values.
-SHIPPING\_ZONE\_ID is the ID that [`epx shipping zones list --site S`](/emporix-cli/commands/shipping#epx-shipping-zones-list) shows; an unknown one is not found.
-ID is the ID that [`epx shipping zones methods list SHIPPING_ZONE_ID --site S`](/emporix-cli/commands/shipping#epx-shipping-zones-methods-list) shows; an unknown one is not found.
+SHIPPING_ZONE_ID is the ID that [`epx shipping zones list --site S`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/shipping#epx-shipping-zones-list) shows; an unknown one is not found.
+ID is the ID that [`epx shipping zones methods list SHIPPING_ZONE_ID --site S`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/shipping#epx-shipping-zones-methods-list) shows; an unknown one is not found.
 
 Localized text in the body, such as a name, is a map of translations, e.g.
 `{"en": "Netherlands", "nl": "Nederland"}`, as `-o json` of a read prints it, sent without a
@@ -905,7 +905,7 @@ Changes data: on a terminal, epx asks before it sends PATCH. `--yes` sends witho
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the shipping.shipping\_manage scope.
+Requires the shipping.shipping_manage scope.
 
 **Command:** `epx shipping zones methods patch SHIPPING_ZONE_ID ID [flags]`
 
@@ -924,7 +924,7 @@ Requires the shipping.shipping\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx shipping zones methods update
 
@@ -932,8 +932,8 @@ Replace a shipping method of a zone.
 
 Replaces the shipping method ID of a zone with the method in `--file`, as create takes it: a
 member that it leaves out is removed.
-SHIPPING\_ZONE\_ID is the ID that [`epx shipping zones list --site S`](/emporix-cli/commands/shipping#epx-shipping-zones-list) shows; an unknown one is not found.
-ID is the ID that [`epx shipping zones methods list SHIPPING_ZONE_ID --site S`](/emporix-cli/commands/shipping#epx-shipping-zones-methods-list) shows; an unknown one is not found.
+SHIPPING_ZONE_ID is the ID that [`epx shipping zones list --site S`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/shipping#epx-shipping-zones-list) shows; an unknown one is not found.
+ID is the ID that [`epx shipping zones methods list SHIPPING_ZONE_ID --site S`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/shipping#epx-shipping-zones-methods-list) shows; an unknown one is not found.
 
 Localized text in the body, such as a name, is a map of translations, e.g.
 `{"en": "Netherlands", "nl": "Nederland"}`, as `-o json` of a read prints it, sent without a
@@ -945,7 +945,7 @@ Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the shipping.shipping\_manage scope.
+Requires the shipping.shipping_manage scope.
 
 **Command:** `epx shipping zones methods update SHIPPING_ZONE_ID ID [flags]`
 
@@ -964,7 +964,7 @@ Requires the shipping.shipping\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx shipping zones patch
 
@@ -984,7 +984,7 @@ Changes data: on a terminal, epx asks before it sends PATCH. `--yes` sends witho
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the shipping.shipping\_manage scope.
+Requires the shipping.shipping_manage scope.
 
 **Command:** `epx shipping zones patch ID [flags]`
 
@@ -1003,7 +1003,7 @@ Requires the shipping.shipping\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx shipping zones update
 
@@ -1025,7 +1025,7 @@ Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the shipping.shipping\_manage scope.
+Requires the shipping.shipping_manage scope.
 
 **Command:** `epx shipping zones update ID [flags]`
 
@@ -1044,4 +1044,4 @@ Requires the shipping.shipping\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).

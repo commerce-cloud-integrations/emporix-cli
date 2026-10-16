@@ -63,7 +63,8 @@
   }, true);
 
   function isRouterData(url) {
-    return /[?&]_rsc=/.test(url);
+    // Router data (_rsc) and Mintlify's own API (the signed-in user), which only the hosted site answers.
+    return /[?&]_rsc=/.test(url) || /\/_mintlify\/api\//.test(url);
   }
 
   var fetchOriginal = window.fetch;

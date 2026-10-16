@@ -12,4 +12,4 @@ Operations of the Emporix API reference file [`checkout/checkout/api-reference/a
 | --- | --- | --- |
 | `POST /checkout/{tenant}/checkouts/order` | Not applicable | Needs a signed-in customer's token, which a service token is not. |
 
-All services: [Emporix API coverage](/emporix-cli/coverage).
+All services: [Emporix API coverage](https://commerce-cloud-integrations.github.io/emporix-cli/coverage).

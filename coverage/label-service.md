@@ -10,11 +10,11 @@ Operations of the Emporix API reference file [`products-labels-and-brands/label-
 
 | Operation | Status | Details |
 | --- | --- | --- |
-| `GET /label/labels` | Built | [`epx labels list`](/emporix-cli/commands/labels#epx-labels-list) |
-| `POST /label/labels` | Built | [`epx labels create`](/emporix-cli/commands/labels#epx-labels-create) |
-| `GET /label/labels/{labelId}` | Built | [`epx labels get`](/emporix-cli/commands/labels#epx-labels-get) |
-| `PUT /label/labels/{labelId}` | Built | [`epx labels update`](/emporix-cli/commands/labels#epx-labels-update) |
-| `PATCH /label/labels/{labelId}` | Built | [`epx labels patch`](/emporix-cli/commands/labels#epx-labels-patch) |
-| `DELETE /label/labels/{labelId}` | Built | [`epx labels delete`](/emporix-cli/commands/labels#epx-labels-delete) |
+| `GET /label/labels` | Built | [`epx labels list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/labels#epx-labels-list) |
+| `POST /label/labels` | Built | [`epx labels create`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/labels#epx-labels-create) |
+| `GET /label/labels/{labelId}` | Built | [`epx labels get`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/labels#epx-labels-get) |
+| `PUT /label/labels/{labelId}` | Built | [`epx labels update`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/labels#epx-labels-update) |
+| `PATCH /label/labels/{labelId}` | Built | [`epx labels patch`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/labels#epx-labels-patch) |
+| `DELETE /label/labels/{labelId}` | Built | [`epx labels delete`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/labels#epx-labels-delete) |
 
-All services: [Emporix API coverage](/emporix-cli/coverage).
+All services: [Emporix API coverage](https://commerce-cloud-integrations.github.io/emporix-cli/coverage).

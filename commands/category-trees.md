@@ -11,12 +11,12 @@ category's id as not found. list's `--limit` counts trees, each shown whole. A m
 category shows in its tree a few seconds later; a root category moved below another may
 keep its old tree until it is deleted.
 
-Its reads require the category.category\_read\_unpublished scope.
-Its writes require the category.category\_manage, category.category\_read\_unpublished scopes.
+Its reads require the category.category_read_unpublished scope.
+Its writes require the category.category_manage, category.category_read_unpublished scopes.
 
 **Command:** `epx category-trees [flags]`, `epx category-trees [command]`
 
-**Flags:** only the [global flags](/emporix-cli/commands#global-flags).
+**Flags:** only the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Subcommands**
 
@@ -40,7 +40,7 @@ category's id as not found. list's `--limit` counts trees, each shown whole. A m
 category shows in its tree a few seconds later; a root category moved below another may
 keep its old tree until it is deleted.
 
-Requires the category.category\_read\_unpublished scope.
+Requires the category.category_read_unpublished scope.
 
 **Command:** `epx category-trees get ID [flags]`
 
@@ -55,7 +55,7 @@ Requires the category.category\_read\_unpublished scope.
 - `-o, --output <format>`\
   Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx category-trees list
 
@@ -68,7 +68,7 @@ category's id as not found. list's `--limit` counts trees, each shown whole. A m
 category shows in its tree a few seconds later; a root category moved below another may
 keep its old tree until it is deleted.
 
-Requires the category.category\_read\_unpublished scope.
+Requires the category.category_read_unpublished scope.
 
 **Command:** `epx category-trees list [flags]`
 
@@ -85,21 +85,21 @@ Requires the category.category\_read\_unpublished scope.
 - `-o, --output <format>`\
   Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx category-trees rebuild
 
 Rebuild a category tree.
 
 Rebuilds the category tree of the root category ID (an unindented row of
-[`epx category-trees list`](/emporix-cli/commands/category-trees#epx-category-trees-list)) and prints the rebuilt tree as JSON, published and unpublished
+[`epx category-trees list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/category-trees#epx-category-trees-list)) and prints the rebuilt tree as JSON, published and unpublished
 categories. It sends no body; another category's id is not found (exit 4).
 
 Changes data: on a terminal, epx asks before it sends POST. `--yes` sends without
 asking (required without a terminal); `--dry-run` prints the request
 instead of sending it.
 
-Requires the category.category\_manage, category.category\_read\_unpublished scopes.
+Requires the category.category_manage, category.category_read_unpublished scopes.
 
 **Command:** `epx category-trees rebuild ID [flags]`
 
@@ -112,7 +112,7 @@ Requires the category.category\_manage, category.category\_read\_unpublished sco
 - `--yes`\
   Send without asking (required without a terminal).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx category-trees search
 
@@ -120,12 +120,12 @@ Search category trees.
 
 Reads the category trees, published and unpublished, that hold any of the categories
 `--category` names, each whole; without `--category`, every tree. `--limit` counts trees.
-It reads and shows them as [`epx category-trees list`](/emporix-cli/commands/category-trees#epx-category-trees-list) does.
+It reads and shows them as [`epx category-trees list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/category-trees#epx-category-trees-list) does.
 
 Changes nothing: Emporix serves this read as POST with a JSON body, which the
 flags make or `--body` gives whole.
 
-Requires the category.category\_read\_unpublished scope.
+Requires the category.category_read_unpublished scope.
 
 **Command:** `epx category-trees search [flags]`
 
@@ -146,4 +146,4 @@ Requires the category.category\_read\_unpublished scope.
 - `-o, --output <format>`\
   Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).

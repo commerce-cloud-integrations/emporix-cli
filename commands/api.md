@@ -6,7 +6,7 @@
 
 **Command:** `epx api [flags]`, `epx api [command]`
 
-**Flags:** only the [global flags](/emporix-cli/commands#global-flags).
+**Flags:** only the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Subcommands**
 
@@ -27,7 +27,7 @@ Send DELETE to an API path and print the JSON response.
 
 Sends DELETE to PATH on the configured API host, with the JSON body that `--file` gives
 (none without it), and prints the response body as JSON (YAML with `-o yaml`) with sorted
-keys and every value as sent (nothing for an empty one). \{tenant\} in PATH is replaced with
+keys and every value as sent (nothing for an empty one). {tenant} in PATH is replaced with
 the tenant; query values given with `-p` replace inline ones. It sends no other header, such
 as the Content-Language that the Unit Service requires to create or update a unit.
 
@@ -56,7 +56,7 @@ that the endpoint needs, as Emporix grants only requested scopes.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Examples**
 
@@ -70,7 +70,7 @@ GET an API path and print the JSON response.
 
 Sends GET to PATH on the configured API host and prints the response body as JSON
 (YAML with `-o yaml`) with sorted keys and every value as sent.
-\{tenant\} in PATH is replaced with the tenant; Accept-Language: \* requests every translation.
+{tenant} in PATH is replaced with the tenant; Accept-Language: \* requests every translation.
 Query values given with `-p` replace inline ones. Request every scope the endpoint needs
 with `--scope`: Emporix grants only requested scopes and may silently omit data otherwise.
 
@@ -85,7 +85,7 @@ with `--scope`: Emporix grants only requested scopes and may silently omit data 
 - `--scope <strings>`\
   OAuth scope to request besides the tenant (repeatable).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Examples**
 
@@ -100,7 +100,7 @@ Send PATCH to an API path and print the JSON response.
 
 Sends PATCH to PATH on the configured API host, with the JSON body that `--file` gives
 (none without it), and prints the response body as JSON (YAML with `-o yaml`) with sorted
-keys and every value as sent (nothing for an empty one). \{tenant\} in PATH is replaced with
+keys and every value as sent (nothing for an empty one). {tenant} in PATH is replaced with
 the tenant; query values given with `-p` replace inline ones. It sends no other header, such
 as the Content-Language that the Unit Service requires to create or update a unit.
 
@@ -128,7 +128,7 @@ that the endpoint needs, as Emporix grants only requested scopes.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Examples**
 
@@ -142,7 +142,7 @@ Send POST to an API path and print the JSON response.
 
 Sends POST to PATH on the configured API host, with the JSON body that `--file` gives
 (none without it), and prints the response body as JSON (YAML with `-o yaml`) with sorted
-keys and every value as sent (nothing for an empty one). \{tenant\} in PATH is replaced with
+keys and every value as sent (nothing for an empty one). {tenant} in PATH is replaced with
 the tenant; query values given with `-p` replace inline ones. It sends no other header, such
 as the Content-Language that the Unit Service requires to create or update a unit.
 
@@ -170,7 +170,7 @@ that the endpoint needs, as Emporix grants only requested scopes.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Examples**
 
@@ -184,7 +184,7 @@ Send PUT to an API path and print the JSON response.
 
 Sends PUT to PATH on the configured API host, with the JSON body that `--file` gives
 (none without it), and prints the response body as JSON (YAML with `-o yaml`) with sorted
-keys and every value as sent (nothing for an empty one). \{tenant\} in PATH is replaced with
+keys and every value as sent (nothing for an empty one). {tenant} in PATH is replaced with
 the tenant; query values given with `-p` replace inline ones. It sends no other header, such
 as the Content-Language that the Unit Service requires to create or update a unit.
 
@@ -212,7 +212,7 @@ that the endpoint needs, as Emporix grants only requested scopes.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Examples**
 

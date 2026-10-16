@@ -15,14 +15,14 @@ Operations of the Emporix API reference file [`orders/availability/api-reference
 | `PUT /availability/{tenant}/locations/{site}` | Not applicable | Deprecated by Emporix, removed on 1 December 2026. |
 | `DELETE /availability/{tenant}/locations/{location}` | Not applicable | Deprecated by Emporix, removed on 1 December 2026. |
 | `POST /availability/{tenant}/search/locations` | Not applicable | Deprecated by Emporix, removed on 1 December 2026. |
-| `GET /availability/{tenant}/availability/site/{site}` | Built | [`epx availability list`](/emporix-cli/commands/availability#epx-availability-list) |
-| `POST /availability/{tenant}/availability/search` | Built | [`epx availability search`](/emporix-cli/commands/availability#epx-availability-search) |
-| `GET /availability/{tenant}/availability/{productId}/{site}` | Built | [`epx availability get`](/emporix-cli/commands/availability#epx-availability-get) |
-| `POST /availability/{tenant}/availability/{productId}/{site}` | Built | [`epx availability create`](/emporix-cli/commands/availability#epx-availability-create) |
-| `PUT /availability/{tenant}/availability/{productId}/{site}` | Built | [`epx availability update`](/emporix-cli/commands/availability#epx-availability-update) |
-| `DELETE /availability/{tenant}/availability/{productId}/{site}` | Built | [`epx availability delete`](/emporix-cli/commands/availability#epx-availability-delete) |
-| `POST /availability/{tenant}/availability/bulk` | Built | [`epx availability bulk-create`](/emporix-cli/commands/availability#epx-availability-bulk-create) |
-| `PUT /availability/{tenant}/availability/bulk` | Built | [`epx availability bulk-update`](/emporix-cli/commands/availability#epx-availability-bulk-update) |
-| `DELETE /availability/{tenant}/availability/bulk` | Built | [`epx availability bulk-delete`](/emporix-cli/commands/availability#epx-availability-bulk-delete) |
+| `GET /availability/{tenant}/availability/site/{site}` | Built | [`epx availability list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/availability#epx-availability-list) |
+| `POST /availability/{tenant}/availability/search` | Built | [`epx availability search`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/availability#epx-availability-search) |
+| `GET /availability/{tenant}/availability/{productId}/{site}` | Built | [`epx availability get`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/availability#epx-availability-get) |
+| `POST /availability/{tenant}/availability/{productId}/{site}` | Built | [`epx availability create`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/availability#epx-availability-create) |
+| `PUT /availability/{tenant}/availability/{productId}/{site}` | Built | [`epx availability update`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/availability#epx-availability-update) |
+| `DELETE /availability/{tenant}/availability/{productId}/{site}` | Built | [`epx availability delete`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/availability#epx-availability-delete) |
+| `POST /availability/{tenant}/availability/bulk` | Built | [`epx availability bulk-create`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/availability#epx-availability-bulk-create) |
+| `PUT /availability/{tenant}/availability/bulk` | Built | [`epx availability bulk-update`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/availability#epx-availability-bulk-update) |
+| `DELETE /availability/{tenant}/availability/bulk` | Built | [`epx availability bulk-delete`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/availability#epx-availability-bulk-delete) |
 
-All services: [Emporix API coverage](/emporix-cli/coverage).
+All services: [Emporix API coverage](https://commerce-cloud-integrations.github.io/emporix-cli/coverage).

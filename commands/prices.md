@@ -10,11 +10,11 @@ nothing. create and update change one price, bulk-create and bulk-update many, e
 `--file`, and delete deletes one.
 
 Its reads require different OAuth scopes; the help of each names them.
-Its writes require the price.price\_manage scope.
+Its writes require the price.price_manage scope.
 
 **Command:** `epx prices [flags]`, `epx prices [command]`
 
-**Flags:** only the [global flags](/emporix-cli/commands#global-flags).
+**Flags:** only the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Subcommands**
 
@@ -55,7 +55,7 @@ Changes data: on a terminal, epx asks before it sends POST. `--yes` sends withou
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the price.price\_manage scope.
+Requires the price.price_manage scope.
 
 **Command:** `epx prices bulk-create [flags]`
 
@@ -70,7 +70,7 @@ Requires the price.price\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx prices bulk-update
 
@@ -91,7 +91,7 @@ Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the price.price\_manage scope.
+Requires the price.price_manage scope.
 
 **Command:** `epx prices bulk-update [flags]`
 
@@ -106,7 +106,7 @@ Requires the price.price\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx prices create
 
@@ -114,7 +114,7 @@ Create a price.
 
 Creates the price in `--file`, a JSON object with at least itemId, currency, location and
 tierValues: the id of each tier of the price model that priceModelId names, as
-[`epx price-models get ID -o json`](/emporix-cli/commands/price-models#epx-price-models-get) prints it, with a priceValue. Without an id, Emporix
+[`epx price-models get ID -o json`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/price-models#epx-price-models-get) prints it, with a priceValue. Without an id, Emporix
 makes one, which the response gives. Emporix does not refuse an id that a price has
 already: it stores a second price with it, and each delete of that id removes one.
 Leave id out, or change a price with update.
@@ -123,7 +123,7 @@ Changes data: on a terminal, epx asks before it sends POST. `--yes` sends withou
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the price.price\_manage scope.
+Requires the price.price_manage scope.
 
 **Command:** `epx prices create [flags]`
 
@@ -138,22 +138,22 @@ Requires the price.price\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx prices delete
 
 Delete a price.
 
-Deletes the price PRICE\_ID.
-Emporix answers an unknown PRICE\_ID as one that it deleted (204 No Content).
-PRICE\_ID is the ID that [`epx prices list --site S`](/emporix-cli/commands/prices#epx-prices-list) shows.
+Deletes the price PRICE_ID.
+Emporix answers an unknown PRICE_ID as one that it deleted (204 No Content).
+PRICE_ID is the ID that [`epx prices list --site S`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/prices#epx-prices-list) shows.
 
 Deletes data, which cannot be undone.
-On a terminal, epx sends DELETE only once you type PRICE\_ID at its prompt.
+On a terminal, epx sends DELETE only once you type PRICE_ID at its prompt.
 `--yes` sends without asking (required without a terminal);
 `--dry-run` prints the request instead of sending it.
 
-Requires the price.price\_manage scope.
+Requires the price.price_manage scope.
 
 **Command:** `epx prices delete PRICE_ID [flags]`
 
@@ -166,7 +166,7 @@ Requires the price.price\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx prices for-product
 
@@ -175,9 +175,9 @@ List the prices of a product on a site.
 Reads prices. Without a site, Emporix lists the prices of every site, so list and
 for-product require `--site` and read that site's prices only; an unknown site lists
 nothing. TIERS lists the value of each price tier as sent; tier quantities and net or
-gross come from the price model ([`epx price-models get`](/emporix-cli/commands/price-models#epx-price-models-get) with the priceModelId of `-o json`).
+gross come from the price model ([`epx price-models get`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/price-models#epx-price-models-get) with the priceModelId of `-o json`).
 Customer and price-list restrictions and sale prices are only in `-o json`.
-PRODUCT\_ID is the product id (as in [`epx products list`](/emporix-cli/commands/products#epx-products-list)), not its code.
+PRODUCT_ID is the product id (as in [`epx products list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/products#epx-products-list)), not its code.
 An unknown id lists nothing.
 
 No OAuth scope is needed.
@@ -203,7 +203,7 @@ No OAuth scope is needed.
 - `--stream`\
   Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx prices get
 
@@ -212,7 +212,7 @@ Show one price.
 Reads prices. Without a site, Emporix lists the prices of every site, so list and
 for-product require `--site` and read that site's prices only; an unknown site lists
 nothing. TIERS lists the value of each price tier as sent; tier quantities and net or
-gross come from the price model ([`epx price-models get`](/emporix-cli/commands/price-models#epx-price-models-get) with the priceModelId of `-o json`).
+gross come from the price model ([`epx price-models get`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/price-models#epx-price-models-get) with the priceModelId of `-o json`).
 Customer and price-list restrictions and sale prices are only in `-o json`.
 
 No OAuth scope is needed.
@@ -228,7 +228,7 @@ No OAuth scope is needed.
 - `-o, --output <format>`\
   Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx prices list
 
@@ -237,7 +237,7 @@ List the prices of a site.
 Reads prices. Without a site, Emporix lists the prices of every site, so list and
 for-product require `--site` and read that site's prices only; an unknown site lists
 nothing. TIERS lists the value of each price tier as sent; tier quantities and net or
-gross come from the price model ([`epx price-models get`](/emporix-cli/commands/price-models#epx-price-models-get) with the priceModelId of `-o json`).
+gross come from the price model ([`epx price-models get`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/price-models#epx-price-models-get) with the priceModelId of `-o json`).
 Customer and price-list restrictions and sale prices are only in `-o json`.
 
 No OAuth scope is needed.
@@ -263,14 +263,14 @@ No OAuth scope is needed.
 - `--stream`\
   Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx prices match
 
 Match the best price of products.
 
 Matches the price of one unit of each product that `--product` names (the product id as in
-[`epx products list`](/emporix-cli/commands/products#epx-products-list)) that Emporix would charge on the site `--site` names, for the country
+[`epx products list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/products#epx-products-list)) that Emporix would charge on the site `--site` names, for the country
 `--country` names, in the currency `--currency` names: of the prices that apply, the lowest
 after discounts, converted with the tenant's exchange rates and tax classes where the price
 is in another currency or for another country. ID is the matched price (of the price list
@@ -281,7 +281,7 @@ entity go in `--body`.
 Changes nothing: Emporix serves this read as POST with a JSON body, which the
 flags make or `--body` gives whole.
 
-Requires the price.price\_read scope.
+Requires the price.price_read scope.
 
 **Command:** `epx prices match [flags]`
 
@@ -304,20 +304,20 @@ Requires the price.price\_read scope.
 - `--site <code>`\
   The code of the site whose price to match (required without `--body`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx prices search
 
 Search the prices of products.
 
-Reads the prices of up to 100 products (`--product`, the product id as in [`epx products list`](/emporix-cli/commands/products#epx-products-list)), on the site and in the currency that `--site` and `--currency` name, else on every
+Reads the prices of up to 100 products (`--product`, the product id as in [`epx products list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/products#epx-products-list)), on the site and in the currency that `--site` and `--currency` name, else on every
 site and in every currency, shown as list shows prices; `-o json` also lists the products
 without a price. Other criteria (a customer, a date, net or gross values) go in `--body`.
 
 Changes nothing: Emporix serves this read as POST with a JSON body, which the
 flags make or `--body` gives whole.
 
-Requires the price.price\_read scope.
+Requires the price.price_read scope.
 
 **Command:** `epx prices search [flags]`
 
@@ -338,24 +338,24 @@ Requires the price.price\_read scope.
 - `--site <code>`\
   The code of the site whose prices to read.
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx prices update
 
 Upsert a price.
 
-Replaces the price PRICE\_ID with the one in `--file`, a JSON object as
-[`epx prices get PRICE_ID -o json`](/emporix-cli/commands/prices#epx-prices-get) prints it, or creates it with that id where none exists
+Replaces the price PRICE_ID with the one in `--file`, a JSON object as
+[`epx prices get PRICE_ID -o json`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/prices#epx-prices-get) prints it, or creates it with that id where none exists
 (an upsert; not with `--partial`: Emporix answers a missing price with 404 Not Found, exit
 4). Send the price's metadata.version as read to change it only if nobody changed it
 since: Emporix answers 409 Conflict otherwise.
-PRICE\_ID is the ID that [`epx prices list --site S`](/emporix-cli/commands/prices#epx-prices-list) shows.
+PRICE_ID is the ID that [`epx prices list --site S`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/prices#epx-prices-list) shows.
 
 Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the price.price\_manage scope.
+Requires the price.price_manage scope.
 
 **Command:** `epx prices update PRICE_ID [flags]`
 
@@ -372,4 +372,4 @@ Requires the price.price\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).

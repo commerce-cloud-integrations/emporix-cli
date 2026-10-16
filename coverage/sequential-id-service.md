@@ -10,13 +10,13 @@ Operations of the Emporix API reference file [`utilities/sequential-id/api-refer
 
 | Operation | Status | Details |
 | --- | --- | --- |
-| `GET /sequential-id/{tenant}/schemas` | Built | [`epx sequential-ids list`](/emporix-cli/commands/sequential-ids#epx-sequential-ids-list) |
-| `POST /sequential-id/{tenant}/schemas` | Built | [`epx sequential-ids create`](/emporix-cli/commands/sequential-ids#epx-sequential-ids-create) |
-| `GET /sequential-id/{tenant}/schemas/{schemaId}` | Built | [`epx sequential-ids get`](/emporix-cli/commands/sequential-ids#epx-sequential-ids-get) |
-| `DELETE /sequential-id/{tenant}/schemas/{schemaId}` | Built | [`epx sequential-ids delete`](/emporix-cli/commands/sequential-ids#epx-sequential-ids-delete) |
-| `POST /sequential-id/{tenant}/schemas/{schemaId}/setActive` | Built | [`epx sequential-ids activate`](/emporix-cli/commands/sequential-ids#epx-sequential-ids-activate) |
-| `GET /sequential-id/{tenant}/schemas/types/{schemaType}` | Built | [`epx sequential-ids for-type`](/emporix-cli/commands/sequential-ids#epx-sequential-ids-for-type) |
-| `POST /sequential-id/{tenant}/schemas/types/{schemaType}/nextId` | Built | [`epx sequential-ids next-id`](/emporix-cli/commands/sequential-ids#epx-sequential-ids-next-id) |
-| `POST /sequential-id/sequenceSchemaBatch/nextIds` | Built | [`epx sequential-ids next-ids`](/emporix-cli/commands/sequential-ids#epx-sequential-ids-next-ids) |
+| `GET /sequential-id/{tenant}/schemas` | Built | [`epx sequential-ids list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/sequential-ids#epx-sequential-ids-list) |
+| `POST /sequential-id/{tenant}/schemas` | Built | [`epx sequential-ids create`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/sequential-ids#epx-sequential-ids-create) |
+| `GET /sequential-id/{tenant}/schemas/{schemaId}` | Built | [`epx sequential-ids get`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/sequential-ids#epx-sequential-ids-get) |
+| `DELETE /sequential-id/{tenant}/schemas/{schemaId}` | Built | [`epx sequential-ids delete`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/sequential-ids#epx-sequential-ids-delete) |
+| `POST /sequential-id/{tenant}/schemas/{schemaId}/setActive` | Built | [`epx sequential-ids activate`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/sequential-ids#epx-sequential-ids-activate) |
+| `GET /sequential-id/{tenant}/schemas/types/{schemaType}` | Built | [`epx sequential-ids for-type`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/sequential-ids#epx-sequential-ids-for-type) |
+| `POST /sequential-id/{tenant}/schemas/types/{schemaType}/nextId` | Built | [`epx sequential-ids next-id`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/sequential-ids#epx-sequential-ids-next-id) |
+| `POST /sequential-id/sequenceSchemaBatch/nextIds` | Built | [`epx sequential-ids next-ids`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/sequential-ids#epx-sequential-ids-next-ids) |
 
-All services: [Emporix API coverage](/emporix-cli/coverage).
+All services: [Emporix API coverage](https://commerce-cloud-integrations.github.io/emporix-cli/coverage).

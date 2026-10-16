@@ -6,12 +6,12 @@
 
 Creates and reads the jobs that generate the invoices of orders.
 
-Its reads require the invoice.invoice\_view scope.
-Its writes require the invoice.invoice\_manage scope.
+Its reads require the invoice.invoice_view scope.
+Its writes require the invoice.invoice_manage scope.
 
 **Command:** `epx invoice-jobs [flags]`, `epx invoice-jobs [command]`
 
-**Flags:** only the [global flags](/emporix-cli/commands#global-flags).
+**Flags:** only the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Subcommands**
 
@@ -28,17 +28,17 @@ Starts a job that generates the invoices of orders: of those that `--order` name
 (`--type` MANUAL, which requires one at least), or of those ready for an invoice that the
 tenant's invoice configuration selects (`--type` AUTOMATIC, which takes no `--order`).
 Without an invoice configuration of the tenant's own, an order is ready for an invoice when
-its mixins.generalAttributes.extendedOrderStatus is 70, 75 or 76 ([`epx orders create`](/emporix-cli/commands/orders#epx-orders-create)
-stores 10; [`epx orders patch`](/emporix-cli/commands/orders#epx-orders-patch) changes it); the job's entry of an order with 10 fails as not
+its mixins.generalAttributes.extendedOrderStatus is 70, 75 or 76 ([`epx orders create`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/orders#epx-orders-create)
+stores 10; [`epx orders patch`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/orders#epx-orders-patch) changes it); the job's entry of an order with 10 fails as not
 ready. Invoicing a ready order calls the tenant's Pick-Pack service: where that service is
 not reachable, the entry fails at the VALIDATION step.
-Emporix answers with the job's id (jobId), which [`epx invoice-jobs get ID`](/emporix-cli/commands/invoice-jobs#epx-invoice-jobs-get) reads.
+Emporix answers with the job's id (jobId), which [`epx invoice-jobs get ID`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/invoice-jobs#epx-invoice-jobs-get) reads.
 
 Changes data: on a terminal, epx asks before it sends POST. `--yes` sends without
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the invoice.invoice\_manage scope.
+Requires the invoice.invoice_manage scope.
 
 **Command:** `epx invoice-jobs create [flags]`
 
@@ -57,7 +57,7 @@ Requires the invoice.invoice\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Examples**
 
@@ -70,7 +70,7 @@ epx invoice-jobs create --type AUTOMATIC --yes
 
 Show the status of an invoice job.
 
-Reads an invoice job: STATUS is IN\_PROGRESS or DONE and TYPE MANUAL (orders chosen when
+Reads an invoice job: STATUS is IN_PROGRESS or DONE and TYPE MANUAL (orders chosen when
 the job was created) or AUTOMATIC (orders that the tenant's configuration selects). ORDERS
 counts the orders the job processed, of which INVOICED got an invoice, FAILED did not and
 PENDING wait for one. Each order's entry in invoices (orderId and status; errorStep and
@@ -79,7 +79,7 @@ documents the invoice number and download link) is only in `-o json`.
 ID is the job id that creating the job returned. Emporix answers an unknown job with
 500 Internal Server Error (the reference documents 404), so get fails with exit code 1.
 
-Requires the invoice.invoice\_view scope.
+Requires the invoice.invoice_view scope.
 
 **Command:** `epx invoice-jobs get ID [flags]`
 
@@ -92,4 +92,4 @@ Requires the invoice.invoice\_view scope.
 - `-o, --output <format>`\
   Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).

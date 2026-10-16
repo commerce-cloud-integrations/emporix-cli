@@ -4,7 +4,7 @@
 
 `epx api` sends a request to any Emporix API path and prints the response as JSON. Use it
 for endpoints that have no command of their own, or to see a raw page of a collection.
-The [API coverage](/emporix-cli/coverage) lists, per service, which operations have a command.
+The [API coverage](https://commerce-cloud-integrations.github.io/emporix-cli/coverage) lists, per service, which operations have a command.
 
 ```sh
 epx api get '/site/{tenant}/sites'
@@ -53,7 +53,7 @@ epx api delete '/product/{tenant}/products/100200' --scope product.product_manag
 `epx api post`, `put`, `patch`, and `delete` send a write to any path, with the same
 paths, query parameters, and scopes as `epx api get`. Like every write, they take their
 body from `--file`, show the exact request with `--dry-run`, and ask before they send.
-See [Change data](/emporix-cli/guides/writes).
+See [Change data](https://commerce-cloud-integrations.github.io/emporix-cli/guides/writes).
 
 `epx api` sends no headers of its own beyond the standard ones. A body with localized
 text sent this way is sent without a `Content-Language` header; a write command of its
@@ -70,4 +70,4 @@ own sends the right one for its service.
 | The command is invalid: a full URL, a malformed `-p` or `--scope`, a body that isn't JSON, or a write without `--yes` where epx can't ask. Nothing was sent. | 2 |
 | Any other error. | 1 |
 
-See [Exit codes and scripting](/emporix-cli/guides/exit-codes) for the full list.
+See [Exit codes and scripting](https://commerce-cloud-integrations.github.io/emporix-cli/guides/exit-codes) for the full list.

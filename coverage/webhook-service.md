@@ -10,15 +10,15 @@ Operations of the Emporix API reference file [`webhooks/webhook-service/api-refe
 
 | Operation | Status | Details |
 | --- | --- | --- |
-| `POST /webhook/{tenant}/config` | Built | [`epx webhooks configurations create`](/emporix-cli/commands/webhooks#epx-webhooks-configurations-create) |
-| `GET /webhook/{tenant}/config` | Built | [`epx webhooks configurations list`](/emporix-cli/commands/webhooks#epx-webhooks-configurations-list) |
-| `PUT /webhook/{tenant}/config/{code}` | Built | [`epx webhooks configurations update`](/emporix-cli/commands/webhooks#epx-webhooks-configurations-update) |
-| `PATCH /webhook/{tenant}/config/{code}` | Built | [`epx webhooks configurations patch`](/emporix-cli/commands/webhooks#epx-webhooks-configurations-patch) |
-| `GET /webhook/{tenant}/config/{code}` | Built | [`epx webhooks configurations get`](/emporix-cli/commands/webhooks#epx-webhooks-configurations-get) |
-| `DELETE /webhook/{tenant}/config/{code}` | Built | [`epx webhooks configurations delete`](/emporix-cli/commands/webhooks#epx-webhooks-configurations-delete) |
-| `PATCH /webhook/{tenant}/event-subscriptions` | Built | [`epx webhooks subscriptions bulk-patch`](/emporix-cli/commands/webhooks#epx-webhooks-subscriptions-bulk-patch) |
-| `GET /webhook/{tenant}/event-subscriptions` | Built | [`epx webhooks subscriptions list`](/emporix-cli/commands/webhooks#epx-webhooks-subscriptions-list) |
-| `GET /webhook/{tenant}/dashboard-access` | Built | [`epx webhooks dashboard-access`](/emporix-cli/commands/webhooks#epx-webhooks-dashboard-access) |
-| `GET /webhook/{tenant}/statistics` | Built | [`epx webhooks statistics`](/emporix-cli/commands/webhooks#epx-webhooks-statistics) |
+| `POST /webhook/{tenant}/config` | Built | [`epx webhooks configurations create`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/webhooks#epx-webhooks-configurations-create) |
+| `GET /webhook/{tenant}/config` | Built | [`epx webhooks configurations list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/webhooks#epx-webhooks-configurations-list) |
+| `PUT /webhook/{tenant}/config/{code}` | Built | [`epx webhooks configurations update`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/webhooks#epx-webhooks-configurations-update) |
+| `PATCH /webhook/{tenant}/config/{code}` | Built | [`epx webhooks configurations patch`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/webhooks#epx-webhooks-configurations-patch) |
+| `GET /webhook/{tenant}/config/{code}` | Built | [`epx webhooks configurations get`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/webhooks#epx-webhooks-configurations-get) |
+| `DELETE /webhook/{tenant}/config/{code}` | Built | [`epx webhooks configurations delete`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/webhooks#epx-webhooks-configurations-delete) |
+| `PATCH /webhook/{tenant}/event-subscriptions` | Built | [`epx webhooks subscriptions bulk-patch`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/webhooks#epx-webhooks-subscriptions-bulk-patch) |
+| `GET /webhook/{tenant}/event-subscriptions` | Built | [`epx webhooks subscriptions list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/webhooks#epx-webhooks-subscriptions-list) |
+| `GET /webhook/{tenant}/dashboard-access` | Built | [`epx webhooks dashboard-access`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/webhooks#epx-webhooks-dashboard-access) |
+| `GET /webhook/{tenant}/statistics` | Built | [`epx webhooks statistics`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/webhooks#epx-webhooks-statistics) |
 
-All services: [Emporix API coverage](/emporix-cli/coverage).
+All services: [Emporix API coverage](https://commerce-cloud-integrations.github.io/emporix-cli/coverage).

@@ -10,14 +10,14 @@ Operations of the Emporix API reference file [`media/media/api-reference/api.yml
 
 | Operation | Status | Details |
 | --- | --- | --- |
-| `POST /media/{tenant}/assets` | Built | [`epx media create`](/emporix-cli/commands/media#epx-media-create) |
-| `GET /media/{tenant}/assets` | Built | [`epx media list`](/emporix-cli/commands/media#epx-media-list) |
-| `GET /media/{tenant}/assets/{assetId}` | Built | [`epx media get`](/emporix-cli/commands/media#epx-media-get) |
-| `PUT /media/{tenant}/assets/{assetId}` | Built | [`epx media update`](/emporix-cli/commands/media#epx-media-update) |
-| `PATCH /media/{tenant}/assets/{assetId}` | Built | [`epx media patch`](/emporix-cli/commands/media#epx-media-patch) |
-| `DELETE /media/{tenant}/assets/{assetId}` | Built | [`epx media delete`](/emporix-cli/commands/media#epx-media-delete) |
+| `POST /media/{tenant}/assets` | Built | [`epx media create`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/media#epx-media-create) |
+| `GET /media/{tenant}/assets` | Built | [`epx media list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/media#epx-media-list) |
+| `GET /media/{tenant}/assets/{assetId}` | Built | [`epx media get`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/media#epx-media-get) |
+| `PUT /media/{tenant}/assets/{assetId}` | Built | [`epx media update`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/media#epx-media-update) |
+| `PATCH /media/{tenant}/assets/{assetId}` | Built | [`epx media patch`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/media#epx-media-patch) |
+| `DELETE /media/{tenant}/assets/{assetId}` | Built | [`epx media delete`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/media#epx-media-delete) |
 | `GET /media/{tenant}/assets/{assetId}/download` | Not applicable | Answers with the file itself; `epx media download-url` gives a URL to it. |
-| `POST /media/{tenant}/assets/upload-session` | Built | [`epx media start-upload`](/emporix-cli/commands/media#epx-media-start-upload) |
-| `GET /media/{tenant}/assets/{assetId}/download-url` | Built | [`epx media download-url`](/emporix-cli/commands/media#epx-media-download-url) |
+| `POST /media/{tenant}/assets/upload-session` | Built | [`epx media start-upload`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/media#epx-media-start-upload) |
+| `GET /media/{tenant}/assets/{assetId}/download-url` | Built | [`epx media download-url`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/media#epx-media-download-url) |
 
-All services: [Emporix API coverage](/emporix-cli/coverage).
+All services: [Emporix API coverage](https://commerce-cloud-integrations.github.io/emporix-cli/coverage).

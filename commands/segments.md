@@ -9,11 +9,11 @@ products or categories, and what is assigned to them: customers, IAM groups and 
 
 Its reads require different OAuth scopes; the help of each names them.
 Opt-in: epx requests a write-capable scope for a read only when given `--allow-write-scope`.
-Its writes require the customersegment.segment\_manage scope.
+Its writes require the customersegment.segment_manage scope.
 
 **Command:** `epx segments [flags]`, `epx segments [command]`
 
-**Flags:** only the [global flags](/emporix-cli/commands#global-flags).
+**Flags:** only the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Subcommands**
 
@@ -55,7 +55,7 @@ List the items of every segment.
 Reads the items assigned to every segment, products or categories (TYPE), with their
 SEGMENT.
 
-Requires the customersegment.segment\_read scope.
+Requires the customersegment.segment_read scope.
 
 **Command:** `epx segments all-items [flags]`
 
@@ -78,7 +78,7 @@ Requires the customersegment.segment\_read scope.
 - `--stream`\
   Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx segments bulk-create
 
@@ -100,7 +100,7 @@ Changes data: on a terminal, epx asks before it sends POST. `--yes` sends withou
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the customersegment.segment\_manage scope.
+Requires the customersegment.segment_manage scope.
 
 **Command:** `epx segments bulk-create [flags]`
 
@@ -115,7 +115,7 @@ Requires the customersegment.segment\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx segments bulk-delete
 
@@ -139,7 +139,7 @@ On a terminal, epx sends DELETE only once you type the tenant at its prompt.
 `--yes` sends without asking (required without a terminal, or with `--file` -);
 `--dry-run` prints the request instead of sending it.
 
-Requires the customersegment.segment\_manage scope.
+Requires the customersegment.segment_manage scope.
 
 **Command:** `epx segments bulk-delete [flags]`
 
@@ -156,7 +156,7 @@ Requires the customersegment.segment\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx segments bulk-update
 
@@ -179,7 +179,7 @@ Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the customersegment.segment\_manage scope.
+Requires the customersegment.segment_manage scope.
 
 **Command:** `epx segments bulk-update [flags]`
 
@@ -194,13 +194,13 @@ Requires the customersegment.segment\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx segments create
 
 Create a segment.
 
-Creates the segment in `--file`, a JSON object such as [`epx segments get ID -o json`](/emporix-cli/commands/segments#epx-segments-get)
+Creates the segment in `--file`, a JSON object such as [`epx segments get ID -o json`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/segments#epx-segments-get)
 prints one, with its name, siteCode, validity and status (INACTIVE unless it says
 ACTIVE); Emporix makes its id unless the body gives one. A segment with that id that
 exists already is a conflict (exit 5).
@@ -213,7 +213,7 @@ Changes data: on a terminal, epx asks before it sends POST. `--yes` sends withou
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the customersegment.segment\_manage scope.
+Requires the customersegment.segment_manage scope.
 
 **Command:** `epx segments create [flags]`
 
@@ -228,7 +228,7 @@ Requires the customersegment.segment\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx segments customers
 
@@ -237,12 +237,12 @@ Read and change the customers of a segment.
 Reads the customers assigned to a segment, personal data included, and assigns and removes
 them, for B2B with their legal entity.
 
-Its reads require the customersegment.segment\_read scope.
-Its writes require the customersegment.segment\_manage scope.
+Its reads require the customersegment.segment_read scope.
+Its writes require the customersegment.segment_manage scope.
 
 **Command:** `epx segments customers [flags]`, `epx segments customers [command]`
 
-**Flags:** only the [global flags](/emporix-cli/commands#global-flags).
+**Flags:** only the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Subcommands**
 
@@ -271,7 +271,7 @@ Its writes require the customersegment.segment\_manage scope.
 
 Delete customer assignments of a segment in bulk.
 
-Removes the customers in `--file` from the segment SEGMENT\_ID, a JSON array such as
+Removes the customers in `--file` from the segment SEGMENT_ID, a JSON array such as
 `[{"customerId": "c1", "legalEntityId": "le1"}]` (without legalEntityId for B2C).
 
 Emporix takes up to 200 items in one request (epx refuses more), carries out each on
@@ -281,11 +281,11 @@ may have been carried out all the same) and exits with the code that their failu
 share (for example 5 for a 409 Conflict, 4 for a 404), else 1.
 
 Deletes the customer assignments of a segment that `--file` names with one request, which cannot be undone.
-On a terminal, epx sends DELETE only once you type SEGMENT\_ID at its prompt.
+On a terminal, epx sends DELETE only once you type SEGMENT_ID at its prompt.
 `--yes` sends without asking (required without a terminal, or with `--file` -);
 `--dry-run` prints the request instead of sending it.
 
-Requires the customersegment.segment\_manage scope.
+Requires the customersegment.segment_manage scope.
 
 **Command:** `epx segments customers bulk-delete SEGMENT_ID [flags]`
 
@@ -300,13 +300,13 @@ Requires the customersegment.segment\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx segments customers bulk-update
 
 Upsert customer assignments of a segment in bulk.
 
-Assigns the customers in `--file` to the segment SEGMENT\_ID, or replaces their assignments
+Assigns the customers in `--file` to the segment SEGMENT_ID, or replaces their assignments
 (an upsert): a JSON array of assignments, each with its customerId, for B2B its
 legalEntityId, and optionally its mixins and metadata.
 A segment holds customers without a legal entity (B2C) or with one (B2B), never both:
@@ -322,7 +322,7 @@ Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the customersegment.segment\_manage scope.
+Requires the customersegment.segment_manage scope.
 
 **Command:** `epx segments customers bulk-update SEGMENT_ID [flags]`
 
@@ -337,17 +337,17 @@ Requires the customersegment.segment\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx segments customers delete
 
 Remove a customer from a segment.
 
 Removes the customer CUSTOMER without a legal entity (B2C) from the segment
-SEGMENT\_ID; Emporix answers one that is not
+SEGMENT_ID; Emporix answers one that is not
 assigned as removed.
-SEGMENT\_ID is the ID that [`epx segments list`](/emporix-cli/commands/segments#epx-segments-list) shows, and
-CUSTOMER the customer's id (the id of [`epx customers get NUMBER -o json`](/emporix-cli/commands/customers#epx-customers-get)), not its
+SEGMENT_ID is the ID that [`epx segments list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/segments#epx-segments-list) shows, and
+CUSTOMER the customer's id (the id of [`epx customers get NUMBER -o json`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/customers#epx-customers-get)), not its
 NUMBER.
 
 Deletes data, which cannot be undone.
@@ -355,7 +355,7 @@ On a terminal, epx sends DELETE only once you type CUSTOMER at its prompt.
 `--yes` sends without asking (required without a terminal);
 `--dry-run` prints the request instead of sending it.
 
-Requires the customersegment.segment\_manage scope.
+Requires the customersegment.segment_manage scope.
 
 **Command:** `epx segments customers delete SEGMENT_ID CUSTOMER [flags]`
 
@@ -368,26 +368,26 @@ Requires the customersegment.segment\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx segments customers delete-b2b
 
 Remove a customer of a legal entity from a segment.
 
-Removes the customer CUSTOMER of the legal entity LEGAL\_ENTITY (B2B) from the segment
-SEGMENT\_ID; Emporix answers one that is not
+Removes the customer CUSTOMER of the legal entity LEGAL_ENTITY (B2B) from the segment
+SEGMENT_ID; Emporix answers one that is not
 assigned as removed.
-SEGMENT\_ID is the ID that [`epx segments list`](/emporix-cli/commands/segments#epx-segments-list) shows,
-CUSTOMER the customer's id (the id of [`epx customers get NUMBER -o json`](/emporix-cli/commands/customers#epx-customers-get)), not its
-NUMBER, and LEGAL\_ENTITY the ID that
-[`epx legal-entities list`](/emporix-cli/commands/legal-entities#epx-legal-entities-list) shows.
+SEGMENT_ID is the ID that [`epx segments list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/segments#epx-segments-list) shows,
+CUSTOMER the customer's id (the id of [`epx customers get NUMBER -o json`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/customers#epx-customers-get)), not its
+NUMBER, and LEGAL_ENTITY the ID that
+[`epx legal-entities list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/legal-entities#epx-legal-entities-list) shows.
 
 Deletes data, which cannot be undone.
-On a terminal, epx sends DELETE only once you type LEGAL\_ENTITY at its prompt.
+On a terminal, epx sends DELETE only once you type LEGAL_ENTITY at its prompt.
 `--yes` sends without asking (required without a terminal);
 `--dry-run` prints the request instead of sending it.
 
-Requires the customersegment.segment\_manage scope.
+Requires the customersegment.segment_manage scope.
 
 **Command:** `epx segments customers delete-b2b SEGMENT_ID CUSTOMER LEGAL_ENTITY [flags]`
 
@@ -400,7 +400,7 @@ Requires the customersegment.segment\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx segments customers get
 
@@ -408,12 +408,12 @@ Show one customer of a segment.
 
 Reads one customer assigned to a segment without a legal entity (B2C), personal data
 included; one assigned with a legal entity (B2B) is not found (exit 4): get-b2b reads it.
-SEGMENT\_ID is the ID that [`epx segments list`](/emporix-cli/commands/segments#epx-segments-list) shows; an unknown one is not found.
-CUSTOMER is the CUSTOMER that [`epx segments customers list SEGMENT_ID`](/emporix-cli/commands/segments#epx-segments-customers-list) shows; an unknown one is not found.
-CUSTOMER is the customer's id, not the NUMBER that [`epx customers get`](/emporix-cli/commands/customers#epx-customers-get) takes; ASSIGNMENT
+SEGMENT_ID is the ID that [`epx segments list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/segments#epx-segments-list) shows; an unknown one is not found.
+CUSTOMER is the CUSTOMER that [`epx segments customers list SEGMENT_ID`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/segments#epx-segments-customers-list) shows; an unknown one is not found.
+CUSTOMER is the customer's id, not the NUMBER that [`epx customers get`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/customers#epx-customers-get) takes; ASSIGNMENT
 is MANUAL or AUTOMATIC.
 
-Requires the customersegment.segment\_read scope.
+Requires the customersegment.segment_read scope.
 
 **Command:** `epx segments customers get SEGMENT_ID CUSTOMER [flags]`
 
@@ -426,19 +426,19 @@ Requires the customersegment.segment\_read scope.
 - `-o, --output <format>`\
   Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx segments customers get-b2b
 
 Show one customer of a legal entity in a segment.
 
 Reads one customer assigned to a segment with a legal entity (B2B), personal data included.
-SEGMENT\_ID is the ID that [`epx segments list`](/emporix-cli/commands/segments#epx-segments-list) shows; an unknown one is not found.
-CUSTOMER and LEGAL\_ENTITY are the CUSTOMER and LEGAL ENTITY that [`epx segments customers list SEGMENT_ID`](/emporix-cli/commands/segments#epx-segments-customers-list) shows; an unknown one is not found.
-CUSTOMER is the customer's id, not the NUMBER that [`epx customers get`](/emporix-cli/commands/customers#epx-customers-get) takes; ASSIGNMENT
+SEGMENT_ID is the ID that [`epx segments list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/segments#epx-segments-list) shows; an unknown one is not found.
+CUSTOMER and LEGAL_ENTITY are the CUSTOMER and LEGAL ENTITY that [`epx segments customers list SEGMENT_ID`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/segments#epx-segments-customers-list) shows; an unknown one is not found.
+CUSTOMER is the customer's id, not the NUMBER that [`epx customers get`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/customers#epx-customers-get) takes; ASSIGNMENT
 is MANUAL or AUTOMATIC.
 
-Requires the customersegment.segment\_read scope.
+Requires the customersegment.segment_read scope.
 
 **Command:** `epx segments customers get-b2b SEGMENT_ID CUSTOMER LEGAL_ENTITY [flags]`
 
@@ -451,7 +451,7 @@ Requires the customersegment.segment\_read scope.
 - `-o, --output <format>`\
   Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx segments customers list
 
@@ -460,11 +460,11 @@ List the customers of a segment.
 Reads the customers of a segment (for B2B, with their legal entity), personal data included.
 list and search sort by id unless `--sort` says otherwise, an order that Emporix keeps
 across pages: unsorted, it pages them in a different order per request.
-SEGMENT\_ID is the ID that [`epx segments list`](/emporix-cli/commands/segments#epx-segments-list) shows; an unknown one lists nothing.
-CUSTOMER is the customer's id, not the NUMBER that [`epx customers get`](/emporix-cli/commands/customers#epx-customers-get) takes; ASSIGNMENT
+SEGMENT_ID is the ID that [`epx segments list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/segments#epx-segments-list) shows; an unknown one lists nothing.
+CUSTOMER is the customer's id, not the NUMBER that [`epx customers get`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/customers#epx-customers-get) takes; ASSIGNMENT
 is MANUAL or AUTOMATIC.
 
-Requires the customersegment.segment\_read scope.
+Requires the customersegment.segment_read scope.
 
 **Command:** `epx segments customers list SEGMENT_ID [flags]`
 
@@ -485,7 +485,7 @@ Requires the customersegment.segment\_read scope.
 - `--stream`\
   Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx segments customers search
 
@@ -495,15 +495,15 @@ Reads the customers of a segment that an Emporix q filter finds (`--query`; with
 every one), personal data included.
 list and search sort by id unless `--sort` says otherwise, an order that Emporix keeps
 across pages: unsorted, it pages them in a different order per request.
-It reads and shows them as [`epx segments customers list SEGMENT_ID`](/emporix-cli/commands/segments#epx-segments-customers-list) does.
-SEGMENT\_ID is the ID that [`epx segments list`](/emporix-cli/commands/segments#epx-segments-list) shows; an unknown one lists nothing.
+It reads and shows them as [`epx segments customers list SEGMENT_ID`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/segments#epx-segments-customers-list) does.
+SEGMENT_ID is the ID that [`epx segments list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/segments#epx-segments-list) shows; an unknown one lists nothing.
 
 Changes nothing: Emporix serves this read as POST with a JSON body, which the
 flags make or `--body` gives whole.
-CUSTOMER is the customer's id, not the NUMBER that [`epx customers get`](/emporix-cli/commands/customers#epx-customers-get) takes; ASSIGNMENT
+CUSTOMER is the customer's id, not the NUMBER that [`epx customers get`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/customers#epx-customers-get) takes; ASSIGNMENT
 is MANUAL or AUTOMATIC.
 
-Requires the customersegment.segment\_read scope.
+Requires the customersegment.segment_read scope.
 
 **Command:** `epx segments customers search SEGMENT_ID [flags]`
 
@@ -526,16 +526,16 @@ Requires the customersegment.segment\_read scope.
 - `--stream`\
   Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx segments customers update
 
 Assign a customer to a segment.
 
 Assigns the customer CUSTOMER without a legal entity (B2C) to the segment
-SEGMENT\_ID, or replaces its assignment (an upsert).
-SEGMENT\_ID is the ID that [`epx segments list`](/emporix-cli/commands/segments#epx-segments-list) shows, and
-CUSTOMER the customer's id (the id of [`epx customers get NUMBER -o json`](/emporix-cli/commands/customers#epx-customers-get)), not its
+SEGMENT_ID, or replaces its assignment (an upsert).
+SEGMENT_ID is the ID that [`epx segments list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/segments#epx-segments-list) shows, and
+CUSTOMER the customer's id (the id of [`epx customers get NUMBER -o json`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/customers#epx-customers-get)), not its
 NUMBER.
 A segment holds customers without a legal entity (B2C) or with one (B2B), never both:
 Emporix refuses to assign one of the other kind.
@@ -548,7 +548,7 @@ Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the customersegment.segment\_manage scope.
+Requires the customersegment.segment_manage scope.
 
 **Command:** `epx segments customers update SEGMENT_ID CUSTOMER [flags]`
 
@@ -563,18 +563,18 @@ Requires the customersegment.segment\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx segments customers update-b2b
 
 Assign a customer of a legal entity to a segment.
 
-Assigns the customer CUSTOMER of the legal entity LEGAL\_ENTITY (B2B) to the segment
-SEGMENT\_ID, or replaces its assignment (an upsert).
-SEGMENT\_ID is the ID that [`epx segments list`](/emporix-cli/commands/segments#epx-segments-list) shows,
-CUSTOMER the customer's id (the id of [`epx customers get NUMBER -o json`](/emporix-cli/commands/customers#epx-customers-get)), not its
-NUMBER, and LEGAL\_ENTITY the ID that
-[`epx legal-entities list`](/emporix-cli/commands/legal-entities#epx-legal-entities-list) shows.
+Assigns the customer CUSTOMER of the legal entity LEGAL_ENTITY (B2B) to the segment
+SEGMENT_ID, or replaces its assignment (an upsert).
+SEGMENT_ID is the ID that [`epx segments list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/segments#epx-segments-list) shows,
+CUSTOMER the customer's id (the id of [`epx customers get NUMBER -o json`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/customers#epx-customers-get)), not its
+NUMBER, and LEGAL_ENTITY the ID that
+[`epx legal-entities list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/legal-entities#epx-legal-entities-list) shows.
 A segment holds customers without a legal entity (B2C) or with one (B2B), never both:
 Emporix refuses to assign one of the other kind.
 `--file` may give the assignment's mixins and metadata (its version and the schemas of
@@ -586,7 +586,7 @@ Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the customersegment.segment\_manage scope.
+Requires the customersegment.segment_manage scope.
 
 **Command:** `epx segments customers update-b2b SEGMENT_ID CUSTOMER LEGAL_ENTITY [flags]`
 
@@ -601,13 +601,13 @@ Requires the customersegment.segment\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx segments delete
 
 Delete a segment.
 
-Deletes the segment ID. ID is the ID that [`epx segments list`](/emporix-cli/commands/segments#epx-segments-list) shows.
+Deletes the segment ID. ID is the ID that [`epx segments list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/segments#epx-segments-list) shows.
 Emporix refuses to delete a segment that has items or customers assigned to it
 (400 Bad Request, exit 1) unless `--with-assignments` deletes those assignments with it. It
 deletes the IAM group assignments of a segment with it either way: a segment with only
@@ -620,7 +620,7 @@ On a terminal, epx sends DELETE only once you type ID at its prompt.
 `--yes` sends without asking (required without a terminal);
 `--dry-run` prints the request instead of sending it.
 
-Requires the customersegment.segment\_manage scope.
+Requires the customersegment.segment_manage scope.
 
 **Command:** `epx segments delete ID [flags]`
 
@@ -635,7 +635,7 @@ Requires the customersegment.segment\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx segments get
 
@@ -644,7 +644,7 @@ Show one segment.
 Reads customer segments, which group customers to offer them items such as products or
 categories. STATUS is ACTIVE or INACTIVE, and FROM and TO the validity window.
 
-Requires the customersegment.segment\_read scope.
+Requires the customersegment.segment_read scope.
 
 **Command:** `epx segments get ID [flags]`
 
@@ -659,7 +659,7 @@ Requires the customersegment.segment\_read scope.
 - `-o, --output <format>`\
   Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx segments groups
 
@@ -667,12 +667,12 @@ Read and change the IAM groups of a segment.
 
 Reads the IAM groups assigned to a segment, and assigns and removes them.
 
-Its reads require the customersegment.segment\_read scope.
-Its writes require the customersegment.segment\_manage scope.
+Its reads require the customersegment.segment_read scope.
+Its writes require the customersegment.segment_manage scope.
 
 **Command:** `epx segments groups [flags]`, `epx segments groups [command]`
 
-**Flags:** only the [global flags](/emporix-cli/commands#global-flags).
+**Flags:** only the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Subcommands**
 
@@ -692,17 +692,17 @@ Its writes require the customersegment.segment\_manage scope.
 Remove an IAM group from a segment.
 
 Removes the IAM group GROUP, a group of customers (userType CUSTOMER), from the segment
-SEGMENT\_ID; Emporix answers one that is not
+SEGMENT_ID; Emporix answers one that is not
 assigned as removed.
-SEGMENT\_ID is the ID that [`epx segments list`](/emporix-cli/commands/segments#epx-segments-list) shows, and GROUP the ID of an IAM group
-that [`epx iam groups list`](/emporix-cli/commands/iam#epx-iam-groups-list) shows.
+SEGMENT_ID is the ID that [`epx segments list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/segments#epx-segments-list) shows, and GROUP the ID of an IAM group
+that [`epx iam groups list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/iam#epx-iam-groups-list) shows.
 
 Deletes data, which cannot be undone.
 On a terminal, epx sends DELETE only once you type GROUP at its prompt.
 `--yes` sends without asking (required without a terminal);
 `--dry-run` prints the request instead of sending it.
 
-Requires the customersegment.segment\_manage scope.
+Requires the customersegment.segment_manage scope.
 
 **Command:** `epx segments groups delete SEGMENT_ID GROUP [flags]`
 
@@ -715,17 +715,17 @@ Requires the customersegment.segment\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx segments groups get
 
 Show one IAM group of a segment.
 
 Reads one IAM group assigned to a segment.
-SEGMENT\_ID is the ID that [`epx segments list`](/emporix-cli/commands/segments#epx-segments-list) shows; an unknown one is not found.
-GROUP is the GROUP that [`epx segments groups list SEGMENT_ID`](/emporix-cli/commands/segments#epx-segments-groups-list) shows; an unknown one is not found.
+SEGMENT_ID is the ID that [`epx segments list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/segments#epx-segments-list) shows; an unknown one is not found.
+GROUP is the GROUP that [`epx segments groups list SEGMENT_ID`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/segments#epx-segments-groups-list) shows; an unknown one is not found.
 
-Requires the customersegment.segment\_read scope.
+Requires the customersegment.segment_read scope.
 
 **Command:** `epx segments groups get SEGMENT_ID GROUP [flags]`
 
@@ -740,16 +740,16 @@ Requires the customersegment.segment\_read scope.
 - `-o, --output <format>`\
   Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx segments groups list
 
 List the IAM groups of a segment.
 
 Reads the IAM groups assigned to a segment.
-SEGMENT\_ID is the ID that [`epx segments list`](/emporix-cli/commands/segments#epx-segments-list) shows; an unknown one lists nothing.
+SEGMENT_ID is the ID that [`epx segments list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/segments#epx-segments-list) shows; an unknown one lists nothing.
 
-Requires the customersegment.segment\_read scope.
+Requires the customersegment.segment_read scope.
 
 **Command:** `epx segments groups list SEGMENT_ID [flags]`
 
@@ -772,7 +772,7 @@ Requires the customersegment.segment\_read scope.
 - `--stream`\
   Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx segments groups search
 
@@ -780,13 +780,13 @@ Search the IAM groups of a segment.
 
 Reads the IAM groups assigned to a segment that an Emporix q filter finds (`--query`;
 without it, every one).
-It reads and shows them as [`epx segments groups list SEGMENT_ID`](/emporix-cli/commands/segments#epx-segments-groups-list) does.
-SEGMENT\_ID is the ID that [`epx segments list`](/emporix-cli/commands/segments#epx-segments-list) shows; an unknown one lists nothing.
+It reads and shows them as [`epx segments groups list SEGMENT_ID`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/segments#epx-segments-groups-list) does.
+SEGMENT_ID is the ID that [`epx segments list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/segments#epx-segments-list) shows; an unknown one lists nothing.
 
 Changes nothing: Emporix serves this read as POST with a JSON body, which the
 flags make or `--body` gives whole.
 
-Requires the customersegment.segment\_read scope.
+Requires the customersegment.segment_read scope.
 
 **Command:** `epx segments groups search SEGMENT_ID [flags]`
 
@@ -811,16 +811,16 @@ Requires the customersegment.segment\_read scope.
 - `--stream`\
   Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx segments groups update
 
 Assign an IAM group to a segment.
 
 Assigns the IAM group GROUP, a group of customers (userType CUSTOMER), to the segment
-SEGMENT\_ID, or replaces its assignment (an upsert).
-SEGMENT\_ID is the ID that [`epx segments list`](/emporix-cli/commands/segments#epx-segments-list) shows, and GROUP the ID of an IAM group
-that [`epx iam groups list`](/emporix-cli/commands/iam#epx-iam-groups-list) shows.
+SEGMENT_ID, or replaces its assignment (an upsert).
+SEGMENT_ID is the ID that [`epx segments list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/segments#epx-segments-list) shows, and GROUP the ID of an IAM group
+that [`epx iam groups list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/iam#epx-iam-groups-list) shows.
 `--file` may give the assignment's mixins and metadata (its version and the schemas of
 its mixins); without it, epx sends an empty object.
 Send its metadata.version as read to change it only if nobody changed it since:
@@ -830,7 +830,7 @@ Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the customersegment.segment\_manage scope.
+Requires the customersegment.segment_manage scope.
 
 **Command:** `epx segments groups update SEGMENT_ID GROUP [flags]`
 
@@ -845,7 +845,7 @@ Requires the customersegment.segment\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx segments items
 
@@ -853,12 +853,12 @@ Read and change the items of a segment.
 
 Reads the items assigned to a segment, products or categories, and assigns and removes them.
 
-Its reads require the customersegment.segment\_read scope.
-Its writes require the customersegment.segment\_manage scope.
+Its reads require the customersegment.segment_read scope.
+Its writes require the customersegment.segment_manage scope.
 
 **Command:** `epx segments items [flags]`, `epx segments items [command]`
 
-**Flags:** only the [global flags](/emporix-cli/commands#global-flags).
+**Flags:** only the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Subcommands**
 
@@ -882,8 +882,8 @@ Its writes require the customersegment.segment\_manage scope.
 Delete item assignments of a segment in bulk.
 
 Removes the products or categories (TYPE) whose ids `--file` gives from the segment
-SEGMENT\_ID, a JSON array such as `["100200", "100300"]`.
-SEGMENT\_ID is the ID that [`epx segments list`](/emporix-cli/commands/segments#epx-segments-list) shows,
+SEGMENT_ID, a JSON array such as `["100200", "100300"]`.
+SEGMENT_ID is the ID that [`epx segments list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/segments#epx-segments-list) shows,
 and TYPE is PRODUCT or CATEGORY, in capitals.
 
 Emporix takes up to 200 items in one request (epx refuses more), carries out each on
@@ -897,7 +897,7 @@ On a terminal, epx sends DELETE only once you type TYPE at its prompt.
 `--yes` sends without asking (required without a terminal, or with `--file` -);
 `--dry-run` prints the request instead of sending it.
 
-Requires the customersegment.segment\_manage scope.
+Requires the customersegment.segment_manage scope.
 
 **Command:** `epx segments items bulk-delete SEGMENT_ID TYPE [flags]`
 
@@ -912,16 +912,16 @@ Requires the customersegment.segment\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx segments items bulk-update
 
 Upsert item assignments of a segment in bulk.
 
-Assigns the products or categories (TYPE) in `--file` to the segment SEGMENT\_ID, or replaces
+Assigns the products or categories (TYPE) in `--file` to the segment SEGMENT_ID, or replaces
 their assignments (an upsert): a JSON array of assignments, each with the id of its item
 and optionally its mixins and metadata.
-SEGMENT\_ID is the ID that [`epx segments list`](/emporix-cli/commands/segments#epx-segments-list) shows,
+SEGMENT_ID is the ID that [`epx segments list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/segments#epx-segments-list) shows,
 and TYPE is PRODUCT or CATEGORY, in capitals.
 Emporix refuses an ID of no product or category of TYPE.
 
@@ -935,7 +935,7 @@ Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the customersegment.segment\_manage scope.
+Requires the customersegment.segment_manage scope.
 
 **Command:** `epx segments items bulk-update SEGMENT_ID TYPE [flags]`
 
@@ -950,17 +950,17 @@ Requires the customersegment.segment\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx segments items delete
 
 Remove a product or category from a segment.
 
 Removes the product or category ID from the segment
-SEGMENT\_ID; Emporix answers one that is not
+SEGMENT_ID; Emporix answers one that is not
 assigned as removed.
-SEGMENT\_ID is the ID that [`epx segments list`](/emporix-cli/commands/segments#epx-segments-list) shows, TYPE is PRODUCT or CATEGORY, in capitals, and
-ID the id of the product or category (as [`epx products list`](/emporix-cli/commands/products#epx-products-list) or [`epx categories list`](/emporix-cli/commands/categories#epx-categories-list)
+SEGMENT_ID is the ID that [`epx segments list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/segments#epx-segments-list) shows, TYPE is PRODUCT or CATEGORY, in capitals, and
+ID the id of the product or category (as [`epx products list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/products#epx-products-list) or [`epx categories list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/categories#epx-categories-list)
 shows it).
 
 Deletes data, which cannot be undone.
@@ -968,7 +968,7 @@ On a terminal, epx sends DELETE only once you type ID at its prompt.
 `--yes` sends without asking (required without a terminal);
 `--dry-run` prints the request instead of sending it.
 
-Requires the customersegment.segment\_manage scope.
+Requires the customersegment.segment_manage scope.
 
 **Command:** `epx segments items delete SEGMENT_ID TYPE ID [flags]`
 
@@ -981,17 +981,17 @@ Requires the customersegment.segment\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx segments items get
 
 Show one item of a segment.
 
 Reads one item assigned to a segment: TYPE is PRODUCT or CATEGORY, in capitals.
-SEGMENT\_ID is the ID that [`epx segments list`](/emporix-cli/commands/segments#epx-segments-list) shows; an unknown one is not found.
-TYPE and ID are the TYPE and ID that [`epx segments items list SEGMENT_ID`](/emporix-cli/commands/segments#epx-segments-items-list) shows; an unknown one is not found.
+SEGMENT_ID is the ID that [`epx segments list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/segments#epx-segments-list) shows; an unknown one is not found.
+TYPE and ID are the TYPE and ID that [`epx segments items list SEGMENT_ID`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/segments#epx-segments-items-list) shows; an unknown one is not found.
 
-Requires the customersegment.segment\_read scope.
+Requires the customersegment.segment_read scope.
 
 **Command:** `epx segments items get SEGMENT_ID TYPE ID [flags]`
 
@@ -1006,16 +1006,16 @@ Requires the customersegment.segment\_read scope.
 - `-o, --output <format>`\
   Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx segments items list
 
 List the items of a segment.
 
 Reads the items assigned to a segment, products or categories (TYPE).
-SEGMENT\_ID is the ID that [`epx segments list`](/emporix-cli/commands/segments#epx-segments-list) shows; an unknown one lists nothing.
+SEGMENT_ID is the ID that [`epx segments list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/segments#epx-segments-list) shows; an unknown one lists nothing.
 
-Requires the customersegment.segment\_read scope.
+Requires the customersegment.segment_read scope.
 
 **Command:** `epx segments items list SEGMENT_ID [flags]`
 
@@ -1038,7 +1038,7 @@ Requires the customersegment.segment\_read scope.
 - `--stream`\
   Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx segments items search
 
@@ -1046,13 +1046,13 @@ Search the items of a segment.
 
 Reads the items assigned to a segment, products or categories (TYPE), that an Emporix q
 filter finds (`--query`; without it, every one).
-It reads and shows them as [`epx segments items list SEGMENT_ID`](/emporix-cli/commands/segments#epx-segments-items-list) does.
-SEGMENT\_ID is the ID that [`epx segments list`](/emporix-cli/commands/segments#epx-segments-list) shows; an unknown one lists nothing.
+It reads and shows them as [`epx segments items list SEGMENT_ID`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/segments#epx-segments-items-list) does.
+SEGMENT_ID is the ID that [`epx segments list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/segments#epx-segments-list) shows; an unknown one lists nothing.
 
 Changes nothing: Emporix serves this read as POST with a JSON body, which the
 flags make or `--body` gives whole.
 
-Requires the customersegment.segment\_read scope.
+Requires the customersegment.segment_read scope.
 
 **Command:** `epx segments items search SEGMENT_ID [flags]`
 
@@ -1077,16 +1077,16 @@ Requires the customersegment.segment\_read scope.
 - `--stream`\
   Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx segments items update
 
 Assign a product or category to a segment.
 
 Assigns the product or category ID to the segment
-SEGMENT\_ID, or replaces its assignment (an upsert).
-SEGMENT\_ID is the ID that [`epx segments list`](/emporix-cli/commands/segments#epx-segments-list) shows, TYPE is PRODUCT or CATEGORY, in capitals, and
-ID the id of the product or category (as [`epx products list`](/emporix-cli/commands/products#epx-products-list) or [`epx categories list`](/emporix-cli/commands/categories#epx-categories-list)
+SEGMENT_ID, or replaces its assignment (an upsert).
+SEGMENT_ID is the ID that [`epx segments list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/segments#epx-segments-list) shows, TYPE is PRODUCT or CATEGORY, in capitals, and
+ID the id of the product or category (as [`epx products list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/products#epx-products-list) or [`epx categories list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/categories#epx-categories-list)
 shows it).
 Emporix refuses an ID of no product or category of TYPE.
 `--file` may give the assignment's mixins and metadata (its version and the schemas of
@@ -1098,7 +1098,7 @@ Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the customersegment.segment\_manage scope.
+Requires the customersegment.segment_manage scope.
 
 **Command:** `epx segments items update SEGMENT_ID TYPE ID [flags]`
 
@@ -1113,7 +1113,7 @@ Requires the customersegment.segment\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx segments list
 
@@ -1122,7 +1122,7 @@ List segments.
 Reads customer segments, which group customers to offer them items such as products or
 categories. STATUS is ACTIVE or INACTIVE, and FROM and TO the validity window.
 
-Requires the customersegment.segment\_read scope.
+Requires the customersegment.segment_read scope.
 
 **Command:** `epx segments list [flags]`
 
@@ -1145,20 +1145,20 @@ Requires the customersegment.segment\_read scope.
 - `--stream`\
   Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx segments match
 
 List the products that belong to segments.
 
-Reads which of the products that `--product` names (the product id, as in [`epx products list`](/emporix-cli/commands/products#epx-products-list)) belong to an active segment that `--segment` names, on the site that `--site` names,
+Reads which of the products that `--product` names (the product id, as in [`epx products list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/products#epx-products-list)) belong to an active segment that `--segment` names, on the site that `--site` names,
 directly or through a category. Emporix answers them whole, in one response: a product
 named twice is listed twice, and unknown products are left out.
 
 Changes nothing: Emporix serves this read as POST with a JSON body, which the
 flags make or `--body` gives whole.
 
-Requires the customersegment.segment\_manage scope.
+Requires the customersegment.segment_manage scope.
 Opt-in: epx requests a write-capable scope for a read only when given `--allow-write-scope`.
 
 **Command:** `epx segments match [flags]`
@@ -1166,7 +1166,7 @@ Opt-in: epx requests a write-capable scope for a read only when given `--allow-w
 **Flags**
 
 - `--allow-write-scope`\
-  Opt in to requesting customersegment.segment\_manage, which can also change data (required).
+  Opt in to requesting customersegment.segment_manage, which can also change data (required).
 - `--body <FILE>`\
   Send the JSON request body in FILE as given (- reads standard input) instead of the one the other flags make.
 - `--columns <names>`\
@@ -1182,7 +1182,7 @@ Opt-in: epx requests a write-capable scope for a read only when given `--allow-w
 - `--site <code>`\
   The site code to match on, e.g. main (required without `--body`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx segments patch
 
@@ -1192,7 +1192,7 @@ Changes the segment ID with the JSON Patch operations (RFC 6902) of `--file`, a 
 such as `[{"op": "replace", "path": "/status", "value": "INACTIVE"}]`; epx refuses
 anything else, which Emporix would answer as done without applying it, although it
 raises the segment's metadata.version.
-ID is the ID that [`epx segments list`](/emporix-cli/commands/segments#epx-segments-list) shows.
+ID is the ID that [`epx segments list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/segments#epx-segments-list) shows.
 
 Localized text in the body is a map of translations, e.g. `{"en": "Acme", "de": "Acme"}`,
 as `-o json` of a read prints it, sent with Content-Language: \*. Emporix refuses a string in
@@ -1204,7 +1204,7 @@ Changes data: on a terminal, epx asks before it sends PATCH. `--yes` sends witho
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the customersegment.segment\_manage scope.
+Requires the customersegment.segment_manage scope.
 
 **Command:** `epx segments patch ID [flags]`
 
@@ -1219,7 +1219,7 @@ Requires the customersegment.segment\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx segments search
 
@@ -1227,12 +1227,12 @@ Search segments.
 
 Reads the customer segments that an Emporix q filter finds (`--query`; without it,
 every segment).
-It reads and shows them as [`epx segments list`](/emporix-cli/commands/segments#epx-segments-list) does.
+It reads and shows them as [`epx segments list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/segments#epx-segments-list) does.
 
 Changes nothing: Emporix serves this read as POST with a JSON body, which the
 flags make or `--body` gives whole.
 
-Requires the customersegment.segment\_read scope.
+Requires the customersegment.segment_read scope.
 
 **Command:** `epx segments search [flags]`
 
@@ -1257,16 +1257,16 @@ Requires the customersegment.segment\_read scope.
 - `--stream`\
   Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx segments update
 
 Upsert a segment.
 
 Replaces the segment ID with the one in `--file`, a JSON object as
-[`epx segments get ID -o json`](/emporix-cli/commands/segments#epx-segments-get) prints it, or creates it with that id where none exists
+[`epx segments get ID -o json`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/segments#epx-segments-get) prints it, or creates it with that id where none exists
 (an upsert); members it leaves out, such as a description, are removed.
-ID is the ID that [`epx segments list`](/emporix-cli/commands/segments#epx-segments-list) shows.
+ID is the ID that [`epx segments list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/segments#epx-segments-list) shows.
 Send its metadata.version as read to change it only if nobody changed it since:
 Emporix answers 409 Conflict (exit 5) otherwise.
 
@@ -1278,7 +1278,7 @@ Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the customersegment.segment\_manage scope.
+Requires the customersegment.segment_manage scope.
 
 **Command:** `epx segments update ID [flags]`
 
@@ -1293,4 +1293,4 @@ Requires the customersegment.segment\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).

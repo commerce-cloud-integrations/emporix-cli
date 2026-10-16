@@ -8,12 +8,12 @@ Reads and changes the locations of B2B customers (legal entities), contact email
 included. A legal entity names its locations in entitiesAddresses, each as `{"id": ...}`.
 create and update ID (an upsert) send the JSON body of `--file`; delete ID sends none.
 
-Its reads require the customermanagement.location\_read scope.
-Its writes require the customermanagement.location\_manage scope.
+Its reads require the customermanagement.location_read scope.
+Its writes require the customermanagement.location_manage scope.
 
 **Command:** `epx customer-locations [flags]`, `epx customer-locations [command]`
 
-**Flags:** only the [global flags](/emporix-cli/commands#global-flags).
+**Flags:** only the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Subcommands**
 
@@ -33,7 +33,7 @@ Its writes require the customermanagement.location\_manage scope.
 Create one customer location.
 
 Creates the customer location that the JSON body of `--file` describes, shaped as
-[`epx customer-locations get ID -o json`](/emporix-cli/commands/customer-locations#epx-customer-locations-get) prints one:
+[`epx customer-locations get ID -o json`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/customer-locations#epx-customer-locations-get) prints one:
 type (required: HEADQUARTER, WAREHOUSE or OFFICE), contactDetails (required: emails,
 phones, addressLine1, addressLine2, city, state, postcode, countryCode and tags) and name;
 leave out `"phones"`: \[\] (an empty list), which Emporix refuses (exit 1).
@@ -44,7 +44,7 @@ Changes data: on a terminal, epx asks before it sends POST. `--yes` sends withou
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the customermanagement.location\_manage scope.
+Requires the customermanagement.location_manage scope.
 
 **Command:** `epx customer-locations create [flags]`
 
@@ -59,14 +59,14 @@ Requires the customermanagement.location\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx customer-locations delete
 
 Delete one customer location.
 
 Deletes the customer location ID; it sends no body.
-ID is the ID that [`epx customer-locations list`](/emporix-cli/commands/customer-locations#epx-customer-locations-list) shows; an unknown one is not found.
+ID is the ID that [`epx customer-locations list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/customer-locations#epx-customer-locations-list) shows; an unknown one is not found.
 A legal entity that names it in entitiesAddresses no longer does.
 
 Deletes data, which cannot be undone.
@@ -74,7 +74,7 @@ On a terminal, epx sends DELETE only once you type ID at its prompt.
 `--yes` sends without asking (required without a terminal);
 `--dry-run` prints the request instead of sending it.
 
-Requires the customermanagement.location\_manage scope.
+Requires the customermanagement.location_manage scope.
 
 **Command:** `epx customer-locations delete ID [flags]`
 
@@ -87,7 +87,7 @@ Requires the customermanagement.location\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx customer-locations get
 
@@ -97,7 +97,7 @@ Reads the locations of B2B customers (legal entities), contact emails included.
 TYPE is HEADQUARTER, WAREHOUSE or OFFICE, ADDRESS the first address line and TAGS the
 location's labels; phone numbers and the rest of the address are only in `-o json`.
 
-Requires the customermanagement.location\_read scope.
+Requires the customermanagement.location_read scope.
 
 **Command:** `epx customer-locations get ID [flags]`
 
@@ -110,7 +110,7 @@ Requires the customermanagement.location\_read scope.
 - `-o, --output <format>`\
   Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx customer-locations list
 
@@ -120,7 +120,7 @@ Reads the locations of B2B customers (legal entities), contact emails included.
 TYPE is HEADQUARTER, WAREHOUSE or OFFICE, ADDRESS the first address line and TAGS the
 location's labels; phone numbers and the rest of the address are only in `-o json`.
 
-Requires the customermanagement.location\_read scope.
+Requires the customermanagement.location_read scope.
 
 **Command:** `epx customer-locations list [flags]`
 
@@ -141,7 +141,7 @@ Requires the customermanagement.location\_read scope.
 - `--stream`\
   Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx customer-locations update
 
@@ -150,16 +150,16 @@ Upsert one customer location.
 Replaces the customer location ID with the JSON body of `--file`, shaped as create takes it
 but without an id, or creates it with that id where none exists (an upsert); it requires
 type and contactDetails.
-With metadata.version as [`epx customer-locations get ID -o json`](/emporix-cli/commands/customer-locations#epx-customer-locations-get) prints it, Emporix
+With metadata.version as [`epx customer-locations get ID -o json`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/customer-locations#epx-customer-locations-get) prints it, Emporix
 replaces it only if nobody changed it since, and answers 409 Conflict (exit 5) otherwise;
 without metadata.version, it replaces it whatever its version.
-ID is the ID that [`epx customer-locations list`](/emporix-cli/commands/customer-locations#epx-customer-locations-list) shows.
+ID is the ID that [`epx customer-locations list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/customer-locations#epx-customer-locations-list) shows.
 
 Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the customermanagement.location\_manage scope.
+Requires the customermanagement.location_manage scope.
 
 **Command:** `epx customer-locations update ID [flags]`
 
@@ -174,4 +174,4 @@ Requires the customermanagement.location\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).

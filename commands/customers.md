@@ -13,7 +13,7 @@ Its writes require different OAuth scopes; the help of each names them.
 
 **Command:** `epx customers [flags]`, `epx customers [command]`
 
-**Flags:** only the [global flags](/emporix-cli/commands#global-flags).
+**Flags:** only the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Subcommands**
 
@@ -44,12 +44,12 @@ Read and change the addresses of a customer.
 
 Reads and changes the addresses of a customer, personal data included, and their tags.
 
-Its reads require the customer.customer\_read scope.
-Its writes require the customer.customer\_manage scope.
+Its reads require the customer.customer_read scope.
+Its writes require the customer.customer_manage scope.
 
 **Command:** `epx customers addresses [flags]`, `epx customers addresses [command]`
 
-**Flags:** only the [global flags](/emporix-cli/commands#global-flags).
+**Flags:** only the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Subcommands**
 
@@ -75,15 +75,15 @@ Its writes require the customer.customer\_manage scope.
 Tag an address of a customer.
 
 Adds the tags that `--tags` names, such as BILLING or SHIPPING, to the address ID of the
-customer CUSTOMER\_NUMBER.
-CUSTOMER\_NUMBER is the NUMBER that [`epx customers list`](/emporix-cli/commands/customers#epx-customers-list) shows, and ID the ID that
-[`epx customers addresses list CUSTOMER_NUMBER`](/emporix-cli/commands/customers#epx-customers-addresses-list) shows.
+customer CUSTOMER_NUMBER.
+CUSTOMER_NUMBER is the NUMBER that [`epx customers list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/customers#epx-customers-list) shows, and ID the ID that
+[`epx customers addresses list CUSTOMER_NUMBER`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/customers#epx-customers-addresses-list) shows.
 
 Changes data: on a terminal, epx asks before it sends POST. `--yes` sends without
 asking (required without a terminal); `--dry-run` prints the request
 instead of sending it.
 
-Requires the customer.customer\_manage scope.
+Requires the customer.customer_manage scope.
 
 **Command:** `epx customers addresses add-tags CUSTOMER_NUMBER ID [flags]`
 
@@ -98,21 +98,21 @@ Requires the customer.customer\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx customers addresses create
 
 Add an address to a customer.
 
 Adds the address in `--file`, a JSON object with at least contactName, to the customer
-CUSTOMER\_NUMBER; Emporix makes its id unless the body gives one, and answers with it.
-CUSTOMER\_NUMBER is the NUMBER that [`epx customers list`](/emporix-cli/commands/customers#epx-customers-list) shows.
+CUSTOMER_NUMBER; Emporix makes its id unless the body gives one, and answers with it.
+CUSTOMER_NUMBER is the NUMBER that [`epx customers list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/customers#epx-customers-list) shows.
 
 Changes data: on a terminal, epx asks before it sends POST. `--yes` sends without
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the customer.customer\_manage scope.
+Requires the customer.customer_manage scope.
 
 **Command:** `epx customers addresses create CUSTOMER_NUMBER [flags]`
 
@@ -127,22 +127,22 @@ Requires the customer.customer\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx customers addresses delete
 
 Delete an address of a customer.
 
-Deletes the address ID of the customer CUSTOMER\_NUMBER.
-CUSTOMER\_NUMBER is the NUMBER that [`epx customers list`](/emporix-cli/commands/customers#epx-customers-list) shows, and ID the ID that
-[`epx customers addresses list CUSTOMER_NUMBER`](/emporix-cli/commands/customers#epx-customers-addresses-list) shows.
+Deletes the address ID of the customer CUSTOMER_NUMBER.
+CUSTOMER_NUMBER is the NUMBER that [`epx customers list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/customers#epx-customers-list) shows, and ID the ID that
+[`epx customers addresses list CUSTOMER_NUMBER`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/customers#epx-customers-addresses-list) shows.
 
 Deletes data, which cannot be undone.
 On a terminal, epx sends DELETE only once you type ID at its prompt.
 `--yes` sends without asking (required without a terminal);
 `--dry-run` prints the request instead of sending it.
 
-Requires the customer.customer\_manage scope.
+Requires the customer.customer_manage scope.
 
 **Command:** `epx customers addresses delete CUSTOMER_NUMBER ID [flags]`
 
@@ -155,19 +155,19 @@ Requires the customer.customer\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx customers addresses get
 
 Show one address of a customer.
 
 Reads one address of a customer, personal data included.
-CUSTOMER\_NUMBER is the NUMBER that [`epx customers list`](/emporix-cli/commands/customers#epx-customers-list) shows; an unknown one is not found.
-ID is the ID that [`epx customers addresses list CUSTOMER_NUMBER`](/emporix-cli/commands/customers#epx-customers-addresses-list) shows; an unknown one is not found.
+CUSTOMER_NUMBER is the NUMBER that [`epx customers list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/customers#epx-customers-list) shows; an unknown one is not found.
+ID is the ID that [`epx customers addresses list CUSTOMER_NUMBER`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/customers#epx-customers-addresses-list) shows; an unknown one is not found.
 DEFAULT marks the default address; TAGS are labels such as BILLING or SHIPPING. Phone
 numbers, states and extra address lines are only in `-o json`.
 
-Requires the customer.customer\_read scope.
+Requires the customer.customer_read scope.
 
 **Command:** `epx customers addresses get CUSTOMER_NUMBER ID [flags]`
 
@@ -180,18 +180,18 @@ Requires the customer.customer\_read scope.
 - `-o, --output <format>`\
   Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx customers addresses list
 
 List the addresses of a customer.
 
 Reads the addresses of a customer, personal data included.
-CUSTOMER\_NUMBER is the NUMBER that [`epx customers list`](/emporix-cli/commands/customers#epx-customers-list) shows; an unknown one is not found.
+CUSTOMER_NUMBER is the NUMBER that [`epx customers list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/customers#epx-customers-list) shows; an unknown one is not found.
 DEFAULT marks the default address; TAGS are labels such as BILLING or SHIPPING. Phone
 numbers, states and extra address lines are only in `-o json`.
 
-Requires the customer.customer\_read scope.
+Requires the customer.customer_read scope.
 
 **Command:** `epx customers addresses list CUSTOMER_NUMBER [flags]`
 
@@ -208,22 +208,22 @@ Requires the customer.customer\_read scope.
 - `--stream`\
   Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx customers addresses patch
 
 Change an address of a customer.
 
-Changes the members of the address ID of the customer CUSTOMER\_NUMBER that `--file` gives,
+Changes the members of the address ID of the customer CUSTOMER_NUMBER that `--file` gives,
 a JSON object such as `{"isDefault": true}`; Emporix keeps the others.
-CUSTOMER\_NUMBER is the NUMBER that [`epx customers list`](/emporix-cli/commands/customers#epx-customers-list) shows, and ID the ID that
-[`epx customers addresses list CUSTOMER_NUMBER`](/emporix-cli/commands/customers#epx-customers-addresses-list) shows.
+CUSTOMER_NUMBER is the NUMBER that [`epx customers list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/customers#epx-customers-list) shows, and ID the ID that
+[`epx customers addresses list CUSTOMER_NUMBER`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/customers#epx-customers-addresses-list) shows.
 
 Changes data: on a terminal, epx asks before it sends PATCH. `--yes` sends without
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the customer.customer\_manage scope.
+Requires the customer.customer_manage scope.
 
 **Command:** `epx customers addresses patch CUSTOMER_NUMBER ID [flags]`
 
@@ -238,22 +238,22 @@ Requires the customer.customer\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx customers addresses remove-tags
 
 Remove tags from an address of a customer.
 
-Removes the tags that `--tags` names from the address ID of the customer CUSTOMER\_NUMBER.
-CUSTOMER\_NUMBER is the NUMBER that [`epx customers list`](/emporix-cli/commands/customers#epx-customers-list) shows, and ID the ID that
-[`epx customers addresses list CUSTOMER_NUMBER`](/emporix-cli/commands/customers#epx-customers-addresses-list) shows.
+Removes the tags that `--tags` names from the address ID of the customer CUSTOMER_NUMBER.
+CUSTOMER_NUMBER is the NUMBER that [`epx customers list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/customers#epx-customers-list) shows, and ID the ID that
+[`epx customers addresses list CUSTOMER_NUMBER`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/customers#epx-customers-addresses-list) shows.
 
 Deletes data, which cannot be undone.
 On a terminal, epx sends DELETE only once you type ID at its prompt.
 `--yes` sends without asking (required without a terminal);
 `--dry-run` prints the request instead of sending it.
 
-Requires the customer.customer\_manage scope.
+Requires the customer.customer_manage scope.
 
 **Command:** `epx customers addresses remove-tags CUSTOMER_NUMBER ID [flags]`
 
@@ -268,24 +268,24 @@ Requires the customer.customer\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx customers addresses update
 
 Upsert an address of a customer.
 
-Changes the members of the address ID of the customer CUSTOMER\_NUMBER that `--file` gives,
-a JSON object as [`epx customers addresses get CUSTOMER_NUMBER ID -o json`](/emporix-cli/commands/customers#epx-customers-addresses-get) prints it,
+Changes the members of the address ID of the customer CUSTOMER_NUMBER that `--file` gives,
+a JSON object as [`epx customers addresses get CUSTOMER_NUMBER ID -o json`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/customers#epx-customers-addresses-get) prints it,
 keeping those it leaves out, such as its tags, or creates the address with that id where
 none exists (an upsert).
-CUSTOMER\_NUMBER is the NUMBER that [`epx customers list`](/emporix-cli/commands/customers#epx-customers-list) shows, and ID the ID that
-[`epx customers addresses list CUSTOMER_NUMBER`](/emporix-cli/commands/customers#epx-customers-addresses-list) shows.
+CUSTOMER_NUMBER is the NUMBER that [`epx customers list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/customers#epx-customers-list) shows, and ID the ID that
+[`epx customers addresses list CUSTOMER_NUMBER`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/customers#epx-customers-addresses-list) shows.
 
 Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the customer.customer\_manage scope.
+Requires the customer.customer_manage scope.
 
 **Command:** `epx customers addresses update CUSTOMER_NUMBER ID [flags]`
 
@@ -300,14 +300,14 @@ Requires the customer.customer\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx customers create
 
 Create a customer.
 
 Creates the customer profile in `--file`, a JSON object with at least contactEmail, such as
-[`epx customers get NUMBER -o json`](/emporix-cli/commands/customers#epx-customers-get) prints one; Emporix makes the customer number unless
+[`epx customers get NUMBER -o json`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/customers#epx-customers-get) prints one; Emporix makes the customer number unless
 the body gives it as id, and answers with it. An account with that email that exists
 already is a conflict (exit 5).
 Emporix ignores a customerNumber that a profile gives (no error).
@@ -318,7 +318,7 @@ Changes data: on a terminal, epx asks before it sends POST. `--yes` sends withou
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the customer.customer\_manage scope.
+Requires the customer.customer_manage scope.
 
 **Command:** `epx customers create [flags]`
 
@@ -335,7 +335,7 @@ Requires the customer.customer\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx customers delete
 
@@ -343,14 +343,14 @@ Delete a customer.
 
 Deletes the customer profile NUMBER and its accounts. Emporix answers 202 Accepted, and
 the profile is not found from then on.
-NUMBER is the NUMBER that [`epx customers list`](/emporix-cli/commands/customers#epx-customers-list) shows.
+NUMBER is the NUMBER that [`epx customers list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/customers#epx-customers-list) shows.
 
 Deletes data, which cannot be undone.
 On a terminal, epx sends DELETE only once you type NUMBER at its prompt.
 `--yes` sends without asking (required without a terminal);
 `--dry-run` prints the request instead of sending it.
 
-Requires the customer.customer\_manage scope.
+Requires the customer.customer_manage scope.
 
 **Command:** `epx customers delete NUMBER [flags]`
 
@@ -363,7 +363,7 @@ Requires the customer.customer\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx customers get
 
@@ -374,9 +374,9 @@ takes, EMAIL the contact email (that of the account, with which the customer sig
 may differ), BUSINESS MODEL is B2B (assigned to a company) or B2C, and ON HOLD marks a
 suspended profile. B2B data and the default address are only in `-o json`; Emporix leaves
 out a profile's addresses, accounts and mixins unless asked to expand them, which epx
-does not: [`epx customers addresses list`](/emporix-cli/commands/customers#epx-customers-addresses-list) lists the addresses.
+does not: [`epx customers addresses list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/customers#epx-customers-addresses-list) lists the addresses.
 
-Requires the customer.customer\_read scope.
+Requires the customer.customer_read scope.
 
 **Command:** `epx customers get NUMBER [flags]`
 
@@ -389,7 +389,7 @@ Requires the customer.customer\_read scope.
 - `-o, --output <format>`\
   Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx customers import
 
@@ -399,7 +399,7 @@ Imports the customer profiles in `--file`, a JSON array of profiles as create ta
 each with an account that holds its email and exactly one of passwordHash, a hash that
 Emporix checks as its own, or legacyAuth, the hash of another system and its algorithm,
 which Emporix replaces with its own as the customer signs in. Customers with legacyAuth
-need a password migration retention: [`epx customers password-migration update`](/emporix-cli/commands/customers#epx-customers-password-migration-update) sets it.
+need a password migration retention: [`epx customers password-migration update`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/customers#epx-customers-password-migration-update) sets it.
 Emporix ignores a customerNumber that a profile gives (no error).
 
 Emporix takes up to 200 items in one request (epx refuses more), carries out each on
@@ -412,7 +412,7 @@ Changes data: on a terminal, epx asks before it sends POST. `--yes` sends withou
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the customer.import\_manage scope.
+Requires the customer.import_manage scope.
 
 **Command:** `epx customers import [flags]`
 
@@ -427,7 +427,7 @@ Requires the customer.import\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx customers list
 
@@ -438,9 +438,9 @@ takes, EMAIL the contact email (that of the account, with which the customer sig
 may differ), BUSINESS MODEL is B2B (assigned to a company) or B2C, and ON HOLD marks a
 suspended profile. B2B data and the default address are only in `-o json`; Emporix leaves
 out a profile's addresses, accounts and mixins unless asked to expand them, which epx
-does not: [`epx customers addresses list`](/emporix-cli/commands/customers#epx-customers-addresses-list) lists the addresses.
+does not: [`epx customers addresses list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/customers#epx-customers-addresses-list) lists the addresses.
 
-Requires the customer.customer\_read scope.
+Requires the customer.customer_read scope.
 
 **Command:** `epx customers list [flags]`
 
@@ -461,7 +461,7 @@ Requires the customer.customer\_read scope.
 - `--stream`\
   Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx customers password-migration
 
@@ -470,12 +470,12 @@ Read and set until when imported customers' passwords are migrated.
 Reads, sets and removes the password migration retention of customer imports, until when
 customers imported with a password hash from another system get an Emporix one.
 
-Its reads require the customer.import\_read scope.
-Its writes require the customer.import\_manage scope.
+Its reads require the customer.import_read scope.
+Its writes require the customer.import_manage scope.
 
 **Command:** `epx customers password-migration [flags]`, `epx customers password-migration [command]`
 
-**Flags:** only the [global flags](/emporix-cli/commands#global-flags).
+**Flags:** only the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Subcommands**
 
@@ -500,7 +500,7 @@ On a terminal, epx sends DELETE only once you type the tenant at its prompt.
 `--yes` sends without asking (required without a terminal);
 `--dry-run` prints the request instead of sending it.
 
-Requires the customer.import\_manage scope.
+Requires the customer.import_manage scope.
 
 **Command:** `epx customers password-migration delete [flags]`
 
@@ -513,7 +513,7 @@ Requires the customer.import\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx customers password-migration get
 
@@ -525,7 +525,7 @@ that, the customers not yet migrated must reset their password. REMINDER is when
 asks them by email to sign in once, and EMAILS whether customers get these reminder and
 reset emails. A tenant without this setting is not found (exit 4).
 
-Requires the customer.import\_read scope.
+Requires the customer.import_read scope.
 
 **Command:** `epx customers password-migration get [flags]`
 
@@ -538,7 +538,7 @@ Requires the customer.import\_read scope.
 - `-o, --output <format>`\
   Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx customers password-migration update
 
@@ -557,7 +557,7 @@ Changes data: on a terminal, epx asks before it sends POST. `--yes` sends withou
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the customer.import\_manage scope.
+Requires the customer.import_manage scope.
 
 **Command:** `epx customers password-migration update [flags]`
 
@@ -578,7 +578,7 @@ Requires the customer.import\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Examples**
 
@@ -593,7 +593,7 @@ Change a customer.
 
 Changes the members of the customer profile NUMBER that `--file` gives, a JSON object such
 as `{"active": false}`; Emporix keeps the others.
-NUMBER is the NUMBER that [`epx customers list`](/emporix-cli/commands/customers#epx-customers-list) shows.
+NUMBER is the NUMBER that [`epx customers list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/customers#epx-customers-list) shows.
 Emporix ignores a customerNumber that a profile gives (no error).
 Send its metadata.version as read to change it only if nobody changed it since:
 Emporix answers 409 Conflict (exit 5) otherwise.
@@ -604,7 +604,7 @@ Changes data: on a terminal, epx asks before it sends PATCH. `--yes` sends witho
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the customer.customer\_manage scope.
+Requires the customer.customer_manage scope.
 
 **Command:** `epx customers patch NUMBER [flags]`
 
@@ -619,7 +619,7 @@ Requires the customer.customer\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx customers search
 
@@ -627,12 +627,12 @@ Search customers.
 
 Reads the customer profiles, personal data included, that an Emporix q filter finds
 (`--query`; without it, every profile).
-It reads and shows them as [`epx customers list`](/emporix-cli/commands/customers#epx-customers-list) does.
+It reads and shows them as [`epx customers list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/customers#epx-customers-list) does.
 
 Changes nothing: Emporix serves this read as POST with a JSON body, which the
 flags make or `--body` gives whole.
 
-Requires the customer.customer\_read scope.
+Requires the customer.customer_read scope.
 
 **Command:** `epx customers search [flags]`
 
@@ -655,17 +655,17 @@ Requires the customer.customer\_read scope.
 - `--stream`\
   Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx customers update
 
 Upsert a customer.
 
 Changes the members of the customer profile NUMBER that `--file` gives, a JSON object as
-[`epx customers get NUMBER -o json`](/emporix-cli/commands/customers#epx-customers-get) prints it, keeping those it leaves out, or creates the
+[`epx customers get NUMBER -o json`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/customers#epx-customers-get) prints it, keeping those it leaves out, or creates the
 profile with that number where none exists (an upsert), as create does: with the email of
 an existing account, that is a conflict (exit 5).
-NUMBER is the NUMBER that [`epx customers list`](/emporix-cli/commands/customers#epx-customers-list) shows.
+NUMBER is the NUMBER that [`epx customers list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/customers#epx-customers-list) shows.
 Emporix ignores a customerNumber that a profile gives (no error).
 Send its metadata.version as read to change it only if nobody changed it since:
 Emporix answers 409 Conflict (exit 5) otherwise.
@@ -678,7 +678,7 @@ Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the customer.customer\_manage scope.
+Requires the customer.customer_manage scope.
 
 **Command:** `epx customers update NUMBER [flags]`
 
@@ -695,4 +695,4 @@ Requires the customer.customer\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).

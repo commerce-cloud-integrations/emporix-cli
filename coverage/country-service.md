@@ -10,10 +10,10 @@ Operations of the Emporix API reference file [`configuration/country-service/api
 
 | Operation | Status | Details |
 | --- | --- | --- |
-| `GET /country/{tenant}/countries` | Built | [`epx countries list`](/emporix-cli/commands/countries#epx-countries-list) |
-| `GET /country/{tenant}/countries/{countryCode}` | Built | [`epx countries get`](/emporix-cli/commands/countries#epx-countries-get) |
-| `PATCH /country/{tenant}/countries/{countryCode}` | Built | [`epx countries patch`](/emporix-cli/commands/countries#epx-countries-patch) |
-| `GET /country/{tenant}/regions` | Built | [`epx regions list`](/emporix-cli/commands/regions#epx-regions-list) |
-| `GET /country/{tenant}/regions/{regionCode}` | Built | [`epx regions get`](/emporix-cli/commands/regions#epx-regions-get) |
+| `GET /country/{tenant}/countries` | Built | [`epx countries list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/countries#epx-countries-list) |
+| `GET /country/{tenant}/countries/{countryCode}` | Built | [`epx countries get`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/countries#epx-countries-get) |
+| `PATCH /country/{tenant}/countries/{countryCode}` | Built | [`epx countries patch`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/countries#epx-countries-patch) |
+| `GET /country/{tenant}/regions` | Built | [`epx regions list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/regions#epx-regions-list) |
+| `GET /country/{tenant}/regions/{regionCode}` | Built | [`epx regions get`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/regions#epx-regions-get) |
 
-All services: [Emporix API coverage](/emporix-cli/coverage).
+All services: [Emporix API coverage](https://commerce-cloud-integrations.github.io/emporix-cli/coverage).

@@ -36,4 +36,4 @@ Operations of the Emporix API reference file [`companies-and-customers/customer-
 | `GET /customer/{tenant}/signup/optin/{token}` | Not applicable | Needs an anonymous storefront token (customer signup and login flows), which a service token is not. |
 | `POST /customer/{tenant}/signup/optin/refresh_token` | Not applicable | Needs an anonymous storefront token (customer signup and login flows), which a service token is not. |
 
-All services: [Emporix API coverage](/emporix-cli/coverage).
+All services: [Emporix API coverage](https://commerce-cloud-integrations.github.io/emporix-cli/coverage).

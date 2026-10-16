@@ -7,8 +7,8 @@
 Generate the autocompletion script for epx for the specified shell.
 See each sub-command's help for details on how to use the generated script.
 
-With EPX\_COMPLETE\_IDS=1 in the environment, the arguments that name items (such as ID of
-[`epx products get ID`](/emporix-cli/commands/products#epx-products-get)) and `--site` complete too, with up to 100 of the IDs and site codes that
+With EPX_COMPLETE_IDS=1 in the environment, the arguments that name items (such as ID of
+[`epx products get ID`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/products#epx-products-get)) and `--site` complete too, with up to 100 of the IDs and site codes that
 the first page of their list shows (the whole list where Emporix sends it in one response),
 read with the API key in effect and the scopes of that list within 3s.
 Without it, completion never calls the API; when the API cannot be read, it offers no IDs
@@ -16,7 +16,7 @@ and prints nothing.
 
 **Command:** `epx completion [flags]`, `epx completion [command]`
 
-**Flags:** only the [global flags](/emporix-cli/commands#global-flags).
+**Flags:** only the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Subcommands**
 
@@ -67,7 +67,7 @@ You will need to start a new shell for this setup to take effect.
 - `--no-descriptions`\
   Disable completion descriptions.
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx completion fish
 
@@ -96,7 +96,7 @@ You will need to start a new shell for this setup to take effect.
 - `--no-descriptions`\
   Disable completion descriptions.
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx completion powershell
 
@@ -120,7 +120,7 @@ to your powershell profile.
 - `--no-descriptions`\
   Disable completion descriptions.
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx completion zsh
 
@@ -164,4 +164,4 @@ You will need to start a new shell for this setup to take effect.
 - `--no-descriptions`\
   Disable completion descriptions.
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).

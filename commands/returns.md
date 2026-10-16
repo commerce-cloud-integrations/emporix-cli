@@ -12,14 +12,14 @@ as that unitPrice is. Items (with their reasons and prices), the return reason, 
 submitter, expiry date and assisted-buying entries are only in `-o json`.
 `--query submitter.userType:CUSTOMER` lists the returns that customers made themselves
 (EMPLOYEE: those made on their behalf).
-[`epx returns create`](/emporix-cli/commands/returns#epx-returns-create), `update`, `patch` and `delete` change returns.
+[`epx returns create`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/returns#epx-returns-create), `update`, `patch` and `delete` change returns.
 
-Its reads require the returns.returns\_read scope.
+Its reads require the returns.returns_read scope.
 Its writes require different OAuth scopes; the help of each names them.
 
 **Command:** `epx returns [flags]`, `epx returns [command]`
 
-**Flags:** only the [global flags](/emporix-cli/commands#global-flags).
+**Flags:** only the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Subcommands**
 
@@ -54,7 +54,7 @@ Changes data: on a terminal, epx asks before it sends POST. `--yes` sends withou
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the returns.returns\_manage scope.
+Requires the returns.returns_manage scope.
 
 **Command:** `epx returns create [flags]`
 
@@ -69,7 +69,7 @@ Requires the returns.returns\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx returns delete
 
@@ -79,14 +79,14 @@ Deletes the return ID; it sends no body. Emporix deletes a PENDING or an
 APPROVED return (the reference documents 400 Bad Request, exit 1, where the status does not
 allow it).
 Emporix answers an unknown ID as one that it deleted (204 No Content).
-ID is the ID that [`epx returns list`](/emporix-cli/commands/returns#epx-returns-list) shows.
+ID is the ID that [`epx returns list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/returns#epx-returns-list) shows.
 
 Deletes data, which cannot be undone.
 On a terminal, epx sends DELETE only once you type ID at its prompt.
 `--yes` sends without asking (required without a terminal);
 `--dry-run` prints the request instead of sending it.
 
-Requires the returns.returns\_manage scope.
+Requires the returns.returns_manage scope.
 
 **Command:** `epx returns delete ID [flags]`
 
@@ -99,7 +99,7 @@ Requires the returns.returns\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx returns get
 
@@ -113,9 +113,9 @@ as that unitPrice is. Items (with their reasons and prices), the return reason, 
 submitter, expiry date and assisted-buying entries are only in `-o json`.
 `--query submitter.userType:CUSTOMER` lists the returns that customers made themselves
 (EMPLOYEE: those made on their behalf).
-[`epx returns create`](/emporix-cli/commands/returns#epx-returns-create), `update`, `patch` and `delete` change returns.
+[`epx returns create`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/returns#epx-returns-create), `update`, `patch` and `delete` change returns.
 
-Requires the returns.returns\_read scope.
+Requires the returns.returns_read scope.
 
 **Command:** `epx returns get ID [flags]`
 
@@ -128,7 +128,7 @@ Requires the returns.returns\_read scope.
 - `-o, --output <format>`\
   Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx returns list
 
@@ -142,9 +142,9 @@ as that unitPrice is. Items (with their reasons and prices), the return reason, 
 submitter, expiry date and assisted-buying entries are only in `-o json`.
 `--query submitter.userType:CUSTOMER` lists the returns that customers made themselves
 (EMPLOYEE: those made on their behalf).
-[`epx returns create`](/emporix-cli/commands/returns#epx-returns-create), `update`, `patch` and `delete` change returns.
+[`epx returns create`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/returns#epx-returns-create), `update`, `patch` and `delete` change returns.
 
-Requires the returns.returns\_read scope.
+Requires the returns.returns_read scope.
 
 **Command:** `epx returns list [flags]`
 
@@ -165,7 +165,7 @@ Requires the returns.returns\_read scope.
 - `--stream`\
   Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx returns patch
 
@@ -175,13 +175,13 @@ Changes the return ID with the JSON Patch (RFC 6902) in `--file`: an array of
 operations, each with op (add, remove or replace), path and value, e.g.
 `[{"op": "replace", "path": "/approvalStatus", "value": "APPROVED"}]`. Emporix requires its
 read scope for it too, and answers a token without it with 400 Bad Request.
-ID is the ID that [`epx returns list`](/emporix-cli/commands/returns#epx-returns-list) shows.
+ID is the ID that [`epx returns list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/returns#epx-returns-list) shows.
 
 Changes data: on a terminal, epx asks before it sends PATCH. `--yes` sends without
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the returns.returns\_read, returns.returns\_manage scopes.
+Requires the returns.returns_read, returns.returns_manage scopes.
 
 **Command:** `epx returns patch ID [flags]`
 
@@ -196,23 +196,23 @@ Requires the returns.returns\_read, returns.returns\_manage scopes.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx returns update
 
 Replace a return.
 
 Replaces the return ID with the return in `--file`, a JSON object as
-[`epx returns get ID -o json`](/emporix-cli/commands/returns#epx-returns-get) prints it, metadata.version included (Emporix refuses a body
+[`epx returns get ID -o json`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/returns#epx-returns-get) prints it, metadata.version included (Emporix refuses a body
 without metadata with 400 Bad Request). Emporix replaces only the latest version: an older
 metadata.version, like an unknown return, is not found (exit 4).
-ID is the ID that [`epx returns list`](/emporix-cli/commands/returns#epx-returns-list) shows.
+ID is the ID that [`epx returns list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/returns#epx-returns-list) shows.
 
 Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the returns.returns\_manage scope.
+Requires the returns.returns_manage scope.
 
 **Command:** `epx returns update ID [flags]`
 
@@ -227,4 +227,4 @@ Requires the returns.returns\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).

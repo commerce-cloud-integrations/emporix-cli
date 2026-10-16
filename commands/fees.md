@@ -14,7 +14,7 @@ Its writes require different OAuth scopes; the help of each names them.
 
 **Command:** `epx fees [flags]`, `epx fees [command]`
 
-**Flags:** only the [global flags](/emporix-cli/commands#global-flags).
+**Flags:** only the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Subcommands**
 
@@ -47,7 +47,7 @@ Its writes require different OAuth scopes; the help of each names them.
 
 **Command:** `epx fees assignments [flags]`, `epx fees assignments [command]`
 
-**Flags:** only the [global flags](/emporix-cli/commands#global-flags).
+**Flags:** only the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Subcommands**
 
@@ -88,7 +88,7 @@ Changes data: on a terminal, epx asks before it sends POST. `--yes` sends withou
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the fee.item\_create scope.
+Requires the fee.item_create scope.
 
 **Command:** `epx fees assignments create [flags]`
 
@@ -97,7 +97,7 @@ Requires the fee.item\_create scope.
 - `--dry-run`\
   Print the request instead of sending it (excludes `-o`).
 - `--fee <ID>`\
-  The ID of a fee, as [`epx fees list`](/emporix-cli/commands/fees#epx-fees-list) shows it (repeatable; required without `--file`).
+  The ID of a fee, as [`epx fees list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/fees#epx-fees-list) shows it (repeatable; required without `--file`).
 - `--file <PATH>`\
   JSON request body in PATH, sent byte for byte instead of the one that epx makes (- reads standard input; sending it then needs `--yes`).
 - `--item <YRN>`\
@@ -109,7 +109,7 @@ Requires the fee.item\_create scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Examples**
 
@@ -133,7 +133,7 @@ On a terminal, epx sends DELETE only once you type YRN at its prompt.
 `--yes` sends without asking (required without a terminal);
 `--dry-run` prints the request instead of sending it.
 
-Requires the fee.item\_delete scope.
+Requires the fee.item_delete scope.
 
 **Command:** `epx fees assignments delete YRN [flags]`
 
@@ -148,25 +148,25 @@ Requires the fee.item\_delete scope.
 - `--yes`\
   Send without asking (required without a terminal).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx fees assignments delete-fee
 
 Remove a fee from an item.
 
-Removes the fee FEE\_ID from the item fee of the item YRN;
+Removes the fee FEE_ID from the item fee of the item YRN;
 Emporix deletes the item fee once it has no fees.
-Emporix answers an unknown FEE\_ID as one that it deleted (204 No Content).
+Emporix answers an unknown FEE_ID as one that it deleted (204 No Content).
 YRN names the item, e.g. `'urn:yaas:saasag:caasproduct:product:TENANT;PRODUCT_ID'`
 (quoted, because the shell would end the command at ;).
-FEE\_ID is the ID that [`epx fees list`](/emporix-cli/commands/fees#epx-fees-list) shows.
+FEE_ID is the ID that [`epx fees list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/fees#epx-fees-list) shows.
 
 Deletes data, which cannot be undone.
-On a terminal, epx sends DELETE only once you type FEE\_ID at its prompt.
+On a terminal, epx sends DELETE only once you type FEE_ID at its prompt.
 `--yes` sends without asking (required without a terminal);
 `--dry-run` prints the request instead of sending it.
 
-Requires the fee.item\_delete scope.
+Requires the fee.item_delete scope.
 
 **Command:** `epx fees assignments delete-fee YRN FEE_ID [flags]`
 
@@ -179,23 +179,23 @@ Requires the fee.item\_delete scope.
 - `--yes`\
   Send without asking (required without a terminal).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx fees assignments delete-product
 
 Delete the item fee of a product.
 
-Deletes the item fee of the product PRODUCT\_ID, which then has no fees.
+Deletes the item fee of the product PRODUCT_ID, which then has no fees.
 Without `--site`, Emporix acts on the item fee on site main.
-Emporix answers an unknown PRODUCT\_ID as one that it deleted (204 No Content).
-PRODUCT\_ID is the product id (as in [`epx products list`](/emporix-cli/commands/products#epx-products-list)), not its code.
+Emporix answers an unknown PRODUCT_ID as one that it deleted (204 No Content).
+PRODUCT_ID is the product id (as in [`epx products list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/products#epx-products-list)), not its code.
 
-Deletes every fee of the product PRODUCT\_ID with one request, which cannot be undone.
-On a terminal, epx sends DELETE only once you type PRODUCT\_ID at its prompt.
+Deletes every fee of the product PRODUCT_ID with one request, which cannot be undone.
+On a terminal, epx sends DELETE only once you type PRODUCT_ID at its prompt.
 `--yes` sends without asking (required without a terminal);
 `--dry-run` prints the request instead of sending it.
 
-Requires the fee.item\_delete scope.
+Requires the fee.item_delete scope.
 
 **Command:** `epx fees assignments delete-product PRODUCT_ID [flags]`
 
@@ -210,24 +210,24 @@ Requires the fee.item\_delete scope.
 - `--yes`\
   Send without asking (required without a terminal).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx fees assignments delete-product-fee
 
 Remove a fee from a product.
 
-Removes the fee FEE\_ID from the item fee of the product PRODUCT\_ID on the site of the fee;
+Removes the fee FEE_ID from the item fee of the product PRODUCT_ID on the site of the fee;
 Emporix deletes the item fee once it has no fees.
-Emporix answers an unknown FEE\_ID as one that it deleted (204 No Content).
-PRODUCT\_ID is the product id (as in [`epx products list`](/emporix-cli/commands/products#epx-products-list)), not its code.
-FEE\_ID is the ID that [`epx fees list`](/emporix-cli/commands/fees#epx-fees-list) shows.
+Emporix answers an unknown FEE_ID as one that it deleted (204 No Content).
+PRODUCT_ID is the product id (as in [`epx products list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/products#epx-products-list)), not its code.
+FEE_ID is the ID that [`epx fees list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/fees#epx-fees-list) shows.
 
 Deletes data, which cannot be undone.
-On a terminal, epx sends DELETE only once you type FEE\_ID at its prompt.
+On a terminal, epx sends DELETE only once you type FEE_ID at its prompt.
 `--yes` sends without asking (required without a terminal);
 `--dry-run` prints the request instead of sending it.
 
-Requires the fee.item\_delete scope.
+Requires the fee.item_delete scope.
 
 **Command:** `epx fees assignments delete-product-fee PRODUCT_ID FEE_ID [flags]`
 
@@ -240,7 +240,7 @@ Requires the fee.item\_delete scope.
 - `--yes`\
   Send without asking (required without a terminal).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx fees assignments list
 
@@ -249,7 +249,7 @@ List the item fees of a site.
 Reads item fees: which fees apply to which item (a product or a payment type) on a site.
 Emporix documents main as the default site, so `--site` is required; an unknown site lists
 nothing.
-ITEM is the item's YRN, ID the item fee's id and FEES the ids of its fees, as [`epx fees list`](/emporix-cli/commands/fees#epx-fees-list)
+ITEM is the item's YRN, ID the item fee's id and FEES the ids of its fees, as [`epx fees list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/fees#epx-fees-list)
 shows them; `-o json` shows the response as sent.
 
 No OAuth scope is needed.
@@ -271,7 +271,7 @@ No OAuth scope is needed.
 - `--stream`\
   Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx fees assignments search
 
@@ -286,7 +286,7 @@ e.g. `'urn:yaas:saasag:caasproduct:product:TENANT;PRODUCT_ID'`
 
 Changes nothing: Emporix serves this read as POST with a JSON body, which the
 flags make or `--body` gives whole.
-ITEM is the item's YRN, ID the item fee's id and FEES the ids of its fees, as [`epx fees list`](/emporix-cli/commands/fees#epx-fees-list)
+ITEM is the item's YRN, ID the item fee's id and FEES the ids of its fees, as [`epx fees list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/fees#epx-fees-list)
 shows them; `-o json` shows the response as sent.
 
 No OAuth scope is needed.
@@ -312,7 +312,7 @@ No OAuth scope is needed.
 - `--stream`\
   Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx fees assignments search-by-product
 
@@ -320,13 +320,13 @@ Search the item fees of a product on sites.
 
 Reads item fees: which fees apply to which item (a product or a payment type) on a site.
 Reads the item fees of the product that `--product` names on the sites that `--site` names: its
-id (as in [`epx products list`](/emporix-cli/commands/products#epx-products-list)), not its code.
+id (as in [`epx products list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/products#epx-products-list)), not its code.
 Emporix pages this search in its body, so epx sets pageNumber and pageSize there, also in
 the body of `--body`.
 
 Changes nothing: Emporix serves this read as POST with a JSON body, which the
 flags make or `--body` gives whole.
-ITEM is the item's YRN, ID the item fee's id and FEES the ids of its fees, as [`epx fees list`](/emporix-cli/commands/fees#epx-fees-list)
+ITEM is the item's YRN, ID the item fee's id and FEES the ids of its fees, as [`epx fees list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/fees#epx-fees-list)
 shows them; `-o json` shows the response as sent.
 
 No OAuth scope is needed.
@@ -352,7 +352,7 @@ No OAuth scope is needed.
 - `--stream`\
   Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx fees assignments search-by-products
 
@@ -360,13 +360,13 @@ Search the item fees of products on a site.
 
 Reads item fees: which fees apply to which item (a product or a payment type) on a site.
 Reads the item fees of the products that `--products` names on the site that `--site` names:
-their ids (as in [`epx products list`](/emporix-cli/commands/products#epx-products-list)), not their codes, separated by commas.
+their ids (as in [`epx products list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/products#epx-products-list)), not their codes, separated by commas.
 Emporix pages this search in its body, so epx sets pageNumber and pageSize there, also in
 the body of `--body`.
 
 Changes nothing: Emporix serves this read as POST with a JSON body, which the
 flags make or `--body` gives whole.
-ITEM is the item's YRN, ID the item fee's id and FEES the ids of its fees, as [`epx fees list`](/emporix-cli/commands/fees#epx-fees-list)
+ITEM is the item's YRN, ID the item fee's id and FEES the ids of its fees, as [`epx fees list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/fees#epx-fees-list)
 shows them; `-o json` shows the response as sent.
 
 No OAuth scope is needed.
@@ -392,7 +392,7 @@ No OAuth scope is needed.
 - `--stream`\
   Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx fees assignments update
 
@@ -410,7 +410,7 @@ Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the fee.item\_update scope.
+Requires the fee.item_update scope.
 
 **Command:** `epx fees assignments update YRN [flags]`
 
@@ -419,7 +419,7 @@ Requires the fee.item\_update scope.
 - `--dry-run`\
   Print the request instead of sending it (excludes `-o`).
 - `--fee <ID>`\
-  The ID of a fee, as [`epx fees list`](/emporix-cli/commands/fees#epx-fees-list) shows it (repeatable; required without `--file`).
+  The ID of a fee, as [`epx fees list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/fees#epx-fees-list) shows it (repeatable; required without `--file`).
 - `--file <PATH>`\
   JSON request body in PATH, sent byte for byte instead of the one that epx makes (- reads standard input; sending it then needs `--yes`).
 - `-o, --output <format>`\
@@ -431,24 +431,24 @@ Requires the fee.item\_update scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx fees assignments update-product
 
 Add fees to a product on a site.
 
 Adds the fees that `--fee` names, or the feeIds of `--file`, a JSON object such as
-`{"feeIds": ["f1", "f2"]}`, to those of the product PRODUCT\_ID
+`{"feeIds": ["f1", "f2"]}`, to those of the product PRODUCT_ID
 on the site that `--site` names, creating its item fee where it
 has none. Emporix removes no fee, with or without `--partial`, and an empty list changes
 nothing: delete-product-fee removes one.
-PRODUCT\_ID is the product id (as in [`epx products list`](/emporix-cli/commands/products#epx-products-list)), not its code.
+PRODUCT_ID is the product id (as in [`epx products list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/products#epx-products-list)), not its code.
 
 Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the fee.item\_update scope.
+Requires the fee.item_update scope.
 
 **Command:** `epx fees assignments update-product PRODUCT_ID [flags]`
 
@@ -457,7 +457,7 @@ Requires the fee.item\_update scope.
 - `--dry-run`\
   Print the request instead of sending it (excludes `-o`).
 - `--fee <ID>`\
-  The ID of a fee, as [`epx fees list`](/emporix-cli/commands/fees#epx-fees-list) shows it (repeatable; required without `--file`).
+  The ID of a fee, as [`epx fees list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/fees#epx-fees-list) shows it (repeatable; required without `--file`).
 - `--file <PATH>`\
   JSON request body in PATH, sent byte for byte instead of the one that epx makes (- reads standard input; sending it then needs `--yes`).
 - `-o, --output <format>`\
@@ -469,14 +469,14 @@ Requires the fee.item\_update scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx fees create
 
 Create a fee.
 
 Creates the fee in `--file`, a JSON object with code (unique in the tenant), name, feeType
-(PERCENT, ABSOLUTE or ABSOLUTE\_MULTIPLY\_ITEMQUANTITY), feePercentage or feeAbsolute (amount
+(PERCENT, ABSOLUTE or ABSOLUTE_MULTIPLY_ITEMQUANTITY), feePercentage or feeAbsolute (amount
 and currency), siteCode and active, and optionally itemType (PRODUCT or PAYMENTTYPE),
 taxable with taxCode, and activeTimespan, e.g. `{"code": "deposit", "name": {"en": "Deposit"}, "feeType": "ABSOLUTE", "feeAbsolute": {"amount": 0.25, "currency": "EUR"}, "siteCode": "AcmeStore_NL", "active": true}`. Without an id, Emporix makes one; the response
 gives it and its YRN. A code that the tenant has already is a conflict (exit 5).
@@ -490,7 +490,7 @@ Changes data: on a terminal, epx asks before it sends POST. `--yes` sends withou
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the fee.fee\_create scope.
+Requires the fee.fee_create scope.
 
 **Command:** `epx fees create [flags]`
 
@@ -505,7 +505,7 @@ Requires the fee.fee\_create scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx fees delete
 
@@ -519,7 +519,7 @@ On a terminal, epx sends DELETE only once you type ID at its prompt.
 `--yes` sends without asking (required without a terminal);
 `--dry-run` prints the request instead of sending it.
 
-Requires the fee.fee\_delete scope.
+Requires the fee.fee_delete scope.
 
 **Command:** `epx fees delete ID [flags]`
 
@@ -532,7 +532,7 @@ Requires the fee.fee\_delete scope.
 - `--yes`\
   Send without asking (required without a terminal).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx fees for-item
 
@@ -541,7 +541,7 @@ List the fees of an item on a site.
 Reads fees, surcharges on items such as products or payment types. Emporix filters fees
 by site and documents main as the default site, so list, for-product and for-item require
 `--site`; an unknown site lists nothing. TYPE is PERCENT, ABSOLUTE or
-ABSOLUTE\_MULTIPLY\_ITEMQUANTITY (the amount times the item quantity), AMOUNT the percentage
+ABSOLUTE_MULTIPLY_ITEMQUANTITY (the amount times the item quantity), AMOUNT the percentage
 or the amount in its currency, ITEM TYPE the type of item the fee applies to (PRODUCT or
 PAYMENTTYPE), and FROM and TO the active time span.
 YRN names the item, e.g. `'urn:yaas:saasag:caasproduct:product:TENANT;PRODUCT_ID'`
@@ -569,7 +569,7 @@ No OAuth scope is needed.
 - `--stream`\
   Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx fees for-product
 
@@ -578,10 +578,10 @@ List the fees of a product on a site.
 Reads fees, surcharges on items such as products or payment types. Emporix filters fees
 by site and documents main as the default site, so list, for-product and for-item require
 `--site`; an unknown site lists nothing. TYPE is PERCENT, ABSOLUTE or
-ABSOLUTE\_MULTIPLY\_ITEMQUANTITY (the amount times the item quantity), AMOUNT the percentage
+ABSOLUTE_MULTIPLY_ITEMQUANTITY (the amount times the item quantity), AMOUNT the percentage
 or the amount in its currency, ITEM TYPE the type of item the fee applies to (PRODUCT or
 PAYMENTTYPE), and FROM and TO the active time span.
-PRODUCT\_ID is the product id (as in [`epx products list`](/emporix-cli/commands/products#epx-products-list)), not its code.
+PRODUCT_ID is the product id (as in [`epx products list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/products#epx-products-list)), not its code.
 An unknown id lists nothing.
 
 No OAuth scope is needed.
@@ -605,7 +605,7 @@ No OAuth scope is needed.
 - `--stream`\
   Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx fees get
 
@@ -614,7 +614,7 @@ Show one fee.
 Reads fees, surcharges on items such as products or payment types. Emporix filters fees
 by site and documents main as the default site, so list, for-product and for-item require
 `--site`; an unknown site lists nothing. TYPE is PERCENT, ABSOLUTE or
-ABSOLUTE\_MULTIPLY\_ITEMQUANTITY (the amount times the item quantity), AMOUNT the percentage
+ABSOLUTE_MULTIPLY_ITEMQUANTITY (the amount times the item quantity), AMOUNT the percentage
 or the amount in its currency, ITEM TYPE the type of item the fee applies to (PRODUCT or
 PAYMENTTYPE), and FROM and TO the active time span.
 
@@ -633,7 +633,7 @@ No OAuth scope is needed.
 - `-o, --output <format>`\
   Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx fees list
 
@@ -642,7 +642,7 @@ List the fees of a site.
 Reads fees, surcharges on items such as products or payment types. Emporix filters fees
 by site and documents main as the default site, so list, for-product and for-item require
 `--site`; an unknown site lists nothing. TYPE is PERCENT, ABSOLUTE or
-ABSOLUTE\_MULTIPLY\_ITEMQUANTITY (the amount times the item quantity), AMOUNT the percentage
+ABSOLUTE_MULTIPLY_ITEMQUANTITY (the amount times the item quantity), AMOUNT the percentage
 or the amount in its currency, ITEM TYPE the type of item the fee applies to (PRODUCT or
 PAYMENTTYPE), and FROM and TO the active time span.
 
@@ -667,7 +667,7 @@ No OAuth scope is needed.
 - `--stream`\
   Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx fees update
 
@@ -687,7 +687,7 @@ Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the fee.fee\_update scope.
+Requires the fee.fee_update scope.
 
 **Command:** `epx fees update ID [flags]`
 
@@ -704,4 +704,4 @@ Requires the fee.fee\_update scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).

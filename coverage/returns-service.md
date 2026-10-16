@@ -10,11 +10,11 @@ Operations of the Emporix API reference file [`orders/returns/api-reference/api.
 
 | Operation | Status | Details |
 | --- | --- | --- |
-| `POST /return/{tenant}/returns` | Built | [`epx returns create`](/emporix-cli/commands/returns#epx-returns-create) |
-| `GET /return/{tenant}/returns` | Built | [`epx returns list`](/emporix-cli/commands/returns#epx-returns-list) |
-| `GET /return/{tenant}/returns/{returnId}` | Built | [`epx returns get`](/emporix-cli/commands/returns#epx-returns-get) |
-| `PUT /return/{tenant}/returns/{returnId}` | Built | [`epx returns update`](/emporix-cli/commands/returns#epx-returns-update) |
-| `DELETE /return/{tenant}/returns/{returnId}` | Built | [`epx returns delete`](/emporix-cli/commands/returns#epx-returns-delete) |
-| `PATCH /return/{tenant}/returns/{returnId}` | Built | [`epx returns patch`](/emporix-cli/commands/returns#epx-returns-patch) |
+| `POST /return/{tenant}/returns` | Built | [`epx returns create`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/returns#epx-returns-create) |
+| `GET /return/{tenant}/returns` | Built | [`epx returns list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/returns#epx-returns-list) |
+| `GET /return/{tenant}/returns/{returnId}` | Built | [`epx returns get`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/returns#epx-returns-get) |
+| `PUT /return/{tenant}/returns/{returnId}` | Built | [`epx returns update`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/returns#epx-returns-update) |
+| `DELETE /return/{tenant}/returns/{returnId}` | Built | [`epx returns delete`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/returns#epx-returns-delete) |
+| `PATCH /return/{tenant}/returns/{returnId}` | Built | [`epx returns patch`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/returns#epx-returns-patch) |
 
-All services: [Emporix API coverage](/emporix-cli/coverage).
+All services: [Emporix API coverage](https://commerce-cloud-integrations.github.io/emporix-cli/coverage).

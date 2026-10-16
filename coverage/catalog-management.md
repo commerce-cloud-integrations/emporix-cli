@@ -10,12 +10,12 @@ Operations of the Emporix API reference file [`catalogs-and-categories/catalog/a
 
 | Operation | Status | Details |
 | --- | --- | --- |
-| `POST /catalog/{tenant}/catalogs` | Built | [`epx catalogs create`](/emporix-cli/commands/catalogs#epx-catalogs-create) |
-| `GET /catalog/{tenant}/catalogs` | Built | [`epx catalogs list`](/emporix-cli/commands/catalogs#epx-catalogs-list) |
-| `GET /catalog/{tenant}/catalogs/categories/{categoryId}` | Built | [`epx catalogs for-category`](/emporix-cli/commands/catalogs#epx-catalogs-for-category) |
-| `GET /catalog/{tenant}/catalogs/{catalogId}` | Built | [`epx catalogs get`](/emporix-cli/commands/catalogs#epx-catalogs-get) |
-| `PUT /catalog/{tenant}/catalogs/{catalogId}` | Built | [`epx catalogs update`](/emporix-cli/commands/catalogs#epx-catalogs-update) |
-| `DELETE /catalog/{tenant}/catalogs/{catalogId}` | Built | [`epx catalogs delete`](/emporix-cli/commands/catalogs#epx-catalogs-delete) |
-| `PATCH /catalog/{tenant}/catalogs/{catalogId}` | Built | [`epx catalogs patch`](/emporix-cli/commands/catalogs#epx-catalogs-patch) |
+| `POST /catalog/{tenant}/catalogs` | Built | [`epx catalogs create`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/catalogs#epx-catalogs-create) |
+| `GET /catalog/{tenant}/catalogs` | Built | [`epx catalogs list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/catalogs#epx-catalogs-list) |
+| `GET /catalog/{tenant}/catalogs/categories/{categoryId}` | Built | [`epx catalogs for-category`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/catalogs#epx-catalogs-for-category) |
+| `GET /catalog/{tenant}/catalogs/{catalogId}` | Built | [`epx catalogs get`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/catalogs#epx-catalogs-get) |
+| `PUT /catalog/{tenant}/catalogs/{catalogId}` | Built | [`epx catalogs update`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/catalogs#epx-catalogs-update) |
+| `DELETE /catalog/{tenant}/catalogs/{catalogId}` | Built | [`epx catalogs delete`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/catalogs#epx-catalogs-delete) |
+| `PATCH /catalog/{tenant}/catalogs/{catalogId}` | Built | [`epx catalogs patch`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/catalogs#epx-catalogs-patch) |
 
-All services: [Emporix API coverage](/emporix-cli/coverage).
+All services: [Emporix API coverage](https://commerce-cloud-integrations.github.io/emporix-cli/coverage).

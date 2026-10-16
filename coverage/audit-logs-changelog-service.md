@@ -10,6 +10,6 @@ Operations of the Emporix API reference file [`utilities/audit-logs-changelog/ap
 
 | Operation | Status | Details |
 | --- | --- | --- |
-| `GET /changelog/{tenant}/changelogs` | Built | [`epx changelog list`](/emporix-cli/commands/changelog#epx-changelog-list) |
+| `GET /changelog/{tenant}/changelogs` | Built | [`epx changelog list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/changelog#epx-changelog-list) |
 
-All services: [Emporix API coverage](/emporix-cli/coverage).
+All services: [Emporix API coverage](https://commerce-cloud-integrations.github.io/emporix-cli/coverage).

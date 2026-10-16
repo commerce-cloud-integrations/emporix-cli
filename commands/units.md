@@ -6,16 +6,16 @@
 
 Reads units of measurement. TYPE groups units that convert into each other, BASE marks
 the base unit of a type, and FACTOR converts a unit into its type's base unit, as sent by
-Emporix (g: 0.001 when kg is the base). [`epx units types`](/emporix-cli/commands/units#epx-units-types) lists the types;
-[`epx units convert`](/emporix-cli/commands/units#epx-units-convert) and `conversion-factor` convert between units of a type.
-[`epx units create`](/emporix-cli/commands/units#epx-units-create), `update`, `delete` and `bulk-delete` change the units.
+Emporix (g: 0.001 when kg is the base). [`epx units types`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/units#epx-units-types) lists the types;
+[`epx units convert`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/units#epx-units-convert) and `conversion-factor` convert between units of a type.
+[`epx units create`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/units#epx-units-create), `update`, `delete` and `bulk-delete` change the units.
 
 Its reads need no OAuth scope.
-Its writes require the unithandling.unit\_manage scope.
+Its writes require the unithandling.unit_manage scope.
 
 **Command:** `epx units [flags]`, `epx units [command]`
 
-**Flags:** only the [global flags](/emporix-cli/commands#global-flags).
+**Flags:** only the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Subcommands**
 
@@ -50,7 +50,7 @@ On a terminal, epx sends DELETE only once you type the tenant at its prompt.
 `--yes` sends without asking (required without a terminal, or with `--file` -);
 `--dry-run` prints the request instead of sending it.
 
-Requires the unithandling.unit\_manage scope.
+Requires the unithandling.unit_manage scope.
 
 **Command:** `epx units bulk-delete [flags]`
 
@@ -65,14 +65,14 @@ Requires the unithandling.unit\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx units conversion-factor
 
 Calculate the factor that converts one unit into another.
 
 Calculates the FACTOR that converts one unit into another of the same type
-([`epx units list`](/emporix-cli/commands/units#epx-units-list) shows their codes and types): an amount in FROM units times FACTOR is
+([`epx units list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/units#epx-units-list) shows their codes and types): an amount in FROM units times FACTOR is
 the amount in TO units.
 An unknown unit is not found (exit 4); Emporix answers units of different types with
 400 Bad Request (exit 1).
@@ -99,13 +99,13 @@ No OAuth scope is needed.
 - `--to <CODE>`\
   The CODE of the unit to convert to (required without `--body`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx units convert
 
 Convert an amount from one unit into another.
 
-Converts an `--amount` of one unit into another of the same type ([`epx units list`](/emporix-cli/commands/units#epx-units-list) shows
+Converts an `--amount` of one unit into another of the same type ([`epx units list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/units#epx-units-list) shows
 their codes and types): FROM is the amount given, TO what it converts to.
 An unknown unit is not found (exit 4); Emporix answers units of different types with
 400 Bad Request (exit 1).
@@ -134,7 +134,7 @@ No OAuth scope is needed.
 - `--to <CODE>`\
   The CODE of the unit to convert to (required without `--body`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx units create
 
@@ -154,7 +154,7 @@ Changes data: on a terminal, epx asks before it sends POST. `--yes` sends withou
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the unithandling.unit\_manage scope.
+Requires the unithandling.unit_manage scope.
 
 **Command:** `epx units create [flags]`
 
@@ -171,13 +171,13 @@ Requires the unithandling.unit\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx units delete
 
 Delete a unit.
 
-Deletes the unit CODE, as [`epx units list`](/emporix-cli/commands/units#epx-units-list) shows it.
+Deletes the unit CODE, as [`epx units list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/units#epx-units-list) shows it.
 Other services see the change after up to 5 minutes.
 
 Deletes data, which cannot be undone.
@@ -185,7 +185,7 @@ On a terminal, epx sends DELETE only once you type CODE at its prompt.
 `--yes` sends without asking (required without a terminal);
 `--dry-run` prints the request instead of sending it.
 
-Requires the unithandling.unit\_manage scope.
+Requires the unithandling.unit_manage scope.
 
 **Command:** `epx units delete CODE [flags]`
 
@@ -198,7 +198,7 @@ Requires the unithandling.unit\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx units get
 
@@ -206,9 +206,9 @@ Show one unit.
 
 Reads units of measurement. TYPE groups units that convert into each other, BASE marks
 the base unit of a type, and FACTOR converts a unit into its type's base unit, as sent by
-Emporix (g: 0.001 when kg is the base). [`epx units types`](/emporix-cli/commands/units#epx-units-types) lists the types;
-[`epx units convert`](/emporix-cli/commands/units#epx-units-convert) and `conversion-factor` convert between units of a type.
-[`epx units create`](/emporix-cli/commands/units#epx-units-create), `update`, `delete` and `bulk-delete` change the units.
+Emporix (g: 0.001 when kg is the base). [`epx units types`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/units#epx-units-types) lists the types;
+[`epx units convert`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/units#epx-units-convert) and `conversion-factor` convert between units of a type.
+[`epx units create`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/units#epx-units-create), `update`, `delete` and `bulk-delete` change the units.
 
 No OAuth scope is needed.
 
@@ -225,7 +225,7 @@ No OAuth scope is needed.
 - `-o, --output <format>`\
   Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx units list
 
@@ -233,9 +233,9 @@ List units.
 
 Reads units of measurement. TYPE groups units that convert into each other, BASE marks
 the base unit of a type, and FACTOR converts a unit into its type's base unit, as sent by
-Emporix (g: 0.001 when kg is the base). [`epx units types`](/emporix-cli/commands/units#epx-units-types) lists the types;
-[`epx units convert`](/emporix-cli/commands/units#epx-units-convert) and `conversion-factor` convert between units of a type.
-[`epx units create`](/emporix-cli/commands/units#epx-units-create), `update`, `delete` and `bulk-delete` change the units.
+Emporix (g: 0.001 when kg is the base). [`epx units types`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/units#epx-units-types) lists the types;
+[`epx units convert`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/units#epx-units-convert) and `conversion-factor` convert between units of a type.
+[`epx units create`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/units#epx-units-create), `update`, `delete` and `bulk-delete` change the units.
 
 No OAuth scope is needed.
 
@@ -258,7 +258,7 @@ No OAuth scope is needed.
 - `--stream`\
   Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx units types
 
@@ -283,15 +283,15 @@ No OAuth scope is needed.
 - `--stream`\
   Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx units update
 
 Update a unit.
 
-Replaces the unit CODE (the CODE that [`epx units list`](/emporix-cli/commands/units#epx-units-list) shows) with the unit that the JSON
+Replaces the unit CODE (the CODE that [`epx units list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/units#epx-units-list) shows) with the unit that the JSON
 body of `--file` describes, as create does, with the same code; Emporix creates no missing
-unit. With metadata.version in the body, as [`epx units get CODE -o json`](/emporix-cli/commands/units#epx-units-get) prints it, Emporix
+unit. With metadata.version in the body, as [`epx units get CODE -o json`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/units#epx-units-get) prints it, Emporix
 replaces only that version of the unit, and answers an older one as it answers an unknown
 unit, with 404 Not Found: epx then exits with 5, a conflict (read the unit again before
 you retry), and without a version with 4, not found.
@@ -306,7 +306,7 @@ Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the unithandling.unit\_manage scope.
+Requires the unithandling.unit_manage scope.
 
 **Command:** `epx units update CODE [flags]`
 
@@ -323,4 +323,4 @@ Requires the unithandling.unit\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).

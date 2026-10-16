@@ -5,14 +5,14 @@
 ## epx countries
 
 Reads all countries known to the tenant, active or not (ACTIVE shows which ones the
-tenant uses). REGIONS lists region codes (see [`epx regions`](/emporix-cli/commands/regions#epx-regions)).
+tenant uses). REGIONS lists region codes (see [`epx regions`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/regions#epx-regions)).
 
 Its reads need no OAuth scope.
-Its writes require the country.country\_manage scope.
+Its writes require the country.country_manage scope.
 
 **Command:** `epx countries [flags]`, `epx countries [command]`
 
-**Flags:** only the [global flags](/emporix-cli/commands#global-flags).
+**Flags:** only the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Subcommands**
 
@@ -28,7 +28,7 @@ Its writes require the country.country\_manage scope.
 Show one country.
 
 Reads all countries known to the tenant, active or not (ACTIVE shows which ones the
-tenant uses). REGIONS lists region codes (see [`epx regions`](/emporix-cli/commands/regions#epx-regions)).
+tenant uses). REGIONS lists region codes (see [`epx regions`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/regions#epx-regions)).
 
 No OAuth scope is needed.
 
@@ -45,14 +45,14 @@ No OAuth scope is needed.
 - `-o, --output <format>`\
   Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx countries list
 
 List countries.
 
 Reads all countries known to the tenant, active or not (ACTIVE shows which ones the
-tenant uses). REGIONS lists region codes (see [`epx regions`](/emporix-cli/commands/regions#epx-regions)).
+tenant uses). REGIONS lists region codes (see [`epx regions`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/regions#epx-regions)).
 
 No OAuth scope is needed.
 
@@ -75,7 +75,7 @@ No OAuth scope is needed.
 - `--stream`\
   Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx countries patch
 
@@ -83,7 +83,7 @@ Activate or deactivate a country.
 
 Activates the country CODE for the tenant (`--active`) or deactivates it (`--active=false`):
 Emporix lets a PATCH change active only. epx takes the country's metadata.version as read
-(`--version`, as [`epx countries get CODE -o json`](/emporix-cli/commands/countries#epx-countries-get) prints it), which the reference asks for;
+(`--version`, as [`epx countries get CODE -o json`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/countries#epx-countries-get) prints it), which the reference asks for;
 Emporix does not check it, so a stale version is accepted and applied. `--file` gives the JSON body
 instead, e.g. `{"active": true, "metadata": {"version": 1}}`. An unknown CODE is not found
 (exit 4).
@@ -92,7 +92,7 @@ Changes data: on a terminal, epx asks before it sends PATCH. `--yes` sends witho
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the country.country\_manage scope.
+Requires the country.country_manage scope.
 
 **Command:** `epx countries patch CODE [flags]`
 
@@ -111,7 +111,7 @@ Requires the country.country\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Examples**
 

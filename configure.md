@@ -11,7 +11,7 @@ from a file.
 
 In the [Emporix Developer Portal](https://app.emporix.io), open **Manage API Keys** and
 create a custom key with only the scopes of the commands you run. Each command's help
-ends with the scopes it requests, as does its entry in the [CLI reference](/emporix-cli/commands):
+ends with the scopes it requests, as does its entry in the [CLI reference](https://commerce-cloud-integrations.github.io/emporix-cli/commands):
 
 ```sh
 epx products list --help    # ... Requires the product.product_read_unpublished scope.
@@ -19,7 +19,7 @@ epx sites list --help       # ... No OAuth scope is needed.
 ```
 
 Add write scopes, such as `product.product_manage`, only to keys that send
-[writes](/emporix-cli/guides/writes). Keep them off keys you use only to read.
+[writes](https://commerce-cloud-integrations.github.io/emporix-cli/guides/writes). Keep them off keys you use only to read.
 
   Your tenant's default Emporix API key also works, but it grants every scope, including
   those that change data.
@@ -39,7 +39,7 @@ export EMPORIX_CLIENT_SECRET=...
 | `EMPORIX_CLIENT_SECRET` | The client secret of the API key. Required. |
 | `EMPORIX_API_URL` | The API host. Defaults to `https://api.emporix.io`. Must use HTTPS, except for a loopback address such as `localhost`. |
 | `EPX_PROFILE` | The [profile](#store-keys-in-profiles) to use when you don't pass `--profile` and no `EMPORIX_` variable is set. |
-| `EPX_COMPLETE_IDS` | Set to `1` to let [shell completion](/emporix-cli/install#complete-ids-from-your-tenant) read IDs from the API. |
+| `EPX_COMPLETE_IDS` | Set to `1` to let [shell completion](https://commerce-cloud-integrations.github.io/emporix-cli/install#complete-ids-from-your-tenant) read IDs from the API. |
 
 When a required setting is missing, any command that calls Emporix, and any write's
 `--dry-run`, fails with exit code 2 and names what to set.
@@ -138,5 +138,5 @@ These flags apply to every command:
 | `--tenant <tenant>` | The tenant, instead of the one from the environment or the profile. An empty value fails as missing configuration. |
 | `--timeout <duration>` | The limit for each HTTP request. Defaults to `30s`. |
 
-Once you've set up a key, take the [quickstart](/emporix-cli/quickstart) or read the
-[security model](/emporix-cli/security).
+Once you've set up a key, take the [quickstart](https://commerce-cloud-integrations.github.io/emporix-cli/quickstart) or read the
+[security model](https://commerce-cloud-integrations.github.io/emporix-cli/security).

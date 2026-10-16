@@ -4,19 +4,19 @@
 
 ## epx quotes
 
-Reads quotes, personal data included. STATUS is CREATING, AWAITING, OPEN, IN\_PROGRESS,
-ACCEPTED, DECLINED, DECLINED\_BY\_MERCHANT or EXPIRED, CUSTOMER the customer it is for (email,
+Reads quotes, personal data included. STATUS is CREATING, AWAITING, OPEN, IN_PROGRESS,
+ACCEPTED, DECLINED, DECLINED_BY_MERCHANT or EXPIRED, CUSTOMER the customer it is for (email,
 name or customer id), and TOTAL the gross total in the quote's currency. Items, prices,
 addresses and comments are only in `-o json`.
-[`epx quotes reasons`](/emporix-cli/commands/quotes#epx-quotes-reasons) lists the reasons for changing or declining a quote.
-[`epx quotes create`](/emporix-cli/commands/quotes#epx-quotes-create), `patch` and `delete` change quotes; `pdf` saves a quote's PDF.
+[`epx quotes reasons`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/quotes#epx-quotes-reasons) lists the reasons for changing or declining a quote.
+[`epx quotes create`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/quotes#epx-quotes-create), `patch` and `delete` change quotes; `pdf` saves a quote's PDF.
 
-Its reads require the quote.quote\_read scope.
-Its writes require the quote.quote\_manage scope.
+Its reads require the quote.quote_read scope.
+Its writes require the quote.quote_manage scope.
 
 **Command:** `epx quotes [flags]`, `epx quotes [command]`
 
-**Flags:** only the [global flags](/emporix-cli/commands#global-flags).
+**Flags:** only the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Subcommands**
 
@@ -46,7 +46,7 @@ customerEmail), siteCode, currency, billingAddressId, shippingAddressId and item
 with its product, price and quantity), or a cart's, with its cartId and optionally the
 addresses and shipping. Without an id, Emporix makes one; it answers with the quote's id.
 A quote made from a cart closes the cart (status CLOSED, with the quoteId): Emporix then
-answers its reads and its delete as not found (exit 4), while [`epx carts search`](/emporix-cli/commands/carts#epx-carts-search) lists it.
+answers its reads and its delete as not found (exit 4), while [`epx carts search`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/carts#epx-carts-search) lists it.
 Without `--allow-external-prices`, Emporix refuses an item with price type EXTERNAL with 400
 Bad Request (exit 1). It fails with 500 Internal Server Error (exit 1) on a cart without
 items, and answers a product that is not published as not found (exit 4).
@@ -55,16 +55,16 @@ Changes data: on a terminal, epx asks before it sends POST. `--yes` sends withou
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-`--allow-external-prices` also requests the cart.cart\_manage\_external\_prices scope.
+`--allow-external-prices` also requests the cart.cart_manage_external_prices scope.
 
-Requires the quote.quote\_manage scope.
+Requires the quote.quote_manage scope.
 
 **Command:** `epx quotes create [flags]`
 
 **Flags**
 
 - `--allow-external-prices`\
-  Allow a body with external prices (price type EXTERNAL) (requests cart.cart\_manage\_external\_prices too).
+  Allow a body with external prices (price type EXTERNAL) (requests cart.cart_manage_external_prices too).
 - `--dry-run`\
   Print the request instead of sending it (excludes `-o`).
 - `--file <PATH>`\
@@ -74,7 +74,7 @@ Requires the quote.quote\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx quotes delete
 
@@ -82,14 +82,14 @@ Delete one quote.
 
 Deletes the quote ID; it sends no body.
 Emporix answers an unknown ID as one that it deleted (204 No Content).
-ID is the ID that [`epx quotes list`](/emporix-cli/commands/quotes#epx-quotes-list) shows.
+ID is the ID that [`epx quotes list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/quotes#epx-quotes-list) shows.
 
 Deletes data, which cannot be undone.
 On a terminal, epx sends DELETE only once you type ID at its prompt.
 `--yes` sends without asking (required without a terminal);
 `--dry-run` prints the request instead of sending it.
 
-Requires the quote.quote\_manage scope.
+Requires the quote.quote_manage scope.
 
 **Command:** `epx quotes delete ID [flags]`
 
@@ -102,20 +102,20 @@ Requires the quote.quote\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx quotes get
 
 Show one quote.
 
-Reads quotes, personal data included. STATUS is CREATING, AWAITING, OPEN, IN\_PROGRESS,
-ACCEPTED, DECLINED, DECLINED\_BY\_MERCHANT or EXPIRED, CUSTOMER the customer it is for (email,
+Reads quotes, personal data included. STATUS is CREATING, AWAITING, OPEN, IN_PROGRESS,
+ACCEPTED, DECLINED, DECLINED_BY_MERCHANT or EXPIRED, CUSTOMER the customer it is for (email,
 name or customer id), and TOTAL the gross total in the quote's currency. Items, prices,
 addresses and comments are only in `-o json`.
-[`epx quotes reasons`](/emporix-cli/commands/quotes#epx-quotes-reasons) lists the reasons for changing or declining a quote.
-[`epx quotes create`](/emporix-cli/commands/quotes#epx-quotes-create), `patch` and `delete` change quotes; `pdf` saves a quote's PDF.
+[`epx quotes reasons`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/quotes#epx-quotes-reasons) lists the reasons for changing or declining a quote.
+[`epx quotes create`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/quotes#epx-quotes-create), `patch` and `delete` change quotes; `pdf` saves a quote's PDF.
 
-Requires the quote.quote\_read scope.
+Requires the quote.quote_read scope.
 
 **Command:** `epx quotes get ID [flags]`
 
@@ -128,7 +128,7 @@ Requires the quote.quote\_read scope.
 - `-o, --output <format>`\
   Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx quotes history
 
@@ -137,9 +137,9 @@ List the changes of a quote.
 Reads the history of a quote, personal data included: when (MODIFIED), by whom (BY: user
 type and name) and what changed (CHANGE: the operation and the changed part). Old and new
 values are only in `-o json`. Emporix sends the whole history in one response.
-QUOTE\_ID is the ID that [`epx quotes list`](/emporix-cli/commands/quotes#epx-quotes-list) shows; an unknown one is not found.
+QUOTE_ID is the ID that [`epx quotes list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/quotes#epx-quotes-list) shows; an unknown one is not found.
 
-Requires the quote.quote\_read scope.
+Requires the quote.quote_read scope.
 
 **Command:** `epx quotes history QUOTE_ID [flags]`
 
@@ -156,20 +156,20 @@ Requires the quote.quote\_read scope.
 - `--stream`\
   Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx quotes list
 
 List quotes.
 
-Reads quotes, personal data included. STATUS is CREATING, AWAITING, OPEN, IN\_PROGRESS,
-ACCEPTED, DECLINED, DECLINED\_BY\_MERCHANT or EXPIRED, CUSTOMER the customer it is for (email,
+Reads quotes, personal data included. STATUS is CREATING, AWAITING, OPEN, IN_PROGRESS,
+ACCEPTED, DECLINED, DECLINED_BY_MERCHANT or EXPIRED, CUSTOMER the customer it is for (email,
 name or customer id), and TOTAL the gross total in the quote's currency. Items, prices,
 addresses and comments are only in `-o json`.
-[`epx quotes reasons`](/emporix-cli/commands/quotes#epx-quotes-reasons) lists the reasons for changing or declining a quote.
-[`epx quotes create`](/emporix-cli/commands/quotes#epx-quotes-create), `patch` and `delete` change quotes; `pdf` saves a quote's PDF.
+[`epx quotes reasons`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/quotes#epx-quotes-reasons) lists the reasons for changing or declining a quote.
+[`epx quotes create`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/quotes#epx-quotes-create), `patch` and `delete` change quotes; `pdf` saves a quote's PDF.
 
-Requires the quote.quote\_read scope.
+Requires the quote.quote_read scope.
 
 **Command:** `epx quotes list [flags]`
 
@@ -190,7 +190,7 @@ Requires the quote.quote\_read scope.
 - `--stream`\
   Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx quotes patch
 
@@ -198,18 +198,18 @@ Change a quote.
 
 Changes the quote ID with the operations in `--file`: a JSON array of operations, each
 with op (ADD, REMOVE or REPLACE), path (such as /status, /validTo, /items or
-/items/ITEM\_ID) and value, e.g.
+/items/ITEM_ID) and value, e.g.
 `[{"op": "REPLACE", "path": "/status", "value": {"value": "OPEN"}}]`. Emporix completes
 the prices and product names of items from their ids afterwards. Emporix refuses to add
 or replace an item with price type EXTERNAL with 400 Bad Request (exit 1), also with
-cart.cart\_manage\_external\_prices (create accepts one).
-ID is the ID that [`epx quotes list`](/emporix-cli/commands/quotes#epx-quotes-list) shows.
+cart.cart_manage_external_prices (create accepts one).
+ID is the ID that [`epx quotes list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/quotes#epx-quotes-list) shows.
 
 Changes data: on a terminal, epx asks before it sends PATCH. `--yes` sends without
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the quote.quote\_manage scope.
+Requires the quote.quote_manage scope.
 
 **Command:** `epx quotes patch ID [flags]`
 
@@ -224,14 +224,14 @@ Requires the quote.quote\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx quotes pdf
 
 Save the PDF of a quote.
 
-Reads the PDF of the quote QUOTE\_ID; an unknown quote is not found (exit 4).
-QUOTE\_ID is the ID that [`epx quotes list`](/emporix-cli/commands/quotes#epx-quotes-list) shows.
+Reads the PDF of the quote QUOTE_ID; an unknown quote is not found (exit 4).
+QUOTE_ID is the ID that [`epx quotes list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/quotes#epx-quotes-list) shows.
 In a `--language` for which a product has no name, the PDF shows the template variable
 $quoteitem.productName in its place; a language that the tenant does not configure is
 answered in English, not refused.
@@ -242,7 +242,7 @@ its owner only; a file there is replaced, but not a directory, device or link), 
 standard output with `--out` -, unless that is a terminal. An answer that is no PDF fails
 (exit 1), and nothing is saved.
 
-Requires the quote.quote\_read scope.
+Requires the quote.quote_read scope.
 
 **Command:** `epx quotes pdf QUOTE_ID [flags]`
 
@@ -253,7 +253,7 @@ Requires the quote.quote\_read scope.
 - `--out <PATH>`\
   Save the PDF to the file PATH, or with - write it to standard output (required).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Examples**
 
@@ -268,14 +268,14 @@ Read, create, change and delete quote reasons.
 
 Reads the reasons a customer or employee can give when asking for changes to a quote
 (TYPE CHANGE) or declining it (DECLINE), and their MESSAGE.
-[`epx quotes reasons create`](/emporix-cli/commands/quotes#epx-quotes-reasons-create), `update` and `delete` change them.
+[`epx quotes reasons create`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/quotes#epx-quotes-reasons-create), `update` and `delete` change them.
 
-Its reads require the quote.quote\_read scope.
-Its writes require the quote.quote\_manage scope.
+Its reads require the quote.quote_read scope.
+Its writes require the quote.quote_manage scope.
 
 **Command:** `epx quotes reasons [flags]`, `epx quotes reasons [command]`
 
-**Flags:** only the [global flags](/emporix-cli/commands#global-flags).
+**Flags:** only the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 **Subcommands**
 
@@ -306,7 +306,7 @@ Changes data: on a terminal, epx asks before it sends POST. `--yes` sends withou
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the quote.quote\_manage scope.
+Requires the quote.quote_manage scope.
 
 **Command:** `epx quotes reasons create [flags]`
 
@@ -321,7 +321,7 @@ Requires the quote.quote\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx quotes reasons delete
 
@@ -329,14 +329,14 @@ Delete one quote reason.
 
 Deletes the quote reason ID; it sends no body.
 Emporix answers an unknown ID as one that it deleted (204 No Content).
-ID is the ID that [`epx quotes reasons list`](/emporix-cli/commands/quotes#epx-quotes-reasons-list) shows.
+ID is the ID that [`epx quotes reasons list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/quotes#epx-quotes-reasons-list) shows.
 
 Deletes data, which cannot be undone.
 On a terminal, epx sends DELETE only once you type ID at its prompt.
 `--yes` sends without asking (required without a terminal);
 `--dry-run` prints the request instead of sending it.
 
-Requires the quote.quote\_manage scope.
+Requires the quote.quote_manage scope.
 
 **Command:** `epx quotes reasons delete ID [flags]`
 
@@ -349,7 +349,7 @@ Requires the quote.quote\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx quotes reasons get
 
@@ -357,9 +357,9 @@ Show one quote reason.
 
 Reads the reasons a customer or employee can give when asking for changes to a quote
 (TYPE CHANGE) or declining it (DECLINE), and their MESSAGE.
-[`epx quotes reasons create`](/emporix-cli/commands/quotes#epx-quotes-reasons-create), `update` and `delete` change them.
+[`epx quotes reasons create`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/quotes#epx-quotes-reasons-create), `update` and `delete` change them.
 
-Requires the quote.quote\_read scope.
+Requires the quote.quote_read scope.
 
 **Command:** `epx quotes reasons get ID [flags]`
 
@@ -374,7 +374,7 @@ Requires the quote.quote\_read scope.
 - `-o, --output <format>`\
   Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx quotes reasons list
 
@@ -382,9 +382,9 @@ List quote reasons.
 
 Reads the reasons a customer or employee can give when asking for changes to a quote
 (TYPE CHANGE) or declining it (DECLINE), and their MESSAGE.
-[`epx quotes reasons create`](/emporix-cli/commands/quotes#epx-quotes-reasons-create), `update` and `delete` change them.
+[`epx quotes reasons create`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/quotes#epx-quotes-reasons-create), `update` and `delete` change them.
 
-Requires the quote.quote\_read scope.
+Requires the quote.quote_read scope.
 
 **Command:** `epx quotes reasons list [flags]`
 
@@ -407,17 +407,17 @@ Requires the quote.quote\_read scope.
 - `--stream`\
   Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes `-o`, `--columns` and `--no-headers`).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
 
 ## epx quotes reasons update
 
 Replace a quote reason.
 
 Replaces the quote reason ID with the one in `--file`: its type, code, message and
-metadata.version, as [`epx quotes reasons get ID -o json`](/emporix-cli/commands/quotes#epx-quotes-reasons-get) prints it. Emporix changes only
+metadata.version, as [`epx quotes reasons get ID -o json`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/quotes#epx-quotes-reasons-get) prints it. Emporix changes only
 that version of the reason and answers an older one with 409 Conflict (exit 5); an
 unknown reason is not found (exit 4).
-ID is the ID that [`epx quotes reasons list`](/emporix-cli/commands/quotes#epx-quotes-reasons-list) shows.
+ID is the ID that [`epx quotes reasons list`](https://commerce-cloud-integrations.github.io/emporix-cli/commands/quotes#epx-quotes-reasons-list) shows.
 
 Localized text in the body is a map of translations, e.g. `{"en": "Acme", "de": "Acme"}`,
 as `-o json` of a read prints it, sent with Content-Language: \*. Emporix refuses a string in
@@ -427,7 +427,7 @@ Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without
 asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
 instead of sending it.
 
-Requires the quote.quote\_manage scope.
+Requires the quote.quote_manage scope.
 
 **Command:** `epx quotes reasons update ID [flags]`
 
@@ -442,4 +442,4 @@ Requires the quote.quote\_manage scope.
 - `--yes`\
   Send without asking (required without a terminal, or with `--file` -).
 
-Also takes the [global flags](/emporix-cli/commands#global-flags).
+Also takes the [global flags](https://commerce-cloud-integrations.github.io/emporix-cli/commands#global-flags).
