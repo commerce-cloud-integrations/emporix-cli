@@ -7,6 +7,8 @@
 epx is a command-line client for the [Emporix Commerce APIs](https://developer.emporix.io/api-references).
 It helps you read, script, and change the data of an Emporix tenant right from the terminal.
 
+**Documentation:** [commerce-cloud-integrations.github.io/emporix-cli](https://commerce-cloud-integrations.github.io/emporix-cli/) covers installation, authentication, every command, and the Emporix API coverage.
+
 **With epx, you can:**
 
 - Read products, categories, catalogs, prices, availability, customers, orders, and nearly
