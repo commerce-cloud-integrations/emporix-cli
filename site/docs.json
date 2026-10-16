@@ -201,6 +201,15 @@
             "href": "https://github.com/emporix/api-references/commit/faad61403b0683a7a8948b571f10305393760ae0"
           }
         ]
+      },
+      {
+        "header": "Maintainer",
+        "items": [
+          {
+            "label": "Commerce Cloud Integrations",
+            "href": "https://www.commercecloudintegrations.com"
+          }
+        ]
       }
     ]
   }

@@ -208,3 +208,5 @@ to read a secret without showing it and to lock the configuration file on Window
 ## License
 
 Licensed under the [Apache License 2.0](LICENSE).
+
+epx is maintained by [Commerce Cloud Integrations](https://www.commercecloudintegrations.com).
