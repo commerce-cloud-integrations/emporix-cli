@@ -25,6 +25,7 @@ SITE = Path(__file__).resolve().parent
 ROOT = SITE.parent
 GITHUB = "https://github.com/commerce-cloud-integrations/emporix-cli"
 REFERENCE_COMMITS = "https://github.com/emporix/api-references/commit/"
+MAINTAINER = "https://www.commercecloudintegrations.com"
 
 # The tabs of docs.json whose pages are generated, and the directory that holds them.
 GENERATED_TABS = {"CLI reference": "commands", "API coverage": "coverage"}
@@ -118,6 +119,9 @@ def site_config(config: dict, reference: dict) -> dict:
                 "href": REFERENCE_COMMITS + reference["commit"],
             },
         ],
+    }, {
+        "header": "Maintainer",
+        "items": [{"label": "Commerce Cloud Integrations", "href": MAINTAINER}],
     }]
     return config
 
