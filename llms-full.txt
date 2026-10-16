@@ -1205,7 +1205,7 @@ and YAML, where the document still decodes to the same data.
 
 ---
 
-Source: https://commerce-cloud-integrations.github.io/emporix-cli/commands/index/
+Source: https://commerce-cloud-integrations.github.io/emporix-cli/commands/
 
 # CLI reference
 
@@ -25517,7 +25517,7 @@ Also takes the [global flags](https://commerce-cloud-integrations.github.io/empo
 
 ---
 
-Source: https://commerce-cloud-integrations.github.io/emporix-cli/coverage/index/
+Source: https://commerce-cloud-integrations.github.io/emporix-cli/coverage/
 
 # Emporix API coverage
 

@@ -11,7 +11,7 @@
   <url><loc>https://commerce-cloud-integrations.github.io/emporix-cli/guides/bulk/</loc></url>
   <url><loc>https://commerce-cloud-integrations.github.io/emporix-cli/guides/exit-codes/</loc></url>
   <url><loc>https://commerce-cloud-integrations.github.io/emporix-cli/security/</loc></url>
-  <url><loc>https://commerce-cloud-integrations.github.io/emporix-cli/commands/index/</loc></url>
+  <url><loc>https://commerce-cloud-integrations.github.io/emporix-cli/commands/</loc></url>
   <url><loc>https://commerce-cloud-integrations.github.io/emporix-cli/commands/ai/</loc></url>
   <url><loc>https://commerce-cloud-integrations.github.io/emporix-cli/commands/api/</loc></url>
   <url><loc>https://commerce-cloud-integrations.github.io/emporix-cli/commands/auth/</loc></url>
@@ -68,7 +68,7 @@
   <url><loc>https://commerce-cloud-integrations.github.io/emporix-cli/commands/vendors/</loc></url>
   <url><loc>https://commerce-cloud-integrations.github.io/emporix-cli/commands/version/</loc></url>
   <url><loc>https://commerce-cloud-integrations.github.io/emporix-cli/commands/webhooks/</loc></url>
-  <url><loc>https://commerce-cloud-integrations.github.io/emporix-cli/coverage/index/</loc></url>
+  <url><loc>https://commerce-cloud-integrations.github.io/emporix-cli/coverage/</loc></url>
   <url><loc>https://commerce-cloud-integrations.github.io/emporix-cli/coverage/ai-rag-indexer/</loc></url>
   <url><loc>https://commerce-cloud-integrations.github.io/emporix-cli/coverage/ai-service/</loc></url>
   <url><loc>https://commerce-cloud-integrations.github.io/emporix-cli/coverage/approval-service/</loc></url>
