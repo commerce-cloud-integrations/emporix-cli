@@ -1,0 +1,48 @@
+/* The Pagefind search window of the docs site's static export (search.js). */
+.epx-search-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(15, 17, 26, 0.45);
+  backdrop-filter: blur(2px);
+  padding: 10vh 16px 16px;
+}
+.epx-search-overlay.is-open {
+  display: block;
+}
+html.epx-search-open {
+  overflow: hidden;
+}
+.epx-search-panel {
+  max-width: 720px;
+  max-height: 75vh;
+  margin: 0 auto;
+  overflow-y: auto;
+  border-radius: 16px;
+  padding: 16px 20px;
+  background: #ffffff;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.25);
+  --pagefind-ui-scale: 0.85;
+  --pagefind-ui-primary: #4f46e5;
+  --pagefind-ui-text: #18181b;
+  --pagefind-ui-background: #ffffff;
+  --pagefind-ui-border: #e4e4e7;
+  --pagefind-ui-tag: #f4f4f5;
+  --pagefind-ui-border-width: 1px;
+  --pagefind-ui-border-radius: 10px;
+  --pagefind-ui-font: inherit;
+}
+html.dark .epx-search-panel {
+  background: #121317;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.6);
+  --pagefind-ui-primary: #818cf8;
+  --pagefind-ui-text: #e4e4e7;
+  --pagefind-ui-background: #121317;
+  --pagefind-ui-border: #2e3038;
+  --pagefind-ui-tag: #23252d;
+}
+.epx-search-panel mark {
+  background: rgba(129, 140, 248, 0.3);
+  color: inherit;
+}
