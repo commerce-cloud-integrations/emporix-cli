@@ -1,6 +1,6 @@
 # epx
 
-[![Go](https://img.shields.io/badge/go-1.27.2%2B-00ADD8?logo=go&logoColor=white)](go.mod)
+[![Go](https://img.shields.io/badge/go-1.27.3%2B-00ADD8?logo=go&logoColor=white)](go.mod)
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue)](LICENSE)
 [![Documentation](https://img.shields.io/badge/docs-epx-4F46E5)](https://commerce-cloud-integrations.github.io/emporix-cli/)
 
@@ -49,7 +49,7 @@ Each [release](https://github.com/commerce-cloud-integrations/emporix-cli/releas
 archive per platform and a checksums file. For example, on Linux x64:
 
 ```sh
-version=v0.1.0
+version=v0.1.1
 base=https://github.com/commerce-cloud-integrations/emporix-cli/releases/download/$version
 curl -fsSLO "$base/epx_${version}_linux_amd64.tar.gz" &&
   curl -fsSLO "$base/epx_${version}_checksums.txt" &&
@@ -62,7 +62,7 @@ On macOS, use `shasum -a 256 --check --ignore-missing` instead of `sha256sum`.
 
 ### Go
 
-With Go 1.27.2 or later:
+With Go 1.27.3 or later:
 
 ```sh
 go install github.com/commerce-cloud-integrations/emporix-cli/cmd/epx@latest

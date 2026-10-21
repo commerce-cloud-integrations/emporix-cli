@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // Runs the epx binary of this platform, which npm installed from the matching
-// optional dependency (epx-cli-<platform>-<arch>).
+// optional dependency (@commercecloudintegrations/epx-cli-<platform>-<arch>).
 "use strict";
 
 const { spawn } = require("node:child_process");
@@ -9,7 +9,7 @@ const path = require("node:path");
 const { optionalDependencies } = require("../package.json");
 
 const windows = process.platform === "win32";
-const prefix = "epx-cli-";
+const prefix = "@commercecloudintegrations/epx-cli-";
 const pkg = `${prefix}${process.platform}-${process.arch}`;
 const reinstall =
   "Reinstall epx-cli without --omit=optional or --no-optional; in a project whose " +

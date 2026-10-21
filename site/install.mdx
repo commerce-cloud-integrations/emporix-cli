@@ -14,9 +14,10 @@ npm install --global epx-cli
 ```
 
 npm installs the package `epx-cli`, which provides the `epx` command, and only the
-package that holds the binary of your platform, such as `epx-cli-darwin-arm64`. Nothing is
-compiled, no install script runs, and nothing is downloaded outside the npm registry, so a
-private registry mirror works too. You need Node.js 18 or later.
+package that holds the binary of your platform, such as
+`@commercecloudintegrations/epx-cli-darwin-arm64`. Nothing is compiled, no install script
+runs, and nothing is downloaded outside the npm registry, so a private registry mirror works
+too. You need Node.js 18 or later.
 
 To run epx once without installing it:
 
@@ -27,8 +28,8 @@ npx epx-cli version
 <Note>
   The `epx` command that npm installs is a small Node.js program that runs the binary.
   Under `nohup`, it still ends when the terminal closes. For such runs, call the binary
-  itself (`bin/epx` in the package `epx-cli-<os>-<cpu>`), or install epx from a release
-  archive.
+  itself (`bin/epx` in the package `@commercecloudintegrations/epx-cli-<os>-<cpu>`), or
+  install epx from a release archive.
 </Note>
 
 ## Install from a release archive
@@ -38,7 +39,7 @@ an archive per platform (`epx_<version>_<os>_<arch>.tar.gz`, or `.zip` on Window
 checksums file. For example, on Linux x64:
 
 ```sh
-version=v0.1.0
+version=v0.1.1
 base=https://github.com/commerce-cloud-integrations/emporix-cli/releases/download/$version
 curl -fsSLO "$base/epx_${version}_linux_amd64.tar.gz" &&
   curl -fsSLO "$base/epx_${version}_checksums.txt" &&
@@ -57,7 +58,7 @@ instead of `sha256sum --check --ignore-missing`.
 go install github.com/commerce-cloud-integrations/emporix-cli/cmd/epx@latest
 ```
 
-You need Go 1.27.2 or later; an older Go toolchain downloads the required version
+You need Go 1.27.3 or later; an older Go toolchain downloads the required version
 automatically. Go installs the binary in `$(go env GOPATH)/bin`, or in `$GOBIN` when it's
 set. Make sure that directory is on your `PATH`.
 
@@ -76,11 +77,11 @@ epx version
 ```
 
 ```text
-epx v0.1.0 (go1.27.2)
+epx v0.1.1 (go1.27.3)
 ```
 
 A release prints its version. A build of an untagged commit prints the commit's date and
-hash instead, such as `epx v0.0.0-20261014183651-ffca1e3d7f17 (go1.27.2)`.
+hash instead, such as `epx v0.0.0-20261014183651-ffca1e3d7f17 (go1.27.3)`.
 
 ## Upgrade epx
 

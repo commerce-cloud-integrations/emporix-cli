@@ -11,7 +11,8 @@ const path = require("node:path");
 const { test } = require("node:test");
 
 const launcher = path.join(__dirname, "..", "bin", "epx.js");
-const host = `epx-cli-${process.platform}-${process.arch}`;
+const scope = "@commercecloudintegrations";
+const host = `${scope}/epx-cli-${process.platform}-${process.arch}`;
 const version = "1.2.3";
 const skip = process.platform === "win32" ? "the stand-in binary is a shell script" : false;
 
@@ -95,7 +96,7 @@ test("forwards SIGTERM to epx and waits for it", { skip, timeout: 5000 }, async 
 });
 
 test("names the supported platforms on another platform", { skip }, (t) => {
-  const result = run(install(t, { platforms: ["epx-cli-aix-ppc64"] }), ["version"]);
+  const result = run(install(t, { platforms: [`${scope}/epx-cli-aix-ppc64`] }), ["version"]);
   assert.equal(result.status, 1);
   assert.match(result.stderr, /no binary exists for .*; epx-cli ships aix-ppc64\./);
 });
