@@ -14,10 +14,9 @@ npm install --global epx-cli
 ```
 
 npm installs the package `epx-cli`, which provides the `epx` command, and only the
-package that holds the binary of your platform, such as
-`@commercecloudintegrations/epx-cli-darwin-arm64`. Nothing is compiled, no install script
-runs, and nothing is downloaded outside the npm registry, so a private registry mirror works
-too. You need Node.js 18 or later.
+binary of your platform, a version of the same package such as `epx-cli@0.1.2-darwin-arm64`.
+Nothing is compiled, no install script runs, and nothing is downloaded outside the npm
+registry, so a private registry mirror works too. You need Node.js 18 or later.
 
 To run epx once without installing it:
 
@@ -28,7 +27,7 @@ npx epx-cli version
 <Note>
   The `epx` command that npm installs is a small Node.js program that runs the binary.
   Under `nohup`, it still ends when the terminal closes. For such runs, call the binary
-  itself (`bin/epx` in the package `@commercecloudintegrations/epx-cli-<os>-<cpu>`), or
+  itself (`bin/epx` in the folder `epx-cli-<os>-<cpu>` that npm installs with `epx-cli`), or
   install epx from a release archive.
 </Note>
 
@@ -39,7 +38,7 @@ an archive per platform (`epx_<version>_<os>_<arch>.tar.gz`, or `.zip` on Window
 checksums file. For example, on Linux x64:
 
 ```sh
-version=v0.1.1
+version=v0.1.2
 base=https://github.com/commerce-cloud-integrations/emporix-cli/releases/download/$version
 curl -fsSLO "$base/epx_${version}_linux_amd64.tar.gz" &&
   curl -fsSLO "$base/epx_${version}_checksums.txt" &&
@@ -77,7 +76,7 @@ epx version
 ```
 
 ```text
-epx v0.1.1 (go1.27.3)
+epx v0.1.2 (go1.27.3)
 ```
 
 A release prints its version. A build of an untagged commit prints the commit's date and

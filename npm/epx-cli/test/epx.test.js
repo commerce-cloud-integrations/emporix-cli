@@ -11,9 +11,8 @@ const path = require("node:path");
 const { test } = require("node:test");
 
 const launcher = path.join(__dirname, "..", "bin", "epx.js");
-const scope = "@commercecloudintegrations";
-const host = `${scope}/epx-cli-${process.platform}-${process.arch}`;
-const version = "1.2.3";
+const host = `epx-cli-${process.platform}-${process.arch}`;
+const version = `1.2.3-${process.platform}-${process.arch}`;
 const skip = process.platform === "win32" ? "the stand-in binary is a shell script" : false;
 
 // The stand-in binary: "args" prints its arguments one per line, "exit N" ends with N,
@@ -28,20 +27,20 @@ esac
 `;
 
 // install lays out node_modules/epx-cli (the launcher, a manifest listing the given
-// platforms at version) and, if platformPackage is set, node_modules/<host> at version
-// found, with the stand-in binary as bin/epx.
+// platforms as aliases of epx-cli@version) and, if platformPackage is set,
+// node_modules/<host>, the version found of epx-cli, with the stand-in binary as bin/epx.
 function install(t, { platforms = [host], platformPackage = true, mode = 0o755, found = version } = {}) {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "epx-cli-"));
   t.after(() => fs.rmSync(root, { recursive: true, force: true }));
   const main = path.join(root, "node_modules", "epx-cli");
   fs.mkdirSync(path.join(main, "bin"), { recursive: true });
   fs.copyFileSync(launcher, path.join(main, "bin", "epx.js"));
-  const optionalDependencies = Object.fromEntries(platforms.map((name) => [name, version]));
+  const optionalDependencies = Object.fromEntries(platforms.map((name) => [name, `npm:epx-cli@${version}`]));
   fs.writeFileSync(path.join(main, "package.json"), JSON.stringify({ name: "epx-cli", optionalDependencies }));
   if (platformPackage) {
     const dir = path.join(root, "node_modules", host);
     fs.mkdirSync(path.join(dir, "bin"), { recursive: true });
-    fs.writeFileSync(path.join(dir, "package.json"), JSON.stringify({ name: host, version: found }));
+    fs.writeFileSync(path.join(dir, "package.json"), JSON.stringify({ name: "epx-cli", version: found }));
     fs.writeFileSync(path.join(dir, "bin", "epx"), fake, { mode });
   }
   return path.join(main, "bin", "epx.js");
@@ -96,7 +95,7 @@ test("forwards SIGTERM to epx and waits for it", { skip, timeout: 5000 }, async 
 });
 
 test("names the supported platforms on another platform", { skip }, (t) => {
-  const result = run(install(t, { platforms: [`${scope}/epx-cli-aix-ppc64`] }), ["version"]);
+  const result = run(install(t, { platforms: ["epx-cli-aix-ppc64"] }), ["version"]);
   assert.equal(result.status, 1);
   assert.match(result.stderr, /no binary exists for .*; epx-cli ships aix-ppc64\./);
 });

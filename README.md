@@ -49,7 +49,7 @@ Each [release](https://github.com/commerce-cloud-integrations/emporix-cli/releas
 archive per platform and a checksums file. For example, on Linux x64:
 
 ```sh
-version=v0.1.1
+version=v0.1.2
 base=https://github.com/commerce-cloud-integrations/emporix-cli/releases/download/$version
 curl -fsSLO "$base/epx_${version}_linux_amd64.tar.gz" &&
   curl -fsSLO "$base/epx_${version}_checksums.txt" &&

@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 // Runs the epx binary of this platform, which npm installed from the matching
-// optional dependency (@commercecloudintegrations/epx-cli-<platform>-<arch>).
+// optional dependency: epx-cli-<platform>-<arch>, an alias of the version
+// epx-cli@<version>-<platform>-<arch> that holds the binary.
 "use strict";
 
 const { spawn } = require("node:child_process");
@@ -9,7 +10,7 @@ const path = require("node:path");
 const { optionalDependencies } = require("../package.json");
 
 const windows = process.platform === "win32";
-const prefix = "@commercecloudintegrations/epx-cli-";
+const prefix = "epx-cli-";
 const pkg = `${prefix}${process.platform}-${process.arch}`;
 const reinstall =
   "Reinstall epx-cli without --omit=optional or --no-optional; in a project whose " +
@@ -26,8 +27,8 @@ function fail(message) {
 // this epx-cli, at its version: Node's lookup could otherwise reach an older one
 // installed elsewhere.
 function locate() {
-  const wanted = optionalDependencies[pkg];
-  if (wanted === undefined) {
+  const spec = optionalDependencies[pkg];
+  if (spec === undefined) {
     const platforms = Object.keys(optionalDependencies).map((name) => name.slice(prefix.length));
     fail(
       platforms.length === 0
@@ -41,6 +42,7 @@ function locate() {
   } catch {
     fail(`the package ${pkg}, which holds the binary, is not installed. ${reinstall}`);
   }
+  const wanted = spec.replace(/^npm:epx-cli@/, "");
   const dir = path.dirname(manifest);
   const found = require(manifest).version;
   if (found !== wanted) {
