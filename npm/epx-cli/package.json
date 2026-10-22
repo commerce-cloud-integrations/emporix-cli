@@ -4,7 +4,7 @@
   "private": true,
   "description": "epx, a command-line client for the Emporix Commerce APIs",
   "keywords": ["emporix", "commerce", "cli"],
-  "homepage": "https://github.com/commerce-cloud-integrations/emporix-cli",
+  "homepage": "https://commerce-cloud-integrations.github.io/emporix-cli/",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/commerce-cloud-integrations/emporix-cli.git"
