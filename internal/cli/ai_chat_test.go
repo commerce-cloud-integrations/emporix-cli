@@ -36,7 +36,7 @@ func TestAIChatsSendTheirSession(t *testing.T) {
 				t.Errorf("%q: exit %d, stderr %q, session-id %q; want %q", args, code, stderr, sent, want)
 			}
 			_, stdout, _ := runIn(t, writeEnv(fake, false, ""), append(args, "--dry-run")...)
-			if shown := strings.Contains(stdout, "\nSession-Id: s 1\n"); shown != (want != "") {
+			if strings.Contains(stdout, "\nSession-Id: s 1\n") != (want != "") {
 				t.Errorf("%q --dry-run: %q; want the session shown exactly when given", args, stdout)
 			}
 		}
@@ -137,8 +137,8 @@ func TestAIHelpNamesCreditsAndJobs(t *testing.T) {
 			!strings.Contains(cmd.Long, "It consumes AI credits: the LLM tokens of") {
 			t.Errorf("ai %s: %v, summary %q, help %q; want both to name AI credits", use, err, cmd.Short, cmd.Long)
 		}
-		if waits := strings.Contains(cmd.Long, "A reply may take longer than the --timeout of a request (30s by "+
-			"default)"); waits == (use == "chat-async") {
+		if strings.Contains(cmd.Long, "A reply may take longer than the --timeout of a request (30s by "+
+			"default)") == (use == "chat-async") {
 			t.Errorf("ai %s: help %q; want --timeout named exactly where it waits for the reply", use, cmd.Long)
 		}
 	}

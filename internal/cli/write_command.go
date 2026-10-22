@@ -128,7 +128,7 @@ func (w *write) command(a *app) *cobra.Command {
 		cmd.Flags().Bool(sw.flag, false, sw.usage)
 	}
 	choose := w.choice.bind(cmd)
-	var end ending = printing{}
+	var end endingPlanner = printing{}
 	if w.answer != nil {
 		end = w.answer.bind(a, cmd)
 	}

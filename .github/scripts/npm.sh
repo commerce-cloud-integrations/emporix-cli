@@ -24,9 +24,9 @@
 # from the tag, never from the working tree; a snapshot takes them from the working tree.
 # Before anything is published, the tarballs are checked (names, versions, os/cpu, the
 # optional dependencies of the main version, an executable binary) and installed into a
-# temporary project as npm installs them from the registry: the main version from its tarball, its optional
-# dependencies resolved to theirs (offline), so npm itself picks the host's package; the
-# installed epx must then run and carry the release's commit. A package version already on
+# temporary project as npm installs them from the registry: the main version from its
+# tarball, its optional dependencies resolved to theirs (offline), so npm itself picks the
+# host's package; the installed epx must then run and carry the release's commit. A package version already on
 # the registry is skipped only when it is byte for byte the local tarball.
 # Output: DIST/npm/*.tgz; a later run packs again and must produce the same bytes.
 set -euo pipefail
@@ -34,12 +34,12 @@ set -euo pipefail
 fail() { echo "npm: $*" >&2; exit 1; }
 usage() { echo "usage: $0 DIST [--publish]" >&2; exit 2; }
 
-[ $# -ge 1 ] && [ $# -le 2 ] || usage
+[[ $# -ge 1 && $# -le 2 ]] || usage
 dist=${1%/}
 mode=${2:-pack}
 case $mode in pack | --publish) ;; *) usage ;; esac
 cd "$(git rev-parse --show-toplevel)"
-[ -d "$dist" ] || fail "$dist does not exist; run scripts/release.sh first"
+[[ -d "$dist" ]] || fail "$dist does not exist; run scripts/release.sh first"
 dist=$(cd "$dist" && pwd)
 
 tag=$(basename "$dist")
@@ -47,7 +47,7 @@ if [[ $tag =~ ^v((0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*))$ ]]; then
 	version=${BASH_REMATCH[1]}
 	commit=$(git rev-parse --verify --quiet "refs/tags/$tag^{commit}") || fail "no local tag $tag"
 elif [[ $tag =~ ^snapshot-([0-9a-f]+)$ ]]; then
-	[ "$mode" = pack ] || fail "a snapshot is never published"
+	[[ "$mode" = pack ]] || fail "a snapshot is never published"
 	# The g keeps the identifier alphanumeric: an all-digit hash with a leading zero is not semver.
 	version=0.0.0-snapshot.g${BASH_REMATCH[1]}
 	commit=$(git rev-parse --verify --quiet "${BASH_REMATCH[1]}^{commit}") || fail "unknown commit in $tag"
@@ -60,28 +60,34 @@ trap 'rm -rf "$stage"' EXIT
 
 # The platforms of the release, from its checksums file: epx_<tag>_<goos>_<goarch>.<ext>.
 sums=epx_${tag}_checksums.txt
-[ -f "$dist/$sums" ] || fail "$dist has no $sums"
+[[ -f "$dist/$sums" ]] || fail "$dist has no $sums"
 (cd "$dist" && shasum -a 256 --check --quiet "$sums") || fail "the archives do not match $sums"
 archives=()
 while read -r _ file; do
 	case $file in *.tar.gz | *.zip) archives+=("$file") ;; *) fail "unknown archive type: $file" ;; esac
 done <"$dist/$sums"
-[ ${#archives[@]} -gt 0 ] || fail "$sums lists no archive"
+[[ ${#archives[@]} -gt 0 ]] || fail "$sums lists no archive"
 
 # base strips the extension of an archive name (.tar.gz or .zip, checked above).
-base() { if [[ $1 == *.zip ]]; then echo "${1%.zip}"; else echo "${1%.tar.gz}"; fi; }
+base() {
+	local file=$1
+	if [[ $file == *.zip ]]; then echo "${file%.zip}"; else echo "${file%.tar.gz}"; fi
+}
 
 # npm_platform maps an archive name to npm's <os>-<cpu> (Go's windows/amd64 is win32/x64).
 npm_platform() {
-	local rest
-	rest=$(base "$1")
+	local file=$1 rest
+	rest=$(base "$file")
 	rest=${rest#"epx_${tag}_"}
 	local goos=${rest%_*} goarch=${rest#*_}
 	echo "${goos/windows/win32}-${goarch/amd64/x64}"
 }
 
 # exe_of prints the binary name of an npm platform.
-exe_of() { if [[ $1 == win32-* ]]; then echo epx.exe; else echo epx; fi; }
+exe_of() {
+	local platform=$1
+	if [[ $platform == win32-* ]]; then echo epx.exe; else echo epx; fi
+}
 
 # pkg is the npm package (as npm/epx-cli/package.json names it; check verifies it); npm
 # pack names its tarballs <scope>-<name>-<version>.tgz. alias_of prints the name under
@@ -89,21 +95,29 @@ exe_of() { if [[ $1 == win32-* ]]; then echo epx.exe; else echo epx; fi; }
 # version.
 pkg=@commercecloudintegrations/epx-cli
 tgz_base=commercecloudintegrations-epx-cli
-alias_of() { echo "epx-cli-$1"; }
-tgz_of() { echo "$out/$tgz_base-$version-$1.tgz"; }
+alias_of() {
+	local platform=$1
+	echo "epx-cli-$platform"
+}
+tgz_of() {
+	local platform=$1
+	echo "$out/$tgz_base-$version-$platform.tgz"
+}
 
 out=$dist/npm
 main_tgz=$out/$tgz_base-$version.tgz
 packed=$stage/npm
 
-# sources copies the tracked inputs of the packages into $1: from the tag for a release.
+# sources copies the tracked inputs of the packages into the directory into: from the tag
+# for a release.
 sources() {
+	local into=$1
 	if [[ $tag == v* ]]; then
-		git archive "$commit" npm/epx-cli LICENSE README.md | tar -x -C "$1"
+		git archive "$commit" npm/epx-cli LICENSE README.md | tar -x -C "$into"
 	else
-		mkdir -p "$1/npm"
-		cp -R npm/epx-cli "$1/npm/"
-		cp LICENSE README.md "$1/"
+		mkdir -p "$into/npm"
+		cp -R npm/epx-cli "$into/npm/"
+		cp LICENSE README.md "$into/"
 	fi
 }
 
@@ -161,7 +175,10 @@ pack() {
 }
 
 # manifest prints the package.json of a tarball.
-manifest() { tar -xOzf "$1" package/package.json; }
+manifest() {
+	local tgz=$1
+	tar -xOzf "$tgz" package/package.json
+}
 
 # check verifies every tarball: the platform versions of the archives, nothing else,
 # and the main version depending on exactly those.
@@ -172,7 +189,7 @@ check() {
 		platforms+=("$platform")
 		tgz=$(tgz_of "$platform")
 		exe=$(exe_of "$platform")
-		[ -f "$tgz" ] || fail "missing $tgz"
+		[[ -f "$tgz" ]] || fail "missing $tgz"
 		manifest "$tgz" | jq -e --arg pkg "$pkg" --arg version "$version-$platform" \
 			--arg os "${platform%-*}" --arg cpu "${platform#*-}" \
 			'.name == $pkg and .version == $version and .os == [$os] and .cpu == [$cpu]
@@ -180,9 +197,9 @@ check() {
 			fail "$tgz has a wrong package.json"
 		tar -tvzf "$tgz" "package/bin/$exe" | grep -q '^-rwxr-xr-x' || fail "$tgz has no executable bin/$exe"
 	done
-	[ -f "$main_tgz" ] || fail "missing $main_tgz"
+	[[ -f "$main_tgz" ]] || fail "missing $main_tgz"
 	actual=$(cd "$out" && find . -name '*.tgz' ! -name "$(basename "$main_tgz")" | sed 's|^\./||' | sort)
-	[ "$actual" = "$(for platform in "${platforms[@]}"; do basename "$(tgz_of "$platform")"; done | sort)" ] ||
+	[[ "$actual" = "$(for platform in "${platforms[@]}"; do basename "$(tgz_of "$platform")"; done | sort)" ]] ||
 		fail "$out holds other tarballs than the platforms of $sums"
 	manifest "$main_tgz" | jq -e --arg pkg "$pkg" --arg version "$version" --argjson deps "$(deps "${platforms[@]}")" '
 		.name == $pkg and .version == $version and (has("private") | not)
@@ -203,7 +220,9 @@ smoke() {
 	done
 	jq -n --arg pkg "$pkg" --arg main "file:$main_tgz" --argjson overrides "$overrides" \
 		'{private: true, dependencies: {($pkg): $main}, overrides: $overrides}' >"$proj/package.json"
-	(cd "$proj" && npm install --offline --silent --no-audit --no-fund) || fail "cannot install the tarballs"
+	# The packages have no lifecycle scripts (check), so none needs to run.
+	(cd "$proj" && npm install --offline --ignore-scripts --silent --no-audit --no-fund) ||
+		fail "cannot install the tarballs"
 	reported=$("$proj/node_modules/.bin/epx" version) || fail "the installed epx does not run"
 	host=$(node -p 'process.platform + "-" + process.arch')
 	info=$(go version -m "$(cd "$proj" && node -p "require.resolve('$(alias_of "$host")/bin/$(exe_of "$host")')")") ||
@@ -215,26 +234,26 @@ smoke() {
 	echo "npm: $out checked ($reported)"
 }
 
-# publish publishes the version $1 of the package from the tarball $2 under the dist-tag $3,
+# publish publishes the version at of the package from the tarball tgz under dist_tag,
 # or skips it when the registry already holds this version with the same content (a run
 # that stopped halfway); a different content under the same version fails, since npm
 # never replaces a version.
 publish() {
-	local published local_sum
-	published=$(npm view "$pkg@$1" dist.integrity 2>/dev/null) || published=
-	if [ -n "$published" ]; then
-		local_sum=sha512-$(openssl dgst -sha512 -binary "$2" | base64 | tr -d '\n')
-		[ "$published" = "$local_sum" ] || fail "$pkg@$1 on the registry is not $2"
-		echo "npm: $pkg@$1 is already published"
+	local at=$1 tgz=$2 dist_tag=$3 published local_sum
+	published=$(npm view "$pkg@$at" dist.integrity 2>/dev/null) || published=
+	if [[ -n "$published" ]]; then
+		local_sum=sha512-$(openssl dgst -sha512 -binary "$tgz" | base64 | tr -d '\n')
+		[[ "$published" = "$local_sum" ]] || fail "$pkg@$at on the registry is not $tgz"
+		echo "npm: $pkg@$at is already published"
 		return
 	fi
-	npm publish --access public --tag "$3" "$2" || fail "cannot publish $pkg@$1"
+	npm publish --access public --tag "$dist_tag" "$tgz" || fail "cannot publish $pkg@$at"
 }
 
 # Every run packs from the verified archives (and the tag); packing is deterministic, so a
 # later run (a resumed publish) must produce exactly the tarballs already in $out.
 pack
-if [ -e "$out" ]; then
+if [[ -e "$out" ]]; then
 	diff -r "$packed" "$out" >/dev/null || fail "$out differs from a fresh pack; delete it to pack again"
 	echo "npm: $out matches a fresh pack"
 else
@@ -244,22 +263,22 @@ check
 smoke
 ls -1 "$out"
 
-# available waits until the registry serves the version $1 of the package: npm processes a
+# available waits until the registry serves the version at of the package: npm processes a
 # publish for a few minutes before installs can fetch it.
 available() {
-	local tries=0
-	until npm view "$pkg@$1" version >/dev/null 2>&1; do
+	local at=$1 tries=0
+	until npm view "$pkg@$at" version >/dev/null 2>&1; do
 		tries=$((tries + 1))
-		[ "$tries" -le 60 ] || fail "$pkg@$1 is still not available after 30 minutes"
+		[[ "$tries" -le 60 ]] || fail "$pkg@$at is still not available after 30 minutes"
 		sleep 30
 	done
 }
 
-if [ "$mode" = --publish ]; then
+if [[ "$mode" = --publish ]]; then
 	remote=$(git ls-remote origin "refs/tags/$tag" "refs/tags/$tag^{}" | awk '{ c = $1 } END { print c }')
-	[ "$remote" = "$commit" ] || fail "origin's tag $tag does not name $commit; push the tag first"
+	[[ "$remote" = "$commit" ]] || fail "origin's tag $tag does not name $commit; push the tag first"
 	# GitHub Actions publishes through trusted publishing (OIDC): there is no login to check.
-	if [ -z "${ACTIONS_ID_TOKEN_REQUEST_URL:-}" ]; then
+	if [[ -z "${ACTIONS_ID_TOKEN_REQUEST_URL:-}" ]]; then
 		npm whoami >/dev/null || fail "not logged in to npm; run npm login"
 	fi
 	# The platform versions first: the main version must never depend on a version that does not

@@ -25,26 +25,31 @@ fail() {
 	exit 1
 }
 
-# fetch writes the body of URL $1 into the file $2.
+# fetch writes the body of an https URL into a file: fetch URL FILE.
 fetch() {
+	fetch_url=$1
+	fetch_file=$2
 	if command -v curl >/dev/null 2>&1; then
-		curl -fsSL --proto '=https' --tlsv1.2 -o "$2" "$1"
+		curl -fsSL --proto '=https' --proto-redir '=https' --tlsv1.2 -o "$fetch_file" "$fetch_url"
 	elif command -v wget >/dev/null 2>&1; then
-		wget -q -O "$2" "$1"
+		wget -q -O "$fetch_file" "$fetch_url"
 	else
 		fail "neither curl nor wget is installed"
 	fi
 }
 
 # latest_tag prints the tag of the latest release: with curl from the redirect of
-# /releases/latest (no API rate limit), with wget (BusyBox too) from the GitHub API.
+# /releases/latest (no API rate limit), with wget (BusyBox too) from the GitHub API, read
+# into $tmp.
 latest_tag() {
 	if command -v curl >/dev/null 2>&1; then
-		url=$(curl -fsSLI --proto '=https' --tlsv1.2 -o /dev/null -w '%{url_effective}' "$repo/releases/latest") || url=
+		url=$(curl -fsSLI --proto '=https' --proto-redir '=https' --tlsv1.2 -o /dev/null -w '%{url_effective}' \
+			"$repo/releases/latest") || url=
 		tag=${url##*/tag/}
+	elif fetch "https://api.github.com/repos/${repo#https://github.com/}/releases/latest" "$tmp/latest.json"; then
+		tag=$(sed -n 's/^ *"tag_name": *"\([^"]*\)".*/\1/p' "$tmp/latest.json")
 	else
-		tag=$(wget -q -O - "https://api.github.com/repos/${repo#https://github.com/}/releases/latest" |
-			sed -n 's/^ *"tag_name": *"\([^"]*\)".*/\1/p') || tag=
+		tag=
 	fi
 	case $tag in v[0-9]*) printf '%s\n' "$tag" ;; *) fail "cannot find the latest release at $repo/releases" ;; esac
 }
@@ -69,14 +74,15 @@ target() {
 	printf '%s_%s\n' "$os" "$arch"
 }
 
-# sha256 prints the SHA-256 of the file $1.
+# sha256 prints the SHA-256 of a file: sha256 FILE.
 sha256() {
+	sum_file=$1
 	if command -v sha256sum >/dev/null 2>&1; then
-		sha256sum "$1" | awk '{ print $1 }'
+		sha256sum "$sum_file" | awk '{ print $1 }'
 	elif command -v shasum >/dev/null 2>&1; then
-		shasum -a 256 "$1" | awk '{ print $1 }'
+		shasum -a 256 "$sum_file" | awk '{ print $1 }'
 	elif command -v openssl >/dev/null 2>&1; then
-		openssl dgst -sha256 "$1" | awk '{ print $NF }'
+		openssl dgst -sha256 "$sum_file" | awk '{ print $NF }'
 	else
 		fail "no SHA-256 tool found (sha256sum, shasum or openssl)"
 	fi
@@ -91,23 +97,28 @@ profile() {
 	esac
 }
 
-# add_to_path makes sure that new shells find epx in the directory $1.
+# add_to_path makes sure that new shells find epx in a directory: add_to_path DIR.
 add_to_path() {
-	case ":$PATH:" in *":$1:"*) return ;; esac
-	line="export PATH=\"$1:\$PATH\""
+	bin_dir=$1
+	case ":$PATH:" in *":$bin_dir:"*) return ;; esac
+	line="export PATH=\"$bin_dir:\$PATH\""
 	if [ "${EPX_NO_MODIFY_PATH:-}" = 1 ]; then
-		say "$1 is not on your PATH; add it with: $line"
+		say "$bin_dir is not on your PATH; add it with: $line"
 		return
 	fi
 	file=$(profile)
 	if ! grep -qF '# >>> epx installer >>>' "$file" 2>/dev/null; then
 		printf '\n# >>> epx installer >>>\n%s\n# <<< epx installer <<<\n' "$line" >>"$file"
-		say "added $1 to PATH in $file"
+		say "added $bin_dir to PATH in $file"
 	fi
 	say "to use epx in this terminal, run: $line"
 }
 
 main() {
+	tmp=$(mktemp -d)
+	trap 'rm -rf "$tmp"' EXIT
+	trap 'exit 1' HUP INT TERM
+
 	version=${EPX_VERSION:-}
 	if [ -z "$version" ]; then
 		version=$(latest_tag)
@@ -118,10 +129,6 @@ main() {
 	dir=${EPX_INSTALL_DIR:-$HOME/.local/bin}
 	name=epx_${version}_$(target)
 	base=$repo/releases/download/$version
-
-	tmp=$(mktemp -d)
-	trap 'rm -rf "$tmp"' EXIT
-	trap 'exit 1' HUP INT TERM
 
 	say "downloading epx $version ($name)"
 	fetch "$base/$name.tar.gz" "$tmp/$name.tar.gz" || fail "cannot download $base/$name.tar.gz"

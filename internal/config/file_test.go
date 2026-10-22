@@ -27,7 +27,7 @@ func checkDefaults(t *testing.T, f *File) {
 	if replaced := f.Put("prod", &Profile{Tenant: "acme2", ClientID: "c2"}); replaced || f.Default != "dev" {
 		t.Fatalf("second put: replaced %v, default %q; want dev to stay the default", replaced, f.Default)
 	}
-	if replaced := f.Put("prod", &Profile{Tenant: "acme2", ClientID: "c3"}); !replaced {
+	if !f.Put("prod", &Profile{Tenant: "acme2", ClientID: "c3"}) {
 		t.Fatal("a put of an existing profile did not replace it")
 	}
 	if got, err := f.Lookup("prod"); err != nil || got.ClientID != "c3" {

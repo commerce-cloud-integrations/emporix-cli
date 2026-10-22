@@ -17,14 +17,14 @@ import (
 // bodyRead reads with a request that Emporix serves as POST, or PUT, with a
 // body but that changes no data, such as a search, a calculation or the
 // parsing of a file (emporix.Client.WithBody). Its flags make the body
-// (readBody): a JSON one, which typed flags make (requestBody) or --body FILE
+// (readBinder): a JSON one, which typed flags make (bodyBinder) or --body FILE
 // gives whole, or a form; the read then goes on as fetch reads: a listing,
 // paged as Emporix pages most searches, or a single response.
 type bodyRead struct {
-	method  string   // http.MethodPost or http.MethodPut
-	created bool     // Emporix answers 201 Created although nothing is created (emporix.Client.AcceptCreated)
-	body    readBody // the body that its flags make; an empty JSON object when nil
-	fetch   fetcher  // how the response is read: a listing or single
+	method  string     // http.MethodPost or http.MethodPut
+	created bool       // Emporix answers 201 Created although nothing is created (emporix.Client.AcceptCreated)
+	body    readBinder // the body that its flags make; an empty JSON object when nil
+	fetch   fetcher    // how the response is read: a listing or single
 	// forbiddenIsRefusal says that Emporix refuses an input that it will not
 	// act on with 403 Forbidden although the credential is fine: such a
 	// refusal then exits 1, not 3 (emporix.Client.ForbiddenIsRefusal).
@@ -45,7 +45,7 @@ const bodyFlag = "body"
 const maxBodyFileBytes = 1 << 20
 
 func (b bodyRead) bind(cmd *cobra.Command) (readFunc, shape) {
-	var body readBody = objectBody{}
+	var body readBinder = objectBody{}
 	if b.body != nil {
 		body = b.body
 	}
@@ -75,10 +75,10 @@ func (b bodyRead) bind(cmd *cobra.Command) (readFunc, shape) {
 	return sent, items
 }
 
-// readBody is the body of a read with a body, which its flags make: a JSON
+// readBinder is the body of a read with a body, which its flags make: a JSON
 // one (jsonRead), which typed flags make (objectBody, valueBody) or --body
 // gives whole, or a form (form).
-type readBody interface {
+type readBinder interface {
 	// bindRead adds the flags of the body to cmd and returns how a run makes
 	// it, and what the read sends, as its help names it after "with".
 	bindRead(cmd *cobra.Command) (made makeBody, sends string)
@@ -89,17 +89,17 @@ type makeBody func(ctx context.Context) (emporix.Body, error)
 
 // jsonRead adds to cmd --body, which gives the JSON body of a read whole,
 // then the flags of typed, each of which excludes --body, and returns how a
-// run makes the body and what the read sends (readBody).
-func jsonRead(cmd *cobra.Command, typed requestBody) (made makeBody, sends string) {
+// run makes the body and what the read sends (readBinder).
+func jsonRead(cmd *cobra.Command, typed bodyBinder) (made makeBody, sends string) {
 	body := bodyFile{flag: bodyFlag, limit: maxBodyFileBytes}.bindWith(cmd, "send the JSON request body in `FILE` as "+
 		"given (- reads standard input) instead of the one the other flags make", typed)
 	return body.make, "a JSON body, which the\nflags make or --body gives whole."
 }
 
-// requestBody is the body that the typed flags of a read or a write make: a
+// bodyBinder is the body that the typed flags of a read or a write make: a
 // JSON object of members (objectBody) or one value, such as an array of IDs
 // (valueBody).
-type requestBody interface {
+type bodyBinder interface {
 	// bind adds the flags of the body to cmd, which defines whole, the flag
 	// that gives the body whole instead (--body of a read, --file of a
 	// write), and returns the body they make once flags are parsed.
@@ -186,7 +186,7 @@ type bodyField struct {
 type bodyValue struct {
 	flag string // the flag that sets it, e.g. "query"
 	// add adds its own flag, if any, to cmd, whose flag whole gives the body
-	// whole (requestBody.bind); it returns the value once flags are parsed.
+	// whole (bodyBinder.bind); it returns the value once flags are parsed.
 	add func(cmd *cobra.Command, whole string) func() any
 }
 

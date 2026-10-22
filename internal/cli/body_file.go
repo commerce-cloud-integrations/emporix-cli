@@ -162,9 +162,9 @@ type boundBody struct {
 }
 
 // bindWith adds the flag of f to cmd with usage, as bind does, then the flags
-// of typed, if any, each of which the flag of f excludes (requestBody.bind),
+// of typed, if any, each of which the flag of f excludes (bodyBinder.bind),
 // and returns the body of a run.
-func (f bodyFile) bindWith(cmd *cobra.Command, usage string, typed requestBody) boundBody {
+func (f bodyFile) bindWith(cmd *cobra.Command, usage string, typed bodyBinder) boundBody {
 	body := boundBody{file: f.bind(cmd, usage)}
 	if typed != nil {
 		body.typed = typed.bind(cmd, f.flag)

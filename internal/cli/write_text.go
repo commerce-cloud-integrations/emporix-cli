@@ -19,12 +19,12 @@ type textAnswer struct {
 
 // bind implements answerer: it says in the help of cmd how the answer is
 // printed, and returns how a run of cmd ends.
-func (t textAnswer) bind(_ *app, cmd *cobra.Command) ending {
+func (t textAnswer) bind(_ *app, cmd *cobra.Command) endingPlanner {
 	cmd.Long += "\n\nEmporix answers with " + t.what + ", which epx prints as a JSON string."
 	return t
 }
 
-// plan implements ending: the run requests the write's scopes alone and
+// plan implements endingPlanner: the run requests the write's scopes alone and
 // prints Emporix's answer as JSON (textAsJSON).
 func (textAnswer) plan(_ *cobra.Command, write []string) ([]string, answered) {
 	return write, func(_ *emporix.Client, response []byte) (json.RawMessage, error) {

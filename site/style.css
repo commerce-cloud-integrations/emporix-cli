@@ -4,6 +4,6 @@
    page is the last child of the container that follows the header. */
 @media (min-width: 1024px) {
   .peer.is-wide ~ div > :last-child {
-    max-width: none !important;
+    max-width: none;
   }
 }

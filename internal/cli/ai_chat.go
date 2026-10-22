@@ -76,7 +76,7 @@ func parseAttachment(value string) (chatAttachment, error) {
 // chatBody is the body of a chat with an agent that its flags make: the
 // agent, the message and the attachments that it sends, which are those of a
 // session, so --attachment applies only with --session.
-func chatBody() requestBody {
+func chatBody() bodyBinder {
 	return objectBody{
 		stringField("agentId", "agent", "the `ID` of the agent, as `epx ai agents list` shows it").require(),
 		stringField("message", "message", "the `TEXT` to send to the agent").require(),

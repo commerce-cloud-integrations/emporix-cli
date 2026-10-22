@@ -108,7 +108,7 @@ type waiting struct {
 // bind implements answerer: it adds --wait, --wait-timeout and
 // --poll-interval to cmd, a write that starts j, which the latter two apply
 // only with (onlyWithFlag), and says in its help how --wait follows the job.
-func (j *jobWait) bind(_ *app, cmd *cobra.Command) ending {
+func (j *jobWait) bind(_ *app, cmd *cobra.Command) endingPlanner {
 	refuseTypeScopes(cmd.Use, j.scopes)
 	w := &waiting{job: j, timeout: waitDuration{value: defaultWaitTimeout, shortest: j.shortest},
 		interval: waitDuration{value: defaultPollInterval, shortest: j.shortest}}
@@ -129,7 +129,7 @@ func (j *jobWait) bind(_ *app, cmd *cobra.Command) ending {
 	return w
 }
 
-// plan implements ending: with --wait, the run also requests the scopes of
+// plan implements endingPlanner: with --wait, the run also requests the scopes of
 // reading the job, which then fail it before anything is sent when the
 // credential lacks them, and follows the job; without, it prints the
 // response.

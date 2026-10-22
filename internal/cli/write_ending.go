@@ -8,12 +8,12 @@ import "github.com/spf13/cobra"
 type answerer interface {
 	// bind adds the flags of the answer to cmd, a write command of a, says in
 	// its help what they do, and returns how a run of cmd ends.
-	bind(a *app, cmd *cobra.Command) ending
+	bind(a *app, cmd *cobra.Command) endingPlanner
 }
 
-// ending is how a run of a write ends once Emporix answered it, as its
+// endingPlanner is how a run of a write ends once Emporix answered it, as its
 // answerer declares, or by printing the response (printing).
-type ending interface {
+type endingPlanner interface {
 	// plan returns the scopes of a run of cmd, a write that requests write,
 	// and what the run does with Emporix's answer.
 	plan(cmd *cobra.Command, write []string) ([]string, answered)

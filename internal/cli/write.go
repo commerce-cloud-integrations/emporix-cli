@@ -90,14 +90,14 @@ type bodySource interface {
 // required unless the body is optional or typed. Each write takes its own,
 // &payload{} for one JSON value, required.
 type payload struct {
-	optional bool        // --file may be left out, as an `api` write then sends no body
-	array    bool        // --file gives one JSON array, such as the operations of a patch (operationsFile)
-	maxItems int         // a bulk write's: the most items of its JSON array, answered per item; 0 for one value
-	itemKey  string      // a bulk write's: the member naming an item in it and its result (emporix.Items)
-	whole    bool        // a bulk write's items are answered as a whole (a 204), not per item
-	batched  bool        // a bulk write's: more items are sent in requests of up to maxItems (emporix.Write.Split)
-	typed    requestBody // the body that typed flags make, each of which --file excludes; none when nil
-	body     boundBody   // --file and the typed flags, once bound
+	optional bool       // --file may be left out, as an `api` write then sends no body
+	array    bool       // --file gives one JSON array, such as the operations of a patch (operationsFile)
+	maxItems int        // a bulk write's: the most items of its JSON array, answered per item; 0 for one value
+	itemKey  string     // a bulk write's: the member naming an item in it and its result (emporix.Items)
+	whole    bool       // a bulk write's items are answered as a whole (a 204), not per item
+	batched  bool       // a bulk write's: more items are sent in requests of up to maxItems (emporix.Write.Split)
+	typed    bodyBinder // the body that typed flags make, each of which --file excludes; none when nil
+	body     boundBody  // --file and the typed flags, once bound
 }
 
 // bind adds --file and the typed flags, if any, with --file required unless

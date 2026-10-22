@@ -24,30 +24,30 @@ case $mode in release | --snapshot | --publish) ;; *) echo "usage: $0 [--snapsho
 cd "$(git rev-parse --show-toplevel)"
 commit=$(git rev-parse HEAD)
 
-if [ "$mode" = --snapshot ]; then
+if [[ "$mode" = --snapshot ]]; then
 	version=snapshot-$(git rev-parse --short HEAD)
 else
 	status=$(git status --porcelain) || fail "git status failed"
-	[ -z "$status" ] || fail "the tree has modified or untracked files"
+	[[ -z "$status" ]] || fail "the tree has modified or untracked files"
 	version=$(git describe --exact-match --tags HEAD 2>/dev/null) || fail "HEAD has no tag"
 	[[ $version =~ ^v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$ ]] ||
 		fail "tag $version is not a canonical vMAJOR.MINOR.PATCH"
 fi
 
 out=dist/$version
-[ ! -e "$out" ] || fail "$out already exists"
+[[ ! -e "$out" ]] || fail "$out already exists"
 mkdir -p "$out"
 stage=$(mktemp -d)
 trap 'rm -r "$stage"' EXIT
 
 # check_binary verifies the build info a binary carries.
 check_binary() {
-	local info
-	info=$(go version -m "$1") || fail "cannot read build info of $1"
-	grep -q "vcs.revision=$commit" <<<"$info" || fail "$1 was not built from $commit"
-	if [ "$mode" != --snapshot ]; then
-		grep -q "vcs.modified=false" <<<"$info" || fail "$1 was built from a modified tree"
-		awk '$1 == "mod" { print $3 }' <<<"$info" | grep -qx "$version" || fail "$1 does not report $version"
+	local binary=$1 info
+	info=$(go version -m "$binary") || fail "cannot read build info of $binary"
+	grep -q "vcs.revision=$commit" <<<"$info" || fail "$binary was not built from $commit"
+	if [[ "$mode" != --snapshot ]]; then
+		grep -q "vcs.modified=false" <<<"$info" || fail "$binary was built from a modified tree"
+		awk '$1 == "mod" { print $3 }' <<<"$info" | grep -qx "$version" || fail "$binary does not report $version"
 	fi
 }
 
@@ -63,13 +63,13 @@ for target in darwin/amd64 darwin/arm64 linux/amd64 linux/arm64 windows/amd64 wi
 	arch=${target#*/}
 	name=epx_${version}_${os}_${arch}
 	exe=epx
-	[ "$os" = windows ] && exe=epx.exe
+	[[ "$os" = windows ]] && exe=epx.exe
 	mkdir "$stage/$name"
 	CGO_ENABLED=0 GOOS=$os GOARCH=$arch go build -buildvcs=true -trimpath -ldflags='-s -w' \
 		-o "$stage/$name/$exe" ./cmd/epx
 	check_binary "$stage/$name/$exe"
 	cp LICENSE README.md "$stage/$name/"
-	if [ "$os" = windows ]; then
+	if [[ "$os" = windows ]]; then
 		(cd "$stage" && zip -qrX "$OLDPWD/$out/$name.zip" "$name")
 	else
 		COPYFILE_DISABLE=1 tar "${tar_flags[@]}" -C "$stage" -czf "$out/$name.tar.gz" "$name"
@@ -82,9 +82,9 @@ reported=$("$host" version) || fail "the host binary does not run"
 echo "release: built $out ($reported)"
 ls -1 "$out"
 
-if [ "$mode" = --publish ]; then
+if [[ "$mode" = --publish ]]; then
 	remote=$(git ls-remote origin "refs/tags/$version" "refs/tags/$version^{}" | awk '{ c = $1 } END { print c }')
-	[ "$remote" = "$commit" ] || fail "origin's tag $version does not name $commit; push the tag first"
+	[[ "$remote" = "$commit" ]] || fail "origin's tag $version does not name $commit; push the tag first"
 	gh release create "$version" "$out"/* install/install.sh install/install.ps1 \
 		--verify-tag --title "$version" --generate-notes
 fi

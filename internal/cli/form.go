@@ -30,7 +30,7 @@ type formPart struct {
 type addPart func(ctx context.Context, parts []emporix.Part) ([]emporix.Part, error)
 
 // form is the form whose parts flags give, in their order: the body of a read
-// (readBody), and the start of the form of a write (formFile).
+// (readBinder), and the start of the form of a write (formFile).
 type form []formPart
 
 // parts adds the flags of f's parts to cmd and returns how a run makes the
