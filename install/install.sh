@@ -18,6 +18,8 @@
 set -eu
 
 repo=https://github.com/commerce-cloud-integrations/emporix-cli
+# curl's --proto and --proto-redir: https only, for the first request and every redirect.
+https_only='=https'
 
 say() { printf 'epx installer: %s\n' "$*"; }
 fail() {
@@ -30,7 +32,7 @@ fetch() {
 	fetch_url=$1
 	fetch_file=$2
 	if command -v curl >/dev/null 2>&1; then
-		curl -fsSL --proto '=https' --proto-redir '=https' --tlsv1.2 -o "$fetch_file" "$fetch_url"
+		curl -fsSL --proto "$https_only" --proto-redir "$https_only" --tlsv1.2 -o "$fetch_file" "$fetch_url"
 	elif command -v wget >/dev/null 2>&1; then
 		wget -q -O "$fetch_file" "$fetch_url"
 	else
@@ -43,7 +45,7 @@ fetch() {
 # into $tmp.
 latest_tag() {
 	if command -v curl >/dev/null 2>&1; then
-		url=$(curl -fsSLI --proto '=https' --proto-redir '=https' --tlsv1.2 -o /dev/null -w '%{url_effective}' \
+		url=$(curl -fsSLI --proto "$https_only" --proto-redir "$https_only" --tlsv1.2 -o /dev/null -w '%{url_effective}' \
 			"$repo/releases/latest") || url=
 		tag=${url##*/tag/}
 	elif fetch "https://api.github.com/repos/${repo#https://github.com/}/releases/latest" "$tmp/latest.json"; then
