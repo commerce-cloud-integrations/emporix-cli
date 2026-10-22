@@ -28,6 +28,26 @@ It helps you read, script, and change the data of an Emporix tenant right from t
 
 epx is a single binary for macOS, Linux, and Windows, on x64 (amd64) and arm64.
 
+### Install script
+
+On macOS or Linux:
+
+```sh
+curl -fsSL https://github.com/commerce-cloud-integrations/emporix-cli/releases/latest/download/install.sh | sh
+```
+
+On Windows (PowerShell):
+
+```powershell
+powershell -ExecutionPolicy ByPass -c "irm https://github.com/commerce-cloud-integrations/emporix-cli/releases/latest/download/install.ps1 | iex"
+```
+
+The script downloads the latest release for your platform, checks it against the release's
+checksums and installs `epx` into `~/.local/bin` (on Windows `%LOCALAPPDATA%\Programs\epx\bin`),
+without sudo, adding that directory to your `PATH` if needed. Set `EPX_VERSION` (such as
+`v0.1.2`) to pin a release, `EPX_INSTALL_DIR` to choose the directory, or `EPX_NO_MODIFY_PATH=1`
+to leave your shell profile alone.
+
 ### npm
 
 With Node.js 18 or later:
@@ -36,8 +56,8 @@ With Node.js 18 or later:
 npm install --global epx-cli
 ```
 
-npm installs only the package that holds the binary of your platform. Nothing is compiled
-and no install script runs. To run epx once without installing it:
+npm installs only the binary of your platform. Nothing is compiled and no install script
+runs. To run epx once without installing it:
 
 ```sh
 npx epx-cli version

@@ -1,11 +1,40 @@
 ---
 title: "Install epx"
-description: "Install epx with npm, from a release archive, or with Go, and set up shell completion."
+description: "Install epx with the install script, npm, a release archive, or Go, and set up shell completion."
 sidebarTitle: "Install"
 ---
 
 epx is a single binary for macOS, Linux, and Windows, on x64 (amd64) and arm64. Install it
-with npm, from a release archive, or with Go.
+with the install script, npm, a release archive, or Go.
+
+## Install with the install script
+
+On macOS or Linux:
+
+```sh
+curl -fsSL https://github.com/commerce-cloud-integrations/emporix-cli/releases/latest/download/install.sh | sh
+```
+
+On Windows, in PowerShell:
+
+```powershell
+powershell -ExecutionPolicy ByPass -c "irm https://github.com/commerce-cloud-integrations/emporix-cli/releases/latest/download/install.ps1 | iex"
+```
+
+The script downloads the latest release for your platform, checks it against the release's
+checksums file, and installs `epx` into `~/.local/bin` (on Windows,
+`%LOCALAPPDATA%\Programs\epx\bin`) without sudo or administrator rights. If that directory
+isn't on your `PATH`, the script adds it to your shell profile (on Windows, to your user
+`Path`); open a new terminal to use `epx`. Run the script again to update epx.
+
+To change what it does, set these environment variables; when piping into `sh`, put them
+after the pipe, such as `| EPX_VERSION=v0.1.2 sh`:
+
+| Variable | Effect |
+| --- | --- |
+| `EPX_VERSION` | Install this release, such as `v0.1.2`, instead of the latest. |
+| `EPX_INSTALL_DIR` | Install `epx` into this directory. |
+| `EPX_NO_MODIFY_PATH` | Set to `1` to leave your shell profile or `Path` unchanged. |
 
 ## Install with npm
 
