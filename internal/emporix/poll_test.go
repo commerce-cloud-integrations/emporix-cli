@@ -35,24 +35,27 @@ func TestPollReadsUntilEnded(t *testing.T) {
 // the context ends Poll with that failure, reading nothing more.
 func TestPollFailures(t *testing.T) {
 	errEnded := errors.New("not a job")
-	canceled, cancel := context.WithCancel(context.Background())
-	cancel()
 	for _, tt := range []struct {
-		name   string
-		ctx    context.Context
-		status int
-		want   error
-		reads  int
+		name     string
+		canceled bool // the context has ended before Poll starts
+		status   int
+		want     error
+		reads    int
 	}{
-		{name: "ended fails", ctx: context.Background(), status: http.StatusOK, want: errEnded, reads: 1},
-		{name: "read fails", ctx: context.Background(), status: http.StatusNotFound, want: ErrNotFound, reads: 1},
-		{name: "context ends", ctx: canceled, status: http.StatusOK, want: context.Canceled},
+		{name: "ended fails", status: http.StatusOK, want: errEnded, reads: 1},
+		{name: "read fails", status: http.StatusNotFound, want: ErrNotFound, reads: 1},
+		{name: "context ends", canceled: true, status: http.StatusOK, want: context.Canceled},
 	} {
+		ctx, cancel := context.WithCancel(context.Background())
+		if tt.canceled {
+			cancel()
+		}
 		fake := newFakeEmporix(t)
 		fake.route("/jobs/j1", respond(tt.status, `{"message":"gone"}`))
-		err := fake.client(t).Poll(tt.ctx, "/jobs/j1", nil, time.Millisecond, func(json.RawMessage) (bool, error) {
+		err := fake.client(t).Poll(ctx, "/jobs/j1", nil, time.Millisecond, func(json.RawMessage) (bool, error) {
 			return false, errEnded
 		})
+		cancel()
 		if !errors.Is(err, tt.want) || len(fake.requests) != tt.reads {
 			t.Errorf("%s: Poll: %v after %d reads; want %v after %d", tt.name, err, len(fake.requests), tt.want, tt.reads)
 		}
