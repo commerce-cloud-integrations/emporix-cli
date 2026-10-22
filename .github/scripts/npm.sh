@@ -244,6 +244,17 @@ check
 smoke
 ls -1 "$out"
 
+# available waits until the registry serves the version $1 of the package: npm processes a
+# publish for a few minutes before installs can fetch it.
+available() {
+	local tries=0
+	until npm view "$pkg@$1" version >/dev/null 2>&1; do
+		tries=$((tries + 1))
+		[ "$tries" -le 60 ] || fail "$pkg@$1 is still not available after 30 minutes"
+		sleep 30
+	done
+}
+
 if [ "$mode" = --publish ]; then
 	remote=$(git ls-remote origin "refs/tags/$tag" "refs/tags/$tag^{}" | awk '{ c = $1 } END { print c }')
 	[ "$remote" = "$commit" ] || fail "origin's tag $tag does not name $commit; push the tag first"
@@ -256,6 +267,11 @@ if [ "$mode" = --publish ]; then
 	for file in "${archives[@]}"; do
 		platform=$(npm_platform "$file")
 		publish "$version-$platform" "$(tgz_of "$platform")" "$platform"
+	done
+	# Until every platform version is served, an install of the main version would leave
+	# out the binary of that platform.
+	for file in "${archives[@]}"; do
+		available "$version-$(npm_platform "$file")"
 	done
 	publish "$version" "$main_tgz" latest
 fi
