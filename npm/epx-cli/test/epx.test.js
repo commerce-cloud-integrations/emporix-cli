@@ -1,6 +1,6 @@
 // Tests of the launcher: it runs from a node_modules tree laid out as npm installs
 // it, with a shell script standing in for the epx binary of this platform.
-// Run with: node --test npm/epx-cli/test
+// Run with: node --test npm/epx-cli/test/*.test.js
 "use strict";
 
 const assert = require("node:assert/strict");
