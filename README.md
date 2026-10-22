@@ -53,14 +53,14 @@ to leave your shell profile alone.
 With Node.js 18 or later:
 
 ```sh
-npm install --global epx-cli
+npm install --global @commercecloudintegrations/epx-cli
 ```
 
 npm installs only the binary of your platform. Nothing is compiled and no install script
 runs. To run epx once without installing it:
 
 ```sh
-npx epx-cli version
+npx @commercecloudintegrations/epx-cli version
 ```
 
 ### Release archive
@@ -69,7 +69,7 @@ Each [release](https://github.com/commerce-cloud-integrations/emporix-cli/releas
 archive per platform and a checksums file. For example, on Linux x64:
 
 ```sh
-version=v0.1.2
+version=v0.1.3
 base=https://github.com/commerce-cloud-integrations/emporix-cli/releases/download/$version
 curl -fsSLO "$base/epx_${version}_linux_amd64.tar.gz" &&
   curl -fsSLO "$base/epx_${version}_checksums.txt" &&
@@ -100,7 +100,7 @@ go build -o bin/epx ./cmd/epx
 
 | Installed with | Upgrade |
 | --- | --- |
-| npm | `npm update --global epx-cli` |
+| npm | `npm update --global @commercecloudintegrations/epx-cli` |
 | A release archive | Replace the binary with the one from the new release. |
 | Go | Run `go install` again. |
 
@@ -108,7 +108,7 @@ go build -o bin/epx ./cmd/epx
 
 1. If you use profiles, remove each one with `epx profile remove NAME`, which also deletes
    its client secret from the OS keychain.
-2. Remove epx: `npm uninstall --global epx-cli`, or delete the `epx` binary you installed.
+2. Remove epx: `npm uninstall --global @commercecloudintegrations/epx-cli`, or delete the `epx` binary you installed.
 3. Delete the `epx` folder from your configuration directory: `~/.config` on Linux,
    `~/Library/Application Support` on macOS, `%AppData%` on Windows.
 

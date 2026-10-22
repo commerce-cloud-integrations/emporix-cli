@@ -1,19 +1,19 @@
 #!/usr/bin/env node
 // Runs the epx binary of this platform, which npm installed from the matching
 // optional dependency: epx-cli-<platform>-<arch>, an alias of the version
-// epx-cli@<version>-<platform>-<arch> that holds the binary.
+// <version>-<platform>-<arch> of this package, which holds the binary.
 "use strict";
 
 const { spawn } = require("node:child_process");
 const { constants } = require("node:os");
 const path = require("node:path");
-const { optionalDependencies } = require("../package.json");
+const { name, optionalDependencies } = require("../package.json");
 
 const windows = process.platform === "win32";
 const prefix = "epx-cli-";
 const pkg = `${prefix}${process.platform}-${process.arch}`;
 const reinstall =
-  "Reinstall epx-cli without --omit=optional or --no-optional; in a project whose " +
+  `Reinstall ${name} without --omit=optional or --no-optional; in a project whose ` +
   "package-lock.json was made on another platform, delete node_modules and " +
   "package-lock.json, then install again.";
 
@@ -24,7 +24,7 @@ function fail(message) {
 }
 
 // locate returns the path of the binary in the platform package that npm installed with
-// this epx-cli, at its version: Node's lookup could otherwise reach an older one
+// this launcher, at its version: Node's lookup could otherwise reach an older one
 // installed elsewhere.
 function locate() {
   const spec = optionalDependencies[pkg];
@@ -32,8 +32,8 @@ function locate() {
     const platforms = Object.keys(optionalDependencies).map((name) => name.slice(prefix.length));
     fail(
       platforms.length === 0
-        ? "this is the source of epx-cli, not a packed release: no platform package is listed yet."
-        : `no binary exists for ${process.platform}-${process.arch}; epx-cli ships ${platforms.join(", ")}.`,
+        ? `this is the source of ${name}, not a packed release: no platform package is listed yet.`
+        : `no binary exists for ${process.platform}-${process.arch}; ${name} ships ${platforms.join(", ")}.`,
     );
   }
   let manifest;
@@ -42,11 +42,12 @@ function locate() {
   } catch {
     fail(`the package ${pkg}, which holds the binary, is not installed. ${reinstall}`);
   }
-  const wanted = spec.replace(/^npm:epx-cli@/, "");
+  const alias = `npm:${name}@`;
+  const wanted = spec.startsWith(alias) ? spec.slice(alias.length) : spec;
   const dir = path.dirname(manifest);
   const found = require(manifest).version;
   if (found !== wanted) {
-    fail(`epx-cli needs ${pkg} ${wanted}, but found ${found} in ${dir}. ${reinstall}`);
+    fail(`${name} needs ${pkg} ${wanted}, but found ${found} in ${dir}. ${reinstall}`);
   }
   return path.join(dir, "bin", windows ? "epx.exe" : "epx");
 }
