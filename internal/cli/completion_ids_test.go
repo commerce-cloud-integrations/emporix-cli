@@ -155,6 +155,12 @@ func TestCompletionOffersTheIDsOfOnePageOfTheList(t *testing.T) {
 			want:     []string{"AcmeStore_NL|Acme NL", "AcmeStore_DE|Acme DE"},
 			requests: []string{"/site/acme1/sites?pageNumber=1&pageSize=100&totalCount=true"},
 		},
+		{ // --mixin-site: the site codes too
+			args:     []string{"custom-entities", "instances", "get", "--mixin-site", "Acme"},
+			routes:   map[string]http.HandlerFunc{"/site/acme1/sites": respond(http.StatusOK, sitePage)},
+			want:     []string{"AcmeStore_NL|Acme NL", "AcmeStore_DE|Acme DE"},
+			requests: []string{"/site/acme1/sites?pageNumber=1&pageSize=100&totalCount=true"},
+		},
 		{ // a list of a site: the --site given before the ID, the list read whole as its command reads it
 			args: []string{"shipping", "zones", "get", "--site", "AcmeStore_NL", ""},
 			routes: map[string]http.HandlerFunc{

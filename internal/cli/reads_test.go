@@ -27,6 +27,7 @@ type readCase struct {
 	body    string      // the response; a paged read gets it on page 1 and nothing after
 	total   string      // the X-Total-Count served instead of a body, as to a HEAD request; none when empty
 	media   string      // the Content-Type of a file served as body, in the language that args name (fileRead)
+	site    string      // the emporix-site header of every request (--mixin-site); none when empty
 	want    string      // the table printed, or the file
 }
 
@@ -84,6 +85,7 @@ func readCases() []readCase {
 		aiReads(),
 		commerceSearchReads(),
 		instanceAndDocumentSearchReads(),
+		mixinSiteReads(),
 		calculationReads(),
 		utilityReads(),
 		importReads())
@@ -116,6 +118,7 @@ func TestReads(t *testing.T) {
 			}
 			fake.assertScopes(t, tt.scopes...)
 			fake.assertMode(t, tt.mode, tt.page, tt.path, tt.query)
+			fake.assertHeader(t, siteHeader, tt.site)
 			if tt.form != nil {
 				for i := range fake.sent {
 					fake.assertForm(t, i, tt.method, tt.form)

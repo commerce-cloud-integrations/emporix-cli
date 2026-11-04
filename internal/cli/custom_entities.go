@@ -96,10 +96,10 @@ func newCustomInstancesCommand(a *app, entities resource[customEntity]) *cobra.C
 			singular:  "custom instance",
 			header:    []string{columnID, columnName, "OWNER", columnVersion},
 			localized: true,
+			siteAware: true,
 			legend: "OWNER is an instance's owner, by default who created it (EMPLOYEE, CUSTOMER or SERVICE,\n" +
-				"and the user or client id); attribute values (mixins) are only in -o json. epx requests\n" +
-				"the scope of the type, not the tenant-wide schema.custominstance_read that Emporix also\n" +
-				"accepts.",
+				"and the user or client id). epx requests the scope of the type, not the tenant-wide\n" +
+				"schema.custominstance_read that Emporix also accepts.",
 			row: func(i customInstance, lang language) []string {
 				return []string{i.ID, i.Name.in(lang), i.Owner.String(), i.Metadata.Version.String()}
 			},

@@ -74,6 +74,7 @@ func products() resource[product] {
 			singular:  "product",
 			header:    []string{columnID, columnCode, columnType, columnPublished, columnName},
 			localized: true,
+			siteAware: true,
 			row: func(p product, lang language) []string {
 				return []string{p.ID, p.Code, p.ProductType, formatBool(p.Published), p.Name.in(lang)}
 			},

@@ -119,6 +119,33 @@ epx catalogs get AcmeStore_catalog --language de
 When an item has no text in that language, the table shows another translation labeled
 with its language, such as `Transistors (fr)`.
 
+## Site-aware mixins
+
+```sh
+epx products get 100200 --mixin-site AcmeStore_NL -o json
+epx custom-entities instances list CAR --mixin-site AcmeStore_NL -o json
+```
+
+A mixin whose schema is site-aware can hold an overlay per site beside its base values:
+`marketAttributes__AcmeStore_NL` holds what differs for the site `AcmeStore_NL` from
+`marketAttributes`. Without `--mixin-site`, `-o json`, `-o yaml`, and `--stream` show the
+base mixin and every overlay as stored. With `--mixin-site SITE`, Emporix merges the
+overlay of that site into the base mixin and leaves out every overlay. Tables don't show
+mixins.
+
+A site without an overlay gets the base mixin as stored, and so does a site the tenant
+doesn't have: epx doesn't check the code, and case matters.
+
+`products list`, `get`, and `search` and `custom-entities instances list`, `get`, and
+`search` take `--mixin-site`. Your profile's default site never sets it.
+
+<Warning>
+  A merged item is what one site sees, not the item as stored. Don't write it back with
+  `update`, `bulk-update`, or, for products, `import`: they replace whole items and would
+  delete every overlay. Don't build a patch from it either: the base mixin would take that
+  site's values.
+</Warning>
+
 ## Files
 
 ```sh

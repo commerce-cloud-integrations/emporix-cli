@@ -16,14 +16,16 @@ import (
 	"github.com/commerce-cloud-integrations/emporix-cli/internal/output"
 )
 
-// view is how the items of a read show in a table. T is the typed subset of
-// an item shown there, decoded from the response; `-o json` and `-o yaml`
-// print the whole response instead.
+// view is how the items of a read show, and what every read of them takes
+// (--language, --mixin-site). T is the typed subset of an item that a table
+// shows, decoded from the response; `-o json` and `-o yaml` print the whole
+// response instead.
 type view[T any] struct {
 	singular  string                     // item name for help text, e.g. "price list"
 	header    []string                   // table columns; the first is the identifier that get takes
 	long      []string                   // columns of long values, which tables cut (csv and -o json: whole)
 	localized bool                       // the table shows translations, so its reads take --language
+	siteAware bool                       // items may hold site-aware mixins, so its reads take --mixin-site
 	row       func(T, language) []string // the cells of an item, in the language --language picks
 	legend    string                     // what each read of the items adds to its text, e.g. what columns mean
 }
@@ -323,10 +325,15 @@ func (r resource[T]) itemPath() string { return r.path + "/" + placeholderID }
 // itemRequest returns the request that reads one item of r, as get reads it.
 func (r resource[T]) itemRequest() request { return request{path: r.itemPath(), query: r.query} }
 
-// help returns long followed by the legend of rd's view and the scope sentence of rd.
+// help returns long followed by the legend of rd's view, the help of
+// --mixin-site where its items may hold site-aware mixins (mixinSiteHelp),
+// and the scope sentence of rd.
 func (rd reader[T]) help(long string) string {
 	if rd.legend != "" {
 		long += "\n" + rd.legend
+	}
+	if rd.siteAware {
+		long += "\n\n" + mixinSiteHelp
 	}
 	return long + "\n\n" + scopeSentence(rd.scopes)
 }
@@ -388,7 +395,7 @@ func (rd reader[T]) command(a *app, c *command) *cobra.Command {
 	// (siteField), and the output flags too, as it may mark flags that exclude them.
 	cmd, target := newRead(a, c, rd.scopes)
 	printed := addTableOutput(cmd, rd.header, rd.long...)
-	read, items := c.fetch.bind(cmd)
+	read, items := rd.withMixinSite(c.fetch).bind(cmd)
 	cmd.Long = rd.help(cmd.Long) // after bind, which may add to the help that the scope sentence ends
 	lang := defaultLanguage
 	cmd.RunE = func(cc *cobra.Command, args []string) error {

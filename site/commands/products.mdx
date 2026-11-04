@@ -240,6 +240,20 @@ Show one product.
 Reads products, published and unpublished (without the product.product\_read\_unpublished
 scope, Emporix would silently omit unpublished products).
 
+Where a mixin's schema is site-aware, an item may hold, besides the mixin NAME, an overlay
+for a site, NAME\_\_SITE, with the values that differ there. `--mixin-site` SITE sends SITE as
+the emporix-site header: Emporix then merges the overlay of SITE into NAME (nested objects
+member by member; arrays and other values are replaced, not merged; a null leaves the
+base value) and leaves out every overlay. A site without an overlay, or one the tenant
+lacks (codes are case-sensitive; epx does not check them), gets NAME as stored. Without
+`--mixin-site`, mixins and overlays are read as stored, whatever the default site of the
+profile. Tables leave mixins (attribute values) out; `-o json` and `-o yaml` print them, as
+`--stream` does on a list.
+
+A merged item is that site's view, not the item as stored. Do not write it back with
+update, bulk-update or (products) import, which replace whole items and would delete every
+overlay, nor build a patch from it: NAME would take the site's values.
+
 Requires the product.product\_read\_unpublished scope.
 
 **Command:** `epx products get ID [flags]`
@@ -250,6 +264,8 @@ Requires the product.product\_read\_unpublished scope.
   Print only these columns of table and csv, in this order: comma-separated names (any case) among ID, CODE, TYPE, PUBLISHED, NAME.
 - `--language <language>`\
   Language of localized table text; a missing translation shows another, labeled (`-o json` prints all). Default: `en`.
+- `--mixin-site <SITE>`\
+  Merge the site-aware mixin overlays of the site SITE (NAME\_\_SITE) into their mixins.
 - `--no-headers`\
   Print table and csv without the header row.
 - `-o, --output <format>`\
@@ -324,6 +340,20 @@ List products.
 Reads products, published and unpublished (without the product.product\_read\_unpublished
 scope, Emporix would silently omit unpublished products).
 
+Where a mixin's schema is site-aware, an item may hold, besides the mixin NAME, an overlay
+for a site, NAME\_\_SITE, with the values that differ there. `--mixin-site` SITE sends SITE as
+the emporix-site header: Emporix then merges the overlay of SITE into NAME (nested objects
+member by member; arrays and other values are replaced, not merged; a null leaves the
+base value) and leaves out every overlay. A site without an overlay, or one the tenant
+lacks (codes are case-sensitive; epx does not check them), gets NAME as stored. Without
+`--mixin-site`, mixins and overlays are read as stored, whatever the default site of the
+profile. Tables leave mixins (attribute values) out; `-o json` and `-o yaml` print them, as
+`--stream` does on a list.
+
+A merged item is that site's view, not the item as stored. Do not write it back with
+update, bulk-update or (products) import, which replace whole items and would delete every
+overlay, nor build a patch from it: NAME would take the site's values.
+
 Requires the product.product\_read\_unpublished scope.
 
 **Command:** `epx products list [flags]`
@@ -336,6 +366,8 @@ Requires the product.product\_read\_unpublished scope.
   Language of localized table text; a missing translation shows another, labeled (`-o json` prints all). Default: `en`.
 - `--limit <n>`\
   Print at most n items; paged reads stop early where they safely can (0: every item).
+- `--mixin-site <SITE>`\
+  Merge the site-aware mixin overlays of the site SITE (NAME\_\_SITE) into their mixins.
 - `--no-headers`\
   Print table and csv without the header row.
 - `-o, --output <format>`\
@@ -534,6 +566,20 @@ It reads and shows them as [`epx products list`](/commands/products#epx-products
 Changes nothing: Emporix serves this read as POST with a JSON body, which the
 flags make or `--body` gives whole.
 
+Where a mixin's schema is site-aware, an item may hold, besides the mixin NAME, an overlay
+for a site, NAME\_\_SITE, with the values that differ there. `--mixin-site` SITE sends SITE as
+the emporix-site header: Emporix then merges the overlay of SITE into NAME (nested objects
+member by member; arrays and other values are replaced, not merged; a null leaves the
+base value) and leaves out every overlay. A site without an overlay, or one the tenant
+lacks (codes are case-sensitive; epx does not check them), gets NAME as stored. Without
+`--mixin-site`, mixins and overlays are read as stored, whatever the default site of the
+profile. Tables leave mixins (attribute values) out; `-o json` and `-o yaml` print them, as
+`--stream` does on a list.
+
+A merged item is that site's view, not the item as stored. Do not write it back with
+update, bulk-update or (products) import, which replace whole items and would delete every
+overlay, nor build a patch from it: NAME would take the site's values.
+
 Requires the product.product\_read\_unpublished scope.
 
 **Command:** `epx products search [flags]`
@@ -548,6 +594,8 @@ Requires the product.product\_read\_unpublished scope.
   Language of localized table text; a missing translation shows another, labeled (`-o json` prints all). Default: `en`.
 - `--limit <n>`\
   Print at most n items; paged reads stop early where they safely can (0: every item).
+- `--mixin-site <SITE>`\
+  Merge the site-aware mixin overlays of the site SITE (NAME\_\_SITE) into their mixins.
 - `--no-headers`\
   Print table and csv without the header row.
 - `-o, --output <format>`\

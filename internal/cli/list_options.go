@@ -78,16 +78,20 @@ func queryUsage(how string) string {
 		"(fields mostly as in -o json)"
 }
 
+// streamFlag is the flag of a list that prints its items as JSON Lines while
+// it reads them (addStreamFlag).
+const streamFlag = "stream"
+
 // addStreamFlag adds --stream, which prints a list as JSON Lines while it is
 // read (emporix.ListOptions.Stream) and so excludes the output flags
 // (addTableOutput).
 func addStreamFlag(cmd *cobra.Command, stream *bool) {
-	cmd.Flags().BoolVar(stream, "stream", false, fmt.Sprintf("print items as JSON Lines as soon as they are "+
+	cmd.Flags().BoolVar(stream, streamFlag, false, fmt.Sprintf("print items as JSON Lines as soon as they are "+
 		"checked, page by page on paged lists, reading up to %d pages where a list without it stops after %d: a "+
 		"check failing on a later page exits 1 after the pages before it (excludes -o, --columns and --no-headers)",
 		emporix.StreamedPages, emporix.KeptPages))
 	for _, flag := range []string{outputFlag, columnsFlag, noHeadersFlag} {
-		cmd.MarkFlagsMutuallyExclusive("stream", flag)
+		cmd.MarkFlagsMutuallyExclusive(streamFlag, flag)
 	}
 }
 

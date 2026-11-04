@@ -10,10 +10,12 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"maps"
 	"net"
 	"net/http"
 	"net/url"
 	"regexp"
+	"slices"
 	"strings"
 	"time"
 	"unicode"
@@ -56,6 +58,7 @@ type Client struct {
 	body    Body             // the body of every read; none for a GET
 	created bool             // 201 Created answers a read as 200 OK does (AcceptCreated)
 	refusal bool             // a 403 Forbidden may refuse a read's input (ForbiddenIsRefusal, refusesInput)
+	header  http.Header      // what every read sends besides its own headers (WithHeader); none when nil
 }
 
 // New validates cfg and returns a client whose token requests exactly the
@@ -239,10 +242,10 @@ func (c *Client) Check(ctx context.Context, path string, query url.Values) (json
 	return result.body, nil
 }
 
-// get performs an authenticated read with optional extra headers: a GET, or
-// the method and body of a client made by WithBody, or a POST without a body
-// of one made by Posting. Responses that do not
-// answer a read (answered) become classified APIErrors.
+// get performs an authenticated read with optional extra headers, besides
+// those of WithHeader: a GET, or the method and body of a client made by
+// WithBody, or a POST without a body of one made by Posting. Responses that
+// do not answer a read (answered) become classified APIErrors.
 func (c *Client) get(ctx context.Context, path string, query url.Values, header http.Header) (reply, error) {
 	target, err := c.locate(path, query)
 	if err == nil && (c.method == http.MethodPost || c.method == http.MethodPut) {
@@ -256,7 +259,7 @@ func (c *Client) get(ctx context.Context, path string, query url.Values, header 
 	if err != nil {
 		return reply{}, err
 	}
-	headers := c.headers(header, c.body.contentType)
+	headers := c.headers(c.body.contentType, c.header, header)
 	// A read changes no data, so it is idempotent, also when sent as POST or PUT.
 	result, err := c.doWithRetry(ctx, idempotent, func() (*http.Request, error) {
 		return newRequest(ctx, c.method, target.String(), bearer, headers, c.body.data)
@@ -343,11 +346,12 @@ func queryLeftOut(err error) error {
 
 // headers returns the headers of an API request but its Authorization:
 // Accept (JSON), User-Agent, Accept-Language when the client sends one and,
-// with a body, its Content-Type, content (empty: no body); a header of extra
-// replaces the one of the same name, one of extra without values removes it
-// (as a read of a file removes Accept-Language: GetFile), and
-// its others are added.
-func (c *Client) headers(extra http.Header, content string) http.Header {
+// with a body, its Content-Type, content (empty: no body); then those of
+// each of extras, in their order, each key in sorted order: a header of one
+// replaces the one of the same name, in any case, set before, one without
+// values removes it (as a read of a file removes Accept-Language: GetFile),
+// and its others are added.
+func (c *Client) headers(content string, extras ...http.Header) http.Header {
 	header := http.Header{}
 	header.Set("Accept", JSONContentType)
 	header.Set("User-Agent", c.cfg.UserAgent)
@@ -357,10 +361,12 @@ func (c *Client) headers(extra http.Header, content string) http.Header {
 	if content != "" {
 		header.Set("Content-Type", content)
 	}
-	for key, values := range extra {
-		header.Del(key)
-		for _, value := range values {
-			header.Add(key, value)
+	for _, extra := range extras {
+		for _, key := range slices.Sorted(maps.Keys(extra)) {
+			header.Del(key)
+			for _, value := range extra[key] {
+				header.Add(key, value)
+			}
 		}
 	}
 	return header

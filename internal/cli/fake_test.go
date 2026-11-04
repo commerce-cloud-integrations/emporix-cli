@@ -26,13 +26,15 @@ type fakeEmporix struct {
 	mu          sync.Mutex
 	denied      []string
 	routes      map[string]http.HandlerFunc
-	gets        []string // request URIs received
-	totals      []string // the X-Total-Count header of every request in gets
-	languages   []string // the Content-Language header of every request in gets; emptyHeader where sent empty
-	sent        []string // the method and body of every request in gets, as "METHOD body"
-	bodies      []string // the body of every request in gets, byte for byte (sent trims it)
-	types       []string // the Content-Type of every request in gets
-	tokenScopes []string // the scope parameter of every token request
+	gets        []string      // request URIs received
+	methods     []string      // the method of every request in gets
+	totals      []string      // the X-Total-Count header of every request in gets
+	languages   []string      // the Content-Language header of every request in gets; emptyHeader where sent empty
+	sent        []string      // the method and body of every request in gets, as "METHOD body"
+	bodies      []string      // the body of every request in gets, byte for byte (sent trims it)
+	types       []string      // the Content-Type of every request in gets
+	headers     []http.Header // the headers of every request in gets, as received
+	tokenScopes []string      // the scope parameter of every token request
 	server      *httptest.Server
 }
 
@@ -60,12 +62,14 @@ func (f *fakeEmporix) serve(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	f.gets = append(f.gets, r.URL.RequestURI())
+	f.methods = append(f.methods, r.Method)
 	f.totals = append(f.totals, r.Header.Get("X-Total-Count"))
 	f.languages = append(f.languages, headerValue(r.Header, "Content-Language"))
 	body, _ := io.ReadAll(r.Body) // a body cut short fails the comparison with the one expected
 	f.sent = append(f.sent, strings.TrimSpace(r.Method+" "+string(body)))
 	f.bodies = append(f.bodies, string(body))
 	f.types = append(f.types, r.Header.Get("Content-Type"))
+	f.headers = append(f.headers, r.Header.Clone())
 	r.Body = io.NopCloser(strings.NewReader(string(body))) // for a handler that reads it too
 	if handler, ok := f.routes[r.URL.EscapedPath()]; ok {
 		handler(w, r)
@@ -224,6 +228,17 @@ func (f *fakeEmporix) assertScopes(t *testing.T, scopes ...string) {
 	want := strings.Join(append([]string{"tenant=acme1"}, scopes...), " ")
 	if len(f.tokenScopes) == 0 || slices.ContainsFunc(f.tokenScopes, func(s string) bool { return s != want }) {
 		t.Fatalf("token scopes %q; want %q", f.tokenScopes, want)
+	}
+}
+
+// assertHeader checks that every request sent the header name with the value
+// want, and none where want is empty.
+func (f *fakeEmporix) assertHeader(t *testing.T, name, want string) {
+	t.Helper()
+	for i, header := range f.headers {
+		if sent := headerValue(header, name); sent != want {
+			t.Fatalf("request %d sent %s %q; want %q", i+1, name, sent, want)
+		}
 	}
 }
 

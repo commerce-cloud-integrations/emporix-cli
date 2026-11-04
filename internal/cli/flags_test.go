@@ -6,13 +6,14 @@ import (
 	"testing"
 )
 
-// TestReadFlagsFollowTheCases checks that --language, --site and
-// --allow-write-scope appear exactly on the commands whose read cases pass
-// them: --language on every read whose table shows translations (each case
-// shows one), --site on every read whose request names the site,
+// TestReadFlagsFollowTheCases checks that --language, --site,
+// --mixin-site and --allow-write-scope appear exactly on the commands whose
+// read cases pass them: --language on every read whose table shows
+// translations (each case shows one), --site on every read whose request
+// names the site, --mixin-site on every read of items with site-aware mixins,
 // --allow-write-scope on every opt-in read.
 func TestReadFlagsFollowTheCases(t *testing.T) {
-	for _, flag := range []string{"language", "site", writeScopeFlag} {
+	for _, flag := range []string{"language", "site", mixinSiteFlag, writeScopeFlag} {
 		var want []string
 		for path, cases := range casesOfCommands(t) {
 			if slices.ContainsFunc(cases, func(c readCase) bool { return slices.Contains(c.args, "--"+flag) }) {

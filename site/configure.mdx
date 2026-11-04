@@ -80,7 +80,8 @@ secret only ever goes to its own API URL. Naming a profile while an `EMPORIX_` v
 is set is a usage error.
 
 A profile's default site and language apply on its own tenant to commands that need a
-site or show translations, when you don't pass `--site` or `--language`.
+site or show translations, when you don't pass `--site` or `--language`. The default site
+never sets [`--mixin-site`](/guides/output#site-aware-mixins).
 
 ### Where profiles are stored
 

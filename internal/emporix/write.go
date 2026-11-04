@@ -3,12 +3,10 @@ package emporix
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"net/http"
 	"net/url"
 	"slices"
-	"strings"
 )
 
 // Answers says how the service answers a write beyond its status, as the
@@ -146,32 +144,8 @@ func (c *Client) Prepare(w *Write) (*Request, error) {
 	}
 	checked := w.Answers
 	checked.StaleNotFound = w.StaleNotFound && carriesVersion(w.Body.data)
-	return &Request{by: c, method: w.Method, url: target.String(), header: c.headers(w.Header, w.Body.contentType),
+	return &Request{by: c, method: w.Method, url: target.String(), header: c.headers(w.Body.contentType, w.Header),
 		body: w.Body, parts: parts, answers: checked}, nil
-}
-
-// checkHeaders returns ErrInvalidInput, naming the request named (a write,
-// or a read of a file: GetFile), when a value of header cannot be sent
-// (CheckHeaderValue); nil when all can.
-func checkHeaders(named string, header http.Header) error {
-	for name, values := range header {
-		for _, value := range values {
-			if err := CheckHeaderValue(value); err != nil {
-				return fmt.Errorf("%w: %s: the header %s %w", ErrInvalidInput, named, name, err)
-			}
-		}
-	}
-	return nil
-}
-
-// CheckHeaderValue returns why value cannot be sent as the value of a header,
-// which HTTP does not allow to hold a control character other than a tab,
-// such as a line break; nil when it can be sent.
-func CheckHeaderValue(value string) error {
-	if strings.ContainsFunc(value, func(r rune) bool { return r < ' ' && r != '\t' || r == 0x7f }) {
-		return errors.New("holds a control character")
-	}
-	return nil
 }
 
 // carriedOutNote ends the error of a write that may have been carried out
