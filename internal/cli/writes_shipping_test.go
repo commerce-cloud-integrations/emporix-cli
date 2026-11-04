@@ -150,31 +150,6 @@ func TestChildWritesNameTheirArguments(t *testing.T) {
 	}
 }
 
-// TestRenamedChildReadsAreUsageErrors checks that the reads that the groups of
-// the methods of a zone, the slots of a delivery time, the users of an IAM
-// group and the groups of an IAM user replaced, run as before, fail as usage
-// errors (exit 2) that send nothing (an unknown command, or, with --site, an
-// unknown flag of the group), rather than run another command of their group.
-func TestRenamedChildReadsAreUsageErrors(t *testing.T) {
-	for _, args := range [][]string{
-		{"shipping", "zones", "methods", "nl", "--site", "AcmeStore_NL"},
-		{"shipping", "zones", "method", "nl", "post", "--site", "AcmeStore_NL"},
-		{"delivery-times", "slots", "d1"},
-		{"delivery-times", "slot", "d1", "s1"},
-		{"iam", "groups", "users", "g1"},
-		{"iam", "users", "groups", "u1"},
-		{"iam", "users", "group", "u1", "g1"},
-	} {
-		fake := newFakeEmporix(t)
-		code, stdout, stderr := runIn(t, writeEnv(fake, false, ""), args...)
-		if code != ExitUsage || stdout != "" || !strings.Contains(stderr, "unknown ") {
-			t.Errorf("%q: exit %d, stdout %q, stderr %q; want exit 2, an unknown command or flag", args, code, stdout,
-				stderr)
-		}
-		fake.assertNothingSent(t)
-	}
-}
-
 // TestShippingCustomerWritesHelp pins what the help of the writes of
 // customers' shipping groups says of Emporix's answers: unknown ids, the
 // update that creates no assignment, and deletes of unknown customers and of

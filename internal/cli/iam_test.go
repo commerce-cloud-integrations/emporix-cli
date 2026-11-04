@@ -2,11 +2,8 @@ package cli
 
 import (
 	"net/http"
-	"slices"
 	"strings"
 	"testing"
-
-	"github.com/spf13/cobra"
 )
 
 // TestUserScopesShapes pins how a user's scopes are read: one text of scopes,
@@ -78,26 +75,5 @@ func TestUserAccessControlsNeedTheirTotal(t *testing.T) {
 	if code != ExitError || stdout != "" || !strings.Contains(stderr, "the service reported no total") ||
 		len(fake.gets) != 1 {
 		t.Fatalf("exit %d, stdout %q, stderr %q, requests %q", code, stdout, stderr, fake.gets)
-	}
-}
-
-// TestDeprecatedIAMReadsSaySo checks that the IAM reads of the endpoints the
-// API reference marks as deprecated, and only they, say so in their help.
-func TestDeprecatedIAMReadsSaySo(t *testing.T) {
-	deprecated := []string{
-		"epx iam permissions get", "epx iam permissions list", "epx iam resources get", "epx iam resources list",
-		"epx iam roles get", "epx iam roles list", "epx iam users resource-access-controls",
-		"epx iam users resource-permissions",
-	}
-	var said []string
-	walkCommands(newTestRoot(), func(cmd *cobra.Command) {
-		_, isRead := cmd.Annotations[scopesAnnotation]
-		if isRead && strings.HasPrefix(cmd.CommandPath(), "epx iam ") && strings.Contains(cmd.Long, deprecatedNote) {
-			said = append(said, cmd.CommandPath())
-		}
-	})
-	slices.Sort(said)
-	if !slices.Equal(said, deprecated) {
-		t.Fatalf("reads that say they are deprecated %q; want %q", said, deprecated)
 	}
 }

@@ -5,11 +5,11 @@ description: "Which Import Service operations epx sends, which do not apply, and
 mode: "wide"
 ---
 
-Operations of the Emporix API reference file [`utilities/import-service/api-reference/api.yml`](https://github.com/emporix/api-references/blob/faad61403b0683a7a8948b571f10305393760ae0/utilities/import-service/api-reference/api.yml) at commit [`faad614`](https://github.com/emporix/api-references/commit/faad61403b0683a7a8948b571f10305393760ae0) (2026-10-14).
+Operations of the Emporix API reference file [`utilities/import-service/api-reference/api.yml`](https://github.com/emporix/api-references/blob/10a768ec7a9cf10299c0121d1c5ed9aaf4fbb6a5/utilities/import-service/api-reference/api.yml) at commit [`10a768e`](https://github.com/emporix/api-references/commit/10a768ec7a9cf10299c0121d1c5ed9aaf4fbb6a5) (2026-11-04).
 
-- Last change: 2026-10-14 ([`f1f0640`](https://github.com/emporix/api-references/commit/f1f0640))
+- Last change: 2026-10-28 ([`19c7309`](https://github.com/emporix/api-references/commit/19c7309))
 - Version: not stated in the reference file
-- Operations: 24 (22 built, 2 not applicable, 0 planned, 0 to do)
+- Operations: 29 (22 built, 2 not applicable, 0 planned, 5 to do)
 
 | Operation | Status | Details |
 | --- | --- | --- |
@@ -17,6 +17,11 @@ Operations of the Emporix API reference file [`utilities/import-service/api-refe
 | `GET /importtool/{tenant}/configs/{id}` | Built | [`epx imports configurations get`](/commands/imports#epx-imports-configurations-get) |
 | `GET /importtool/{tenant}/configs/{configId}/streams` | Built | [`epx imports configurations streams`](/commands/imports#epx-imports-configurations-streams) |
 | `GET /importtool/{tenant}/streams/{id}` | Built | [`epx imports streams get`](/commands/imports#epx-imports-streams-get) |
+| `GET /importtool/{tenant}/streams/{streamId}/files` | To do |  |
+| `POST /importtool/{tenant}/streams/{streamId}/files` | To do |  |
+| `GET /importtool/{tenant}/streams/{streamId}/files/limits` | To do |  |
+| `PUT /importtool/{tenant}/streams/{streamId}/files/order` | To do |  |
+| `DELETE /importtool/{tenant}/streams/{streamId}/files/{fileId}` | To do |  |
 | `GET /importtool/{tenant}/configs/{configId}/schedule` | Built | [`epx imports configurations schedule`](/commands/imports#epx-imports-configurations-schedule) |
 | `PUT /importtool/{tenant}/configs/{configId}/schedule` | Built | [`epx imports configurations update-schedule`](/commands/imports#epx-imports-configurations-update-schedule) |
 | `DELETE /importtool/{tenant}/configs/{configId}/schedule` | Built | [`epx imports configurations delete-schedule`](/commands/imports#epx-imports-configurations-delete-schedule) |

@@ -94,18 +94,10 @@ func newUserGroupsCommand(a *app, users resource[iamUser]) *cobra.Command {
 		userGroupsWrite(a, groupsOf, userGroups))
 }
 
-// userAccessReads returns the reads of what a user may do: the scopes, all
-// access controls and those on one resource that their groups grant them, and
-// their permissions on one resource.
+// userAccessReads returns the reads of what a user may do: the scopes and the
+// access controls that their groups grant them.
 func userAccessReads(a *app, users resource[iamUser]) []*cobra.Command {
-	accessControls, permissions, resources := iamAccessControls().reader(), iamPermissions().reader(), iamResources()
-	user := users.path + "/" + placeholderParent
-	onResource := users.itemArgumentsSentence(resources.argument(), resources.listLine(),
-		"an unknown one, or a resource the user has no access to, lists nothing")
-	// Paging parameters do not page the answer there (live: pageNumber 2, and
-	// pageSize 1 on page 1, list nothing), which comes whole without them.
-	whole := listing{read: (*emporix.Client).GetUnpaged}
-	onResourceIDs := argumentIDs{users.argument(): users.ids(), resources.argument(): resources.ids()}
+	accessControls := iamAccessControls().reader()
 	return []*cobra.Command{
 		childCommand(a, users, child[string]{
 			use:   "scopes",
@@ -127,24 +119,6 @@ func userAccessReads(a *app, users resource[iamUser]) []*cobra.Command {
 			fetch:   listing{read: onFirstPage(userAccessControlsPage)},
 			unknown: listsNothing,
 			view:    accessControls.view,
-		}),
-		accessControls.command(a, &command{
-			use:   "resource-access-controls " + users.argument() + " " + resources.argument(),
-			short: "List the access controls of a user on a resource",
-			long: "Reads the access controls a user is granted on one resource.\n" + accessControlColumns + "\n" +
-				onResource + "\n" + deprecatedNote,
-			req:   request{path: user + "/access-controls/" + placeholderID},
-			fetch: whole,
-			ids:   onResourceIDs,
-		}),
-		permissions.command(a, &command{
-			use:   "resource-permissions " + users.argument() + " " + resources.argument(),
-			short: "List the permissions of a user on a resource",
-			long: "Reads the permissions a user has on one resource through the roles that their groups'\n" +
-				"access controls grant there: " + permissionColumns + "\n" + onResource + "\n" + deprecatedNote,
-			req:   request{path: user + "/permissions/" + placeholderID},
-			fetch: whole,
-			ids:   onResourceIDs,
 		}),
 	}
 }

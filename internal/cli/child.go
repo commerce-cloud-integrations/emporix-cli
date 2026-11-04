@@ -349,15 +349,6 @@ func (r resource[T]) source(arg string) string {
 	return fmt.Sprintf("%s is the %s that `epx %s` shows", arg, r.header[0], r.listLine())
 }
 
-// itemArgumentsSentence says where the arguments of a read of one item below
-// an item of r come from: r's argument, from r's list, and item, which the
-// command line source (without epx) shows; unknown says what an unknown one
-// gives, e.g. "an unknown one is not found (exit 4)".
-func (r resource[T]) itemArgumentsSentence(item, source, unknown string) string {
-	return fmt.Sprintf("%s and %s are the IDs that `epx %s` and `epx %s` show;\n%s.", r.argument(), item,
-		r.listLine(), source, unknown)
-}
-
 // listLine returns the command line, without epx, that lists r's items, e.g.
 // "iam users list", "shipping zones list --site S", for a collection that
 // Emporix lists only by search (r.search), "carts search", or, for a group
