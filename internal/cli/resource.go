@@ -210,24 +210,25 @@ func onePage(size int) string { return "one page of up to " + strconv.Itoa(size)
 // createWrite, upsertWrite and deleteWrite declare the usual ones.
 type resource[T any] struct {
 	view[T]
-	use       string         // command name, e.g. "price-lists"
-	noun      string         // the items in help text; use without hyphens when empty
-	short     string         // summary of the group; "Read " + noun when empty
-	long      string         // what the reads return and leave out
-	about     string         // the group's help where it says more than long, e.g. what its writes change
-	under     string         // the commands above the group, if any, e.g. "shipping"
-	listedBy  string         // a group without list: the command line, without epx, that lists the items
-	atPath    bool           // listedBy lists the items at path, as for a nested group (nested)
-	path      string         // collection path; may name {site}
-	query     url.Values     // query of list and get, e.g. showUnpublished=true
-	listQuery url.Values     // query of list only, e.g. siteCode={site}
-	scopes    []string       // OAuth scopes besides the tenant; every read requests them
-	filters   listFilters    // what list takes besides --limit: what the service supports
-	read      collectionRead // how list reads the collection; GetAll when nil
-	items     shape          // where list finds the items in the response (table and -o json); listItems when nil
-	item      shape          // how get finds the item in its response; oneItem when nil
-	roots     shape          // the items of list's response that get takes, for completion; items when nil
-	search    *searchListing // the search that lists a collection that Emporix lists only by search; list when nil
+	use        string         // command name, e.g. "price-lists"
+	noun       string         // the items in help text; use without hyphens when empty
+	short      string         // summary of the group; "Read " + noun when empty
+	long       string         // what the reads return and leave out
+	about      string         // the group's help where it says more than long, e.g. what its writes change
+	under      string         // the commands above the group, if any, e.g. "shipping"
+	listedBy   string         // a group without list: the command line, without epx, that lists the items
+	atPath     bool           // listedBy lists the items at path, as for a nested group (nested)
+	path       string         // collection path; may name {site}
+	query      url.Values     // query of list, get, search, count and ID completion, e.g. showUnpublished=true
+	listQuery  url.Values     // query of list, search, count and ID completion, not get, e.g. siteCode={site}
+	listParams []paramFlag    // optional query parameters that flags of list set, and of no other read, e.g. type
+	scopes     []string       // OAuth scopes besides the tenant; every read requests them
+	filters    listFilters    // what list takes besides --limit: what the service supports
+	read       collectionRead // how list reads the collection; GetAll when nil
+	items      shape          // where list finds the items in the response (table and -o json); listItems when nil
+	item       shape          // how get finds the item in its response; oneItem when nil
+	roots      shape          // the items of list's response that get takes, for completion; items when nil
+	search     *searchListing // the search that lists a collection that Emporix lists only by search; list when nil
 }
 
 // newResourceCommand returns the group of r: list, get ID and the extra
@@ -285,14 +286,16 @@ const listUse = "list"
 // getUse is the name of the command that reads one item of a collection.
 const getUse = "get"
 
-// listCommand returns `list`, which lists the collection.
+// listCommand returns `list`, which lists the collection, with the query
+// parameters that the flags of listParams set, each when given.
 func (r resource[T]) listCommand(a *app) *cobra.Command {
 	req := r.listRequest()
 	short := "List " + r.nouns()
 	if req.names(placeholderSite) {
 		short = "List the " + r.nouns() + " of a site"
 	}
-	return r.reader().command(a, &command{use: listUse, short: short, long: r.long, req: req, fetch: r.listing()})
+	return r.reader().command(a, &command{use: listUse, short: short, long: r.long, req: req,
+		fetch: &paramRead{params: queryFlags{optional: r.listParams}, fetch: r.listing()}})
 }
 
 // listing returns how list reads the collection, which a search of it reads

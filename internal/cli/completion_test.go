@@ -46,6 +46,7 @@ func TestCompletionNeverSuggestsFiles(t *testing.T) {
 		{args: []string{"products", "list", "--language", ""}},
 		{args: []string{"ai", "analytics", "executions", "helper", "--granularity", ""},
 			want: []string{"QUARTER\n", "MONTH\n", "WEEK\n"}},
+		{args: []string{"category-trees", "list", "--type", ""}, want: []string{"STANDARD\n", "CLASSIFICATION\n"}},
 		// --param repeats, so completion offers it again.
 		{args: []string{"api", "get", "/x", "-p", "a=1", "--pa"}, want: []string{"--param\t"}},
 	}

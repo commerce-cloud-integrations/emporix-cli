@@ -29,11 +29,17 @@ func categoryTrees() resource[treeCategory] {
 		long: "Reads category trees, published and unpublished: each root category followed by its\n" +
 			"subcategories, depth first, in the order Emporix sends them; NAME is indented by the\n" +
 			"category's level. get takes the id of a root category: Emporix answers another\n" +
-			"category's id as not found. list's --limit counts trees, each shown whole. A move of a\n" +
-			"category shows in its tree a few seconds later; a root category moved below another may\n" +
-			"keep its old tree until it is deleted.",
-		path:   "/category/{tenant}/category-trees",
-		query:  withUnpublished(),
+			"category's id as not found. list's --limit counts trees, each shown whole. list's --type\n" +
+			"lists only the trees of one category type: STANDARD (regular categories) or\n" +
+			"CLASSIFICATION (categories that define classification mixins, the attributes that the\n" +
+			"products in them take). A move of a category shows in its tree a few seconds later; a\n" +
+			"root category moved below another may keep its old tree until it is deleted.",
+		path:  "/category/{tenant}/category-trees",
+		query: withUnpublished(),
+		listParams: []paramFlag{{
+			param: typeParam, flag: typeParam, choices: []string{"STANDARD", "CLASSIFICATION"},
+			usage: "list only the trees of this category `TYPE`",
+		}},
 		scopes: []string{"category.category_read_unpublished"},
 		read:   (*emporix.Client).GetUnpaged,
 		items:  treeItems,

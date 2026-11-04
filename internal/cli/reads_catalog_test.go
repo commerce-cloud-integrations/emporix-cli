@@ -239,6 +239,25 @@ func categoryTreeReads() []readCase {
 				"r2                    Tuin\n",
 		},
 		{
+			// --type sends the category type of the trees to list, beside the read's own query.
+			args:   []string{"category-trees", "list", "--type", "CLASSIFICATION"},
+			path:   "/category/acme1/category-trees",
+			query:  "showUnpublished=true&type=CLASSIFICATION",
+			scopes: []string{"category.category_read_unpublished"},
+			mode:   getWhole,
+			body:   `[{"id":"r3","code":"tools","localizedName":{"en":"Tools"},"subcategories":[{"id":"c4","name":"Saws"}]}]`,
+			want:   "ID  CODE   PUBLISHED  NAME\nr3  tools             Tools\nc4                      Saws\n",
+		},
+		{
+			args:   []string{"category-trees", "list", "--type", "STANDARD", "--limit", "1"},
+			path:   "/category/acme1/category-trees",
+			query:  "showUnpublished=true&type=STANDARD",
+			scopes: []string{"category.category_read_unpublished"},
+			mode:   getWhole,
+			body:   `[{"id":"r1","name":"Garden"},{"id":"r2","name":"Kitchen"}]`,
+			want:   "ID  CODE  PUBLISHED  NAME\nr1                   Garden\n",
+		},
+		{
 			args:   []string{"category-trees", "get", "r 1", "--language", "nl"},
 			path:   "/category/acme1/category-trees/r%201",
 			query:  "showUnpublished=true",

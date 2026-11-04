@@ -9,9 +9,11 @@ description: "Read and rebuild category trees."
 Reads category trees, published and unpublished: each root category followed by its
 subcategories, depth first, in the order Emporix sends them; NAME is indented by the
 category's level. get takes the id of a root category: Emporix answers another
-category's id as not found. list's `--limit` counts trees, each shown whole. A move of a
-category shows in its tree a few seconds later; a root category moved below another may
-keep its old tree until it is deleted.
+category's id as not found. list's `--limit` counts trees, each shown whole. list's `--type`
+lists only the trees of one category type: STANDARD (regular categories) or
+CLASSIFICATION (categories that define classification mixins, the attributes that the
+products in them take). A move of a category shows in its tree a few seconds later; a
+root category moved below another may keep its old tree until it is deleted.
 
 Its reads require the category.category\_read\_unpublished scope.
 Its writes require the category.category\_manage, category.category\_read\_unpublished scopes.
@@ -38,9 +40,11 @@ Show one category tree.
 Reads category trees, published and unpublished: each root category followed by its
 subcategories, depth first, in the order Emporix sends them; NAME is indented by the
 category's level. get takes the id of a root category: Emporix answers another
-category's id as not found. list's `--limit` counts trees, each shown whole. A move of a
-category shows in its tree a few seconds later; a root category moved below another may
-keep its old tree until it is deleted.
+category's id as not found. list's `--limit` counts trees, each shown whole. list's `--type`
+lists only the trees of one category type: STANDARD (regular categories) or
+CLASSIFICATION (categories that define classification mixins, the attributes that the
+products in them take). A move of a category shows in its tree a few seconds later; a
+root category moved below another may keep its old tree until it is deleted.
 
 Requires the category.category\_read\_unpublished scope.
 
@@ -66,9 +70,11 @@ List category trees.
 Reads category trees, published and unpublished: each root category followed by its
 subcategories, depth first, in the order Emporix sends them; NAME is indented by the
 category's level. get takes the id of a root category: Emporix answers another
-category's id as not found. list's `--limit` counts trees, each shown whole. A move of a
-category shows in its tree a few seconds later; a root category moved below another may
-keep its old tree until it is deleted.
+category's id as not found. list's `--limit` counts trees, each shown whole. list's `--type`
+lists only the trees of one category type: STANDARD (regular categories) or
+CLASSIFICATION (categories that define classification mixins, the attributes that the
+products in them take). A move of a category shows in its tree a few seconds later; a
+root category moved below another may keep its old tree until it is deleted.
 
 Requires the category.category\_read\_unpublished scope.
 
@@ -86,6 +92,8 @@ Requires the category.category\_read\_unpublished scope.
   Print table and csv without the header row.
 - `-o, --output <format>`\
   Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
+- `--type <TYPE>`\
+  List only the trees of this category TYPE: STANDARD or CLASSIFICATION.
 
 Also takes the [global flags](/commands#global-flags).
 

@@ -10,12 +10,15 @@ import (
 // on `carts find`, exactly one of --customer and --session is required and
 // none may be empty, also when the read is opted in to; on
 // `ai analytics executions`, --granularity takes only the granularities that
-// Emporix names, in capitals. Any other use is a usage error found while
-// flags are parsed, before a token is requested or anything is read.
+// Emporix names, in capitals, and on `category-trees list`, --type only the
+// category types; search and get of category trees take no --type. Any other
+// use is a usage error found while flags are parsed, before a token is
+// requested or anything is read.
 func TestParamReadFailuresSendNothing(t *testing.T) {
 	find := []string{"carts", "find", "--site", "AcmeStore_NL", "--allow-write-scope"}
 	executions := []string{"ai", "analytics", "executions", "helper"}
 	const choices = `flag: use QUARTER, MONTH or WEEK`
+	const treeTypes = `flag: use STANDARD or CLASSIFICATION`
 	for _, tt := range []struct {
 		args []string
 		want string
@@ -36,6 +39,13 @@ func TestParamReadFailuresSendNothing(t *testing.T) {
 			want: `invalid argument "Month" for "--granularity" ` + choices},
 		{args: slices.Concat(executions, []string{"--granularity="}),
 			want: `invalid argument "" for "--granularity" flag: empty`},
+		{args: []string{"category-trees", "list", "--type", "PRODUCT"},
+			want: `invalid argument "PRODUCT" for "--type" ` + treeTypes},
+		{args: []string{"category-trees", "list", "--type", "standard"},
+			want: `invalid argument "standard" for "--type" ` + treeTypes},
+		{args: []string{"category-trees", "list", "--type="}, want: `invalid argument "" for "--type" flag: empty`},
+		{args: []string{"category-trees", "search", "--type", "STANDARD"}, want: "unknown flag: --type"},
+		{args: []string{"category-trees", "get", "r1", "--type", "STANDARD"}, want: "unknown flag: --type"},
 	} {
 		fake := newFakeEmporix(t)
 		code, stdout, stderr := runCLI(t, fake.env(), tt.args...)
@@ -60,6 +70,8 @@ func TestParamFlagsNameTheirChoices(t *testing.T) {
 	}{
 		{args: []string{"ai", "analytics", "executions"}, flag: granularityParam,
 			want: "the calendar `period` of each count: QUARTER, MONTH or WEEK"},
+		{args: []string{"category-trees", "list"}, flag: typeParam,
+			want: "list only the trees of this category `TYPE`: STANDARD or CLASSIFICATION"},
 		{args: []string{"carts", "find"}, flag: cartCustomerFlag, want: "the customer `ID` whose cart to read"},
 	} {
 		cmd, _, err := root.Find(tt.args)
