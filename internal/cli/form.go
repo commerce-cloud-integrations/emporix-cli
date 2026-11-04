@@ -18,6 +18,7 @@ import (
 
 // formPart is a part of a form that a flag gives (filePartOf, fieldPart).
 type formPart struct {
+	flag string // the flag that gives it
 	// bind adds the flag to cmd and returns how a run adds the part.
 	bind func(cmd *cobra.Command) addPart
 	// bound is the most bytes that Emporix takes in a request whose form
@@ -80,12 +81,19 @@ func (f form) bindRead(cmd *cobra.Command) (made makeBody, sends string) {
 // within the size of --file, as application/json; one that is not JSON is
 // refused (isJSON).
 func filePart(name, flag, usage string) formPart {
-	part := filePartOf(name, bodyFile{flag: flag, limit: maxWriteFileBytes}, usage, jsonContent)
-	return formPart{bind: func(cmd *cobra.Command) addPart {
-		add := part.bind(cmd)
-		requireFlag(cmd, flag)
+	return filePartOf(name, bodyFile{flag: flag, limit: maxWriteFileBytes}, usage, jsonContent).require()
+}
+
+// require returns p with its flag required (requireFlag): a run without it
+// fails while flags are parsed (exit 2), and nothing is sent.
+func (p formPart) require() formPart {
+	bind := p.bind
+	p.bind = func(cmd *cobra.Command) addPart {
+		add := bind(cmd)
+		requireFlag(cmd, p.flag)
 		return add
-	}}
+	}
+	return p
 }
 
 // jsonContent returns the content type of a JSON file: application/json, or,
@@ -105,7 +113,7 @@ func jsonContent(_ string, content []byte) (string, error) {
 // reads only from a path, as standard input has no name to send.
 func filePartOf(name string, file bodyFile, usage string,
 	typeOf func(fileName string, content []byte) (string, error)) formPart {
-	return formPart{bind: func(cmd *cobra.Command) addPart {
+	return formPart{flag: file.flag, bind: func(cmd *cobra.Command) addPart {
 		given := file.bind(cmd, usage)
 		return func(ctx context.Context, parts []emporix.Part) ([]emporix.Part, error) {
 			if !given.given() {
@@ -133,7 +141,7 @@ func filePartOf(name string, file bodyFile, usage string,
 // gives, sent as given when the flag is given; an empty value is refused
 // while flags are parsed (paramValue).
 func fieldPart(name, flag, usage string) formPart {
-	return formPart{bind: func(cmd *cobra.Command) addPart {
+	return formPart{flag: flag, bind: func(cmd *cobra.Command) addPart {
 		value := &paramValue{paramFlag: paramFlag{param: name, flag: flag, usage: usage}}
 		value.register(cmd)
 		return func(_ context.Context, parts []emporix.Part) ([]emporix.Part, error) {
@@ -203,8 +211,9 @@ func (f *formFile) fillAlone(w *emporix.Write, body json.RawMessage) (err error)
 func (f *formFile) fromStdin() bool { return f.file.fromStdin() }
 
 // formBody is the body of a write that is a form whose parts flags give
-// (form), exactly one of the flags oneOf, such as a file to upload or the ID
-// of one that Emporix stores already. Each write takes its own.
+// (form): exactly one of the flags oneOf where it names any, such as a file
+// to upload or the ID of one that Emporix stores already; a part may require
+// its own flag instead (formPart.require). Each write takes its own.
 type formBody struct {
 	form  form
 	oneOf []string

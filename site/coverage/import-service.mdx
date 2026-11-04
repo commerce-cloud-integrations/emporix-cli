@@ -9,7 +9,7 @@ Operations of the Emporix API reference file [`utilities/import-service/api-refe
 
 - Last change: 2026-10-28 ([`19c7309`](https://github.com/emporix/api-references/commit/19c7309))
 - Version: not stated in the reference file
-- Operations: 29 (22 built, 2 not applicable, 0 planned, 5 to do)
+- Operations: 29 (27 built, 2 not applicable, 0 planned, 0 to do)
 
 | Operation | Status | Details |
 | --- | --- | --- |
@@ -17,11 +17,11 @@ Operations of the Emporix API reference file [`utilities/import-service/api-refe
 | `GET /importtool/{tenant}/configs/{id}` | Built | [`epx imports configurations get`](/commands/imports#epx-imports-configurations-get) |
 | `GET /importtool/{tenant}/configs/{configId}/streams` | Built | [`epx imports configurations streams`](/commands/imports#epx-imports-configurations-streams) |
 | `GET /importtool/{tenant}/streams/{id}` | Built | [`epx imports streams get`](/commands/imports#epx-imports-streams-get) |
-| `GET /importtool/{tenant}/streams/{streamId}/files` | To do |  |
-| `POST /importtool/{tenant}/streams/{streamId}/files` | To do |  |
-| `GET /importtool/{tenant}/streams/{streamId}/files/limits` | To do |  |
-| `PUT /importtool/{tenant}/streams/{streamId}/files/order` | To do |  |
-| `DELETE /importtool/{tenant}/streams/{streamId}/files/{fileId}` | To do |  |
+| `GET /importtool/{tenant}/streams/{streamId}/files` | Built | [`epx imports streams files list`](/commands/imports#epx-imports-streams-files-list) |
+| `POST /importtool/{tenant}/streams/{streamId}/files` | Built | [`epx imports streams files upload`](/commands/imports#epx-imports-streams-files-upload) |
+| `GET /importtool/{tenant}/streams/{streamId}/files/limits` | Built | [`epx imports streams files limits`](/commands/imports#epx-imports-streams-files-limits) |
+| `PUT /importtool/{tenant}/streams/{streamId}/files/order` | Built | [`epx imports streams files order`](/commands/imports#epx-imports-streams-files-order) |
+| `DELETE /importtool/{tenant}/streams/{streamId}/files/{fileId}` | Built | [`epx imports streams files delete`](/commands/imports#epx-imports-streams-files-delete) |
 | `GET /importtool/{tenant}/configs/{configId}/schedule` | Built | [`epx imports configurations schedule`](/commands/imports#epx-imports-configurations-schedule) |
 | `PUT /importtool/{tenant}/configs/{configId}/schedule` | Built | [`epx imports configurations update-schedule`](/commands/imports#epx-imports-configurations-update-schedule) |
 | `DELETE /importtool/{tenant}/configs/{configId}/schedule` | Built | [`epx imports configurations delete-schedule`](/commands/imports#epx-imports-configurations-delete-schedule) |

@@ -202,10 +202,10 @@ func TestMediaWritesSayHowToUpload(t *testing.T) {
 }
 
 // TestFormsOfUploadsAreBounded checks that a form is bounded by its parts:
-// one with a file to upload at maxUploadBytes, one without at nothing; and
-// that both bodies that send a form, alone (formBody) and with the JSON of
-// --file (formFile), send a form of its bound and refuse one byte more as a
-// usage error.
+// one with a file to upload at maxUploadBytes, also where the file is
+// required, one without at nothing; and that both bodies that send a form,
+// alone (formBody) and with the JSON of --file (formFile), send a form of its
+// bound and refuse one byte more as a usage error.
 func TestFormsOfUploadsAreBounded(t *testing.T) {
 	field := fieldPart("attachmentId", mediaFlag, "")
 	if got := (form{field, uploadPart("file", "")}).limit(); got != maxUploadBytes {
@@ -213,6 +213,9 @@ func TestFormsOfUploadsAreBounded(t *testing.T) {
 	}
 	if got := (form{field}).limit(); got != 0 {
 		t.Errorf("form without a file to upload bounded at %d; want 0", got)
+	}
+	if got := (form{uploadPart("file", "").require()}).limit(); got != maxUploadBytes {
+		t.Errorf("form with a required file to upload bounded at %d; want %d", got, maxUploadBytes)
 	}
 	sources := map[string]func(part formPart) bodySource{
 		"formBody": func(part formPart) bodySource {

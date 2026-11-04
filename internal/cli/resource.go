@@ -219,7 +219,7 @@ type resource[T any] struct {
 	about      string         // the group's help where it says more than long, e.g. what its writes change
 	under      string         // the commands above the group, if any, e.g. "shipping"
 	listedBy   string         // a group without list: the command line, without epx, that lists the items
-	atPath     bool           // listedBy lists the items at path, as for a nested group (nested)
+	atPath     bool           // listedBy lists the items at path, as for one nested with a list of its own (listsAtPath)
 	path       string         // collection path; may name {site}
 	query      url.Values     // query of list, get, search, count and ID completion, e.g. showUnpublished=true
 	listQuery  url.Values     // query of list, search, count and ID completion, not get, e.g. siteCode={site}
@@ -267,8 +267,7 @@ func (r resource[T]) ids() *idSource { return r.idsIn(r.header[0]) }
 // give it.
 func (r resource[T]) idsIn(column string) *idSource {
 	list := r.listRequest()
-	elsewhere := r.listedBy != "" && !r.atPath
-	if r.search != nil || elsewhere || list.names(placeholderSite) && !r.itemRequest().names(placeholderSite) {
+	if r.search != nil || !r.listsAtPath() || list.names(placeholderSite) && !r.itemRequest().names(placeholderSite) {
 		return nil
 	}
 	listed := r.listing()

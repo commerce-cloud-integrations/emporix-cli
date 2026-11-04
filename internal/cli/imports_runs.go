@@ -106,7 +106,7 @@ func importRuns(listedBy string) resource[importRun] {
 func importRunView() view[importRun] {
 	return view[importRun]{
 		singular: "run",
-		header:   []string{columnID, columnStatus, "MODE", "STARTED", "FINISHED", "READ", columnFailed},
+		header:   []string{columnID, columnStatus, "MODE", "STARTED", "FINISHED", columnRead, columnFailed},
 		legend: "STATUS is QUEUED, RUNNING, RESUMABLE (interrupted; it resumes by itself), SUCCEEDED,\n" +
 			"PARTIAL (records failed or a limit skipped some, or a stream did not run), FAILED, CANCELLED\n" +
 			"or ABORTED (refused: nothing was read), MODE FULL or DELTA, followed by dry run for a run that\n" +
@@ -179,7 +179,7 @@ func runStreamView() view[runStream] {
 	return view[runStream]{
 		singular: "run stream",
 		header: []string{
-			columnStream, columnStatus, "READ", columnCreated, "UPDATED", "SKIPPED", "DELETED", columnFailed, columnMessage,
+			columnStream, columnStatus, columnRead, columnCreated, "UPDATED", "SKIPPED", "DELETED", columnFailed, columnMessage,
 		},
 		long: []string{columnMessage},
 		row: func(s runStream, _ language) []string {

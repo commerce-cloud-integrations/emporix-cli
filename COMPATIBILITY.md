@@ -16,7 +16,7 @@ any GET operation that answers JSON to a service token, and
 `epx api post|put|patch|delete PATH` sends any write with the scopes given, before a
 command of its own does.
 
-**Coverage:** 597 of 667 operations built, 65 not applicable, 5 to do; in 43 services (and the
+**Coverage:** 602 of 667 operations built, 65 not applicable, 0 to do; in 43 services (and the
 OAuth Service for the token).
 
 ## Summary
@@ -62,7 +62,7 @@ OAuth Service for the token).
 | [IAM Service](#iam-service) | `users-and-permissions/iam` | 2026-11-03 (`33e56c6`) | — | 34 | 31 | 3 |
 | [Session Context Service](#session-context-service) | `users-and-permissions/session-context` | 2026-10-01 (`7fad4ee`) | — | 8 | 4 | 4 |
 | [Audit Logs (Changelog) Service](#audit-logs-changelog-service) | `utilities/audit-logs-changelog` | 2026-10-01 (`84cc3ec`) | — | 1 | 1 | 0 |
-| [Import Service](#import-service) | `utilities/import-service` | 2026-10-28 (`19c7309`) | — | 29 | 22 | 2 |
+| [Import Service](#import-service) | `utilities/import-service` | 2026-10-28 (`19c7309`) | — | 29 | 27 | 2 |
 | [Schema Service](#schema-service) | `utilities/schema` | 2026-10-15 (`eb42d3c`) | — | 31 | 31 | 0 |
 | [Search Service](#search-service) | `utilities/search-service` | 2026-10-28 (`7387567`) | — | 15 | 15 | 0 |
 | [Sequential ID Service](#sequential-id-service) | `utilities/sequential-id` | 2026-10-01 (`7fad4ee`) | — | 8 | 8 | 0 |
@@ -927,11 +927,11 @@ OAuth Service for the token).
 | `GET /importtool/{tenant}/configs/{id}` | `epx imports configurations get` |
 | `GET /importtool/{tenant}/configs/{configId}/streams` | `epx imports configurations streams` |
 | `GET /importtool/{tenant}/streams/{id}` | `epx imports streams get` |
-| `GET /importtool/{tenant}/streams/{streamId}/files` | not yet |
-| `POST /importtool/{tenant}/streams/{streamId}/files` | not yet |
-| `GET /importtool/{tenant}/streams/{streamId}/files/limits` | not yet |
-| `PUT /importtool/{tenant}/streams/{streamId}/files/order` | not yet |
-| `DELETE /importtool/{tenant}/streams/{streamId}/files/{fileId}` | not yet |
+| `GET /importtool/{tenant}/streams/{streamId}/files` | `epx imports streams files list` |
+| `POST /importtool/{tenant}/streams/{streamId}/files` | `epx imports streams files upload` |
+| `GET /importtool/{tenant}/streams/{streamId}/files/limits` | `epx imports streams files limits` |
+| `PUT /importtool/{tenant}/streams/{streamId}/files/order` | `epx imports streams files order` |
+| `DELETE /importtool/{tenant}/streams/{streamId}/files/{fileId}` | `epx imports streams files delete` |
 | `GET /importtool/{tenant}/configs/{configId}/schedule` | `epx imports configurations schedule` |
 | `PUT /importtool/{tenant}/configs/{configId}/schedule` | `epx imports configurations update-schedule` |
 | `DELETE /importtool/{tenant}/configs/{configId}/schedule` | `epx imports configurations delete-schedule` |

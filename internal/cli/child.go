@@ -111,11 +111,17 @@ func childListLine[P, T any](parent resource[P], c child[T]) string {
 // name that group (commandLine), while r's list still lists the items that
 // their first argument names (listedBy), e.g. "sites mixins list SITE_CODE",
 // where SITE_CODE is the CODE that `epx sites list` shows, at r's path
-// (atPath), which completion reads too.
+// (atPath), which completion reads too. A resource that another command lists
+// at another path (listedBy without atPath), such as the import streams of a
+// configuration, stays listed there, and completion reads none.
 func (r resource[T]) nested(group string) resource[T] {
-	r.under, r.use, r.listedBy, r.atPath = strings.TrimSpace(r.under+" "+r.use), group, r.listLine(), true
+	r.under, r.use, r.listedBy, r.atPath = strings.TrimSpace(r.under+" "+r.use), group, r.listLine(), r.listsAtPath()
 	return r
 }
+
+// listsAtPath reports whether the list of r's items reads r's path: r's own
+// list, or listedBy at that path (atPath), not another command's at another.
+func (r resource[T]) listsAtPath() bool { return r.listedBy == "" || r.atPath }
 
 // searchUse returns the name of the search of c: search beside the list of
 // a group of its own (use list, its parent nested), else search-<use>, e.g.

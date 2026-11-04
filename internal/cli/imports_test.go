@@ -66,6 +66,21 @@ func TestImportShapesRejectMalformedResponses(t *testing.T) {
 			want:   "decoding health thresholds response: expected a JSON object",
 			bodies: []string{`[]`, `null`, `"none"`},
 		},
+		{
+			args: []string{"streams", "files", "list", "s1"}, path: filesPath,
+			want: "decoding stream file response: expected an object with the pending files and the history, and " +
+				"an integer pendingTotal and a boolean pendingTruncated, if any",
+			bodies: []string{
+				`[]`, `null`, `{}`, `{"pending":[]}`, `{"history":[]}`, `{"pending":null,"history":[]}`,
+				`{"pending":{},"history":[]}`, `{"pending":[],"history":[],"pendingTotal":"2"}`,
+				`{"pending":[],"history":[],"pendingTotal":1.5}`, `{"pending":[],"history":[],"pendingTruncated":"no"}`,
+			},
+		},
+		{
+			args: []string{"streams", "files", "limits", "s1"}, path: filesPath + "/limits",
+			want:   "decoding file upload limits response: expected a JSON object",
+			bodies: []string{`[]`, `null`, `9437184`},
+		},
 	} {
 		for _, body := range tt.bodies {
 			for _, output := range []string{"table", "json"} {

@@ -21,10 +21,11 @@ func TestLimitIsOfferedOnEveryListAndNoSingleRead(t *testing.T) {
 	// its delivery restrictions and its validation, the AI Service's LLM
 	// models, commerce events and analytics, the webhook dashboard access, an
 	// export package and the import reads of one object: a schedule, a stream
-	// order, a run's streams and diagnostics, the statistics, health thresholds
-	// and limits (one response each); or one response: the order count, the
-	// prices and price matches of given products, the products a segment
-	// match finds, the calculations and checks, and a parsed JSON schema file.
+	// order, a run's streams and diagnostics, a stream's file queue and upload
+	// limits, the statistics, health thresholds and limits (one response each);
+	// or one response: the order count, the prices and price matches of given
+	// products, the products a segment match finds, the calculations and
+	// checks, and a parsed JSON schema file.
 	single := []string{
 		"epx orders history", "epx media download-url", "epx iam users scopes", "epx webhooks statistics",
 		"epx configurations client-setting",
@@ -34,7 +35,8 @@ func TestLimitIsOfferedOnEveryListAndNoSingleRead(t *testing.T) {
 		"epx ai analytics tenant", "epx ai analytics agent", "epx ai analytics executions",
 		"epx webhooks dashboard-access", "epx custom-entities export", "epx search indexes export", "epx segments match",
 		"epx imports configurations schedule", "epx imports configurations stream-order", "epx imports runs streams",
-		"epx imports runs diagnostics", "epx imports statistics", "epx imports health-thresholds", "epx imports license",
+		"epx imports runs diagnostics", "epx imports streams files list", "epx imports streams files limits",
+		"epx imports statistics", "epx imports health-thresholds", "epx imports license",
 		"epx shipping quote", "epx shipping quote-minimum", "epx shipping quote-slot", "epx delivery-times validate",
 		"epx delivery-times generate-cycle",
 		"epx units convert", "epx units conversion-factor", "epx taxes calculate", "epx coupons validate",

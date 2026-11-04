@@ -69,10 +69,11 @@ type importedRecord struct {
 	ImportedAt string `json:"importedAt"`
 }
 
-// newImportsCommand reads the Import Service: its configurations, streams,
-// runs, imported records and statistics. Emporix reads them only with the
-// write-capable importtool.import_trigger scope, so every read is opt-in.
-// With that scope, it also starts, retries and cancels runs and schedules
+// newImportsCommand reads the Import Service: its configurations, streams
+// and their file queues, runs, imported records and statistics. Emporix reads
+// them only with the write-capable importtool.import_trigger scope, so every
+// read is opt-in. With that scope, it also queues files for a stream
+// (newImportFilesCommand), starts, retries and cancels runs and schedules
 // them (importConfigurationWrites, importRunWrites).
 func newImportsCommand(a *app) *cobra.Command {
 	configurations, streamsOf, runsOf := importConfigurations(), configurationStreams(), configurationRuns()
@@ -85,12 +86,13 @@ func newImportsCommand(a *app) *cobra.Command {
 		newImportStreamsCommand(a, streams),
 		newImportRunsCommand(a, runs, importRunWrites(a, runs, job)...),
 	}, importDataReads(a), importAnalyticsReads(a))
-	return newGroup(importsUse, "Read import configurations, runs and imported records; start and schedule runs",
+	return newGroup(importsUse, "Read import configurations, runs and records; queue files, start and schedule runs",
 		"Reads the Import Service, which imports master data from external sources into Emporix:\n"+
-			"configurations, their streams (each imports one source entity into an Emporix type),\n"+
-			"schedules and runs, the errors and diagnostics of a run, the records imported, statistics,\n"+
-			"job groups, health thresholds and the tenant's import limits. Emporix allows these reads\n"+
-			"only with "+importScope+", with which epx also starts, retries, cancels and schedules runs.",
+			"configurations, their streams (each imports one source entity into an Emporix type), the\n"+
+			"file queue of a file-based stream, schedules and runs, the errors and diagnostics of a run,\n"+
+			"the records imported, statistics, job groups, health thresholds and the tenant's import\n"+
+			"limits. Emporix allows these reads only with "+importScope+", with which epx\n"+
+			"also queues files for a stream, and starts, retries, cancels and schedules runs.",
 		reads...)
 }
 
@@ -176,21 +178,25 @@ func configurationStreams() child[importStream] {
 // by their own id; the command line listedBy lists them (the streams of a
 // configuration).
 func importStreams(listedBy string) resource[importStream] {
-	return resource[importStream]{
+	streams := resource[importStream]{
 		use:      "streams",
 		noun:     "import streams",
-		short:    "Read import streams and the records they imported",
+		short:    "Read import streams and the records they imported; queue their files",
 		under:    importsUse,
 		listedBy: listedBy,
 		long: "Reads an import stream, which imports one source entity of a configuration: SOURCE is that\n" +
 			"entity, TARGET TYPE the Emporix type it writes to (a discriminator, in -o json, may route\n" +
 			"records to others), MODE STANDALONE, or COMPOSITE_CHILD or COMPOSITE_MERGE for a stream that\n" +
-			"adds to the records of another. Its delta, delete, write and health settings are only in\n" +
-			"-o json. A stream's ID is the one that `epx " + listedBy + "` shows.",
+			"adds to the records of another. Its delta, delete, write and health settings, and the file\n" +
+			"settings of a file-based stream (fileMode, sourceDataset), are only in -o json.\n" +
+			"A stream's ID is the one that `epx " + listedBy + "` shows.",
 		path:   "/importtool/{tenant}/streams",
 		scopes: importScopes(),
 		view:   importStreamView(),
 	}
+	streams.about = streams.long + "\n`epx " + streams.commandLine(filesUse, request{}) + "` reads and changes the " +
+		"queue of the files that a file-based\nstream imports."
+	return streams
 }
 
 // importStreamView is the table of import streams.
@@ -205,9 +211,9 @@ func importStreamView() view[importStream] {
 }
 
 // newImportStreamsCommand reads one import stream and the records a stream
-// imported.
+// imported, followed by the group of a stream's file queue.
 func newImportStreamsCommand(a *app, streams resource[importStream]) *cobra.Command {
-	return newGroup(streams.use, streams.summary(), streams.long,
+	return newGroup(streams.use, streams.summary(), streams.groupHelp(),
 		streams.getCommand(a),
 		importReader(importedRecordView()).command(a, &command{
 			use:   "records " + streams.argument(),
@@ -216,7 +222,8 @@ func newImportStreamsCommand(a *app, streams resource[importStream]) *cobra.Comm
 				streams.argumentSentence(listsNothing),
 			req:   request{path: "/importtool/{tenant}/data/streams/" + placeholderID + "/records"},
 			fetch: listing{read: (*emporix.Client).GetAllContentPages},
-		}))
+		}),
+		newImportFilesCommand(a, streams))
 }
 
 // importedRecordView is the table of imported records.

@@ -55,6 +55,33 @@ func TestNestedChildSearchAndWrites(t *testing.T) {
 	}
 }
 
+// TestNestedKeepsWhereItsItemsAreListed checks that a resource nested in a
+// group of its own (resource.nested) moves its commands below that group and
+// still names the command line that lists its items, and that it completes
+// their IDs from its own list only where it has one: one that another command
+// lists at another path, such as the import streams of a configuration, is
+// not claimed to be listed at its path, and completes none.
+func TestNestedKeepsWhereItsItemsAreListed(t *testing.T) {
+	stores := resource[thing]{use: "stores", under: "things", path: "/stores", view: thingView()}
+	elsewhere := stores
+	elsewhere.listedBy = "things shops stores SHOP_ID"
+	for _, tt := range []struct {
+		nested            resource[thing]
+		listedBy          string
+		atPath, completes bool
+	}{
+		{nested: stores.nested("shelves"), listedBy: "things stores list", atPath: true, completes: true},
+		{nested: elsewhere.nested("shelves"), listedBy: elsewhere.listedBy},
+	} {
+		r := tt.nested
+		if r.under != "things stores" || r.use != "shelves" || r.listedBy != tt.listedBy || r.atPath != tt.atPath ||
+			(r.ids() != nil) != tt.completes {
+			t.Errorf("nested %+v, completes %v; want below things stores, listed by %q, at its path %v, completes %v",
+				r, r.ids() != nil, tt.listedBy, tt.atPath, tt.completes)
+		}
+	}
+}
+
 // TestChildListedByListNamesItsPath checks that a child listed by `list`
 // without sub, which would send to .../list, a mistake in its declaration,
 // fails while the command tree is built.

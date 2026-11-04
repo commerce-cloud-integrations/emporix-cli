@@ -2,6 +2,7 @@ package cli
 
 import (
 	"net/http"
+	"slices"
 	"strings"
 	"testing"
 	"time"
@@ -23,12 +24,13 @@ const (
 )
 
 // importWriteCases are the writes of the Import Service: runs started,
-// retried and cancelled, and a configuration's schedule set and deleted.
+// retried and cancelled, a configuration's schedule set and deleted, and
+// those of a stream's file queue.
 func importWriteCases() []writeCase {
 	trigger := []string{"importtool.import_trigger"}
 	const configuration, run = "/importtool/acme1/configs/c1", "/importtool/acme1/runs/r1"
 	const schedule = `{"cron":"0 0 2 * * *","enabled":true,"timezone":"Europe/Berlin"}`
-	return []writeCase{
+	return slices.Concat([]writeCase{
 		{
 			args: []string{"imports", "configurations", "trigger", "c1"}, sent: `{}`, method: http.MethodPost,
 			path: configuration + "/runs", scopes: trigger, status: http.StatusOK, body: queuedRun, want: queuedRunJSON,
@@ -83,6 +85,43 @@ func importWriteCases() []writeCase {
 		{
 			args: []string{"imports", "runs", "retry", "r1"}, method: http.MethodPost, path: run + "/retry",
 			scopes: trigger, status: http.StatusOK, body: queuedRun, want: queuedRunJSON, conflict: activeRunConflict,
+		},
+	}, importFileWriteCases(trigger))
+}
+
+// importFileWriteCases are the writes of a stream's file queue: a file
+// uploaded in a form, the load order set by flags or by --file, and a waiting
+// file removed.
+func importFileWriteCases(trigger []string) []writeCase {
+	const order = `["f3","f2"]`
+	reordered := `[{"id":"f3","status":"PENDING","loadRank":1},{"id":"f2","status":"PENDING","loadRank":2}]`
+	reorderedJSON := "[\n  {\n    \"id\": \"f3\",\n    \"loadRank\": 1,\n    \"status\": \"PENDING\"\n  },\n" +
+		"  {\n    \"id\": \"f2\",\n    \"loadRank\": 2,\n    \"status\": \"PENDING\"\n  }\n]\n"
+	return []writeCase{
+		{
+			// The file is sent as the form's file, with its name and the content type of its extension.
+			args:   []string{"imports", "streams", "files", "upload", "s1", "--upload", "testdata/order.csv"},
+			form:   []sentPart{{name: "file", file: "order.csv", contentType: "text/csv", content: orderCSV()}},
+			method: http.MethodPost, path: filesPath, scopes: trigger, status: http.StatusOK,
+			body: `{"id":"f2","fileName":"order.csv","size":24,"status":"PENDING","loadRank":1}`,
+			want: "{\n  \"fileName\": \"order.csv\",\n  \"id\": \"f2\",\n  \"loadRank\": 1,\n  \"size\": 24,\n" +
+				"  \"status\": \"PENDING\"\n}\n",
+			conflict: uploadConflict(filesList, streamGet),
+		},
+		{
+			args: []string{"imports", "streams", "files", "order", "s1", "--id", "f3", "--id", "f2"}, sent: order,
+			method: http.MethodPut, path: filesPath + "/order", scopes: trigger, status: http.StatusOK, body: reordered,
+			want: reorderedJSON, conflict: fileOrderConflict(filesList),
+		},
+		{
+			args: []string{"imports", "streams", "files", "order", "s1"}, file: order, method: http.MethodPut,
+			path: filesPath + "/order", scopes: trigger, status: http.StatusOK, body: reordered, want: reorderedJSON,
+			conflict: fileOrderConflict(filesList),
+		},
+		{
+			args: []string{"imports", "streams", "files", "delete", "s1", "f2"}, method: http.MethodDelete,
+			path: filesPath + "/f2", scopes: trigger, status: http.StatusNoContent, confirmBy: "f2",
+			conflict: fileDeleteConflict(filesList),
 		},
 	}
 }

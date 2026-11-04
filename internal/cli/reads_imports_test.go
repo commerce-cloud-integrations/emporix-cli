@@ -83,7 +83,45 @@ func importReads() []readCase {
 				"UNRESOLVED_PARENT  poLine    ID:PO-4711  HEADER_ID      PO-4711        7              \n" +
 				"REPEATED_KEY       Products  100200                                                   2\n",
 		},
-	}, importDataAndAnalyticsReads(optIn, scopes))
+	}, importFileReads(optIn, scopes), importDataAndAnalyticsReads(optIn, scopes))
+}
+
+// importFileReads returns the reads of a stream's file queue: its files and
+// the most bytes an upload takes.
+func importFileReads(optIn string, scopes []string) []readCase {
+	return []readCase{
+		{
+			// The waiting files in load order, each of all those waiting, then the history, newest first.
+			args:   []string{"imports", "streams", "files", "list", "s1", "--history-limit", "50", optIn},
+			path:   filesPath,
+			query:  "historyLimit=50",
+			scopes: scopes,
+			mode:   getWhole,
+			body: `{"pending":[{"id":"f2","fileName":"vendors-2026-10-23.csv","size":2458112,"status":"PENDING",
+				"loadRank":1,"queuedAt":"2026-10-23T09:15:00.000Z"},{"id":"f3","fileName":"vendors-2026-10-24.csv",
+				"size":2510044,"status":"PENDING","loadRank":2,"queuedAt":"2026-10-24T09:15:00.000Z"}],
+				"history":[{"id":"f1","fileName":"vendors-2026-10-22.csv","size":2391001,"status":"PROCESSED","loadRank":1,
+				"queuedAt":"2026-10-22T09:15:00.000Z","processedAt":"2026-10-22T09:17:42.000Z","runId":"r1",
+				"recordsRead":43342,"message":"Imported with failures: 1 record had no key value"}],
+				"pendingTruncated":false,"pendingTotal":2}`,
+			want: "ID  LOAD ORDER  NAME                    STATUS     SIZE     QUEUED                    " +
+				"PROCESSED                 READ   MESSAGE\n" +
+				"f2  1 of 2      vendors-2026-10-23.csv  PENDING    2458112  2026-10-23T09:15:00.000Z  " +
+				"                                 \n" +
+				"f3  2 of 2      vendors-2026-10-24.csv  PENDING    2510044  2026-10-24T09:15:00.000Z  " +
+				"                                 \n" +
+				"f1              vendors-2026-10-22.csv  PROCESSED  2391001  2026-10-22T09:15:00.000Z  " +
+				"2026-10-22T09:17:42.000Z  43342  Imported with failures: 1 record had no key value\n",
+		},
+		{
+			args:   []string{"imports", "streams", "files", "limits", "s1", optIn},
+			path:   filesPath + "/limits",
+			scopes: scopes,
+			mode:   getWhole,
+			body:   `{"maxUploadBytes":9437184,"gatewayLimited":true,"uploadSupported":true}`,
+			want:   "MAX UPLOAD BYTES  GATEWAY LIMITED  UPLOAD SUPPORTED\n9437184           true             true\n",
+		},
+	}
 }
 
 // importConfigurationReads returns the reads of import configurations: the

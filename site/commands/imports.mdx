@@ -1,16 +1,17 @@
 ---
 title: "epx imports"
 sidebarTitle: "imports"
-description: "Read import configurations, runs and imported records; start and schedule runs."
+description: "Read import configurations, runs and records; queue files, start and schedule runs."
 ---
 
 ## epx imports
 
 Reads the Import Service, which imports master data from external sources into Emporix:
-configurations, their streams (each imports one source entity into an Emporix type),
-schedules and runs, the errors and diagnostics of a run, the records imported, statistics,
-job groups, health thresholds and the tenant's import limits. Emporix allows these reads
-only with importtool.import\_trigger, with which epx also starts, retries, cancels and schedules runs.
+configurations, their streams (each imports one source entity into an Emporix type), the
+file queue of a file-based stream, schedules and runs, the errors and diagnostics of a run,
+the records imported, statistics, job groups, health thresholds and the tenant's import
+limits. Emporix allows these reads only with importtool.import\_trigger, with which epx
+also queues files for a stream, and starts, retries, cancels and schedules runs.
 
 Its reads require the importtool.import\_trigger scope.
 Opt-in: epx requests a write-capable scope for a read only when given `--allow-write-scope`.
@@ -37,7 +38,7 @@ Its writes require the importtool.import\_trigger scope.
 - [`epx imports statistics`](#epx-imports-statistics)\
   Show the import statistics of the last 30 days.
 - [`epx imports streams`](#epx-imports-streams)\
-  Read import streams and the records they imported.
+  Read import streams and the records they imported; queue their files.
 - [`epx imports types`](#epx-imports-types)\
   List the types that hold imported records.
 
@@ -757,16 +758,20 @@ Also takes the [global flags](/commands#global-flags).
 
 ## epx imports streams
 
-Read import streams and the records they imported.
+Read import streams and the records they imported; queue their files.
 
 Reads an import stream, which imports one source entity of a configuration: SOURCE is that
 entity, TARGET TYPE the Emporix type it writes to (a discriminator, in `-o json`, may route
 records to others), MODE STANDALONE, or COMPOSITE\_CHILD or COMPOSITE\_MERGE for a stream that
-adds to the records of another. Its delta, delete, write and health settings are only in
-`-o json`. A stream's ID is the one that [`epx imports configurations streams CONFIGURATION_ID`](/commands/imports#epx-imports-configurations-streams) shows.
+adds to the records of another. Its delta, delete, write and health settings, and the file
+settings of a file-based stream (fileMode, sourceDataset), are only in `-o json`.
+A stream's ID is the one that [`epx imports configurations streams CONFIGURATION_ID`](/commands/imports#epx-imports-configurations-streams) shows.
+[`epx imports streams files`](/commands/imports#epx-imports-streams-files) reads and changes the queue of the files that a file-based
+stream imports.
 
-Requires the importtool.import\_trigger scope.
+Its reads require the importtool.import\_trigger scope.
 Opt-in: epx requests a write-capable scope for a read only when given `--allow-write-scope`.
+Its writes require the importtool.import\_trigger scope.
 
 **Command:** `epx imports streams [flags]`, `epx imports streams [command]`
 
@@ -774,10 +779,245 @@ Opt-in: epx requests a write-capable scope for a read only when given `--allow-w
 
 **Subcommands**
 
+- [`epx imports streams files`](#epx-imports-streams-files)\
+  Read and change the files that a file-based stream imports.
 - [`epx imports streams get`](#epx-imports-streams-get)\
   Show one stream.
 - [`epx imports streams records`](#epx-imports-streams-records)\
   List the records a stream imported.
+
+## epx imports streams files
+
+Read and change the files that a file-based stream imports.
+
+Reads the file queue of a file-based import stream: the files that it waits to import, in
+the order that its next run reads them, and those it dealt with; uploads a file to it, sets
+the order of the waiting files and removes one. Nothing is imported until a run starts
+([`epx imports configurations trigger`](/commands/imports#epx-imports-configurations-trigger)).
+A file-based stream reads its files by its fileMode, SNAPSHOT by default. A SNAPSHOT stream
+takes each file as the whole picture: its run reads only the most recently arrived waiting
+file and may report the older ones superseded, in their MESSAGE. An INCREMENTAL stream takes
+each file as a change set: its run reads them all, in load order, a later file's values
+winning on a key that an earlier one carries too. A stream without fileMode reads no files
+([`epx imports streams get ID -o json`](/commands/imports#epx-imports-streams-get) shows it).
+
+Its reads require the importtool.import\_trigger scope.
+Opt-in: epx requests a write-capable scope for a read only when given `--allow-write-scope`.
+Its writes require the importtool.import\_trigger scope.
+
+**Command:** `epx imports streams files [flags]`, `epx imports streams files [command]`
+
+**Flags:** only the [global flags](/commands#global-flags).
+
+**Subcommands**
+
+- [`epx imports streams files delete`](#epx-imports-streams-files-delete)\
+  Remove a waiting file from a stream's queue.
+- [`epx imports streams files limits`](#epx-imports-streams-files-limits)\
+  Show the most bytes that an upload to a stream takes.
+- [`epx imports streams files list`](#epx-imports-streams-files-list)\
+  List the files that a stream waits to import and those it dealt with.
+- [`epx imports streams files order`](#epx-imports-streams-files-order)\
+  Set the order in which a stream imports its waiting files.
+- [`epx imports streams files upload`](#epx-imports-streams-files-upload)\
+  Upload a file for a stream to import.
+
+## epx imports streams files delete
+
+Remove a waiting file from a stream's queue.
+
+Removes the waiting file ID from the queue of the stream STREAM\_ID and deletes its
+content. Only a waiting file is removed: one that a run claimed or imported is a conflict
+(exit 5), as is any while the stream's job has a run in flight.
+STREAM\_ID is the ID that [`epx imports configurations streams CONFIGURATION_ID`](/commands/imports#epx-imports-configurations-streams) shows; an unknown one is not found.
+ID is the ID that [`epx imports streams files list STREAM_ID`](/commands/imports#epx-imports-streams-files-list) shows; an unknown one is not found.
+
+Deletes data, which cannot be undone.
+On a terminal, epx sends DELETE only once you type ID at its prompt.
+`--yes` sends without asking (required without a terminal);
+`--dry-run` prints the request instead of sending it.
+
+Requires the importtool.import\_trigger scope.
+
+**Command:** `epx imports streams files delete STREAM_ID ID [flags]`
+
+**Flags**
+
+- `--dry-run`\
+  Print the request instead of sending it (excludes `-o`).
+- `-o, --output <format>`\
+  Format of the response: json or yaml. Default: `json`.
+- `--yes`\
+  Send without asking (required without a terminal).
+
+Also takes the [global flags](/commands#global-flags).
+
+## epx imports streams files limits
+
+Show the most bytes that an upload to a stream takes.
+
+Reads the largest file that the environment takes in [`epx imports streams files upload`](/commands/imports#epx-imports-streams-files-upload):
+MAX UPLOAD BYTES, which the API gateway in front of the Import Service sets where GATEWAY
+LIMITED is true (it refuses a larger file with its own 413 before the service sees it), and
+UPLOAD SUPPORTED, false where the environment has nowhere to store an uploaded file (an
+upload is then answered 503 Service Unavailable). A larger file can be published at an
+HTTP(S) URL that the stream's connection reads instead, a change that needs
+importtool.import\_manage, which epx does not request.
+STREAM\_ID is the ID that [`epx imports configurations streams CONFIGURATION_ID`](/commands/imports#epx-imports-configurations-streams) shows; an unknown one is not found.
+
+Requires the importtool.import\_trigger scope.
+Opt-in: epx requests a write-capable scope for a read only when given `--allow-write-scope`.
+
+**Command:** `epx imports streams files limits STREAM_ID [flags]`
+
+**Flags**
+
+- `--allow-write-scope`\
+  Opt in to requesting importtool.import\_trigger, which can also change data (required).
+- `--columns <names>`\
+  Print only these columns of table and csv, in this order: comma-separated names (any case) among MAX UPLOAD BYTES, GATEWAY LIMITED, UPLOAD SUPPORTED.
+- `--no-headers`\
+  Print table and csv without the header row.
+- `-o, --output <format>`\
+  Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
+
+Also takes the [global flags](/commands#global-flags).
+
+## epx imports streams files list
+
+List the files that a stream waits to import and those it dealt with.
+
+Reads the file queue of a file-based stream. First come the files waiting, in the order
+that its next run reads them: LOAD ORDER is a file's place among all the files waiting,
+e.g. 1 of 3.
+A file-based stream reads its files by its fileMode, SNAPSHOT by default. A SNAPSHOT stream
+takes each file as the whole picture: its run reads only the most recently arrived waiting
+file and may report the older ones superseded, in their MESSAGE. An INCREMENTAL stream takes
+each file as a change set: its run reads them all, in load order, a later file's values
+winning on a key that an earlier one carries too. A stream without fileMode reads no files
+([`epx imports streams get ID -o json`](/commands/imports#epx-imports-streams-get) shows it).
+Emporix lists up to 2000 waiting files: where more wait, the last LOAD ORDER listed ends
+below the total, e.g. 2000 of 2500, and [`epx imports streams files order`](/commands/imports#epx-imports-streams-files-order) cannot reorder
+them. Then comes the history, newest first and without LOAD ORDER: up to `--history-limit`
+files that a run claimed (STATUS IN\_PROGRESS), read to the end (PROCESSED, also with
+records that failed, as MESSAGE says) or could not import (FAILED: it can be uploaded
+again). SIZE is in bytes, QUEUED when the file was uploaded, PROCESSED when its import
+ended and READ the records read from it. A file's load rank and run are only in `-o json`.
+STREAM\_ID is the ID that [`epx imports configurations streams CONFIGURATION_ID`](/commands/imports#epx-imports-configurations-streams) shows; an unknown one is not found.
+
+Requires the importtool.import\_trigger scope.
+Opt-in: epx requests a write-capable scope for a read only when given `--allow-write-scope`.
+
+**Command:** `epx imports streams files list STREAM_ID [flags]`
+
+**Flags**
+
+- `--allow-write-scope`\
+  Opt in to requesting importtool.import\_trigger, which can also change data (required).
+- `--columns <names>`\
+  Print only these columns of table and csv, in this order: comma-separated names (any case) among ID, LOAD ORDER, NAME, STATUS, SIZE, QUEUED, PROCESSED, READ, MESSAGE.
+- `--history-limit <FILES>`\
+  The most FILES of the history to list, newest first: 1 to 500 (Emporix: 100 without it).
+- `--no-headers`\
+  Print table and csv without the header row.
+- `-o, --output <format>`\
+  Output format: table, json, yaml or csv (csv: the table's rows; json and yaml: the whole response). Default: `table`.
+
+Also takes the [global flags](/commands#global-flags).
+
+## epx imports streams files order
+
+Set the order in which a stream imports its waiting files.
+
+Sets the order in which the stream STREAM\_ID reads its waiting files: `--id` names each one,
+the first to load first, as [`epx imports streams files list STREAM_ID`](/commands/imports#epx-imports-streams-files-list) shows its ID;
+`--file` gives the JSON array of their ids instead. The order matters only for an INCREMENTAL
+stream, as that list says. Emporix takes every waiting file, no more and no fewer
+(otherwise 400 Bad Request, exit 1), and answers with the waiting files in their new order.
+A stream whose job has a run in flight, or with more waiting files than the list shows, is
+a conflict (exit 5).
+STREAM\_ID is the ID that [`epx imports configurations streams CONFIGURATION_ID`](/commands/imports#epx-imports-configurations-streams) shows; an unknown one is not found.
+
+Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without
+asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
+instead of sending it.
+
+Requires the importtool.import\_trigger scope.
+
+**Command:** `epx imports streams files order STREAM_ID [flags]`
+
+**Flags**
+
+- `--dry-run`\
+  Print the request instead of sending it (excludes `-o`).
+- `--file <PATH>`\
+  JSON request body in PATH, sent byte for byte instead of the one that epx makes (- reads standard input; sending it then needs `--yes`).
+- `--id <ID>`\
+  The ID of a waiting file, the first to load first (repeatable): every waiting file (required without `--file`).
+- `-o, --output <format>`\
+  Format of the response: json or yaml. Default: `json`.
+- `--yes`\
+  Send without asking (required without a terminal, or with `--file` -).
+
+Also takes the [global flags](/commands#global-flags).
+
+**Examples**
+
+```sh
+epx imports streams files order 3fa85f64-5717-4562-b3fc-2c963f66afa6 --id 9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d --id c56a4180-65aa-42ec-a945-5fd21dec0538
+```
+
+## epx imports streams files upload
+
+Upload a file for a stream to import.
+
+Uploads the delimited file (CSV or a variant) that `--upload` names to the queue of the
+file-based stream STREAM\_ID, which imports it on its next run: nothing is imported now.
+The file's name is sent with it and tells Emporix a compression, such as .gz. Emporix
+answers with the file queued, whose id [`epx imports streams files order`](/commands/imports#epx-imports-streams-files-order) and
+[`epx imports streams files delete`](/commands/imports#epx-imports-streams-files-delete) take. Which waiting files a run reads depends on the
+stream's fileMode, as [`epx imports streams files list STREAM_ID`](/commands/imports#epx-imports-streams-files-list) says.
+Emporix knows a file by its content, whatever its name, and never imports it twice: content
+that the stream imported or queued already is a conflict (exit 5), as is an upload to a
+stream that reads no files or one that would replace content that a run in flight reads; a
+file that FAILED is taken again.
+epx sends a file of up to 30 MB including the form, and the environment may take less
+([`epx imports streams files limits`](/commands/imports#epx-imports-streams-files-limits)): Emporix answers a larger one with
+413 Request Entity Too Large (exit 1). A large file may need a longer `--timeout`, e.g.
+`--timeout` 5m, as it bounds the whole request.
+A 503 Service Unavailable (exit 1) comes from an environment that cannot store uploads
+(UPLOAD SUPPORTED false in [`epx imports streams files limits`](/commands/imports#epx-imports-streams-files-limits)), which queued nothing, or from
+a gateway that failed, after which the file may have been queued: check
+[`epx imports streams files list STREAM_ID`](/commands/imports#epx-imports-streams-files-list) before you send it again; if it was
+queued, a resend is a conflict (exit 5), not a second import.
+STREAM\_ID is the ID that [`epx imports configurations streams CONFIGURATION_ID`](/commands/imports#epx-imports-configurations-streams) shows; an unknown one is not found.
+
+Changes data: on a terminal, epx asks before it sends POST. `--yes` sends without
+asking (required without a terminal); `--dry-run` prints the request
+instead of sending it.
+
+Requires the importtool.import\_trigger scope.
+
+**Command:** `epx imports streams files upload STREAM_ID [flags]`
+
+**Flags**
+
+- `--dry-run`\
+  Print the request instead of sending it (excludes `-o`).
+- `-o, --output <format>`\
+  Format of the response: json or yaml. Default: `json`.
+- `--upload <PATH>`\
+  The delimited file in PATH to queue (up to 30 MB including the form), sent with its name (required).
+- `--yes`\
+  Send without asking (required without a terminal).
+
+Also takes the [global flags](/commands#global-flags).
+
+**Examples**
+
+```sh
+epx imports streams files upload 3fa85f64-5717-4562-b3fc-2c963f66afa6 --upload vendors.csv
+```
 
 ## epx imports streams get
 
@@ -786,8 +1026,9 @@ Show one stream.
 Reads an import stream, which imports one source entity of a configuration: SOURCE is that
 entity, TARGET TYPE the Emporix type it writes to (a discriminator, in `-o json`, may route
 records to others), MODE STANDALONE, or COMPOSITE\_CHILD or COMPOSITE\_MERGE for a stream that
-adds to the records of another. Its delta, delete, write and health settings are only in
-`-o json`. A stream's ID is the one that [`epx imports configurations streams CONFIGURATION_ID`](/commands/imports#epx-imports-configurations-streams) shows.
+adds to the records of another. Its delta, delete, write and health settings, and the file
+settings of a file-based stream (fileMode, sourceDataset), are only in `-o json`.
+A stream's ID is the one that [`epx imports configurations streams CONFIGURATION_ID`](/commands/imports#epx-imports-configurations-streams) shows.
 
 Requires the importtool.import\_trigger scope.
 Opt-in: epx requests a write-capable scope for a read only when given `--allow-write-scope`.

@@ -31,6 +31,7 @@ const (
 	columnCountry     = "COUNTRY"
 	columnStatus      = "STATUS"
 	columnFailed      = "FAILED" // a count of failed items
+	columnRead        = "READ"   // a count of records read, e.g. by an import run
 	columnMessage     = "MESSAGE"
 	columnKey         = "KEY"
 	columnValue       = "VALUE"  // a long value, e.g. a setting's
