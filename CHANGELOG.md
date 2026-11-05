@@ -5,7 +5,7 @@ All notable changes to epx are listed here. epx follows
 change or remove commands, columns or flags, and its notes list each such change under
 **Breaking changes**.
 
-## Unreleased
+## 0.3.0 (2026-11-05)
 
 ### New
 
@@ -14,8 +14,11 @@ change or remove commands, columns or flags, and its notes list each such change
   `commerce-cloud-integrations/scoop-bucket`). Every release carries the formula and the
   manifest as `epx.rb` and `epx.json`.
 - Man pages: `man epx` and one page per top-level command, such as `man epx-products`, with
-  the same text as `--help`. The install script and npm install them; the release archives
-  for macOS and Linux hold them in `man/`.
+  the same text as `--help`. Homebrew, the install script and npm install them; the release
+  archives for macOS and Linux hold them in `man/`.
+- The [documentation site](https://commerce-cloud-integrations.github.io/emporix-cli/) is
+  published with every release, with search. The repository has a contributing guide and a
+  security policy, with private vulnerability reporting.
 
 ### Fixed
 

@@ -74,9 +74,9 @@ request. Package-level mutable state and `init` functions aren't used.
   when commands changed.
 - Write commit messages that describe the change to epx, in the imperative mood
   ("Add `--type` to category-trees list").
-- Add a line under **Unreleased** in [CHANGELOG.md](CHANGELOG.md) when users will notice the
-  change. Mark changes that break scripts, such as a removed command, flag or column, under
-  **Breaking changes**.
+- Add a line under **Unreleased** in [CHANGELOG.md](CHANGELOG.md) (start the section if it is
+  missing) when users will notice the change. Mark changes that break scripts, such as a
+  removed command, flag or column, under **Breaking changes**.
 
 By contributing, you agree that your contribution is licensed under the
 [Apache License 2.0](LICENSE).
