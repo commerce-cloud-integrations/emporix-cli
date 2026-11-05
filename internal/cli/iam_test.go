@@ -77,3 +77,27 @@ func TestUserAccessControlsNeedTheirTotal(t *testing.T) {
 		t.Fatalf("exit %d, stdout %q, stderr %q, requests %q", code, stdout, stderr, fake.gets)
 	}
 }
+
+// TestIAMPagingNoteIsOnListOnly checks that the IAM lists sorted by id say so
+// in the help of list, and get, which reads one item, does not.
+func TestIAMPagingNoteIsOnListOnly(t *testing.T) {
+	for _, tt := range []struct {
+		group  string
+		hasGet bool
+	}{
+		{group: "scopes", hasGet: true},
+		{group: "access-controls", hasGet: true},
+		{group: "templates"}, // Emporix reads no template by id
+		{group: "groups", hasGet: true},
+	} {
+		if _, stdout, _ := runCLI(t, nil, "iam", tt.group, "list", "--help"); !strings.Contains(stdout, iamPagingNote) {
+			t.Errorf("iam %s list --help lacks the paging note:\n%s", tt.group, stdout)
+		}
+		if !tt.hasGet {
+			continue
+		}
+		if _, stdout, _ := runCLI(t, nil, "iam", tt.group, "get", "--help"); strings.Contains(stdout, iamPagingNote) {
+			t.Errorf("iam %s get --help has the paging note:\n%s", tt.group, stdout)
+		}
+	}
+}

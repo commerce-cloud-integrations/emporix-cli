@@ -46,6 +46,7 @@ func iamReads() []readCase {
 		{
 			args:    []string{"iam", "groups", "list", "--language", "en"},
 			path:    "/iam/acme1/groups",
+			query:   "sort=id%3Aasc",
 			scopes:  []string{"iam.group_read"},
 			filters: listFilters{kinds: filterable},
 			body: `[{"id":"g1","code":"CUSTOMER","name":{"en":"Customers"},"userType":"CUSTOMER","accessControls":[]},
@@ -74,7 +75,8 @@ func iamReads() []readCase {
 }
 
 // iamAccessReads returns the IAM Service reads of scopes, access controls and
-// templates. Their lists sort by id unless --sort says otherwise.
+// templates. Their lists, like that of groups (every list iamList declares),
+// sort by id unless --sort says otherwise.
 func iamAccessReads() []readCase {
 	return []readCase{
 		{

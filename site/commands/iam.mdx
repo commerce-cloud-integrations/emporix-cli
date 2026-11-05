@@ -91,8 +91,6 @@ Show one access control.
 
 Reads IAM access controls.
 SCOPES counts the scopes an access control grants (`-o json` lists them).
-list sorts by id unless `--sort` says otherwise; end another order with ,id:asc (e.g.
-name.en:asc,id:asc), as Emporix wants a direction on every field, so pages do not overlap.
 
 Requires the iam.access\_read scope.
 
@@ -347,6 +345,8 @@ List IAM groups.
 Reads the tenant's user groups. TYPE is the kind of user a group is for (e.g. EMPLOYEE,
 CUSTOMER), and ACCESS CONTROLS counts the access controls it grants (`-o json` lists their
 ids, [`epx iam groups access-controls`](/commands/iam#epx-iam-groups-access-controls) reads them).
+list sorts by id unless `--sort` says otherwise; end another order with ,id:asc (e.g.
+name.en:asc,id:asc), as Emporix wants a direction on every field, so pages do not overlap.
 
 Requires the iam.group\_read scope.
 
@@ -649,8 +649,6 @@ Show one scope.
 
 Reads the OAuth scopes the tenant knows: ID is the scope, DOMAIN the service it belongs to
 and PREDEFINED whether Emporix defines it.
-list sorts by id unless `--sort` says otherwise; end another order with ,id:asc (e.g.
-name.en:asc,id:asc), as Emporix wants a direction on every field, so pages do not overlap.
 
 Requires the iam.scope\_read scope.
 
@@ -742,8 +740,6 @@ Read IAM templates.
 
 Reads IAM access control templates: sets of access controls that groups are built from
 (`-o json` lists them).
-list sorts by id unless `--sort` says otherwise; end another order with ,id:asc (e.g.
-name.en:asc,id:asc), as Emporix wants a direction on every field, so pages do not overlap.
 
 Requires the iam.template\_read scope.
 

@@ -96,5 +96,9 @@ Some services need a different read, and the command's help says so:
 - Emporix orders countries and IAM users differently on every request, so epx reads each
   as one page. IAM users fit in one page of up to 500; on a tenant with more,
   `iam users list` fails.
+- Unsorted, IAM scopes, templates, and groups come in a different order on every request,
+  so epx sorts the IAM lists of scopes, access controls, templates, and groups by id unless
+  you pass `--sort`. End your own order with `,id:asc`, such as `name.en:asc,id:asc`, so
+  pages don't overlap.
 - The change history (`changelog list`) covers the last 30 days unless you filter on
   `occurredAt`. On an active tenant, read a closed range in the past, or use `--limit`.

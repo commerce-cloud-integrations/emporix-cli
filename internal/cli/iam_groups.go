@@ -26,28 +26,18 @@ type groupMember struct {
 // iamGroups returns the tenant's user groups, which a user's groups are read
 // as too.
 func iamGroups() resource[iamGroup] {
-	return resource[iamGroup]{
-		use:   groupsUse,
-		noun:  "IAM groups",
-		short: "Read, create, upsert and delete IAM groups and their users",
-		under: iamUse,
-		long: "Reads the tenant's user groups. TYPE is the kind of user a group is for (e.g. EMPLOYEE,\n" +
-			"CUSTOMER), and ACCESS CONTROLS counts the access controls it grants (-o json lists their\n" +
-			"ids, `epx iam groups access-controls` reads them).",
-		about: "Reads the tenant's user groups, their users and the access controls they grant, and\n" +
-			"changes groups and their users." + writesChangeAccess,
-		path:    "/iam/{tenant}/groups",
-		scopes:  []string{"iam.group_read"},
-		filters: listFilters{kinds: filterable},
-		view: view[iamGroup]{
+	return iamList(groupsUse, "iam.group_read",
+		"Reads the tenant's user groups. TYPE is the kind of user a group is for (e.g. EMPLOYEE,\n"+
+			"CUSTOMER), and ACCESS CONTROLS counts the access controls it grants (-o json lists their\n"+
+			"ids, `epx iam groups access-controls` reads them).", listFilters{kinds: filterable},
+		view[iamGroup]{
 			singular:  "group",
 			header:    []string{columnID, columnCode, columnName, columnType, "ACCESS CONTROLS"},
 			localized: true,
 			row: func(g iamGroup, lang language) []string {
 				return []string{g.ID, g.Code, g.Name.in(lang), g.UserType, strconv.Itoa(len(g.AccessControls))}
 			},
-		},
-	}
+		})
 }
 
 // newIAMGroupsCommand reads, creates, upserts and deletes the tenant's user
@@ -55,6 +45,9 @@ func iamGroups() resource[iamGroup] {
 // grant.
 func newIAMGroupsCommand(a *app) *cobra.Command {
 	groups, accessControls := iamGroups(), iamAccessControls().reader()
+	groups.short = "Read, create, upsert and delete IAM groups and their users"
+	groups.about = "Reads the tenant's user groups, their users and the access controls they grant, and\n" +
+		"changes groups and their users." + writesChangeAccess
 	extra := append(iamGroupWrites(a, groups), newGroupUsersCommand(a, groups),
 		childCommand(a, groups, child[iamAccessControl]{
 			use:   "access-controls",

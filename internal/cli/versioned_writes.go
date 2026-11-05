@@ -46,14 +46,6 @@ func (r resource[T]) versionedWrites(a *app, scopes []string, v *versioned) []*c
 	}
 }
 
-// withNote returns help ended by the line note, if not empty.
-func withNote(help, note string) string {
-	if note == "" {
-		return help
-	}
-	return help + "\n" + note
-}
-
 // versionedCreateHelp returns the help of create of r, whose body holds
 // members, help text of its own lines that ends without a line break.
 func (r resource[T]) versionedCreateHelp(members string) string {

@@ -36,21 +36,22 @@ type iamTemplate struct {
 // also in the reads of one group or user.
 const accessControlColumns = "SCOPES counts the scopes an access control grants (-o json lists them)."
 
-// iamPagingNote ends the help of the IAM lists that sort by id.
-const iamPagingNote = "\nlist sorts by id unless --sort says otherwise; end another order with ,id:asc (e.g.\n" +
+// iamPagingNote ends the help of list of each collection iamList declares.
+const iamPagingNote = "list sorts by id unless --sort says otherwise; end another order with ,id:asc (e.g.\n" +
 	"name.en:asc,id:asc), as Emporix wants a direction on every field, so pages do not overlap."
 
 // iamList returns the IAM collection use, read with scope. Unsorted, Emporix
-// orders scopes and templates differently on every request, so their pages
-// overlap and miss items; sorted by id (live, also for access controls, whose
-// reference documents no sort) every IAM list pages cleanly, so each sorts by
-// id unless --sort says otherwise.
+// orders scopes, templates and groups differently on every request, so pages
+// overlap and miss items. Sorted by id (live, also for access controls, whose
+// reference documents no sort) every IAM list pages cleanly, so list sorts by
+// id unless --sort is given (iamPagingNote).
 func iamList[T any](use, scope, long string, filters listFilters, v view[T]) resource[T] {
 	return resource[T]{
 		use:       use,
 		noun:      "IAM " + strings.ReplaceAll(use, "-", " "),
 		under:     iamUse,
-		long:      long + iamPagingNote,
+		long:      long,
+		listNote:  iamPagingNote,
 		path:      "/iam/{tenant}/" + use,
 		listQuery: url.Values{sortParameter: {"id:asc"}},
 		scopes:    []string{scope},

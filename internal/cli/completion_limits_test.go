@@ -172,6 +172,14 @@ func TestCompletionOfDeletesAndActionsReadsTheirLists(t *testing.T) {
 			requests: []string{"/payment-gateway/acme1/transactions?pageNumber=1&pageSize=100"},
 			scopes:   []string{"payment-gateway.paymenttransactions_read"},
 		},
+		{ // a group: its IDs in the order of list, by id
+			args: []string{"iam", "groups", "delete", ""},
+			routes: map[string]http.HandlerFunc{"/iam/acme1/groups": respond(http.StatusOK,
+				`[{"id":"g1","code":"BO_ADMIN","name":{"en":"Administrators"}}]`)},
+			want:     []string{"g1|Administrators"},
+			requests: []string{"/iam/acme1/groups?pageNumber=1&pageSize=100&sort=id%3Aasc"},
+			scopes:   []string{"iam.group_read"},
+		},
 		{ // a user of a group: the USER of its members
 			args: []string{"iam", "groups", "users", "delete", "G1", ""},
 			routes: map[string]http.HandlerFunc{"/iam/acme1/groups/G1/users": respond(http.StatusOK,
