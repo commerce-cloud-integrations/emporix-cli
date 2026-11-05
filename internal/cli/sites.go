@@ -119,7 +119,7 @@ func siteWrites(a *app, sites resource[site]) []*cobra.Command {
 		(&write{
 			use: sites.itemUse("patch"), short: "Change members of a site", method: http.MethodPatch,
 			long: "Changes the members of the site CODE that the JSON in --file gives, such as " +
-				`{"languages": ["en", "nl"]}; the others keep their values.` + " " + unknown,
+				literal(`{"languages": ["en", "nl"]}`) + "; the others keep their values." + " " + unknown,
 			req: item, scopes: manage, body: &payload{}, ids: sites.itemIDs(),
 		}).command(a),
 		(&write{
@@ -142,7 +142,7 @@ func newSiteMixinsCommand(a *app, sites resource[site]) *cobra.Command {
 		sub:   mixinsOf.use,
 		short: "List the mixins of a site",
 		long: "Reads the mixins of a site, the custom settings that extend it (such as coupon or customer " +
-			"settings), by NAME, each VALUE cut (-o json prints them whole). A site without mixins lists none.",
+			"settings), by NAME, each VALUE cut (`-o json` prints them whole). A site without mixins lists none.",
 		// Emporix documents site.site_manage for mixins, but serves them without a scope (live), so
 		// none is requested, whatever the scopes of sites.
 		scopes: []string{},
@@ -162,7 +162,7 @@ func newSiteMixinsCommand(a *app, sites resource[site]) *cobra.Command {
 		items: []*childItem{{
 			use:   getUse,
 			short: "Show one mixin of a site",
-			long:  "Reads one mixin of a site: its fields by NAME, each VALUE cut (-o json prints them whole).",
+			long:  "Reads one mixin of a site: its fields by NAME, each VALUE cut (`-o json` prints them whole).",
 			items: members, // a mixin is an object too: the table shows its fields
 		}},
 		writes: siteMixinWrites(a, mixinsOf, mixins),
@@ -184,7 +184,7 @@ func siteMixinWrites(a *app, mixinsOf resource[site], mixins child[namedValue]) 
 		(&write{
 			use: createUse + " " + siteCode, short: "Add mixins to a site", method: http.MethodPost,
 			long: "Adds mixins to the site " + siteCode + ": the JSON object in --file maps the name of each to its " +
-				`fields, e.g. {"generalShopSettings": {"logoUrl": "https://shop.acme.example/logo.png"}}. ` +
+				"fields, e.g. " + literal(`{"generalShopSettings": {"logoUrl": "https://shop.acme.example/logo.png"}}`) + ". " +
 				"Emporix checks each against the schema that its metadata.schema names; a mixin that the " +
 				"site has already is a conflict (exit 5).",
 			req: request{path: mixins.below(mixinsOf.path)}, scopes: manage, body: &payload{},
@@ -200,7 +200,7 @@ func siteMixinWrites(a *app, mixinsOf resource[site], mixins child[namedValue]) 
 			use: mixin("patch").use, short: "Change fields of a mixin of a site",
 			method: http.MethodPatch,
 			long: "Changes the fields of the mixin NAME of the site " + siteCode + " that the JSON object in " +
-				`--file gives, such as {"active": true}; the others keep their values.`,
+				"--file gives, such as " + literal(`{"active": true}`) + "; the others keep their values.",
 			req: item, scopes: manage, body: &payload{}, ids: ids,
 		}).command(a),
 		(&write{

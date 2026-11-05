@@ -62,7 +62,7 @@ func currencyWrites(a *app, currencies resource[codeName]) []*cobra.Command {
 		(&write{
 			use: createUse, short: "Create a currency", method: http.MethodPost,
 			long: "Creates a currency from the JSON in --file: its code (ISO 4217) and name, e.g. " +
-				`{"code": "CHF", "name": {"en": "Swiss franc", "de": "Schweizer Franken"}}, in languages ` +
+				literal(`{"code": "CHF", "name": {"en": "Swiss franc", "de": "Schweizer Franken"}}`) + ", in languages " +
 				"that the tenant has. Emporix answers with the code; a code that exists already is a " +
 				"conflict (exit 5).",
 			req: request{path: currencies.path}, scopes: manage, body: &payload{}, language: stringsOrMaps,
@@ -71,7 +71,7 @@ func currencyWrites(a *app, currencies resource[codeName]) []*cobra.Command {
 			use: currencies.itemUse("update"), short: "Rename a currency", method: http.MethodPut,
 			long: "Replaces the name of the currency CODE with the one in the JSON of --file, which also " +
 				"needs the currency's metadata.version as read (`epx currencies get CODE -o json`), e.g. " +
-				`{"name": {"en": "Swiss franc"}, "metadata": {"version": 1}}; the code cannot change. A ` +
+				literal(`{"name": {"en": "Swiss franc"}, "metadata": {"version": 1}}`) + "; the code cannot change. A " +
 				"stale version and an unknown CODE are both not found (exit 4): Emporix answers 404 to both.",
 			req: request{path: currencies.itemPath()}, scopes: manage, body: &payload{}, language: stringsOrMaps,
 			ids: currencies.itemIDs(),

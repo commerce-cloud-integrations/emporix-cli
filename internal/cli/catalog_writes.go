@@ -155,7 +155,7 @@ func assignmentWrites(a *app, categories resource[category], assignments child[c
 	ofCategory := argumentIDs{category: categories.ids()}
 	about := categories.argumentSentence(notFound)
 	manage := []string{categoryManageScope}
-	const ref = `{"ref": {"id": "100200", "type": "PRODUCT"}}` // an assignment that create and bulk-create send
+	ref := literal(`{"ref": {"id": "100200", "type": "PRODUCT"}}`) // an assignment that create and bulk-create send
 	return []*cobra.Command{
 		(&write{
 			use: createUse + " " + category, short: "Assign a product to a category", method: http.MethodPost,
@@ -176,7 +176,7 @@ func assignmentWrites(a *app, categories resource[category], assignments child[c
 			method: http.MethodPut,
 			long: "Assigns products to a category, or updates the assignments that exist (an upsert): the " +
 				"JSON in --file is an array of assignments, each naming a product by its id, as in " +
-				`{"ref": {"id": "100200"}}.` + " " + about,
+				literal(`{"ref": {"id": "100200"}}`) + "." + " " + about,
 			req: request{path: path + referencesSegment + bulkSegment}, scopes: manage,
 			body: &payload{maxItems: maxAssignments}, ids: ofCategory,
 		}).command(a),

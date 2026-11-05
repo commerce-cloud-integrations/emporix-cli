@@ -39,7 +39,7 @@ func quoteWrites(quotes resource[quote]) []*write {
 			long: "Changes the quote ID with the operations in --file: a JSON array of operations, each " +
 				"with op (ADD, REMOVE or REPLACE), path (such as /status, /validTo, /items or " +
 				"/items/ITEM_ID) and value, e.g. " +
-				`[{"op": "REPLACE", "path": "/status", "value": {"value": "OPEN"}}]. Emporix completes` +
+				literal(`[{"op": "REPLACE", "path": "/status", "value": {"value": "OPEN"}}]`) + ". Emporix completes" +
 				" the prices and product names of items from their ids afterwards. Emporix refuses to add " +
 				"or replace an item with price type EXTERNAL with 400 Bad Request (exit 1), also with " +
 				"cart.cart_manage_external_prices (create accepts one). " + quotes.idSource() + ".",

@@ -45,7 +45,7 @@ func newMediaCommand(a *app) *cobra.Command {
 		long: "Reads media assets: files Emporix stores (BLOB) or links to files elsewhere (LINK). ACCESS " +
 			"is PUBLIC or PRIVATE; STATUS is PENDING until an upload completes, then READY or empty; " +
 			"BYTES is the file size as sent, and REFERENCES the items an asset belongs to (type and " +
-			"id). URLs are only in -o json; `epx media download-url` gives one that downloads the file.",
+			"id). URLs are only in `-o json`; `epx media download-url` gives one that downloads the file.",
 		path:    "/media/{tenant}/assets",
 		scopes:  []string{"media.asset_read"},
 		filters: listFilters{kinds: filterable},

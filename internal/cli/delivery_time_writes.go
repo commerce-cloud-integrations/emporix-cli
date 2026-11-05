@@ -26,7 +26,7 @@ func validateOverlap() queryFlags {
 // with an example of an operation.
 func jsonPatchHelp(example string) string {
 	return "the JSON Patch (RFC 6902) in " +
-		"--file: an array of operations whose op is add, remove or replace, such as [" + example + "]."
+		"--file: an array of operations whose op is add, remove or replace, such as " + literal("["+example+"]") + "."
 }
 
 // deliveryTimeWrites returns the writes of delivery times: create,

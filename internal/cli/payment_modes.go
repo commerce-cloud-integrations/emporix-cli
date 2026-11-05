@@ -34,7 +34,7 @@ func newPaymentModesCommand(a *app) *cobra.Command {
 		noun: "payment modes as a storefront sees them",
 		long: "Reads payment modes as a storefront sees them, without provider secrets. INTEGRATION is " +
 			"OFFSITE, EXTERNAL, SEPA or TOKENIZED and METHOD the payment method type, e.g. paypal; public " +
-			"keys, tokens and script URLs are only in -o json.",
+			"keys, tokens and script URLs are only in `-o json`.",
 		path: "/payment-gateway/{tenant}/paymentmodes/frontend",
 		read: (*emporix.Client).GetUnpaged,
 		item: oneItemOrArray,
@@ -51,11 +51,11 @@ func newPaymentModesCommand(a *app) *cobra.Command {
 		short: "Read, create, update and delete payment modes",
 		about: "Reads the tenant's payment modes, and creates, updates and deletes them (create and " +
 			"update send the JSON of --file). Provider configurations hold credentials, which the reads " +
-			"show only in -o json and the writes send and print as given. `epx payment-modes public` " +
+			"show only in `-o json` and the writes send and print as given. `epx payment-modes public` " +
 			"shows what a storefront sees and needs no scope.",
 		long: "Reads the tenant's payment modes. PROVIDER is INVOICE, CASH_ON_DELIVERY, SPREEDLY, " +
 			"SPREEDLY_SAFERPAY or UNZER. The provider configuration, credentials included (such as " +
-			"Spreedly/AccessSecret or Saferpay/BasicAuth), is only in -o json. `epx payment-modes public` " +
+			"Spreedly/AccessSecret or Saferpay/BasicAuth), is only in `-o json`. `epx payment-modes public` " +
 			"shows what a storefront sees and needs no scope.",
 		path:   "/payment-gateway/{tenant}/paymentmodes/config",
 		scopes: []string{"payment-gateway.paymentmodes_read"},

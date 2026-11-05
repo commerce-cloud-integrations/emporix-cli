@@ -97,7 +97,7 @@ func newWebhooksCommand(a *app) *cobra.Command {
 			short: "Show a link that logs in to the webhook dashboard",
 			long: "Reads a URL that logs in to the tenant's webhook dashboard, the Svix application portal of " +
 				"a tenant whose webhooks Emporix sends through its shared Svix account (provider " +
-				"SVIX_SHARED). The URL holds its own authentication, so treat it as a secret; -o json also " +
+				"SVIX_SHARED). The URL holds its own authentication, so treat it as a secret; `-o json` also " +
 				"prints the portal's token.",
 			req:   request{path: "/webhook/{tenant}/dashboard-access"},
 			fetch: single{items: oneItem},
@@ -140,7 +140,7 @@ func newWebhookConfigurationsCommand(a *app) *cobra.Command {
 		under: "webhooks",
 		long: "Reads webhook configurations: PROVIDER is SVIX_SHARED, SVIX or HTTP, DESTINATION where " +
 			"events are sent and ENTRIES counts the event entries, each with its own destination, " +
-			"headers and filter (inactive ones included), which only -o json shows. The service returns " +
+			"headers and filter (inactive ones included), which only `-o json` shows. The service returns " +
 			"the configurations whole, so they are read with one request.",
 		path:   "/webhook/{tenant}/config",
 		scopes: []string{webhookScope},

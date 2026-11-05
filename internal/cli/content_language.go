@@ -44,13 +44,13 @@ func (w *write) bindLanguage(cmd *cobra.Command) *contentLanguage {
 	switch w.language {
 	case notLocalized: // no flag, and nothing in its help
 	case mapsOnly:
-		cmd.Long += "\n\n" + cmp.Or(w.languageHelp, mapsOnlyHelp)
+		cmd.Long += "\n\n" + cmp.Or(w.languageHelp, mapsOnlyHelp())
 	case headerlessMaps:
 		cmd.Flags().Var(&lang, contentLanguageFlag, languageUsage+", sent without Content-Language")
-		cmd.Long += "\n\n" + headerlessMapsHelp
+		cmd.Long += "\n\n" + headerlessMapsHelp()
 	case stringsOrMaps:
 		cmd.Flags().Var(&lang, contentLanguageFlag, languageUsage)
-		cmd.Long += "\n\n" + cmp.Or(w.languageHelp, contentLanguageHelp)
+		cmd.Long += "\n\n" + cmp.Or(w.languageHelp, contentLanguageHelp())
 	}
 	return &lang
 }
@@ -85,30 +85,38 @@ const localizedMaps = "Localized text in the body, such as a name, is a map of t
 
 // contentLanguageHelp follows what a write whose body holds localized text
 // sends, in its help.
-const contentLanguageHelp = localizedMaps + " " +
-	`{"en": "gram", "de": "Gramm"}, as -o json of a read prints it, or with --` + contentLanguageFlag +
-	" LANGUAGE a string in that language, e.g. \"gram\" with --" + contentLanguageFlag + " en."
+func contentLanguageHelp() string {
+	return localizedMaps + " " +
+		literal(`{"en": "gram", "de": "Gramm"}`) + ", as `-o json` of a read prints it, or with --" + contentLanguageFlag +
+		" LANGUAGE a string in that language, e.g. \"gram\" with --" + contentLanguageFlag + " en."
+}
 
 // headerlessMapsHelp follows what a write of headerlessMaps sends,
 // in its help: its service reads maps of translations sent without a
 // Content-Language header, and refuses them with Content-Language: *.
-const headerlessMapsHelp = localizedMaps + " " +
-	`{"en": "Netherlands", "nl": "Nederland"}, as -o json of a read prints it, sent without a ` +
-	"Content-Language header (--" + contentLanguageFlag + " " + everyLanguage + ", the default), or with --" +
-	contentLanguageFlag + " LANGUAGE a string in that language, sent with that Content-Language, e.g. " +
-	`"Netherlands" with --` + contentLanguageFlag + " en."
+func headerlessMapsHelp() string {
+	return localizedMaps + " " +
+		literal(`{"en": "Netherlands", "nl": "Nederland"}`) + ", as `-o json` of a read prints it, sent without a " +
+		"Content-Language header (--" + contentLanguageFlag + " " + everyLanguage + ", the default), or with --" +
+		contentLanguageFlag + " LANGUAGE a string in that language, sent with that Content-Language, e.g. " +
+		`"Netherlands" with --` + contentLanguageFlag + " en."
+}
 
 // mapsSent says how a write of mapsOnly sends localized text, which the help
 // of each such write begins with. It names no member, unlike localizedMaps: a
 // member such as a brand's name may be plain text, which the service takes as
 // a string.
-const mapsSent = "Localized text in the body is a map of translations, e.g. " +
-	`{"en": "Acme", "de": "Acme"},` + " as -o json of a read prints it, sent with Content-Language: " +
-	everyLanguage + "."
+func mapsSent() string {
+	return "Localized text in the body is a map of translations, e.g. " +
+		literal(`{"en": "Acme", "de": "Acme"}`) + "," + " as `-o json` of a read prints it, sent with Content-Language: " +
+		everyLanguage + "."
+}
 
 // mapsOnlyHelp follows what a write of mapsOnly sends, in its help, where its
 // service refuses a string.
-const mapsOnlyHelp = mapsSent + " Emporix refuses a string in its place."
+func mapsOnlyHelp() string {
+	return mapsSent() + " Emporix refuses a string in its place."
+}
 
 // contentLanguage is a --content-language value: everyLanguage, or a language
 // code, lower-cased as a --language value is; it implements pflag.Value, so

@@ -143,9 +143,9 @@ func TestB2BWritesHelp(t *testing.T) {
 	for args, want := range map[string][]string{
 		"customer-locations create": {"shaped as `epx customer-locations get ID -o json` prints one: type (required",
 			"leave out \"phones\": []"},
-		"vendors create": {"locations (its vendor locations, each as {\"id\": ...} or in full, as get prints it)",
-			"each as {\"email\": ...}", "parentId and locations must name items that exist (400 Bad Request, exit 1"},
-		"legal-entities create": {"the last three each as {\"id\": ...} or in full, as get prints it.",
+		"vendors create": {"locations (its vendor locations, each as `{\"id\": ...}` or in full, as get prints it)",
+			"each as `{\"email\": ...}`", "parentId and locations must name items that exist (400 Bad Request, exit 1"},
+		"legal-entities create": {"the last three each as `{\"id\": ...}` or in full, as get prints it.",
 			"must name items that exist", "may still make the IAM customer groups"},
 		"contact-assignments create": {"A second assignment of a customer to the same legal entity is a conflict",
 			"also assigns it to the parent company"},
@@ -164,7 +164,7 @@ func TestB2BWritesHelp(t *testing.T) {
 		"contact-assignments delete": {"list` shows; an unknown one is not found.\n\n"},
 		"customer-locations delete":  {"is not found. A legal entity that names it"},
 		"vendor-locations delete":    {"is not found. A vendor that names it in locations no longer does."},
-		"vendor-locations":           {"each as {\"id\": ...}. " + versionedWritesNote + "\n"},
+		"vendor-locations":           {"each as `{\"id\": ...}`. " + versionedWritesNote + "\n"},
 	} {
 		_, help, _ := runCLI(t, nil, append(strings.Fields(args), "--help")...)
 		for _, part := range want {

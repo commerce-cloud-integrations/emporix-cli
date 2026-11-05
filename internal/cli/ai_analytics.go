@@ -59,7 +59,7 @@ func newAIAnalyticsCommand(a *app) *cobra.Command {
 		header:   []string{"LOGS", columnTotal, "WARNING", "ERROR", "ERROR RATE"},
 		legend: "LOGS is requests or sessions, TOTAL how many there were in the last four weeks, WARNING and " +
 			"ERROR how many of them had that severity and ERROR RATE their share with errors, as Emporix " +
-			"computes it. The requests per session and the weekly trends are only in -o json.",
+			"computes it. The requests per session and the weekly trends are only in `-o json`.",
 		row: func(t logTotals, _ language) []string {
 			m := t.Metrics
 			return []string{t.Of, m.Total.String(), m.BySeverity.Warning.String(), m.BySeverity.Error.String(),

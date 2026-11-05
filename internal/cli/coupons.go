@@ -64,16 +64,16 @@ const columnDiscount = "DISCOUNT"
 // only with the write-capable coupon.coupon_manage scope, so those reads are
 // opt-in, and creates, changes, redeems and deletes them (couponWrites).
 func newCouponsCommand(a *app) *cobra.Command {
-	const long = "Reads coupons, customer ids included (issuedTo, validFor in -o json). DISCOUNT is a " +
+	const long = "Reads coupons, customer ids included (issuedTo, validFor in `-o json`). DISCOUNT is a " +
 		"percentage, an amount or FREE_SHIPPING. STATUS is VALID, INACTIVE, EXPIRED or USED, as " +
 		"Emporix computes it: --query status:VALUE matches no coupon and --sort status is ignored. " +
 		"REDEEMED counts redemptions, out of the maximum when there is one; Emporix counts those for " +
-		"a legal entity apart, per legal entity (legalEntityRedemptions, only in -o json). Other " +
+		"a legal entity apart, per legal entity (legalEntityRedemptions, only in `-o json`). Other " +
 		"restrictions (valid from, minimum order value, customers, categories, segments) are only in " +
-		"-o json. " +
+		"`-o json`. " +
 		"`epx coupons redemptions` and `redemption` read the redemptions of a coupon, all or one. " +
 		"`epx coupons list` leaves out deleted coupons; `epx coupons get CODE` still shows one, in " +
-		"the table as a live one (-o json has deleted: true). Deleted coupons are listed too, one " +
+		"the table as a live one (`-o json` has deleted: true). Deleted coupons are listed too, one " +
 		"page at a time, by " +
 		"`epx api get /coupon/{tenant}/coupons -p showDeleted=true --scope coupon.coupon_read`."
 	coupons := resource[coupon]{
@@ -145,8 +145,8 @@ func newReferralCouponCommand(a *app) *cobra.Command {
 		use:   "referral " + profiles.argument(),
 		short: "Show the referral coupon of a customer",
 		long: "Reads the referral coupon of a customer: the coupon issued to the customer (issuedTo in " +
-			"-o json) to share with the people they refer, also a deleted one, which the table shows as " +
-			"a live one (-o json has deleted: true). Its columns are those of `epx coupons list`. " +
+			"`-o json`) to share with the people they refer, also a deleted one, which the table shows as " +
+			"a live one (`-o json` has deleted: true). Its columns are those of `epx coupons list`. " +
 			profiles.argumentSource() + "; a customer without a " +
 			"referral coupon, or an unknown one, is not found (exit 4).",
 		req:   request{path: referralCouponsPath + "/" + placeholderID},
@@ -174,7 +174,7 @@ func newCouponValidationCommand(a *app, coupons resource[coupon]) *cobra.Command
 			"refuses a coupon that cannot be redeemed with an error that says why: one that the customer " +
 			"may not redeem with " + forbiddenRefusal + ". An unknown coupon is not found (exit 4). " +
 			legalEntityNote + " " +
-			"Emporix answers a redeemable coupon without a body; -o json prints true then. The scope, " +
+			"Emporix answers a redeemable coupon without a body; `-o json` prints true then. The scope, " +
 			"which epx requests also without --customer, lets a credential redeem coupons on a " +
 			"customer's behalf too. " +
 			coupons.argumentSource() + ".",

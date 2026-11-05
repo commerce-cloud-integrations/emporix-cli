@@ -25,8 +25,10 @@ const (
 // feeLanguageHelp says, in the help of the writes of fees, how the Fee
 // Service stores localized text: it ignores Content-Language, so a string is
 // stored as sent, in no language, in place of the translations.
-const feeLanguageHelp = mapsSent + " The Fee Service ignores Content-Language: it stores a string as sent, " +
-	"in no language, in place of any translations."
+func feeLanguageHelp() string {
+	return mapsSent() + " The Fee Service ignores Content-Language: it stores a string as sent, " +
+		"in no language, in place of any translations."
+}
 
 // feeUpdateConflict is what a 409 Conflict of fees update means: a code that
 // another fee has, as the reference documents, or an unknown ID, which
@@ -40,13 +42,13 @@ const feeUpdateConflict = "another fee has the code already, or the fee ID does 
 // (mapsOnly, feeLanguageHelp).
 func feeWrites(a *app, fees resource[fee]) []*cobra.Command {
 	create, update, remove := (&collectionWrites{
-		at: fees.at(), one: "a fee", language: mapsOnly, languageHelp: feeLanguageHelp,
+		at: fees.at(), one: "a fee", language: mapsOnly, languageHelp: feeLanguageHelp(),
 		create: "Creates the fee in --file, a JSON object with code (unique in the tenant), name, feeType " +
 			"(PERCENT, ABSOLUTE or ABSOLUTE_MULTIPLY_ITEMQUANTITY), feePercentage or feeAbsolute (amount " +
 			"and currency), siteCode and active, and optionally itemType (PRODUCT or PAYMENTTYPE), " +
-			"taxable with taxCode, and activeTimespan, e.g. " + `{"code": "deposit", "name": {"en": "Deposit"}, ` +
-			`"feeType": "ABSOLUTE", "feeAbsolute": {"amount": 0.25, "currency": "EUR"}, ` +
-			`"siteCode": "AcmeStore_NL", "active": true}` + ". Without an id, Emporix makes one; the response " +
+			"taxable with taxCode, and activeTimespan, e.g. " + literal(`{"code": "deposit", "name": {"en": "Deposit"}, `+
+			`"feeType": "ABSOLUTE", "feeAbsolute": {"amount": 0.25, "currency": "EUR"}, `+
+			`"siteCode": "AcmeStore_NL", "active": true}`) + ". Without an id, Emporix makes one; the response " +
 			"gives it and its YRN. A code that the tenant has already is a conflict (exit 5).",
 		update: "Replaces the fee ID with the one in --file, a JSON object as create takes it, or with " +
 			"--partial changes only the members that it gives, which still include code, siteCode, " +
@@ -132,7 +134,7 @@ func (o *feeOwner) writes() []*write {
 		{
 			use: "update" + o.suffix + " " + o.arg, short: "Add fees to " + o.one + short, method: http.MethodPut,
 			long: joinSentences("Adds the fees that --fee names, or the feeIds of --file, a JSON object such as "+
-				`{"feeIds": ["f1", "f2"]}, to those of `+o.the+onSite+", creating its item fee where it has none. "+
+				literal(`{"feeIds": ["f1", "f2"]}`)+", to those of "+o.the+onSite+", creating its item fee where it has none. "+
 				"Emporix removes no fee, with or without --partial, and an empty list changes nothing: delete"+
 				o.suffix+"-fee removes one.", siteNote, o.note),
 			req: update, params: updateSite, scopes: []string{itemFeeUpdate},

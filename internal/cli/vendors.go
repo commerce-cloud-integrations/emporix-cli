@@ -35,7 +35,7 @@ func vendors() resource[vendor] {
 			"reads and changes their locations. " + versionedWritesNote,
 		long: "Reads vendors, the sellers of a marketplace tenant. TYPE is COMPANY or SUBSIDIARY, PARENT " +
 			"the vendor a subsidiary belongs to and COUNTRY the country of registration. Registration " +
-			"details, contact details and locations are only in -o json; `epx vendor-locations` lists " +
+			"details, contact details and locations are only in `-o json`; `epx vendor-locations` lists " +
 			"the locations.",
 		path:    "/vendor/{tenant}/vendors",
 		scopes:  []string{vendorScope},
@@ -60,8 +60,8 @@ func newVendorsCommand(a *app) *cobra.Command {
 	writes := r.versionedWrites(a, []string{vendorManageScope}, &versioned{
 		members: "name (required), type (COMPANY, the default, or SUBSIDIARY), parentId (the vendor a " +
 			"subsidiary belongs to), legalInfo, contactDetails (a list of contacts, each as " +
-			"{\"email\": ...}, which is all Emporix keeps of one), locations (its vendor locations, each " +
-			"as {\"id\": ...} or in full, as get prints it) and mixins; parentId and locations must name " +
+			literal(`{"email": ...}`) + ", which is all Emporix keeps of one), locations (its vendor locations, each " +
+			"as " + literal(`{"id": ...}`) + " or in full, as get prints it) and mixins; parentId and locations must name " +
 			"items that exist (400 Bad Request, exit 1, otherwise).",
 		required:   "name and type",
 		deleteNote: "Its subsidiaries stay and still name it as their parentId.",
@@ -77,7 +77,7 @@ func newVendorLocationsCommand(a *app) *cobra.Command {
 		use:   "vendor-locations",
 		short: "Read and change the locations of vendors",
 		about: "Reads and changes the locations of vendors, contact emails included. A vendor names its " +
-			"locations in locations, each as {\"id\": ...}. " + versionedWritesNote,
+			"locations in locations, each as " + literal(`{"id": ...}`) + ". " + versionedWritesNote,
 		long:    "Reads the locations of vendors, contact emails included. " + locationColumns,
 		path:    "/vendor/{tenant}/locations",
 		scopes:  []string{vendorScope},

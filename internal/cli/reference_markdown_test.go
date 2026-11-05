@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"iter"
 	"slices"
 	"strings"
 	"testing"
@@ -134,15 +135,28 @@ func citedCommand(root *cobra.Command, words []string) *cobra.Command {
 func markLiterals(text string) string {
 	var b strings.Builder
 	last := 0
-	for i := 0; i < len(text); i++ {
-		end := literalEnd(text, i)
-		if end <= i {
-			continue
-		}
-		b.WriteString(escapeMarkdown(text[last:i]) + codeSpan(text[i:end]))
-		last, i = end, end-1
+	for start, end := range literalSpans(text) {
+		b.WriteString(escapeMarkdown(text[last:start]) + codeSpan(text[start:end]))
+		last = end
 	}
 	return b.String() + escapeMarkdown(text[last:])
+}
+
+// literalSpans yields the start and end of each literal of prose text
+// (literalEnd), in order, which markLiterals shows as code.
+func literalSpans(text string) iter.Seq2[int, int] {
+	return func(yield func(int, int) bool) {
+		for i := 0; i < len(text); i++ {
+			end := literalEnd(text, i)
+			if end <= i {
+				continue
+			}
+			if !yield(i, end) {
+				return
+			}
+			i = end - 1
+		}
+	}
 }
 
 // literalEnd returns the end of the literal that starts at text[i], or i when

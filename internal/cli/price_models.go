@@ -57,7 +57,7 @@ func newPriceModelsCommand(a *app) *cobra.Command {
 		long: "Reads price models, the tier structure that prices follow. DEFAULT marks the tenant's " +
 			"default model, TYPE is the tier type (BASIC, TIERED or VOLUME), TIERS the minimum quantity " +
 			"of each tier, UNIT the quantity a price applies to, and TAX and MARKUP whether prices of " +
-			"the model include them (-o json adds descriptions and the tier ids that price tier values " +
+			"the model include them (`-o json` adds descriptions and the tier ids that price tier values " +
 			"refer to).",
 		path:    "/price/{tenant}/priceModels",
 		filters: listFilters{kinds: sortable},
@@ -95,10 +95,10 @@ func priceModelWrites(a *app, models resource[priceModel]) []*cobra.Command {
 		at: at, one: "a price model", scopes: []string{priceModelManage}, language: stringsOrMaps, upsert: true,
 		create: "Creates the price model in --file, a JSON object with name, includesTax, includesMarkup, " +
 			"measurementUnit and tierDefinition: tierType (BASIC, TIERED or VOLUME) and the minQuantity of " +
-			"each tier, e.g. " + `{"name": {"en": "Per kilogram"}, "includesTax": true, ` +
-			`"includesMarkup": false, "measurementUnit": {"quantity": 1, "unitCode": "kg"}, ` +
-			`"tierDefinition": {"tierType": "BASIC", "tiers": [{"minQuantity": {"quantity": 0, ` +
-			`"unitCode": "kg"}}]}}` + ". Without an id, Emporix makes one, which the response gives.",
+			"each tier, e.g. " + literal(`{"name": {"en": "Per kilogram"}, "includesTax": true, `+
+			`"includesMarkup": false, "measurementUnit": {"quantity": 1, "unitCode": "kg"}, `+
+			`"tierDefinition": {"tierType": "BASIC", "tiers": [{"minQuantity": {"quantity": 0, `+
+			`"unitCode": "kg"}}]}}`) + ". Without an id, Emporix makes one, which the response gives.",
 		update: "Replaces the price model ID with the one in --file, a JSON object as " +
 			"`epx " + at.get + " -o json` prints it, or creates it with that id where none exists " +
 			"(an upsert).",

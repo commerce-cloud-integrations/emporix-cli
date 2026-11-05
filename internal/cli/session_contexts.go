@@ -38,7 +38,7 @@ const sessionContextPath = sessionContexts + "/" + placeholderID
 func newSessionContextsCommand(a *app) *cobra.Command {
 	const long = "Reads the context of a storefront session: its customer (once logged in, personal data; " +
 		"ANONYMOUS before), site, currency, language, LOCATION (its target country) and active cart; " +
-		"its custom attributes are only in -o json. Emporix creates the context with the session's " +
+		"its custom attributes are only in `-o json`. Emporix creates the context with the session's " +
 		"first cart; before that, the session's ID is not found (exit 4). The context of an " +
 		"anonymous cart may name the tenant's default site rather than the cart's, and " +
 		"names no cart once the cart was merged into a customer's."
@@ -84,7 +84,8 @@ func sessionContextWrites(a *app) []*cobra.Command {
 			(&write{
 				use: "create SESSION_ID", short: "Add a custom attribute to a session context", method: http.MethodPost,
 				long: "Adds the custom attribute --key with the string --value to the context of the storefront " +
-					"session SESSION_ID; --file gives the body instead, e.g. {\"key\": \"k\", \"value\": {\"a\": \"b\"}} for a " +
+					"session SESSION_ID; --file gives the body instead, e.g. " +
+					literal(`{"key": "k", "value": {"a": "b"}}`) + " for a " +
 					"value that is a JSON object. " + source,
 				req: request{path: sessionContextPath + "/attributes"}, scopes: scopes,
 				body: &payload{typed: objectBody(requireAll([]bodyField{

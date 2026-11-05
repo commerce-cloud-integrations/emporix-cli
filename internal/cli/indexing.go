@@ -59,7 +59,7 @@ func newIndexingCommand(a *app) *cobra.Command {
 		use:  "public",
 		noun: "index providers as a storefront sees them",
 		long: "Reads the public index provider configurations, as a storefront sees them. The search key " +
-			"is only in -o json.",
+			"is only in `-o json`.",
 		path: "/indexing/{tenant}/public/configurations",
 		read: (*emporix.Client).GetUnpaged,
 		view: providerView("public provider"),
@@ -68,7 +68,7 @@ func newIndexingCommand(a *app) *cobra.Command {
 		use:   "providers",
 		noun:  "index providers",
 		short: "Read, create, update and delete index providers",
-		long: "Reads index provider configurations. Search and write keys are only in -o json; " +
+		long: "Reads index provider configurations. Search and write keys are only in `-o json`; " +
 			"`epx indexing providers public` shows what a storefront sees and needs no scope.",
 		path:   "/indexing/{tenant}/configurations",
 		scopes: []string{indexingScope},

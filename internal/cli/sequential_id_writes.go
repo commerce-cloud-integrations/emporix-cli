@@ -52,8 +52,8 @@ func sequenceSchemaWrites(a *app, schemas resource[sequenceSchema]) []*cobra.Com
 			long: "Issues the next ID of the active schema of TYPE, such as orderNoSequence (`epx " +
 				"sequential-ids list` shows the types), and prints it. --sequence-key numbers in a sequence " +
 				"of its own, such as one per month, instead of the default one; --file gives the body " +
-				"whole, with the values of placeholders, e.g. {\"sequenceKey\": \"2026-10\", " +
-				"\"placeholders\": {\"__year__\": \"2026\"}}. With --site, Emporix fills in the placeholders " +
+				"whole, with the values of placeholders, e.g. " + literal(`{"sequenceKey": "2026-10", `+
+				`"placeholders": {"__year__": "2026"}}`) + ". With --site, Emporix fills in the placeholders " +
 				"that the body leaves out from that site's data. " + issuesIDs,
 			example: "  epx sequential-ids next-id orderNoSequence --sequence-key 2026-10 --dry-run",
 			req:     request{path: schemas.path + "/types/" + placeholderID + "/nextId"},

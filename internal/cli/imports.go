@@ -116,7 +116,7 @@ func importConfigurations() resource[importConfig] {
 		under: importsUse,
 		long: "Reads import configurations, each a set of streams that run together: ENABLED says " +
 			"whether it is active, VERSION counts its changes and MODIFIED is when it last changed. Its " +
-			"description, source connection, creator and health thresholds are only in -o json. The " +
+			"description, source connection, creator and health thresholds are only in `-o json`. The " +
 			"service returns the configurations whole, so they are read with one request.",
 		path:   "/importtool/{tenant}/configs",
 		scopes: importScopes(),
@@ -222,11 +222,11 @@ func importStreamView(queue string) view[importStream] {
 		header:   []string{columnID, columnName, "SOURCE", "TARGET TYPE", "MODE", columnEnabled},
 		legend: "SOURCE is the stream's source entity, followed for a file-based stream (which may name no " +
 			"entity) by SNAPSHOT files or INCREMENTAL files, read as " + queue + " explains. " +
-			"TARGET TYPE is the Emporix type it writes to (a discriminator, in -o json, may route records " +
+			"TARGET TYPE is the Emporix type it writes to (a discriminator, in `-o json`, may route records " +
 			"to others), MODE STANDALONE, or COMPOSITE_CHILD or COMPOSITE_MERGE for a stream that adds to " +
 			"the records of another. A stream's source dataset (sourceDataset, such as the key column and " +
 			"the file format), connection, and delta, delete, write and health settings are only in " +
-			"-o json.",
+			"`-o json`.",
 		row: func(s importStream, _ language) []string {
 			return []string{s.ID, s.Name, s.source(), s.TargetType, s.Mode, formatBool(s.Enabled)}
 		},
@@ -277,7 +277,7 @@ func importDataReads(a *app) []*cobra.Command {
 			short: "List the imported records of a type",
 			long: "Reads the records imported into a target type: KEY is a record's natural key in the source, " +
 				"OUTCOME how it was last imported (UPSERTED, DELETED at the source, DELETED_TARGET in " +
-				"Emporix, FAILED or DRY_RUN) and IMPORTED when. -o json adds its stored fields, the Emporix " +
+				"Emporix, FAILED or DRY_RUN) and IMPORTED when. `-o json` adds its stored fields, the Emporix " +
 				"id it was written under, and its configuration, stream and run. TYPE is one that " +
 				"`epx imports types` shows; an unknown one lists nothing. To search keys or filter by " +
 				"outcome, one page at a time: `epx api get /importtool/{tenant}/data/records -p type=TYPE " +

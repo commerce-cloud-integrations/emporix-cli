@@ -69,7 +69,7 @@ func newOrdersCommand(a *app) *cobra.Command {
 			"up their totals. STATUS is " + alternatives(orderStatuses()) + ", " +
 			"CUSTOMER the customer's email (or name), ITEMS the number of order entries and TOTAL the " +
 			"gross final price in the order's currency (empty when Emporix sends only the deprecated " +
-			"totalPrice, which -o json shows, as for an order that `epx orders add-entries --store`, " +
+			"totalPrice, which `-o json` shows, as for an order that `epx orders add-entries --store`, " +
 			"`recalculate` or `split` rewrote, and for sub-orders). The orders of a legal entity: " +
 			"`epx orders list --query legalEntityId:ID`.",
 		about: "Reads, creates and changes sales orders, personal data included, and their status: " +
@@ -96,7 +96,7 @@ func newOrdersCommand(a *app) *cobra.Command {
 			"(--query; without it, every order).", queryField()),
 		orders.countCommand(a, "Prints the number of sales orders, or of those that an Emporix q filter finds "+
 			"(--query), which Emporix reports in a header without sending the orders: a master order "+
-			"and each of its sub-orders count once, as list lists them. -o json prints the number alone. "+
+			"and each of its sub-orders count once, as list lists them. `-o json` prints the number alone. "+
 			"Emporix counts 0 for a filter on id or customer.id although list finds the orders (seen "+
 			"live): list them instead."),
 		childCommand(a, orders, child[orderStatus]{
@@ -115,7 +115,7 @@ func newOrdersCommand(a *app) *cobra.Command {
 			use:   "history",
 			sub:   "historical-transitions",
 			short: "Show the status changes of an order",
-			long: "Reads the status changes of an order, in the order Emporix sends them. -o json adds the " +
+			long: "Reads the status changes of an order, in the order Emporix sends them. `-o json` adds the " +
 				"history's metadata.",
 			fetch: single{items: orderHistoryItems},
 			view: view[orderStatusChange]{

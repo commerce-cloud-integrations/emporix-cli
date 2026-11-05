@@ -93,7 +93,7 @@ func newIAMScopesCommand(a *app) *cobra.Command {
 			use: scopes.itemUse("update"), short: "Upsert a custom scope", method: http.MethodPut,
 			long: "Replaces the custom scope ID, e.g. acme.vehicle_manage, with the JSON in --file, or creates " +
 				"it where none exists (an upsert): its domain and description, a map of translations such " +
-				`as {"en": "Manage vehicles"}. ` + upsertTerms + " Access controls " +
+				"as " + literal(`{"en": "Manage vehicles"}`) + ". " + upsertTerms + " Access controls " +
 				"grant scopes (`epx iam access-controls update`).",
 			req: request{path: scopes.itemPath()}, scopes: manage, body: &payload{}, ids: scopes.itemIDs(),
 		}).command(a),

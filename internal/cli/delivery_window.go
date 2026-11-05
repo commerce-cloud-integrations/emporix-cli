@@ -53,7 +53,7 @@ func newDeliveryWindowsCommand(a *app) *cobra.Command {
 			"METHOD the shipping method, ZONE the shipping zone, CUT-OFF the latest time to order for " +
 			"the window, SLOT the time slot of its delivery time, which " +
 			"`epx delivery-times slots list DELIVERY_TIME_ID` lists, and ID the id of that delivery " +
-			"time (`epx delivery-times get ID`); the delivery cycle is only in -o json. " +
+			"time (`epx delivery-times get ID`); the delivery cycle is only in `-o json`. " +
 			"For another postal code than the cart's, run " +
 			"`epx api get /shipping/{tenant}/actualDeliveryWindows/CART_ID -p postalCode=CODE`. " +
 			"CART_ID is the id of a cart; an unknown one is not found (exit 4).",

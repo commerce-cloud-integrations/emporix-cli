@@ -116,7 +116,7 @@ func productWrites(a *app, products resource[product]) []*cobra.Command {
 			"DYNAMIC_VARIANT product, or whose root has a job pending or processing is skipped " +
 			"(skippedProductIds, left out when none is); where every ID is, the answer has no jobs. " +
 			"Takes up to 1000 IDs, given with --product or in the JSON object of --file " +
-			"({\"productIds\": [...]}).",
+			"(" + literal(`{"productIds": [...]}`) + ").",
 		body: &payload{typed: objectBody{
 			listField("productIds", "product", "`ID` of a product to recalculate (repeatable)").require(),
 		}},

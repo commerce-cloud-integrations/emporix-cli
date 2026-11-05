@@ -45,7 +45,7 @@ func newReturnsCommand(a *app) *cobra.Command {
 			"items are returned, REQUESTOR who asked (email, name or customer id) and TOTAL the value " +
 			"returned: the order entries' deprecated unitPrice times the quantity returned, net or gross " +
 			"as that unitPrice is. Items (with their reasons and prices), the return reason, approver, " +
-			"submitter, expiry date and assisted-buying entries are only in -o json. " +
+			"submitter, expiry date and assisted-buying entries are only in `-o json`. " +
 			"`--query submitter.userType:CUSTOMER` lists the returns that customers made themselves " +
 			"(EMPLOYEE: those made on their behalf). " +
 			"`epx returns create`, `update`, `patch` and `delete` change returns.",
@@ -84,7 +84,7 @@ func returnWrites(returns resource[returnRequest]) []*write {
 			long: "Creates a return on behalf of a customer from the JSON object in --file: its orders " +
 				"(each with its id and the items to return, each with id and quantity), reason (code or " +
 				"details), requestor (the customer, by customerId) and submitter (who submits it), and " +
-				"optionally approver ({\"type\": \"USER\" or \"GROUP\", \"id\": an IAM user or group id}; " +
+				"optionally approver (" + literal(`{"type": "USER" or "GROUP", "id": an IAM user or group id}`) + "; " +
 				"Emporix refuses an id unknown for that type with 400 Bad Request, exit 1), expiryDate and " +
 				"mixins. Emporix answers with the return's id. It does not check quantities against earlier " +
 				"returns: sending the body again creates another return, even beyond the entry's amount. " +
@@ -104,7 +104,7 @@ func returnWrites(returns resource[returnRequest]) []*write {
 			use: returns.itemUse("patch"), short: "Change a return",
 			long: "Changes the return ID with the JSON Patch (RFC 6902) in --file: an array of " +
 				"operations, each with op (add, remove or replace), path and value, e.g. " +
-				`[{"op": "replace", "path": "/approvalStatus", "value": "APPROVED"}]. Emporix requires its` +
+				literal(`[{"op": "replace", "path": "/approvalStatus", "value": "APPROVED"}]`) + ". Emporix requires its" +
 				" read scope for it too, and answers a token without it with 400 Bad Request. " + source,
 			method: http.MethodPatch, req: item, scopes: []string{"returns.returns_read", returnsManageScope},
 			body: operationsFile(), ids: returns.itemIDs(),

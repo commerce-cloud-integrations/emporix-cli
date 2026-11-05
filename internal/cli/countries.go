@@ -58,7 +58,7 @@ func countryWrites(a *app, countries resource[country]) []*cobra.Command {
 			"Emporix lets a PATCH change active only. epx takes the country's metadata.version as read " +
 			"(--version, as `epx countries get CODE -o json` prints it), which the reference asks for; " +
 			"Emporix does not check it, so a stale version is accepted and applied. --file gives the JSON body " +
-			`instead, e.g. {"active": true, "metadata": {"version": 1}}. An unknown CODE is not found ` +
+			"instead, e.g. " + literal(`{"active": true, "metadata": {"version": 1}}`) + ". An unknown CODE is not found " +
 			"(exit 4).",
 		example: "  epx countries patch NL --active --version 1",
 		method:  http.MethodPatch,

@@ -52,7 +52,7 @@ func importConfigurationWrites(a *app, configurations resource[importConfig], jo
 			method: http.MethodPut,
 			long: "Sets when the configuration " + configuration + " runs by itself, creating its schedule where " +
 				"it has none (an upsert), and prints the schedule. --cron is a Spring cron expression with " +
-				"six fields, seconds first, e.g. \"0 0 2 * * *\" for 02:00 every day (Emporix refuses one with " +
+				"six fields, seconds first, e.g. " + literal(`"0 0 2 * * *"`) + " for 02:00 every day (Emporix refuses one with " +
 				"five: 400 Bad Request), evaluated in --timezone, an IANA time zone such as Europe/Berlin. " +
 				"The schedule runs the configuration unless --enabled=false, which keeps it without running " +
 				"it: epx always sends enabled, as the schedule is replaced whole. --file gives the body " +
@@ -85,7 +85,7 @@ func importTrigger(configurations resource[importConfig], job *jobWait) *write {
 		use: "trigger " + configuration, short: "Start an import run of a configuration", method: http.MethodPost,
 		long: "Starts an import run of the configuration " + configuration + ", a DELTA run unless --mode FULL, " +
 			"and prints the run, QUEUED until a worker of the Import Service takes it. --file gives the " +
-			"body instead, e.g. {\"mode\": \"FULL\", \"dryRun\": true, \"streamIds\": [\"ID\"]} for a dry run of " +
+			"body instead, e.g. " + literal(`{"mode": "FULL", "dryRun": true, "streamIds": ["ID"]}`) + " for a dry run of " +
 			"some streams, which maps and checks records but writes none. A configuration that has a run " +
 			"QUEUED, RUNNING or RESUMABLE already is a conflict (exit 5). Emporix answers a run that it " +
 			"refuses, e.g. of streams whose mappings were never published, as any other: the run ends " +

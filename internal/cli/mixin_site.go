@@ -32,7 +32,7 @@ const mixinSiteHelp = "Where a mixin's schema is site-aware, an item may hold, b
 	"base value) and leaves out every overlay. A site without an overlay, or one the tenant " +
 	"lacks (codes are case-sensitive; epx does not check them), gets NAME as stored. Without " +
 	"--" + mixinSiteFlag + ", mixins and overlays are read as stored, whatever the default site of the " +
-	"profile. Tables leave mixins (attribute values) out; -o json and -o yaml print them, as " +
+	"profile. Tables leave mixins (attribute values) out; `-o json` and `-o yaml` print them, as " +
 	"--" + streamFlag + " does on a list.\n\n" +
 	"A merged item is that site's view, not the item as stored. Do not write it back with " +
 	"update, bulk-update or (products) import, which replace whole items and would delete every " +

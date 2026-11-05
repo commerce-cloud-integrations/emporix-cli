@@ -20,7 +20,7 @@ func customEntityWrites(a *app, entities resource[customEntity]) []*cobra.Comman
 		(&write{
 			use: createUse, short: "Create a custom entity type", method: http.MethodPost,
 			long: "Creates the custom entity type in --file, a JSON object with its id and name, such as " +
-				`{"id": "CUSTOM_DOCUMENT", "name": {"en": "Document"}}, and prints the id that Emporix answers` +
+				literal(`{"id": "CUSTOM_DOCUMENT", "name": {"en": "Document"}}`) + ", and prints the id that Emporix answers" +
 				" with; one that exists already is a conflict. The id has capital letters, digits and " +
 				"underscores, the first a letter. Emporix also creates the scopes that read and manage the " +
 				"instances of the type, such as custom.custom_document_manage, which it grants only minutes " +
@@ -31,7 +31,7 @@ func customEntityWrites(a *app, entities resource[customEntity]) []*cobra.Comman
 		(&write{
 			use: entities.itemUse("update"), short: "Upsert a custom entity type", method: http.MethodPut,
 			long: "Replaces the name of the custom entity type ID with the one in --file, a JSON object such " +
-				`as {"name": {"en": "Document"}, "metadata": {"version": 1}}, or creates the type where none` +
+				"as " + literal(`{"name": {"en": "Document"}, "metadata": {"version": 1}}`) + ", or creates the type where none" +
 				" exists (an upsert). With metadata.version, as `epx custom-entities get ID -o json` prints " +
 				"it, Emporix replaces only that version: an older one is a conflict.",
 			req: request{path: entities.itemPath()}, scopes: manage, body: &payload{}, language: mapsOnly,
@@ -111,14 +111,14 @@ func (in *instanceWrites) one() []write {
 		{
 			use: createUse + " " + in.typeArg, short: "Create an instance of a custom entity type", method: http.MethodPost,
 			long: "Creates an instance of the custom entity type " + in.typeArg + " from the JSON object in " +
-				`--file, such as {"id": "123", "name": {"en": "Report"}, "mixins": {…}}, and prints the id ` +
+				"--file, such as " + literal(`{"id": "123", "name": {"en": "Report"}, "mixins": {…}}`) + ", and prints the id " +
 				"that Emporix answers with; it makes one unless the object names it, and an id that exists " +
-				`already is a conflict. An owner, such as {"type": "EMPLOYEE", "userId": "…"}, cannot change` +
+				"already is a conflict. An owner, such as " + literal(`{"type": "EMPLOYEE", "userId": "…"}`) + ", cannot change" +
 				" once set. The attributes of a schema go under its id, which metadata.mixins maps to its " +
-				`URL: {"mixins": {"SCHEMA_ID": {…}}, "metadata": {"mixins": {"SCHEMA_ID": "URL"}}}, the URL` +
+				"URL: " + literal(`{"mixins": {"SCHEMA_ID": {…}}, "metadata": {"mixins": {"SCHEMA_ID": "URL"}}}`) + ", the URL" +
 				" being the metadata.url that `epx schemas get SCHEMA_ID -o json` prints. A localized " +
 				`attribute, unlike the name, is a list of translations, such as ` +
-				`[{"language": "en", "value": "Report"}]. ` + in.ofType,
+				literal(`[{"language": "en", "value": "Report"}]`) + ". " + in.ofType,
 			req: request{path: in.path}, scopes: in.manage, body: &payload{}, language: mapsOnly, ids: in.typeIDs,
 		},
 		{
@@ -134,7 +134,7 @@ func (in *instanceWrites) one() []write {
 			use: itemUse("patch"), short: "Change an instance of a custom entity type", method: http.MethodPatch,
 			long: "Changes the instance ID of the custom entity type " + in.typeArg + " with the JSON array of " +
 				"JSON Patch (RFC 6902) operations in --file, such as " +
-				`[{"op": "replace", "path": "/name", "value": {"en": "Report"}}]; an add whose path ends in` +
+				literal(`[{"op": "replace", "path": "/name", "value": {"en": "Report"}}]`) + "; an add whose path ends in" +
 				" /- appends to an array. An unknown ID is not found. " + in.ofItem,
 			req: item, scopes: in.manage, body: operationsFile(), language: mapsOnly,
 			reserved: map[string]string{bulkSegment: bulkPatchUse}, ids: in.itemIDs,
@@ -170,10 +170,12 @@ func (in *instanceWrites) bulk() []write {
 			"(an upsert). " + in.ofType,
 		patch: "Changes instances of the custom entity type " + in.typeArg + " as --file says: a JSON array " +
 			"with the id of each instance and the JSON Patch operations that change it, as patch takes " +
-			`them, such as ` + `[{"id": "123", "data": [{"op": "replace", "path": "/name/en", "value": "Report"}]}]. ` +
+			"them, such as " + literal(`[{"id": "123", "data": [{"op": "replace", "path": "/name/en", `+
+			`"value": "Report"}]}]`) + ". " +
 			in.ofType,
 		delete: "Deletes the instances of the custom entity type " + in.typeArg + " whose ids --file lists, a " +
-			`JSON array of strings, such as ["123", "124"]; Emporix answers an unknown id as deleted. ` + in.ofType,
+			"JSON array of strings, such as " +
+			literal(`["123", "124"]`) + "; Emporix answers an unknown id as deleted. " + in.ofType,
 	}).writes()
 	create, update, patch, remove := &writes[0], &writes[1], &writes[2], &writes[3]
 	for _, w := range []*write{create, update, patch} {

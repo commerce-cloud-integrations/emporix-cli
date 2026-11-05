@@ -62,7 +62,7 @@ func newAIToolsCommand(a *app) *cobra.Command {
 		long: "Reads the native tools that agents can use: TYPE is slack, teams, rag_custom " +
 			"(retrieval-augmented generation over the tenant's own vector database), rag_emporix (over Emporix " +
 			"data) or search (customers or legal entities, found without embeddings in a search index " +
-			"that Emporix keeps); their configuration is only in -o json. " + searchToolNeedsReindex,
+			"that Emporix keeps); their configuration is only in `-o json`. " + searchToolNeedsReindex,
 		view: view[aiTool]{
 			singular: "tool",
 			header:   []string{columnID, columnType, columnEnabled, columnName},
@@ -86,7 +86,7 @@ func newAITokensCommand(a *app) *cobra.Command {
 		use: "tokens", noun: "AI tokens",
 		long: "Reads the tokens that hold the API keys and secrets of LLMs, tools, OAuth configurations and " +
 			"MCP servers, by name: the table shows no value, and the API reference documents none in a " +
-			"response; -o json prints the response as Emporix sends it.",
+			"response; `-o json` prints the response as Emporix sends it.",
 		view: view[aiToken]{
 			singular: "token",
 			header:   []string{columnID, columnName, columnCreated, columnModified},
@@ -110,7 +110,7 @@ func newAIOAuthsCommand(a *app) *cobra.Command {
 		use: "oauths", noun: "OAuth configurations",
 		long: "Reads OAuth configurations (a preview at Emporix): the OAuth 2.0 client credentials with which " +
 			"agents get a token for a self-hosted LLM from TOKEN URL. SECRET TOKEN is the ID of the token " +
-			"(`epx ai tokens list`) that holds the client's secret; the scope is only in -o json, which " +
+			"(`epx ai tokens list`) that holds the client's secret; the scope is only in `-o json`, which " +
 			"prints the response as Emporix sends it.",
 		view: view[aiOAuth]{
 			singular: "OAuth configuration",
@@ -135,7 +135,7 @@ func newAIMCPServersCommand(a *app) *cobra.Command {
 		use: "mcp-servers", noun: "MCP servers",
 		long: "Reads the tenant's MCP servers, whose tools agents can use: TYPE is custom (a server at URL) " +
 			"or dynamic (a preview at Emporix: tools that the server's configuration defines, only in " +
-			"-o json), TRANSPORT streamable_http or sse.",
+			"`-o json`), TRANSPORT streamable_http or sse.",
 		view: view[aiMCPServer]{
 			singular: "MCP server",
 			header:   []string{columnID, columnType, columnEnabled, "TRANSPORT", columnName, columnURL},

@@ -101,7 +101,7 @@ func newSearchCommand(a *app) *cobra.Command {
 		noun:  "saved searches",
 		short: "Read, upsert and delete saved searches",
 		under: searchUse,
-		long: "Reads saved searches: queries and filters (only in -o json) stored to run against a search " +
+		long: "Reads saved searches: queries and filters (only in `-o json`) stored to run against a search " +
 			"INDEX of a type. " + badQuery,
 		path:    searchPerType + "queries",
 		scopes:  []string{searchScope},
@@ -137,7 +137,7 @@ func indexesCommand(a *app, job *jobWait, types exactTypes) *cobra.Command {
 		short: "Read, upsert, delete, export and import search indexes",
 		under: searchUse,
 		long: "Reads search indexes: which fields of the documents of a type can be searched. " +
-			"STATUS is building, ready or failed and FIELDS the indexed fields (-o json shows how each is " +
+			"STATUS is building, ready or failed and FIELDS the indexed fields (`-o json` shows how each is " +
 			"searched). --query matches STATUS in upper case (`status:READY`; `status:ready` matches no index). " + badQuery,
 		path:    searchPerType + "indexes",
 		scopes:  []string{searchScope},
@@ -216,7 +216,7 @@ func documentsCommand(a *app, types builtInTypes) *cobra.Command {
 		long: "Reads the documents of a type that the saved search --saved-search finds with the text of " +
 			"--text (`epx search queries for-type TYPE` lists them): customers, legal entities or the " +
 			"instances of a custom entity type, as a search index holds them. SCORE is how well a document " +
-			"matches; its other fields are only in -o json. --body gives a search of an index by its own " +
+			"matches; its other fields are only in `-o json`. --body gives a search of an index by its own " +
 			"queries and filters instead. An unknown saved search, or index of --body, is not found " +
 			"(exit 4). " + typeSentence(types) + " " +
 			"Known limitation: for customer or legal-entity, epx requests the read scope that " +

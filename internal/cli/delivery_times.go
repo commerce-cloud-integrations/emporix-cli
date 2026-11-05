@@ -81,7 +81,7 @@ func newDeliveryTimesCommand(a *app) *cobra.Command {
 		use:   "delivery-times",
 		short: "Read and change delivery times and their time slots; read the delivery windows of a cart",
 		long: "Reads delivery times, the days on which a site delivers to a zone. ZONE is a zone id " +
-			"(`epx shipping zones list --site S`), or \"all zones\" for a day without delivery on every " +
+			"(`epx shipping zones list --site S`), or " + literal(`"all zones"`) + " for a day without delivery on every " +
 			"zone; DAY is a weekday, a date or a date period (from/to); DELIVERS is false for a day " +
 			"without delivery; DAY SHIFT is how many days the delivery follows an order placed before " +
 			"the cut-off, when the delivery time sets it (a weekday's slots may set their own); SLOTS " +

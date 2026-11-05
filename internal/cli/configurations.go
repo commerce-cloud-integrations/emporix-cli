@@ -53,7 +53,7 @@ const configurationClient = "CLIENT"
 // (newConfigurationWrites). The service returns each list whole (live, it
 // ignores pageNumber and pageSize), so each is read with one request.
 func newConfigurationsCommand(a *app) *cobra.Command {
-	const values = "Tables show values as sent, secured ones included, and cut long ones (-o json prints " +
+	const values = "Tables show values as sent, secured ones included, and cut long ones (`-o json` prints " +
 		"them whole)."
 	whole := listing{read: (*emporix.Client).GetUnpaged}
 	global := reader[configuration]{view: configurationView("global configuration")}

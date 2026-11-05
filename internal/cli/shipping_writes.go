@@ -37,7 +37,7 @@ func zoneWrites(a *app, zones resource[shippingZone]) []*cobra.Command {
 			long: "Creates a shipping zone of the site --site names from the JSON in --file: its id, name, " +
 				"shipTo (the countries it ships to, each with a postal code, or a prefix followed by *, where " +
 				"it ships to some only) and whether it is the site's default zone, as in " +
-				`{"id": "nl", "name": {"en": "Netherlands"}, "shipTo": [{"country": "NL"}], "default": true}. ` +
+				literal(`{"id": "nl", "name": {"en": "Netherlands"}, "shipTo": [{"country": "NL"}], "default": true}`) + ". " +
 				"The first zone of a site becomes its default zone whatever default says. " +
 				"Emporix answers with the zone's id; a zone with that id exists already: a conflict (exit 5).",
 			req: request{path: zones.path}, scopes: manage, body: &payload{}, language: headerlessMaps,
@@ -122,7 +122,7 @@ func groupWrites(a *app, groups resource[shippingGroup]) []*cobra.Command {
 		(&write{
 			use: createUse, short: "Create a shipping group", method: http.MethodPost,
 			long: "Creates a shipping group of the site --site names from the JSON in --file: its id and " +
-				`description, as in {"id": "vip", "description": {"en": "Free shipping"}}. A fee of a ` +
+				"description, as in " + literal(`{"id": "vip", "description": {"en": "Free shipping"}}`) + ". A fee of a " +
 				"shipping method applies to the customers of a group (`epx shipping customers create`) when " +
 				"it names the group as its shippingGroupId. Emporix answers with the group's id; a group " +
 				"with that id exists already: a conflict (exit 5).",
@@ -151,7 +151,7 @@ func groupWrites(a *app, groups resource[shippingGroup]) []*cobra.Command {
 // CUSTOMER.
 func customerGroupWrites(a *app, customers resource[shippingCustomer]) []*cobra.Command {
 	manage := []string{shippingManageScope}
-	const relation = `{"customerId": "C001", "groupId": "vip"}`
+	relation := literal(`{"customerId": "C001", "groupId": "vip"}`)
 	return []*cobra.Command{
 		(&write{
 			use: createUse, short: "Assign a customer to a shipping group", method: http.MethodPost,

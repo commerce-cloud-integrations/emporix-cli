@@ -31,7 +31,7 @@ func newAPIGetCommand(a *app) *cobra.Command {
 		Use:   "get PATH",
 		Short: "GET an API path and print the JSON response",
 		Long: "Sends GET to PATH on the configured API host and prints the response body as JSON " +
-			"(YAML with -o yaml) with sorted keys and every value as sent. " +
+			"(YAML with `-o yaml`) with sorted keys and every value as sent. " +
 			"{tenant} in PATH is replaced with the tenant; Accept-Language: * requests every translation. " +
 			"Query values given with -p replace inline ones. Request every scope the endpoint needs " +
 			"with --scope: Emporix grants only requested scopes and may silently omit data otherwise.",
@@ -65,7 +65,7 @@ func newAPIWriteCommand(a *app, method, example string) *cobra.Command {
 		Use:   use + " PATH",
 		Short: "Send " + method + " to an API path and print the JSON response",
 		Long: "Sends " + method + " to PATH on the configured API host, with the JSON body that --file gives " +
-			"(none without it), and prints the response body as JSON (YAML with -o yaml) with sorted " +
+			"(none without it), and prints the response body as JSON (YAML with `-o yaml`) with sorted " +
 			"keys and every value as sent (nothing for an empty one). {tenant} in PATH is replaced with " +
 			"the tenant; query values given with -p replace inline ones. It sends no other header, such " +
 			"as the Content-Language that the Unit Service requires to create or update a unit.",

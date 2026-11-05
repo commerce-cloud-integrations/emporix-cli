@@ -32,7 +32,7 @@ func newLabelsCommand(a *app) *cobra.Command {
 		short: "Read, create, change and delete labels",
 		long: "Reads labels, the badges shown on products. OVERLAY is the label's overlay flag and " +
 			"POSITION its overlay position, as sent; MEDIA is the id of its image (image URLs are only " +
-			"in -o json), and DESCRIPTION is often HTML.",
+			"in `-o json`), and DESCRIPTION is often HTML.",
 		path:    "/label/labels",
 		filters: listFilters{kinds: filterable},
 		view: view[label]{
@@ -52,9 +52,9 @@ func newLabelsCommand(a *app) *cobra.Command {
 	return newResourceCommand(a, labels,
 		(&write{
 			use: createUse, short: "Create a label", method: http.MethodPost,
-			long: "Creates a label from the JSON in --file, such as " +
-				`{"name": "Free shipping", "description": "<p>Ships free</p>", "overlay": {"isTrue": true, ` +
-				`"position": 1}},` + " and prints the label that Emporix answers with. Emporix generates its id " +
+			long: "Creates a label from the JSON in --file, such as " + literal(
+				`{"name": "Free shipping", "description": "<p>Ships free</p>", "overlay": {"isTrue": true, `+
+					`"position": 1}}`) + ", and prints the label that Emporix answers with. Emporix generates its id " +
 				"unless the JSON names one; an id that exists already is a conflict.",
 			req: request{path: labels.path}, scopes: manage, body: &payload{},
 		}).command(a),

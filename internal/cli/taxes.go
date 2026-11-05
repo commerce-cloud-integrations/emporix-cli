@@ -52,7 +52,7 @@ func newTaxesCommand(a *app) *cobra.Command {
 		use:   "taxes",
 		short: "Read and change tax configurations, and calculate net and gross prices",
 		long: "Reads tax configurations, one per location. CLASSES lists each tax class with its rate " +
-			"in percent (-o json adds their names). `epx taxes calculate` applies them to a price.",
+			"in percent (`-o json` adds their names). `epx taxes calculate` applies them to a price.",
 		path:    "/tax/{tenant}/taxes",
 		filters: listFilters{kinds: sortable},
 		scopes:  []string{"tax.tax_read"},
@@ -84,8 +84,8 @@ func taxWrites(a *app, taxes resource[taxConfiguration]) []*cobra.Command {
 			use: createUse, short: "Create a tax configuration", method: http.MethodPost,
 			long: "Creates the tax configuration of a country from the JSON in --file: location.countryCode " +
 				"and taxClasses, each with its code, name, order, rate in percent and, for one, isDefault, " +
-				`e.g. {"location": {"countryCode": "NL"}, "taxClasses": [{"code": "STANDARD", "name": ` +
-				`{"en": "Standard"}, "order": 0, "rate": 21, "isDefault": true}]}. A country that has one ` +
+				"e.g. " + literal(`{"location": {"countryCode": "NL"}, "taxClasses": [{"code": "STANDARD", "name": `+
+				`{"en": "Standard"}, "order": 0, "rate": 21, "isDefault": true}]}`) + ". A country that has one " +
 				"already is a conflict (exit 5).",
 			req: request{path: taxes.path}, scopes: manage, body: &payload{}, language: stringsOrMaps,
 		}).command(a),

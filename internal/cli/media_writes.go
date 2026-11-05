@@ -25,13 +25,14 @@ func mediaWrites(a *app, assets resource[mediaAsset]) []*cobra.Command {
 		(&write{
 			use: createUse, short: "Create a media asset: a link, or a file to upload", method: http.MethodPost,
 			long: "Creates a media asset from the JSON in --file and prints its id. A LINK asset points to a " +
-				"file elsewhere, e.g. {\"type\": \"LINK\", \"access\": \"PUBLIC\", \"url\": \"https://example.com/a.pdf\"}. " +
+				"file elsewhere, e.g. " +
+				literal(`{"type": "LINK", "access": "PUBLIC", "url": "https://example.com/a.pdf"}`) + ". " +
 				"A BLOB asset is a file that Emporix stores: --" + uploadFlag + " PATH sends the file in a " +
 				"multipart/form-data form, with the JSON of --file as its body field, e.g. " +
-				`{"type": "BLOB", "access": "PRIVATE", "details": {"filename": "a", "mimeType": "application/pdf"}}. ` +
-				"Emporix takes a file of " + uploadLimitHelp + "; a large file may need a longer " +
+				literal(`{"type": "BLOB", "access": "PRIVATE", "details": {"filename": "a", "mimeType": "application/pdf"}}`) +
+				". Emporix takes a file of " + uploadLimitHelp + "; a large file may need a longer " +
 				"--timeout, e.g. --timeout 5m, as it bounds the whole request. " + blobNeedsFileHelp + " " +
-				"refIds assigns the asset to items, e.g. [{\"type\": \"PRODUCT\", \"id\": \"100200\"}]; an asset of a " +
+				"refIds assigns the asset to items, e.g. " + literal(`[{"type": "PRODUCT", "id": "100200"}]`) + "; an asset of a " +
 				"PRODUCT or CATEGORY must be PUBLIC. An id that exists already is a conflict (exit 5).",
 			example: "  epx media create --file link.json --dry-run\n" +
 				"  epx media create --upload manual.pdf --file manual.json",
@@ -50,7 +51,7 @@ func mediaWrites(a *app, assets resource[mediaAsset]) []*cobra.Command {
 		(&write{
 			use: assets.itemUse("patch"), short: "Change members of a media asset", method: http.MethodPatch,
 			long: "Changes the media asset ID with the JSON Patch (RFC 6902) in --file, an array of operations " +
-				"such as [{\"op\": \"add\", \"path\": \"/refIds/-\", \"value\": {\"type\": \"PRODUCT\", \"id\": \"100200\"}}], " +
+				"such as " + literal(`[{"op": "add", "path": "/refIds/-", "value": {"type": "PRODUCT", "id": "100200"}}]`) + ", " +
 				"also of a BLOB asset, whose file it keeps; its type and access cannot change. " + unknown,
 			req: request{path: assets.itemPath()}, scopes: scopes, body: operationsFile(), ids: assets.itemIDs(),
 		}).command(a),

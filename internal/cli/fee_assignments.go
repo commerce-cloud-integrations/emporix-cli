@@ -36,7 +36,7 @@ func newFeeAssignmentsCommand(a *app) *cobra.Command {
 			return []string{f.ItemYrn, f.ID, f.SiteCode, strings.Join(f.FeeIDs, ",")}
 		},
 		legend: "ITEM is the item's YRN, ID the item fee's id and FEES the ids of its fees, as `epx fees list` " +
-			"shows them; -o json shows the response as sent.",
+			"shows them; `-o json` shows the response as sent.",
 	}}
 	const (
 		long        = "Reads item fees: which fees apply to which item (a product or a payment type) on a site."

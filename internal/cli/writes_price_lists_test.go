@@ -268,9 +268,9 @@ func TestPriceWritesSayHowEmporixReadsThem(t *testing.T) {
 		args          []string
 		want, without string
 	}{
-		{args: []string{"price-lists", "create"}, want: priceListLanguageHelp, without: contentLanguageHelp},
-		{args: []string{"price-lists", "update"}, want: priceListLanguageHelp, without: contentLanguageHelp},
-		{args: []string{"price-models", "create"}, want: contentLanguageHelp, without: priceListLanguageHelp},
+		{args: []string{"price-lists", "create"}, want: priceListLanguageHelp(), without: contentLanguageHelp()},
+		{args: []string{"price-lists", "update"}, want: priceListLanguageHelp(), without: contentLanguageHelp()},
+		{args: []string{"price-models", "create"}, want: contentLanguageHelp(), without: priceListLanguageHelp()},
 		{args: []string{"price-lists", "prices", "bulk-delete"},
 			want:    "Emporix takes up to 200 items in one request (epx refuses more) and answers for all of them at once",
 			without: "the result of each"},

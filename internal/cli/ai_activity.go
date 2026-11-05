@@ -75,7 +75,7 @@ const aiLogsUse = "logs"
 // logsLegend says what the columns of request and session logs hold.
 const logsLegend = "AGENT is the agent that was called, SEVERITY INFO, WARNING or ERROR, MESSAGES how many " +
 	"messages were logged (empty when a log comes without them) and SECONDS how long it took; the " +
-	"messages, the other agents that took part and the LLM tokens used are only in -o json."
+	"messages, the other agents that took part and the LLM tokens used are only in `-o json`."
 
 // newAIJobsCommand reads the jobs of the AI Service.
 func newAIJobsCommand(a *app) *cobra.Command {
@@ -84,7 +84,7 @@ func newAIJobsCommand(a *app) *cobra.Command {
 		long: "Reads the jobs of the AI Service: TYPE is AGENT_CHAT (an agent's run), IMPORT or EXPORT (of " +
 			"agents), STATUS in_progress, success, failure or skipped, AGENT and SESSION the agent that " +
 			"ran and its session (`epx ai logs sessions get`) and EVENT the commerce event that started " +
-			"it. The agent's message and an import's or export's result are only in -o json.",
+			"it. The agent's message and an import's or export's result are only in `-o json`.",
 		view: view[aiJob]{
 			singular: "agent job",
 			header:   []string{columnID, columnType, columnStatus, columnAgent, columnSession, "EVENT", columnCreated},
@@ -104,7 +104,7 @@ func newAIConversationsCommand(a *app) *cobra.Command {
 		long: "Reads the conversations of agents in Microsoft Teams channels and group chats: ID is the " +
 			"conversation in Teams, NAME its channel or chat, SESSION the agent's session (`epx ai logs " +
 			"sessions get`) and LAST MESSAGE when it was last active. The channel and the context " +
-			"reference are only in -o json.",
+			"reference are only in `-o json`.",
 		view: view[aiConversation]{
 			singular: "agent conversation",
 			header:   []string{columnID, columnName, columnAgent, columnSession, "LAST MESSAGE"},

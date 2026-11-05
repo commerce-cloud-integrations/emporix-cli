@@ -68,7 +68,7 @@ func aiItemWriteCommands[T any](a *app, r resource[T], w aiItemWrites) []*cobra.
 			use: r.itemUse("patch"), short: "Change members of " + w.one, method: http.MethodPatch,
 			long: "Changes " + the + " with the JSON array of operations in --file, each with op " +
 				"(ADD, REMOVE or REPLACE), path and value, e.g. " +
-				`[{"op": "REPLACE", "path": "/enabled", "value": false}]; its other members keep their values. ` +
+				literal(`[{"op": "REPLACE", "path": "/enabled", "value": false}]`) + "; its other members keep their values. " +
 				itemSentence(id, id, r.listLine()),
 			req: item, scopes: scopes, body: operationsFile(), switches: forceSwitch(w.disable), ids: r.itemIDs(),
 		}).command(a),

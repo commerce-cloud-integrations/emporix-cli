@@ -173,7 +173,7 @@ func newFindSitesCommand(a *app) *cobra.Command {
 		use:   "find-sites",
 		short: "List the sites that ship to a postal code",
 		long: "Lists the sites with a shipping zone that ships to a postal code: ZONES lists the zones that " +
-			"Emporix returns with each site, and METHODS their shipping methods (-o json adds the " +
+			"Emporix returns with each site, and METHODS their shipping methods (`-o json` adds the " +
 			"zones' destinations and fees). Emporix matched no site without --country on the tenant " +
 			"tested.",
 		req: request{path: "/shipping/{tenant}/findSite"},

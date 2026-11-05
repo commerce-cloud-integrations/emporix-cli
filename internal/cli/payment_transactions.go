@@ -49,7 +49,7 @@ func newPaymentTransactionsCommand(a *app) *cobra.Command {
 		long: "Reads payment transactions, personal data included. PAYMENT MODE is the id of the payment " +
 			"mode used, and ENTRIES the operations the provider ran, in the order sent: type and amount, " +
 			"marked failed when they failed. Payment details (such as bank details and pay-by-link URLs), " +
-			"card tokens and the provider's requests and responses are only in -o json. list's --sort " +
+			"card tokens and the provider's requests and responses are only in `-o json`. list's --sort " +
 			"takes only createdDate (e.g. createdDate:desc); Emporix rejects other and several fields.",
 		path:    "/payment-gateway/{tenant}/transactions",
 		scopes:  []string{"payment-gateway.paymenttransactions_read"},

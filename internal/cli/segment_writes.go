@@ -26,8 +26,10 @@ func withAssignments() []paramFlag {
 // segmentPatchLanguageHelp says, in the help of segments patch, how its
 // operations give localized text: as every write of mapsOnly, but for the
 // value of a path to one translation.
-const segmentPatchLanguageHelp = mapsOnlyHelp + " In an operation, a path to one translation, such as /name/de, " +
-	"takes a string in that language."
+func segmentPatchLanguageHelp() string {
+	return mapsOnlyHelp() + " In an operation, a path to one translation, such as /name/de, " +
+		"takes a string in that language."
+}
 
 // withAssignmentsNote follows what a delete of segments sends, in its help.
 const withAssignmentsNote = "Emporix refuses to delete a segment that has items or customers assigned to it " +
@@ -49,7 +51,7 @@ func segmentWrites(a *app, segments resource[segment]) []*cobra.Command {
 		create: "Creates the segments in --file, a JSON array of segments, each as create takes it.",
 		update: "Replaces the segments in --file, a JSON array of segments, each with its id, or creates " +
 			"those that do not exist (an upsert).",
-		delete: "Deletes the segments whose IDs --file gives, a JSON array such as [\"s1\", \"s2\"]. " +
+		delete: "Deletes the segments whose IDs --file gives, a JSON array such as " + literal(`["s1", "s2"]`) + ". " +
 			withAssignmentsNote + " " + unknownAsDeleted("ID"),
 		deleteSwitches: withAssignments(),
 	}
@@ -74,10 +76,10 @@ func segmentWrites(a *app, segments resource[segment]) []*cobra.Command {
 		(&write{
 			use: segments.itemUse("patch"), short: "Change a segment", method: http.MethodPatch, language: mapsOnly,
 			long: "Changes the segment ID with the JSON Patch operations (RFC 6902) of --file, a JSON array " +
-				"such as [{\"op\": \"replace\", \"path\": \"/status\", \"value\": \"INACTIVE\"}]; epx refuses " +
+				"such as " + literal(`[{"op": "replace", "path": "/status", "value": "INACTIVE"}]`) + "; epx refuses " +
 				"anything else, which Emporix would answer as done without applying it, although it " +
 				"raises the segment's metadata.version. " + id,
-			languageHelp: segmentPatchLanguageHelp,
+			languageHelp: segmentPatchLanguageHelp(),
 			req:          request{path: item}, scopes: scopes, body: operationsFile(), ids: ids,
 		}).command(a),
 		(&write{
@@ -157,7 +159,7 @@ func segmentCustomerWrites(a *app, segments resource[segment], customers child[s
 			"(an upsert): a JSON array of assignments, each with its customerId, for B2B its " +
 			"legalEntityId, and optionally its mixins and metadata. " + oneCustomerKindNote,
 		delete: "Removes the customers in --file from the segment " + segment + ", a JSON array such as " +
-			"[{\"customerId\": \"c1\", \"legalEntityId\": \"le1\"}] (without legalEntityId for B2C).",
+			literal(`[{"customerId": "c1", "legalEntityId": "le1"}]`) + " (without legalEntityId for B2C).",
 	}
 	customer := "CUSTOMER the customer's id (the id of `epx customers get NUMBER -o json`), not its NUMBER"
 	return slices.Concat(
@@ -203,7 +205,7 @@ func segmentItemWrites(a *app, segments resource[segment], items child[segmentIt
 			"their assignments (an upsert): a JSON array of assignments, each with the id of its item " +
 			"and optionally its mixins and metadata. " + types + " " + unknownItemNote,
 		delete: "Removes the products or categories (TYPE) whose ids --file gives from the segment " +
-			"SEGMENT_ID, a JSON array such as [\"100200\", \"100300\"]. " + types,
+			"SEGMENT_ID, a JSON array such as " + literal(`["100200", "100300"]`) + ". " + types,
 	}
 	return append(segmentAssignmentWrites(a, segments, items, bulk, &segmentAssignment{
 		columns: []string{columnType, columnID}, noun: "a product or category", what: "the product or category ID",

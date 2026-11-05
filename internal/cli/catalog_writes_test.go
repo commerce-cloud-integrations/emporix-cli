@@ -160,7 +160,7 @@ func TestCatalogWriteHelp(t *testing.T) {
 			"send without asking (required without a terminal)\n",
 		}},
 		{args: []string{"categories", "assignments", "bulk-update"}, want: []string{
-			"as in {\"ref\": {\"id\": \"100200\"}}.", "Emporix takes up to 200 items in one request",
+			"as in `{\"ref\": {\"id\": \"100200\"}}`.", "Emporix takes up to 200 items in one request",
 		}},
 		{args: []string{"categories"}, want: []string{"Its reads require the category.category_read_unpublished " +
 			"scope. Its writes require different OAuth scopes; the help of each names them.\n\nUsage:",

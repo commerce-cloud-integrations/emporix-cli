@@ -216,8 +216,8 @@ func TestCustomEntityWriteHelp(t *testing.T) {
 			"/- appends to an array", "(true without it), requesting custom.<type>_read where it is true or not given"}},
 		{args: []string{"custom-entities", "instances", "create"}, want: []string{
 			`{"mixins": {"SCHEMA_ID": {…}}, "metadata": {"mixins": {"SCHEMA_ID": "URL"}}}`,
-			"A localized attribute, unlike the name, is a list of translations, such as " +
-				`[{"language": "en", "value": "Report"}].`, "sent with Content-Language: *"}},
+			"A localized attribute, unlike the name, is a list of translations, such as `" +
+				`[{"language": "en", "value": "Report"}]` + "`.", "sent with Content-Language: *"}},
 		{args: []string{"custom-entities", "instances", "bulk-patch"}, want: []string{
 			"(false without it, although its reference says true), requesting custom.<type>_read where it is true:",
 			"With --validate-references true, Emporix checks",

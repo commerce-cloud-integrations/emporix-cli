@@ -65,8 +65,8 @@ func newPricesCommand(a *app) *cobra.Command {
 		long: "Reads prices. Without a site, Emporix lists the prices of every site, so list and " +
 			"for-product require --site and read that site's prices only; an unknown site lists " +
 			"nothing. TIERS lists the value of each price tier as sent; tier quantities and net or " +
-			"gross come from the price model (`epx price-models get` with the priceModelId of -o json). " +
-			"Customer and price-list restrictions and sale prices are only in -o json.",
+			"gross come from the price model (`epx price-models get` with the priceModelId of `-o json`). " +
+			"Customer and price-list restrictions and sale prices are only in `-o json`.",
 		path:      "/price/{tenant}/prices",
 		listQuery: url.Values{siteCodeParam: {placeholderSite}},
 		filters:   listFilters{kinds: filterable},
@@ -161,7 +161,7 @@ func priceSearchCommand(a *app, prices resource[price]) *cobra.Command {
 		short: "Search the prices of products",
 		long: "Reads the prices of up to 100 products (--product, the product id as in `epx products " +
 			"list`), on the site and in the currency that --site and --currency name, else on every " +
-			"site and in every currency, shown as list shows prices; -o json also lists the products " +
+			"site and in every currency, shown as list shows prices; `-o json` also lists the products " +
 			"without a price. Other criteria (a customer, a date, net or gross values) go in --body.",
 		req: request{path: prices.path + "/" + collectionSearch},
 		fetch: bodyRead{method: http.MethodPost, fetch: single{items: pricesOfProducts}, body: objectBody{

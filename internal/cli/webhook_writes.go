@@ -22,7 +22,7 @@ func webhookConfigurationWrites(a *app, configs resource[webhookConfiguration]) 
 				"your Svix account for SVIX, and for HTTP the destinationUrl, secretKey, headers and " +
 				"eventsConfiguration (entries that send events of a type elsewhere, each without an id: " +
 				"Emporix assigns one and refuses one given). For HTTP, Emporix checks that the destinationUrl " +
-				"is reachable (400 Bad Request, exit 1, \"not reachable\" otherwise). Emporix answers with the " +
+				"is reachable (400 Bad Request, exit 1, " + literal(`"not reachable"`) + " otherwise). Emporix answers with the " +
 				"code. A tenant has at most one configuration per provider: when it has one, Emporix " +
 				"answers 409 Conflict (exit 5); change that one with update or patch.",
 			example: "  epx webhooks configurations create --file http.json --dry-run",

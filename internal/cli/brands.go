@@ -35,7 +35,7 @@ func newBrandsCommand(a *app) *cobra.Command {
 		(&write{
 			use: createUse, short: "Create a brand", method: http.MethodPost,
 			long: "Creates a brand from the JSON in --file, such as " +
-				`{"name": "Acme", "localizedName": {"en": "Acme", "de": "Acme"}}, and prints the brand that ` +
+				literal(`{"name": "Acme", "localizedName": {"en": "Acme", "de": "Acme"}}`) + ", and prints the brand that " +
 				"Emporix answers with, including its id. Emporix generates the id unless the JSON names one; " +
 				"an id that exists already is a conflict, while a name that exists already makes a second " +
 				"brand.",

@@ -70,7 +70,7 @@ func customerWrites(a *app, customers resource[customer]) []*cobra.Command {
 		(&write{
 			use: customers.itemUse("patch"), short: "Change a customer", method: http.MethodPatch,
 			long: "Changes the members of the customer profile NUMBER that --file gives, a JSON object such " +
-				"as {\"active\": false}; Emporix keeps the others. " + number + " " + customerNumberNote + " " +
+				"as " + literal(`{"active": false}`) + "; Emporix keeps the others. " + number + " " + customerNumberNote + " " +
 				ifUnchangedNote + " " + contactEmailNote,
 			req: item, scopes: scopes, body: &payload{}, ids: ids,
 		}).command(a),
@@ -132,7 +132,7 @@ func addressWrites(a *app, customers resource[customer], addresses child[custome
 		(&write{
 			use: patch.use, short: "Change an address of a customer", method: http.MethodPatch,
 			long: "Changes the members of the address ID of the customer CUSTOMER_NUMBER that --file gives, " +
-				"a JSON object such as {\"isDefault\": true}; Emporix keeps the others. " + arguments,
+				"a JSON object such as " + literal(`{"isDefault": true}`) + "; Emporix keeps the others. " + arguments,
 			req: request{path: patch.path}, scopes: scopes, body: &payload{}, ids: ofAddress,
 		}).command(a),
 		(&write{

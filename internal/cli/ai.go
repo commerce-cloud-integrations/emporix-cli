@@ -115,7 +115,7 @@ func newAICommand(a *app) *cobra.Command {
 			short: "List the LLM models that agents can use",
 			long: "Reads the LLM models of every provider that agents can use (openai, anthropic and google): " +
 				"ID is what an agent's LLM configuration names and THINKING whether the model supports " +
-				"thinking; descriptions are only in -o json.",
+				"thinking; descriptions are only in `-o json`.",
 			req:   request{path: agenticPath + "models"},
 			fetch: single{items: modelItems},
 		}),
@@ -165,7 +165,7 @@ func aiAgents() resource[aiAgent] {
 		use: "agents", noun: "AI agents", short: "Read, create, upsert, change, delete, export and import AI agents",
 		long: "Reads AI agents: TYPE is generic, complaint or anti_fraud, PROVIDER and MODEL the LLM an " +
 			"agent uses and TRIGGERS what starts it (endpoint, slack, teams or commerce_events). Their " +
-			"prompts, tools and MCP servers are only in -o json.",
+			"prompts, tools and MCP servers are only in `-o json`.",
 		view: view[aiAgent]{
 			singular:  "agent",
 			header:    []string{columnID, columnType, columnEnabled, columnProvider, columnModel, "TRIGGERS", columnName},

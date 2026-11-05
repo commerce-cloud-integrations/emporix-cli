@@ -60,7 +60,7 @@ func newInvoiceJobsCommand(a *app) *cobra.Command {
 				"counts the orders the job processed, of which INVOICED got an invoice, FAILED did not and " +
 				"PENDING wait for one. Each order's entry in invoices (orderId and status; errorStep and " +
 				"message for a failure, e.g. an order not ready for invoicing; for a success, the reference " +
-				"documents the invoice number and download link) is only in -o json. " +
+				"documents the invoice number and download link) is only in `-o json`. " +
 				"ID is the job id that creating the job returned. Emporix answers an unknown job with " +
 				"500 Internal Server Error (the reference documents 404), so get fails with exit code 1.",
 			req:   request{path: "/invoice/{tenant}/jobs/invoices/" + placeholderID},

@@ -25,7 +25,7 @@ func newProductTemplatesCommand(a *app) *cobra.Command {
 		about: "Reads and changes product templates, the attribute sets shared by products based on them: " +
 			"create makes one, update replaces one, each from --file; delete deletes one.",
 		long: "Reads product templates, the attribute sets shared by products based on them. " +
-			"ATTRIBUTES counts the template's attributes (-o json prints their definitions).",
+			"ATTRIBUTES counts the template's attributes (`-o json` prints their definitions).",
 		path:    "/product/{tenant}/product-templates",
 		filters: listFilters{kinds: filterable},
 		scopes:  []string{"product.product_template_read"},

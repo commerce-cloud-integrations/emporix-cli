@@ -77,7 +77,7 @@ func priceListPrices(pricesOf resource[priceList]) child[priceListPrice] {
 		view: view[priceListPrice]{
 			singular: "price list price",
 			header:   []string{columnID, columnItem, columnType, "MODEL", columnTiers},
-			legend: "TIERS lists each tier value as sent; -o json pairs it with the id of its tier in the price " +
+			legend: "TIERS lists each tier value as sent; `-o json` pairs it with the id of its tier in the price " +
 				"model MODEL (`epx price-models get MODEL`; an empty MODEL is the default model).",
 			row: func(p priceListPrice, _ language) []string {
 				return []string{p.ID, p.ItemID.ID, p.ItemID.ItemType, p.PriceModelID, p.TierValues.String()}

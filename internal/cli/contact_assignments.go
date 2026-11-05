@@ -32,7 +32,7 @@ func newContactAssignmentsCommand(a *app) *cobra.Command {
 			"personal data included. CUSTOMER is the customer's id, not the NUMBER that `epx customers " +
 			"get` takes. TYPE is PRIMARY, BILLING, LOGISTICS or CONTACT; the PRIMARY column is the " +
 			"assignment's primary flag, separate from the TYPE PRIMARY. Phone numbers and the legal " +
-			"entity's details are only in -o json.",
+			"entity's details are only in `-o json`.",
 		path:    "/customer-management/{tenant}/contact-assignments",
 		scopes:  []string{"customermanagement.contactassignment_read"},
 		filters: listFilters{kinds: filterable},
@@ -48,7 +48,8 @@ func newContactAssignmentsCommand(a *app) *cobra.Command {
 		},
 	}
 	writes := assignments.versionedWrites(a, []string{"customermanagement.contactassignment_manage"}, &versioned{
-		members: "legalEntity and customer (required, each as {\"id\": ...} of one that exists: 400 Bad Request, " +
+		members: "legalEntity and customer (required, each as " +
+			literal(`{"id": ...}`) + " of one that exists: 400 Bad Request, " +
 			"exit 1, otherwise; the customer's id, not its number), type (PRIMARY, BILLING, LOGISTICS " +
 			"or CONTACT, the default) and primary (true or false).",
 		required: "legalEntity and customer; a type left out becomes CONTACT, a primary left out false",

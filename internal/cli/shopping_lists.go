@@ -89,7 +89,7 @@ func (l shoppingList) String() string {
 // request.
 func newShoppingListsCommand(a *app) *cobra.Command {
 	const long = "Reads customers' shopping lists, personal data included: each customer's lists by name, " +
-		"with how many items they hold. Items are only in -o json. CUSTOMER is the customer id the " +
+		"with how many items they hold. Items are only in `-o json`. CUSTOMER is the customer id the " +
 		"lists are kept under (the reference calls it the customer number; for a customer that " +
 		"Emporix numbered, the two are the same); get takes it, and a customer without shopping " +
 		"lists is not found."

@@ -102,7 +102,7 @@ func cartExecute(cartID string, req request, scopes []string, about string) *wri
 	return &write{
 		use: "execute " + cartID, short: "Run a chain of cart commands", method: http.MethodPost,
 		long: "Runs a chain of commands on the cart " + cartID + " in one request, from the JSON object of " +
-			"--file: {\"commands\": [...]}, each with its type (AddCartItem, UpdateCartItem, " +
+			"--file: " + literal(`{"commands": [...]}`) + ", each with its type (AddCartItem, UpdateCartItem, " +
 			"DeleteCartItem, DeleteCartItems, GetCart, AddCartItemsBatch, UpdateCartItemsBatch, " +
 			"UpdateCart, ApplyCartDiscount, GetCartDiscounts, DeleteCartDiscounts, DeleteCartDiscount, " +
 			"RefreshCart or ValidateCart), the body of that operation as data, and the rest of its " +
@@ -193,8 +193,8 @@ func cartItemWrites(a *app, itemsOf resource[cart], items child[cartItem]) []*co
 			use: bulkUpdateUse + " " + cartID, short: "Update items of a cart", method: http.MethodPut,
 			long: "Updates the items in --file, a JSON array of items, each with the id of an item of the " +
 				"cart " + cartID + " and the whole item, as update takes it without --partial. Emporix " +
-				"refuses an entry with only quantity for that item (400 \"The Price must be " +
-				"defined.\"). `epx carts execute` changes some members of several items " +
+				"refuses an entry with only quantity for that item (400 " +
+				literal(`"The Price must be defined."`) + "). `epx carts execute` changes some members of several items " +
 				"(UpdateCartItemsBatch with options.partial). " + about,
 			req: request{path: batch}, scopes: scopes, body: &payload{maxItems: maxCartItemsUpdated}, choice: external,
 		}).command(a),
@@ -222,7 +222,7 @@ func cartDiscountWrites(a *app, discountsOf resource[cart], discounts child[cart
 				"Emporix may limit the coupons per cart (a tenant setting; one tenant allows one: a second is " +
 				"refused with 400 Bad Request, exit 1). It refuses a coupon restricted to customers " +
 				"(restrictions.validFor), even to the cart's own customer, with " + forbiddenRefusal + ", " +
-				"\"User not authorized.\", when an API key credential such as epx's applies it. " +
+				literal(`"User not authorized."`) + ", when an API key credential such as epx's applies it. " +
 				about,
 			// The Cart Service answers a missing scope with the same message (its reference's
 			// 403); epx checks cart.cart_manage before it sends, so a 403 here refuses the coupon.

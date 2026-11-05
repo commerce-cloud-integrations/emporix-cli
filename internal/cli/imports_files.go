@@ -125,7 +125,7 @@ func streamFiles(filesOf resource[importStream], modes string) child[queuedFile[
 			"files that a run claimed (STATUS IN_PROGRESS), read to the end (PROCESSED, also with " +
 			"records that failed, as MESSAGE says) or could not import (FAILED: it can be uploaded " +
 			"again). SIZE is in bytes, QUEUED when the file was uploaded, PROCESSED when its import " +
-			"ended and READ the records read from it. A file's load rank and run are only in -o json.",
+			"ended and READ the records read from it. A file's load rank and run are only in `-o json`.",
 		fetch: &paramRead{
 			params: queryFlags{optional: []paramFlag{{
 				param: "historyLimit", flag: "history-limit", check: fileHistoryLimit,

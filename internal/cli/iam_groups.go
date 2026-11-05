@@ -28,7 +28,7 @@ type groupMember struct {
 func iamGroups() resource[iamGroup] {
 	return iamList(groupsUse, "iam.group_read",
 		"Reads the tenant's user groups. TYPE is the kind of user a group is for (e.g. EMPLOYEE, "+
-			"CUSTOMER), and ACCESS CONTROLS counts the access controls it grants (-o json lists their "+
+			"CUSTOMER), and ACCESS CONTROLS counts the access controls it grants (`-o json` lists their "+
 			"ids, `epx iam groups access-controls` reads them).", listFilters{kinds: filterable},
 		view[iamGroup]{
 			singular:  "group",

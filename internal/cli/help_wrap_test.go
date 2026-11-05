@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"fmt"
 	"io"
 	"math"
 	"regexp"
@@ -36,6 +37,31 @@ func TestReflowWrapsProseAndKeepsTheRest(t *testing.T) {
 				t.Errorf("reflow(%q) = %q, want %q", tt.text, got, tt.want)
 			}
 		})
+	}
+}
+
+// TestHelpChunksYieldsKeptLinesAndParagraphs checks helpChunks: kept lines as
+// they are and the prose between them joined, in order, until the loop stops.
+func TestHelpChunksYieldsKeptLinesAndParagraphs(t *testing.T) {
+	var got []string
+	for chunk, kept := range helpChunks("one\ntwo\n\n  run\nthree") {
+		got = append(got, fmt.Sprintf("%q %v", chunk, kept))
+	}
+	want := []string{`"one two" false`, `"" true`, `"  run" true`, `"three" false`}
+	if !slices.Equal(got, want) {
+		t.Errorf("helpChunks = %q, want %q", got, want)
+	}
+	for stop := range 3 {
+		seen := 0
+		for range helpChunks("one\n\ntwo") {
+			if seen == stop {
+				break
+			}
+			seen++
+		}
+		if seen != stop {
+			t.Errorf("helpChunks went on after the loop stopped at %d", stop)
+		}
 	}
 }
 

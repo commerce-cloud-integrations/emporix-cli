@@ -110,7 +110,7 @@ func importRuns(listedBy string) resource[importRun] {
 		under:    importsUse,
 		listedBy: listedBy,
 		long: "Reads import runs; a run's ID is the one that `epx " + listedBy + "` shows. " +
-			"Its -o json adds the progress of each stream of the run, which `epx imports runs streams` shows.",
+			"Its `-o json` adds the progress of each stream of the run, which `epx imports runs streams` shows.",
 		path:   "/importtool/{tenant}/runs",
 		item:   detailRun, // the run of its details
 		scopes: importScopes(),
@@ -127,7 +127,7 @@ func importRunView() view[importRun] {
 			"PARTIAL (records failed or a limit skipped some, or a stream did not run), FAILED, CANCELLED " +
 			"or ABORTED (refused: nothing was read), MODE FULL or DELTA, followed by dry run for a run that " +
 			"wrote nothing, STARTED when the run was requested, FINISHED when it ended, READ the records it " +
-			"read and FAILED those that failed. -o json adds its message, queue position and other counters; " +
+			"read and FAILED those that failed. `-o json` adds its message, queue position and other counters; " +
 			"READ is created + updated + skipped + deleted + failed + unresolvedParents + collapsed + " +
 			"embedded.",
 		row: func(r importRun, _ language) []string {
@@ -156,7 +156,7 @@ func newImportRunsCommand(a *app, runs resource[importRun], writes ...*cobra.Com
 				"(rows that repeated a key of the same batch, merged before the write, the last one winning) " +
 				"and EMBEDDED (child records that their parent wrote inside its own record). A STREAM followed " +
 				"by sweep is the repair pass that read again the parents a child stream had not found, not a " +
-				"second stream. -o json adds duplicateKeys (rows whose key the run had imported already, which " +
+				"second stream. `-o json` adds duplicateKeys (rows whose key the run had imported already, which " +
 				"`epx imports runs diagnostics` lists too), capSkipped (whether the tenant's limit of records " +
 				"per type skipped records), keylessSeen (whether a record had no key: an error NO_KEY) and the " +
 				"files a file-based stream read (filesRead, fileNames). A queued run lists nothing yet. " +
@@ -172,7 +172,7 @@ func newImportRunsCommand(a *app, runs resource[importRun], writes ...*cobra.Com
 				"REPEATED_KEY for a row whose KEY the run had already imported (OCCURRENCE times before), or " +
 				"UNRESOLVED_PARENT for a child line whose parent was missing: LINKING FIELD and LINKING VALUE " +
 				"are the parent key it points at, WAITING LINES the lines waiting for that parent. The service " +
-				"keeps a capped sample per stream and kind; -o json says how many rows it recorded, its cap " +
+				"keeps a capped sample per stream and kind; `-o json` says how many rows it recorded, its cap " +
 				"and whether a stream reached it (the run's counters give the totals). Every recorded row is " +
 				"read, up to " + limit + "; a run that recorded more fails, and its rows are read per stream: " +
 				"`epx api get /importtool/{tenant}/runs/RUN_ID/diagnostics -p streamId=ID -p limit=" + limit + " " +
@@ -209,7 +209,7 @@ func runErrors() child[importError] {
 		short: "List the errors of a run",
 		long: "Reads the errors recorded during an import run: KEY is the natural key of the record that " +
 			"failed, STAGE the step it failed in (such as MAPPING or UPSERT), CODE what kind of error it is " +
-			"and MESSAGE what went wrong. Its stream and time are only in -o json. CODE is VALIDATION (the " +
+			"and MESSAGE what went wrong. Its stream and time are only in `-o json`. CODE is VALIDATION (the " +
 			"mapped record was invalid, so it was not written), NO_KEY (its key column was empty), UPSERT " +
 			"(the target refused the write), CONFIGURATION (something to change in the import's own " +
 			"configuration, such as a missing base URL, refused credentials or an unknown path), " +

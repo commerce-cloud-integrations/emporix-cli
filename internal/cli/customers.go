@@ -54,7 +54,7 @@ func customers() resource[customer] {
 		long: "Reads customer profiles, personal data included. NUMBER is the customer number that get " +
 			"takes, EMAIL the contact email (that of the account, with which the customer signs in, " +
 			"may differ), BUSINESS MODEL is B2B (assigned to a company) or B2C, and ON HOLD marks a " +
-			"suspended profile. B2B data and the default address are only in -o json; Emporix leaves " +
+			"suspended profile. B2B data and the default address are only in `-o json`; Emporix leaves " +
 			"out a profile's addresses, accounts and mixins unless asked to expand them, which epx " +
 			"does not: `epx customers addresses list` lists the addresses.",
 		path:    "/customer/{tenant}/customers",
@@ -106,7 +106,7 @@ func newCustomerAddressesCommand(a *app, customers resource[customer]) *cobra.Co
 				columnID, "CONTACT", columnCompany, "STREET", "ZIP", "CITY", columnCountry, columnDefault, "TAGS",
 			},
 			legend: "DEFAULT marks the default address; TAGS are labels such as BILLING or SHIPPING. Phone " +
-				"numbers, states and extra address lines are only in -o json.",
+				"numbers, states and extra address lines are only in `-o json`.",
 			row: func(d customerAddress, _ language) []string {
 				return []string{
 					d.ID, d.ContactName, d.CompanyName, spaced(d.Street, d.StreetNumber), d.ZipCode, d.City, d.Country,

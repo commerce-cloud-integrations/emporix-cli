@@ -38,7 +38,7 @@ func newLegalEntitiesCommand(a *app) *cobra.Command {
 		long: "Reads legal entities, the companies of B2B customers and their subsidiaries, personal data " +
 			"included (approval groups name customers). TYPE is COMPANY or SUBSIDIARY, PARENT the legal " +
 			"entity a subsidiary belongs to, COUNTRY the country of registration. Registration details, " +
-			"addresses, customer groups, approval groups and restrictions are only in -o json.",
+			"addresses, customer groups, approval groups and restrictions are only in `-o json`.",
 		path:    "/customer-management/{tenant}/legal-entities",
 		scopes:  []string{legalEntityReadScope},
 		filters: listFilters{kinds: filterable},
@@ -57,7 +57,7 @@ func newLegalEntitiesCommand(a *app) *cobra.Command {
 		"Reads the legal entities, personal data included, that an Emporix q filter finds (--query; "+
 			"without it, every legal entity).", queryField())}
 	writes := entities.versionedWrites(a, []string{"customermanagement.legalentity_manage"}, &versioned{
-		members: legalEntityMembers, required: "name and type",
+		members: legalEntityMembers(), required: "name and type",
 		createNote: "A create that Emporix refuses as a conflict may still make the IAM customer groups of " +
 			"the legal entity.",
 		updateNote: "Keep every customer group that Emporix made for the legal entity (Admin, Buyer, Requester " +
@@ -75,12 +75,14 @@ func newLegalEntitiesCommand(a *app) *cobra.Command {
 }
 
 // legalEntityMembers are the members of the body of a legal entity's create.
-const legalEntityMembers = "name (required), type (COMPANY, the default, or SUBSIDIARY), parentId (the legal " +
-	"entity a subsidiary belongs to), legalInfo, accountLimit, customerGroups (IAM groups), " +
-	"entitiesAddresses and approvalGroup (its customer locations and contact assignments), " +
-	"restrictions and mixins; parentId, customerGroups, entitiesAddresses and approvalGroup must " +
-	"name items that exist (400 Bad Request, exit 1, otherwise), the last three each as " +
-	"{\"id\": ...} or in full, as get prints it."
+func legalEntityMembers() string {
+	return "name (required), type (COMPANY, the default, or SUBSIDIARY), parentId (the legal " +
+		"entity a subsidiary belongs to), legalInfo, accountLimit, customerGroups (IAM groups), " +
+		"entitiesAddresses and approvalGroup (its customer locations and contact assignments), " +
+		"restrictions and mixins; parentId, customerGroups, entitiesAddresses and approvalGroup must " +
+		"name items that exist (400 Bad Request, exit 1, otherwise), the last three each as " +
+		literal(`{"id": ...}`) + " or in full, as get prints it."
+}
 
 // legalEntityView is the table of legal entities.
 func legalEntityView() view[legalEntity] {

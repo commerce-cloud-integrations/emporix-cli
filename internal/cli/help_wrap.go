@@ -44,18 +44,39 @@ func reflowHelp(root *cobra.Command) {
 func reflow(text string, width int) string {
 	out := helpLines{width: width}
 	out.text.Grow(len(text))
-	var prose []string // the lines of the paragraph so far
-	for line := range strings.SplitSeq(text, "\n") {
-		if !keptLine(line) {
-			prose = append(prose, line)
-			continue
+	for chunk, kept := range helpChunks(text) {
+		if kept {
+			out.line(chunk)
+		} else {
+			out.fill(chunk)
 		}
-		out.fill(strings.Join(prose, " "))
-		prose = prose[:0]
-		out.line(line)
 	}
-	out.fill(strings.Join(prose, " "))
 	return out.text.String()
+}
+
+// helpChunks yields help text, in order, as reflow reads it: each line that
+// it keeps (keptLine) as it is, with true, and each paragraph of prose, the
+// lines between two kept ones joined by spaces, with false.
+func helpChunks(text string) iter.Seq2[string, bool] {
+	return func(yield func(string, bool) bool) {
+		var prose []string // the lines of the paragraph so far
+		for line := range strings.SplitSeq(text, "\n") {
+			if !keptLine(line) {
+				prose = append(prose, line)
+				continue
+			}
+			if len(prose) > 0 && !yield(strings.Join(prose, " "), false) {
+				return
+			}
+			prose = prose[:0]
+			if !yield(line, true) {
+				return
+			}
+		}
+		if len(prose) > 0 {
+			yield(strings.Join(prose, " "), false)
+		}
+	}
 }
 
 // keptLine reports whether line of help text is kept as it is by reflow: a
@@ -140,6 +161,11 @@ func wordEnd(text string, i int) int {
 
 // isBlankByte reports whether c is a space or a tab.
 func isBlankByte(c byte) bool { return c == ' ' || c == '\t' }
+
+// literal returns s, such as a JSON value or a quoted message, as a
+// backquoted span of help text, which the reflow never breaks (wordEnd) and
+// the reference shows as code.
+func literal(s string) string { return "`" + s + "`" }
 
 // joinSentences joins parts, sentences of help text, with a space between each
 // two that are not empty: the separator belongs to the joining, not to the

@@ -61,7 +61,7 @@ func rewardPointWrites(a *app, customers, options argumentIDs) []*cobra.Command 
 				"The JSON of --file must give customerId, CUSTOMER again (Emporix answers 400 Bad Request to " +
 				"another and 500 Internal Server Error without one, exit 1, and creates no entry), and the " +
 				"points it starts with as startPoints, e.g. " +
-				"{\"customerId\": \"C1001\", \"startPoints\": {\"points\": 20}}. " + customer,
+				literal(`{"customerId": "C1001", "startPoints": {"points": 20}}`) + ". " + customer,
 			example: "  epx reward-points create C1001 --site AcmeStore_NL --points 20 --description \"Welcome\"",
 			req:     request{path: rewardCustomerPath}, params: rewardSite(),
 			scopes: manage, ids: customers,

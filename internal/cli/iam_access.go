@@ -34,7 +34,7 @@ type iamTemplate struct {
 
 // accessControlColumns says what the columns of an IAM access control hold,
 // also in the reads of one group or user.
-const accessControlColumns = "SCOPES counts the scopes an access control grants (-o json lists them)."
+const accessControlColumns = "SCOPES counts the scopes an access control grants (`-o json` lists them)."
 
 // iamPagingNote ends the help of list of each collection iamList declares.
 const iamPagingNote = "list sorts by id unless --sort says otherwise; end another order with ,id:asc (e.g. " +
@@ -94,7 +94,7 @@ func iamAccessControls() resource[iamAccessControl] {
 func newIAMTemplatesCommand(a *app) *cobra.Command {
 	templates := iamList("templates", "iam.template_read",
 		"Reads IAM access control templates: sets of access controls that groups are built from "+
-			"(-o json lists them).", listFilters{kinds: sortable},
+			"(`-o json` lists them).", listFilters{kinds: sortable},
 		view[iamTemplate]{
 			singular:  "template",
 			header:    []string{columnID, columnName, "ACCESS CONTROLS"},

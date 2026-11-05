@@ -121,7 +121,7 @@ func newCartsCommand(a *app) *cobra.Command {
 		filters: listFilters{kinds: sortable},
 		search: &searchListing{
 			long: "Reads the carts, personal data included, that an Emporix q filter finds (--query; without " +
-				"it, every cart), e.g. --query 'status:OPEN siteCode:AcmeStore_NL'.",
+				"it, every cart), e.g. --query " + literal(`'status:OPEN siteCode:AcmeStore_NL'`) + ".",
 			fields: []bodyField{queryField()},
 		},
 		view: view[cart]{
@@ -131,7 +131,7 @@ func newCartsCommand(a *app) *cobra.Command {
 				columnModified,
 			},
 			legend: "STATUS is OPEN or CLOSED (sent by search only), CUSTOMER the customer id " +
-				"(empty for an anonymous cart, whose sessionId -o json shows), ITEMS the number of items and " +
+				"(empty for an anonymous cart, whose sessionId `-o json` shows), ITEMS the number of items and " +
 				"TOTAL the gross final price (items, shipping and payment fee) in the cart's currency. " +
 				"A CLOSED cart, such as one merged into another, is listed by search but not found by get.",
 			row: func(c cart, _ language) []string {
@@ -302,7 +302,7 @@ func cartValidationChild() child[cartValidation] {
 		short: "Check the prices of a cart's items",
 		long: "Reads whether a cart's items pass Emporix's checks, which find prices that are no longer " +
 			"valid and prices duplicated for a product; it changes nothing. VALID is true or false and " +
-			"ERRORS the error codes by item id (-o json adds each error's message and field).",
+			"ERRORS the error codes by item id (`-o json` adds each error's message and field).",
 		fetch: single{items: validationResult},
 		view: view[cartValidation]{
 			singular: "cart validation",

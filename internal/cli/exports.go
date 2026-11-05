@@ -34,7 +34,7 @@ func exportCommand(a *app, path string, e *export) *cobra.Command {
 		singular: "export package",
 		header:   []string{"DATA", "EXPORTED AT"},
 		long:     []string{"DATA"},
-		legend: "DATA is the package, base64-encoded and cut in the table; -o json prints the package " +
+		legend: "DATA is the package, base64-encoded and cut in the table; `-o json` prints the package " +
 			"whole, as an import on another tenant takes it.",
 		row: func(p exportPackage, _ language) []string { return []string{p.Data, p.ExportedAt} },
 	}, scopes: e.scopes}.command(a, &command{

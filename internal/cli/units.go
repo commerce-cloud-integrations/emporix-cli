@@ -60,8 +60,10 @@ const unitManageScope = "unithandling.unit_manage"
 // unitLanguageHelp is what the help of units update says of the localized
 // text of its body: Emporix replaces a name with a string in one language,
 // so that the unit's other translations are gone.
-const unitLanguageHelp = contentLanguageHelp + " Such a string replaces the unit's other translations of " +
-	"that text; send the map to keep them."
+func unitLanguageHelp() string {
+	return contentLanguageHelp() + " Such a string replaces the unit's other translations of " +
+		"that text; send the map to keep them."
+}
 
 // unitWriteCommands returns the writes of units, with the scope that the
 // reference names for them: `create` (POST to the collection), `update CODE`
@@ -92,14 +94,14 @@ func unitWriteCommands(a *app, units resource[unit]) []*cobra.Command {
 				"unit, with 404 Not Found: epx then exits with 5, a conflict (read the unit again before " +
 				"you retry), and without a version with 4, not found. " + visibility,
 			method: http.MethodPut, req: request{path: units.itemPath()}, scopes: manage, body: &payload{},
-			language: stringsOrMaps, languageHelp: unitLanguageHelp, ids: units.itemIDs(),
+			language: stringsOrMaps, languageHelp: unitLanguageHelp(), ids: units.itemIDs(),
 			answers: emporix.Answers{StaleNotFound: true},
 		}).command(a),
 		itemDelete(units, "Delete a unit", "Deletes the unit CODE, as `epx units list` shows it. "+visibility,
 			manage).command(a),
 		(&write{
 			use: bulkDeleteUse, short: "Delete units by their codes", method: http.MethodDelete,
-			long: "Deletes the units whose codes the JSON array of --file names, such as [\"g\", \"kg\"]. " +
+			long: "Deletes the units whose codes the JSON array of --file names, such as " + literal(`["g", "kg"]`) + ". " +
 				visibility,
 			req: request{path: units.path}, scopes: manage, body: &payload{},
 			deletes: deletion{many: "the units whose codes --file names"},

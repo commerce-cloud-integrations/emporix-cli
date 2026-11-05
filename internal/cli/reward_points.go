@@ -85,7 +85,7 @@ func newRewardPointsCommand(a *app) *cobra.Command {
 		"a customer can redeem now (expired points are left out), ADDED and REDEEMED the points added " +
 		"and redeemed so far, expired ones included (a failed redemption is refunded as an " +
 		"addition), so ACTIVE may be less than ADDED minus REDEEMED. Each addition and redemption is " +
-		"only in -o json."
+		"only in `-o json`."
 	summaries := reader[rewardSummary]{view: view[rewardSummary]{
 		singular: "reward points summary",
 		header:   []string{columnCustomer, columnActive, "ADDED", "REDEEMED"},

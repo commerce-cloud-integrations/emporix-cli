@@ -69,7 +69,7 @@ func couponWrites(a *app, coupons resource[coupon], redemptions child[redemption
 			use: createUse, short: "Create a coupon", method: http.MethodPost,
 			long: "Creates the coupon in --file, a JSON object with at least its name and, for a discount, " +
 				"discountType (PERCENT with discountPercentage, ABSOLUTE with discountAbsolute, or " +
-				"FREE_SHIPPING), and prints {\"id\": CODE}: the code of the JSON, or one that Emporix makes " +
+				"FREE_SHIPPING), and prints " + literal(`{"id": CODE}`) + ": the code of the JSON, or one that Emporix makes " +
 				"without one. Emporix saves codes in upper case unless the tenant configuration " +
 				"enableCouponCodeCaseSensitivity is true. A coupon with the code exists already: a conflict " +
 				"(exit 5), also for a deleted one, whose code stays taken.",
@@ -105,7 +105,7 @@ func couponWrites(a *app, coupons resource[coupon], redemptions child[redemption
 			use: "redeem " + coupons.argument(), short: "Redeem a coupon", method: http.MethodPost,
 			long: "Redeems a coupon for an order of --order-total that it takes --discount off, by " +
 				"--customer (a customer number) where given, outside a checkout, and prints what Emporix " +
-				"answers with: {\"id\": ID}, the redemption's id. Sent twice, it redeems the coupon twice. " +
+				"answers with: " + literal(`{"id": ID}`) + ", the redemption's id. Sent twice, it redeems the coupon twice. " +
 				redemptionRefusals + " " + legalEntityNote +
 				" `epx coupons validate` runs the same checks without redeeming it. " +
 				"--customer needs the scope below: Emporix refuses it to a token with coupon.coupon_manage " +

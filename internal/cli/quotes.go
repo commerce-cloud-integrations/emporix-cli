@@ -75,7 +75,7 @@ func newQuotesCommand(a *app) *cobra.Command {
 		long: "Reads quotes, personal data included. STATUS is CREATING, AWAITING, OPEN, IN_PROGRESS, " +
 			"ACCEPTED, DECLINED, DECLINED_BY_MERCHANT or EXPIRED, CUSTOMER the customer it is for (email, " +
 			"name or customer id), and TOTAL the gross total in the quote's currency. Items, prices, " +
-			"addresses and comments are only in -o json. " +
+			"addresses and comments are only in `-o json`. " +
 			"`epx quotes reasons` lists the reasons for changing or declining a quote. " +
 			"`epx quotes create`, `patch` and `delete` change quotes; `pdf` saves a quote's PDF.",
 		path:    "/quote/{tenant}/quotes",
@@ -94,7 +94,7 @@ func newQuotesCommand(a *app) *cobra.Command {
 		short: "List the changes of a quote",
 		long: "Reads the history of a quote, personal data included: when (MODIFIED), by whom (BY: user " +
 			"type and name) and what changed (CHANGE: the operation and the changed part). Old and new " +
-			"values are only in -o json. Emporix sends the whole history in one response.",
+			"values are only in `-o json`. Emporix sends the whole history in one response.",
 		fetch: listing{read: (*emporix.Client).GetUnpaged}, // live: pageSize and pageNumber are ignored
 		view: view[quoteChange]{
 			singular: "quote change",

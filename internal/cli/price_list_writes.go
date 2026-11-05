@@ -12,10 +12,13 @@ const priceListManage = "price.pricelist_manage"
 // help: the Price Service takes its localized text as a map of translations
 // also with a Content-Language that names one language, a map of that one
 // language then (its reference's header_contentLanguage).
-const priceListLanguageHelp = "Localized text in the body, such as a name, is a map of translations, e.g. " +
-	`{"en": "Wholesale", "nl": "Groothandel"}, as -o json of a read prints it, also with --` +
-	contentLanguageFlag + " LANGUAGE: then a map of that language only, e.g. " + `{"en": "Wholesale"}` + " with --" +
-	contentLanguageFlag + " en."
+func priceListLanguageHelp() string {
+	return "Localized text in the body, such as a name, is a map of translations, e.g. " +
+		literal(`{"en": "Wholesale", "nl": "Groothandel"}`) + ", as `-o json` of a read prints it, also with --" +
+		contentLanguageFlag + " LANGUAGE: then a map of that language only, e.g. " +
+		literal(`{"en": "Wholesale"}`) + " with --" +
+		contentLanguageFlag + " en."
+}
 
 // priceListWrites returns the writes of price lists: create, update ID (an
 // upsert) and delete ID, which deletes the prices of the list too.
@@ -23,11 +26,11 @@ func priceListWrites(a *app, lists resource[priceList]) []*cobra.Command {
 	at := lists.at()
 	create, update, remove := (&collectionWrites{
 		at: at, one: "a price list", scopes: []string{priceListManage}, language: stringsOrMaps,
-		languageHelp: priceListLanguageHelp, upsert: true,
+		languageHelp: priceListLanguageHelp(), upsert: true,
 		create: "Creates the price list in --file, a JSON object with name, currency, siteCode and validity " +
 			"(from and to), and optionally countries or regions, and customerGroups or legalEntityId, " +
-			"e.g. " + `{"name": {"en": "Wholesale"}, "currency": "EUR", "siteCode": "AcmeStore_NL", ` +
-			`"countries": ["NL"], "validity": {"from": "2026-01-01T00:00:00.000Z"}}` + ". Without an id, Emporix " +
+			"e.g. " + literal(`{"name": {"en": "Wholesale"}, "currency": "EUR", "siteCode": "AcmeStore_NL", `+
+			`"countries": ["NL"], "validity": {"from": "2026-01-01T00:00:00.000Z"}}`) + ". Without an id, Emporix " +
 			"makes one, which the response gives.",
 		update: "Replaces the price list ID with the one in --file, a JSON object as " +
 			"`epx " + at.get + " -o json` prints it, or creates it with that id where none exists " +
@@ -51,9 +54,9 @@ func priceListPriceWrites(a *app, pricesOf resource[priceList], prices child[pri
 	const shape = "a JSON object with itemId (itemType and id) and " + tierValuesHelp
 	return (&collectionWrites{
 		at: at, one: "a price of a price list", scopes: []string{priceListManage}, upsert: true,
-		create: "Adds the price in --file to the price list PRICE_LIST_ID, in its currency: " + shape + ", e.g. " +
-			`{"itemId": {"itemType": "PRODUCT", "id": "100200"}, "priceModelId": "pm1", ` +
-			`"tierValues": [{"id": "t1", "priceValue": 15.90}]}` + ". Without an id, Emporix makes one, which the " +
+		create: "Adds the price in --file to the price list PRICE_LIST_ID, in its currency: " + shape + ", e.g. " + literal(
+			`{"itemId": {"itemType": "PRODUCT", "id": "100200"}, "priceModelId": "pm1", `+
+				`"tierValues": [{"id": "t1", "priceValue": 15.90}]}`) + ". Without an id, Emporix makes one, which the " +
 			"response gives. " + of,
 		update: "Replaces the price ID of the price list PRICE_LIST_ID with the one in --file, a JSON object " +
 			"as `epx " + at.get + " -o json` prints it, or creates it with that id where none exists " +
@@ -66,7 +69,7 @@ func priceListPriceWrites(a *app, pricesOf resource[priceList], prices child[pri
 			update: "Replaces the prices in --file in the price list PRICE_LIST_ID, a JSON array of prices, " +
 				"each with its id, or creates those that do not exist (an upsert). " + staleBulkItemHelp + " " + of,
 			delete: "Deletes the prices of the price list PRICE_LIST_ID whose ids --file gives, a JSON array of " +
-				`ids, e.g. ["p1", "p2"].` + " " + of,
+				"ids, e.g. " + literal(`["p1", "p2"]`) + "." + " " + of,
 		},
 	}).commands(a)
 }

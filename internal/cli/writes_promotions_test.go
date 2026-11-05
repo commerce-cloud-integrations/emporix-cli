@@ -222,7 +222,7 @@ func TestPromotionWriteUsageErrorsSendNothing(t *testing.T) {
 // of unknown items and the settings the site needs.
 func TestPromotionWritesHelp(t *testing.T) {
 	assertHelpHolds(t, map[string][]string{
-		"coupons redeem": {redemptionRefusals, legalEntityNote, `answers with: {"id": ID}`,
+		"coupons redeem": {redemptionRefusals, legalEntityNote, "answers with: `{\"id\": ID}`",
 			"Sent twice, it redeems the coupon twice", "Emporix refuses it to a token with coupon.coupon_manage"},
 		"coupons validate":          {"may not redeem with " + forbiddenRefusal, legalEntityNote},
 		"coupons redemption-delete": {"which then counts one redemption less"},

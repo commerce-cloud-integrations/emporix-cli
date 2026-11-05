@@ -51,7 +51,7 @@ func newAvailabilityCommand(a *app) *cobra.Command {
 		stock.command(a, &command{
 			use:   "get PRODUCT_ID",
 			short: "Show the availability of a product on a site",
-			long: joinSentences(onSite, productIDNote, "The availability of a bundle's products is only in -o json "+
+			long: joinSentences(onSite, productIDNote, "The availability of a bundle's products is only in `-o json` "+
 				"(bundleAvailabilities)."),
 			req:   request{path: availabilityService + "/" + placeholderID + "/" + placeholderSite},
 			fetch: single{items: oneItem},
@@ -113,7 +113,7 @@ func availabilityWrites(a *app, listed argumentIDs) []*cobra.Command {
 		update: "Replaces the availability records in --file, a JSON array of records as bulk-create " +
 			"takes them, or creates those that do not exist (an upsert).",
 		delete: "Deletes the availability records that --file names, a JSON array of objects with the " +
-			`productId and site of each, such as [{"productId": "100200", "site": "AcmeStore_NL"}]. ` +
+			"productId and site of each, such as " + literal(`[{"productId": "100200", "site": "AcmeStore_NL"}]`) + ". " +
 			bundle + " deleted.",
 	}).commands(a)...)
 }

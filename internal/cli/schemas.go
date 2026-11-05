@@ -36,7 +36,7 @@ func newSchemasCommand(a *app) *cobra.Command {
 		use:   "schemas",
 		short: "Read, create, change and delete custom schemas and schema references",
 		long: "Reads custom schemas, the attribute sets that extend Emporix entities. TYPES lists the " +
-			"entity types a schema applies to and ATTRIBUTES counts its top-level attributes (-o json " +
+			"entity types a schema applies to and ATTRIBUTES counts its top-level attributes (`-o json` " +
 			"prints their definitions). `epx schemas references` reads schema references and " +
 			"`epx schemas types` the entity types that have schemas.",
 		path:    "/schema/{tenant}/schemas",
@@ -98,7 +98,7 @@ func schemaWriteCommands(a *app, schemas resource[schema]) []*cobra.Command {
 		(&write{
 			use: schemas.itemUse("update-types"), short: "Change the entity types of a schema", method: http.MethodPut,
 			long: "Sets the entity types of the schema ID to those of the JSON array in --file, such as " +
-				`["PRODUCT", "ORDER"], in the version that --version names: the latest is VERSION in ` +
+				literal(`["PRODUCT", "ORDER"]`) + ", in the version that --version names: the latest is VERSION in " +
 				"`epx schemas get ID`, and an earlier one may be named too. --mode ADD adds the types instead, " +
 				"REMOVE removes them. It releases no new version of the schema. An unknown ID is not found. " +
 				schemaTypesHelp,
@@ -128,7 +128,7 @@ func newSchemaReferencesCommand(a *app) *cobra.Command {
 		under: "schemas",
 		long: "Reads schema references: schemas uploaded as a JSON schema file, for attribute types that " +
 			"schemas cannot define. TYPES lists the entity types a reference applies to; the file's " +
-			"URL is only in -o json.",
+			"URL is only in `-o json`.",
 		path:    "/schema/{tenant}/references",
 		filters: listFilters{kinds: filterable},
 		view: view[schema]{
@@ -151,7 +151,7 @@ func newSchemaReferencesCommand(a *app) *cobra.Command {
 			use: createUse, short: "Create a schema reference", method: http.MethodPost,
 			long: "Creates a schema reference: the JSON schema file of --json-schema with the JSON in " +
 				"--file, which names the reference and the entity types it applies to, such as " +
-				`{"name": {"en": "Specifications"}, "types": ["PRODUCT"]}. It prints the id that Emporix answers` +
+				literal(`{"name": {"en": "Specifications"}, "types": ["PRODUCT"]}`) + ". It prints the id that Emporix answers" +
 				" with; one that exists already is a conflict. " + sent + " " + referenceTypesHelp,
 			req: request{path: references.path}, scopes: manage, body: referenceForm(), language: mapsOnly,
 		}).command(a),
