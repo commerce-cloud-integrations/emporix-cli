@@ -193,12 +193,18 @@ def write_pages(export: str, source: str, base: str, host: str) -> int:
         md_url = host + base + "/" + page + ".md"
         text = "# " + title + "\n\n" + ("> " + description + "\n\n" if description else "") + markdown(body, host + base)
         md_path.parent.mkdir(parents=True, exist_ok=True)
-        md_path.write_text(text, encoding="utf-8")
+        save(md_path, text)
         page_html = target.read_text(encoding="utf-8")
-        target.write_text(add_head(page_html, canonical, title, description, site), encoding="utf-8")
+        save(target, add_head(page_html, canonical, title, description, site))
         entries.append((group, page, title, description, canonical, md_url, text))
     write_indexes(Path(export), docs, site, host, base, entries)
     return 0
+
+
+def save(path: Path, text: str) -> None:
+    """Writes text to path, as UTF-8."""
+    with open(path, "w", encoding="utf-8") as out:
+        out.write(text)
 
 
 def write_indexes(export: Path, docs: dict, site: dict, host: str, base: str, entries: list) -> None:
@@ -210,17 +216,16 @@ def write_indexes(export: Path, docs: dict, site: dict, host: str, base: str, en
             current = group
             lines += ["", "## " + (group or "Pages"), ""]
         lines.append("- [%s](%s)%s" % (title, md_url, ": " + description if description else ""))
-    (export / "llms.txt").write_text("\n".join(lines) + "\n", encoding="utf-8")
+    save(export / "llms.txt", "\n".join(lines) + "\n")
     full = ["# %s — full documentation" % site["name"], ""]
     for _, _, _, _, canonical, _, text in entries:
         full += ["Source: " + canonical, "", text, "---", ""]
-    (export / "llms-full.txt").write_text("\n".join(full), encoding="utf-8")
+    save(export / "llms-full.txt", "\n".join(full))
     urls = "".join("  <url><loc>%s</loc></url>\n" % html.escape(entry[4]) for entry in entries)
     sitemap = ('<?xml version="1.0" encoding="UTF-8"?>\n'
                '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + urls + "</urlset>\n")
-    (export / "sitemap.xml").write_text(sitemap, encoding="utf-8")
-    (export / "robots.txt").write_text(
-        "User-agent: *\nAllow: /\n\nSitemap: %s%s/sitemap.xml\n" % (host, base), encoding="utf-8")
+    save(export / "sitemap.xml", sitemap)
+    save(export / "robots.txt", "User-agent: *\nAllow: /\n\nSitemap: %s%s/sitemap.xml\n" % (host, base))
 
 
 if __name__ == "__main__":
