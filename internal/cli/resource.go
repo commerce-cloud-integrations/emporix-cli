@@ -325,6 +325,10 @@ func (r resource[T]) itemPath() string { return r.path + "/" + placeholderID }
 // itemRequest returns the request that reads one item of r, as get reads it.
 func (r resource[T]) itemRequest() request { return request{path: r.itemPath(), query: r.query} }
 
+// getLine returns the command line of get of one item of r, without epx,
+// e.g. "vendors get ID".
+func (r resource[T]) getLine() string { return r.commandLine(r.itemUse(getUse), r.itemRequest()) }
+
 // help returns long followed by the legend of rd's view, the help of
 // --mixin-site where its items may hold site-aware mixins (mixinSiteHelp),
 // and the scope sentence of tokens, the scopes of its read

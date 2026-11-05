@@ -34,17 +34,32 @@ func (r *importRun) mode() string {
 	return r.Mode
 }
 
-// runStream is the progress of one stream in an import run.
+// runStream is the progress of one stream in an import run: the records it
+// read, which its other counters add up to, and its message.
 type runStream struct {
-	StreamName  string      `json:"streamName"`
-	Status      string      `json:"status"`
-	RecordsRead json.Number `json:"recordsRead"`
-	Created     json.Number `json:"created"`
-	Updated     json.Number `json:"updated"`
-	Skipped     json.Number `json:"skipped"`
-	Deleted     json.Number `json:"deleted"`
-	Failed      json.Number `json:"failed"`
-	Message     string      `json:"message"`
+	StreamName        string      `json:"streamName"`
+	Status            string      `json:"status"`
+	RecordsRead       json.Number `json:"recordsRead"`
+	Created           json.Number `json:"created"`
+	Updated           json.Number `json:"updated"`
+	Skipped           json.Number `json:"skipped"`
+	Deleted           json.Number `json:"deleted"`
+	Failed            json.Number `json:"failed"`
+	UnresolvedParents json.Number `json:"unresolvedParents"`
+	Collapsed         json.Number `json:"collapsed"`
+	Embedded          json.Number `json:"embedded"`
+	Message           string      `json:"message"`
+	Sweep             bool        `json:"sweep"` // the repair pass of a stream, not a second stream
+}
+
+// stream returns the name of the stream of s, followed by "sweep" for the
+// repair pass that read again the parents a child stream had not found; a
+// progress without a name has no identifier, also when it is a sweep.
+func (s *runStream) stream() string {
+	if s.Sweep && s.StreamName != "" {
+		return spaced(s.StreamName, "sweep")
+	}
+	return s.StreamName
 }
 
 // importError is the part of an error recorded during an import run shown in
@@ -75,9 +90,10 @@ const maxDiagnosticRows = 50000
 // configurationRuns declares the runs of an import configuration.
 func configurationRuns() child[importRun] {
 	return child[importRun]{
-		use:     "runs",
-		short:   "List the runs of a configuration",
-		long:    "Reads the run history of an import configuration, most recent first.",
+		use:   "runs",
+		short: "List the runs of a configuration",
+		long: "Reads the run history of an import configuration, most recent first; `epx imports runs streams`\n" +
+			"shows the counters of each stream of a run.",
 		fetch:   listing{read: (*emporix.Client).GetAllContentPages},
 		unknown: listsNothing,
 		view:    importRunView(),
@@ -111,7 +127,9 @@ func importRunView() view[importRun] {
 			"PARTIAL (records failed or a limit skipped some, or a stream did not run), FAILED, CANCELLED\n" +
 			"or ABORTED (refused: nothing was read), MODE FULL or DELTA, followed by dry run for a run that\n" +
 			"wrote nothing, STARTED when the run was requested, FINISHED when it ended, READ the records it\n" +
-			"read and FAILED those that failed. -o json adds its other counters, message and queue position.",
+			"read and FAILED those that failed. -o json adds its message, queue position and other counters;\n" +
+			"READ is created + updated + skipped + deleted + failed + unresolvedParents + collapsed +\n" +
+			"embedded.",
 		row: func(r importRun, _ language) []string {
 			return []string{
 				r.ID, r.Status, r.mode(), r.StartedAt, r.FinishedAt, r.RecordsRead.String(), r.Failed.String(),
@@ -131,29 +149,22 @@ func newImportRunsCommand(a *app, runs resource[importRun], writes ...*cobra.Com
 			short: "Show the progress of each stream of a run",
 			long: "Reads the progress of each stream of an import run: STATUS is QUEUED, RUNNING, SUCCEEDED,\n" +
 				"PARTIAL, FAILED, SKIPPED or ABORTED (not run because of its configuration, such as mappings\n" +
-				"never published, as MESSAGE says), then the records the stream read, created, updated,\n" +
-				"skipped as unchanged, deleted and failed to import. A queued run lists nothing yet.\n" +
+				"never published, as MESSAGE says). READ counts the records the stream read, and the counters\n" +
+				"after it add up to READ: CREATED, UPDATED, SKIPPED (unchanged, or not written because the\n" +
+				"tenant's limit of records per type was reached), DELETED, FAILED, UNRESOLVED (child records\n" +
+				"whose parent was not found; `epx imports runs diagnostics` lists those parents), COLLAPSED\n" +
+				"(rows that repeated a key of the same batch, merged before the write, the last one winning)\n" +
+				"and EMBEDDED (child records that their parent wrote inside its own record). A STREAM followed\n" +
+				"by sweep is the repair pass that read again the parents a child stream had not found, not a\n" +
+				"second stream. -o json adds duplicateKeys (rows whose key the run had imported already, which\n" +
+				"`epx imports runs diagnostics` lists too), capSkipped (whether the tenant's limit of records\n" +
+				"per type skipped records), keylessSeen (whether a record had no key: an error NO_KEY) and the\n" +
+				"files a file-based stream read (filesRead, fileNames). A queued run lists nothing yet.\n" +
 				runs.argumentSentence(notFound),
 			req:   request{path: runs.path + "/" + placeholderID},
 			fetch: single{items: detailStreams},
 		}),
-		childCommand(a, runs, child[importError]{
-			use:   "errors",
-			short: "List the errors of a run",
-			long: "Reads the errors recorded during an import run: KEY is the natural key of the record that\n" +
-				"failed, STAGE the step it failed in (such as MAPPING or UPSERT), CODE the error code and\n" +
-				"MESSAGE what went wrong. Its stream and time are only in -o json.",
-			fetch:   listing{read: (*emporix.Client).GetAllContentPages},
-			unknown: listsNothing,
-			view: view[importError]{
-				singular: "run error",
-				header:   []string{columnID, columnKey, "STAGE", columnCode, columnMessage},
-				long:     []string{columnMessage},
-				row: func(e importError, _ language) []string {
-					return []string{e.ID, e.NaturalKey, e.Stage, e.ErrorCode, e.Message}
-				},
-			},
-		}),
+		childCommand(a, runs, runErrors()),
 		childCommand(a, runs, child[diagnosticRow]{
 			use:   "diagnostics",
 			short: "List the source rows behind a run's repeated keys and missing parents",
@@ -179,12 +190,45 @@ func runStreamView() view[runStream] {
 	return view[runStream]{
 		singular: "run stream",
 		header: []string{
-			columnStream, columnStatus, columnRead, columnCreated, "UPDATED", "SKIPPED", "DELETED", columnFailed, columnMessage,
+			columnStream, columnStatus, columnRead, columnCreated, "UPDATED", "SKIPPED", "DELETED", columnFailed,
+			"UNRESOLVED", "COLLAPSED", "EMBEDDED", columnMessage,
 		},
 		long: []string{columnMessage},
 		row: func(s runStream, _ language) []string {
-			return []string{s.StreamName, s.Status, s.RecordsRead.String(), s.Created.String(), s.Updated.String(),
-				s.Skipped.String(), s.Deleted.String(), s.Failed.String(), s.Message}
+			return []string{s.stream(), s.Status, s.RecordsRead.String(), s.Created.String(), s.Updated.String(),
+				s.Skipped.String(), s.Deleted.String(), s.Failed.String(), s.UnresolvedParents.String(),
+				s.Collapsed.String(), s.Embedded.String(), s.Message}
+		},
+	}
+}
+
+// runErrors declares the errors recorded during an import run.
+func runErrors() child[importError] {
+	return child[importError]{
+		use:   "errors",
+		short: "List the errors of a run",
+		long: "Reads the errors recorded during an import run: KEY is the natural key of the record that\n" +
+			"failed, STAGE the step it failed in (such as MAPPING or UPSERT), CODE what kind of error it is\n" +
+			"and MESSAGE what went wrong. Its stream and time are only in -o json. CODE is VALIDATION (the\n" +
+			"mapped record was invalid, so it was not written), NO_KEY (its key column was empty), UPSERT\n" +
+			"(the target refused the write), CONFIGURATION (something to change in the import's own\n" +
+			"configuration, such as a missing base URL, refused credentials or an unknown path),\n" +
+			"EXTERNAL_SYSTEM (another system answered with an error, such as the source with a 5xx), MERGE\n" +
+			"or PATCH_EMBED (a composite merge or an embed into the parent failed), NO_LINKING_VALUE (a\n" +
+			"child row without the key of its parent), MARKER_DELETE, TOMBSTONE_DELETE or TOMBSTONE_NO_KEY\n" +
+			"(a delete the source marked could not be applied), REJECTED_BY_SOURCE (the source refused the\n" +
+			"record for its data, such as a file row with more array elements than the stream allows; the\n" +
+			"other records are imported) or STREAM_ERROR (the stream failed as a whole). For CONFIGURATION\n" +
+			"and EXTERNAL_SYSTEM, MESSAGE says what to change.",
+		fetch:   listing{read: (*emporix.Client).GetAllContentPages},
+		unknown: listsNothing,
+		view: view[importError]{
+			singular: "run error",
+			header:   []string{columnID, columnKey, "STAGE", columnCode, columnMessage},
+			long:     []string{columnMessage},
+			row: func(e importError, _ language) []string {
+				return []string{e.ID, e.NaturalKey, e.Stage, e.ErrorCode, e.Message}
+			},
 		},
 	}
 }

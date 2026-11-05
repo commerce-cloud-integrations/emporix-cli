@@ -106,7 +106,7 @@ func importFileWriteCases(trigger []string) []writeCase {
 			body: `{"id":"f2","fileName":"order.csv","size":24,"status":"PENDING","loadRank":1}`,
 			want: "{\n  \"fileName\": \"order.csv\",\n  \"id\": \"f2\",\n  \"loadRank\": 1,\n  \"size\": 24,\n" +
 				"  \"status\": \"PENDING\"\n}\n",
-			conflict: uploadConflict(filesList, streamGet),
+			conflict: uploadConflict(filesList, fileModeShown),
 		},
 		{
 			args: []string{"imports", "streams", "files", "order", "s1", "--id", "f3", "--id", "f2"}, sent: order,

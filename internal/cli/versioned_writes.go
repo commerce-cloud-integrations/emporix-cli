@@ -82,5 +82,5 @@ func (r resource[T]) versionedDeleteHelp(unknown unknownParent) string {
 // getJSON returns the command line that prints one item of r as JSON, e.g.
 // "`epx vendors get ID -o json`".
 func (r resource[T]) getJSON() string {
-	return "`epx " + r.commandLine(r.itemUse("get"), r.itemRequest()) + " -o json`"
+	return "`epx " + r.getLine() + " -o json`"
 }

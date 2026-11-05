@@ -33,7 +33,7 @@ func (c *collectionAt) itemUse(verb string) string { return c.use(verb) + " " + 
 // at returns where the items of r are, for its writes.
 func (r resource[T]) at() collectionAt {
 	return collectionAt{path: r.path, item: r.header[0], itemPath: r.itemPath(),
-		get: r.commandLine(r.itemUse(getUse), r.itemRequest()), itemIDs: r.itemIDs()}
+		get: r.getLine(), itemIDs: r.itemIDs()}
 }
 
 // collectionWrites declares the writes of the items of a collection: create

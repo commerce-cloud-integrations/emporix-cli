@@ -40,9 +40,20 @@ type importStream struct {
 	ID           string `json:"id"`
 	Name         string `json:"name"`
 	SourceEntity string `json:"sourceEntity"`
+	FileMode     string `json:"fileMode"` // SNAPSHOT or INCREMENTAL, for a file-based stream only
 	TargetType   string `json:"targetType"`
 	Mode         string `json:"mode"`
 	Enabled      *bool  `json:"enabled"`
+}
+
+// source returns what s imports: its source entity, followed for a
+// file-based stream by how it reads its files, e.g. "SNAPSHOT files", as such
+// a stream may name no entity.
+func (s *importStream) source() string {
+	if s.FileMode == "" {
+		return s.SourceEntity
+	}
+	return spaced(s.SourceEntity, s.FileMode, "files")
 }
 
 // importSchedule is the part of a configuration's run schedule shown in tables.
@@ -88,9 +99,9 @@ func newImportsCommand(a *app) *cobra.Command {
 	}, importDataReads(a), importAnalyticsReads(a))
 	return newGroup(importsUse, "Read import configurations, runs and records; queue files, start and schedule runs",
 		"Reads the Import Service, which imports master data from external sources into Emporix:\n"+
-			"configurations, their streams (each imports one source entity into an Emporix type), the\n"+
-			"file queue of a file-based stream, schedules and runs, the errors and diagnostics of a run,\n"+
-			"the records imported, statistics, job groups, health thresholds and the tenant's import\n"+
+			"configurations, their streams (each imports one source, an entity or files, into an Emporix\n"+
+			"type), the file queue of a file-based stream, schedules and runs, the errors and diagnostics of\n"+
+			"a run, the records imported, statistics, job groups, health thresholds and the tenant's import\n"+
 			"limits. Emporix allows these reads only with "+importScope+", with which epx\n"+
 			"also queues files for a stream, and starts, retries, cancels and schedules runs.",
 		reads...)
@@ -166,8 +177,8 @@ func configurationStreams() child[importStream] {
 	return child[importStream]{
 		use:   "streams",
 		short: "List the streams of a configuration",
-		long: "Reads the streams of an import configuration, in their sequence, with the columns of\n" +
-			"`epx imports streams get`. The service returns them whole, so they are read with one request.",
+		long: "Reads the streams of an import configuration, in their sequence. The service returns them\n" +
+			"whole, so they are read with one request.",
 		fetch:   listing{read: (*emporix.Client).GetUnpaged},
 		unknown: listsNothing,
 		view:    importStreamView(),
@@ -184,12 +195,8 @@ func importStreams(listedBy string) resource[importStream] {
 		short:    "Read import streams and the records they imported; queue their files",
 		under:    importsUse,
 		listedBy: listedBy,
-		long: "Reads an import stream, which imports one source entity of a configuration: SOURCE is that\n" +
-			"entity, TARGET TYPE the Emporix type it writes to (a discriminator, in -o json, may route\n" +
-			"records to others), MODE STANDALONE, or COMPOSITE_CHILD or COMPOSITE_MERGE for a stream that\n" +
-			"adds to the records of another. Its delta, delete, write and health settings, and the file\n" +
-			"settings of a file-based stream (fileMode, sourceDataset), are only in -o json.\n" +
-			"A stream's ID is the one that `epx " + listedBy + "` shows.",
+		long: "Reads an import stream, which imports one source of a configuration, an entity or files,\n" +
+			"into an Emporix type. A stream's ID is the one that `epx " + listedBy + "` shows.",
 		path:   "/importtool/{tenant}/streams",
 		scopes: importScopes(),
 		view:   importStreamView(),
@@ -204,8 +211,15 @@ func importStreamView() view[importStream] {
 	return view[importStream]{
 		singular: "stream",
 		header:   []string{columnID, columnName, "SOURCE", "TARGET TYPE", "MODE", columnEnabled},
+		legend: "SOURCE is the stream's source entity, followed for a file-based stream (which may name no\n" +
+			"entity) by SNAPSHOT files or INCREMENTAL files, read as `epx imports streams files` explains.\n" +
+			"TARGET TYPE is the Emporix type it writes to (a discriminator, in -o json, may route records\n" +
+			"to others), MODE STANDALONE, or COMPOSITE_CHILD or COMPOSITE_MERGE for a stream that adds to\n" +
+			"the records of another. A stream's source dataset (sourceDataset, such as the key column and\n" +
+			"the file format), connection, and delta, delete, write and health settings are only in\n" +
+			"-o json.",
 		row: func(s importStream, _ language) []string {
-			return []string{s.ID, s.Name, s.SourceEntity, s.TargetType, s.Mode, formatBool(s.Enabled)}
+			return []string{s.ID, s.Name, s.source(), s.TargetType, s.Mode, formatBool(s.Enabled)}
 		},
 	}
 }

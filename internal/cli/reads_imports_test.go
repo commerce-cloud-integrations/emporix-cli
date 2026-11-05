@@ -12,15 +12,17 @@ func importReads() []readCase {
 		"deleted":0,"message":"Import completed with 5 record failures."}`
 	return slices.Concat(importConfigurationReads(optIn, scopes, run), []readCase{
 		{
-			// A stream is read by its own ID; its settings are only in -o json.
+			// A stream is read by its own ID; its settings are only in -o json. One that imports files may
+			// leave its source entity out or empty.
 			args:   []string{"imports", "streams", "get", "s 1", optIn},
 			path:   "/importtool/acme1/streams/s%201",
 			scopes: scopes,
 			mode:   getWhole,
-			body: `{"id":"s 1","configId":"c1","name":"Products","sourceEntity":"PRODUCT","targetWriter":"emporix.customEntity",
-				"targetType":"product","mode":"STANDALONE","writeStrategy":"PATCH","enabled":true}`,
-			want: "ID   NAME      SOURCE   TARGET TYPE  MODE        ENABLED\n" +
-				"s 1  Products  PRODUCT  product      STANDALONE  true\n",
+			body: `{"id":"s 1","configId":"c1","name":"Vendors","sourceEntity":"","targetWriter":"emporix.customEntity",
+				"targetType":"vendor","mode":"STANDALONE","writeStrategy":"PATCH","enabled":true,"connectionId":"k2",
+				"sourceDataset":{"keyFields":["ID","VAT_ID"],"keyName":"ID","header":true},"fileMode":"INCREMENTAL"}`,
+			want: "ID   NAME     SOURCE             TARGET TYPE  MODE        ENABLED\n" +
+				"s 1  Vendors  INCREMENTAL files  vendor       STANDALONE  true\n",
 		},
 		{
 			args:   []string{"imports", "streams", "records", "s1", optIn},
@@ -44,17 +46,29 @@ func importReads() []readCase {
 				"r1  PARTIAL  DELTA  2026-07-27T02:00:00.000Z  2026-07-27T02:04:12.000Z  1250  5\n",
 		},
 		{
+			// Every counter that READ adds up to, a parent's sweep marked as one; the files read only in -o json.
 			args:   []string{"imports", "runs", "streams", "r1", optIn},
 			path:   "/importtool/acme1/runs/r1",
 			scopes: scopes,
 			mode:   getWhole,
 			body: `{"run":` + run + `,"streams":[{"id":"p1","runId":"r1","streamId":"s1","streamName":"Products",
-				"status":"PARTIAL","recordsRead":1250,"created":40,"updated":1180,"skipped":25,"failed":5,"deleted":0,
-				"message":"5 records failed validation."},{"streamName":"Prices","status":"ABORTED",
-				"message":"The mappings were never published."}]}`,
-			want: "STREAM    STATUS   READ  CREATED  UPDATED  SKIPPED  DELETED  FAILED  MESSAGE\n" +
-				"Products  PARTIAL  1250  40       1180     25       0        5       5 records failed validation.\n" +
-				"Prices    ABORTED                                                    The mappings were never published.\n",
+				"status":"PARTIAL","recordsRead":1250,"created":40,"updated":1180,"skipped":13,"failed":5,"deleted":0,
+				"unresolvedParents":0,"collapsed":12,"embedded":0,"duplicateKeys":12,"capSkipped":false,"keylessSeen":true,
+				"filesRead":["media:5f1c"],"fileNames":{"media:5f1c":"vendors-2026-10-23.csv"},"sweep":false,
+				"message":"5 records failed validation."},{"streamName":"Lines","status":"SUCCEEDED","recordsRead":800,
+				"created":0,"updated":0,"skipped":0,"failed":0,"deleted":0,"unresolvedParents":370,"collapsed":0,
+				"embedded":430},{"streamName":"Orders","status":"SUCCEEDED","recordsRead":7,"created":7,"sweep":true},
+				{"streamName":"Prices","status":"ABORTED","message":"The mappings were never published."}]}`,
+			want: "STREAM        STATUS     READ  CREATED  UPDATED  SKIPPED  DELETED  FAILED  UNRESOLVED  COLLAPSED  " +
+				"EMBEDDED  MESSAGE\n" +
+				"Products      PARTIAL    1250  40       1180     13       0        5       0           12         " +
+				"0         5 records failed validation.\n" +
+				"Lines         SUCCEEDED  800   0        0        0        0        0       370         0          " +
+				"430       \n" +
+				"Orders sweep  SUCCEEDED  7     7                                                                  " +
+				"          \n" +
+				"Prices        ABORTED                                                                             " +
+				"          The mappings were never published.\n",
 		},
 		{
 			args:   []string{"imports", "runs", "errors", "r1", optIn},
@@ -62,11 +76,11 @@ func importReads() []readCase {
 			scopes: scopes,
 			mode:   getAllContentPages,
 			body: `{"content":[{"id":"e1","runId":"r1","streamId":"s1","naturalKey":"100200",
-				"targetEntity":"emporix.customEntity","stage":"MAPPING","errorCode":"REQUIRED_FIELD_MISSING",
-				"message":"Required field 'name' is missing.","createdAt":"2026-07-27T02:03:41.000Z"}],
+				"targetEntity":"emporix.customEntity","stage":"EXTRACT","errorCode":"REJECTED_BY_SOURCE",
+				"message":"Column COUNTRIES has 1200 elements, more than 1000.","createdAt":"2026-07-27T02:03:41.000Z"}],
 				"totalElements":1,"totalPages":1,"number":0,"size":100}`,
-			want: "ID  KEY     STAGE    CODE                    MESSAGE\n" +
-				"e1  100200  MAPPING  REQUIRED_FIELD_MISSING  Required field 'name' is missing.\n",
+			want: "ID  KEY     STAGE    CODE                MESSAGE\n" +
+				"e1  100200  EXTRACT  REJECTED_BY_SOURCE  Column COUNTRIES has 1200 elements, more than 1000.\n",
 		},
 		{
 			// Every recorded row is asked for; the sample's size and cap are only in -o json.
@@ -150,16 +164,22 @@ func importConfigurationReads(optIn string, scopes []string, run string) []readC
 			want:   "ID   NAME            ENABLED  VERSION  MODIFIED\nc 1  Product master  true     3.0      \n",
 		},
 		{
+			// A file-based stream says how it reads its files, also when it names no entity.
 			args:   []string{"imports", "configurations", "streams", "c1", optIn},
 			path:   "/importtool/acme1/configs/c1/streams",
 			scopes: scopes,
 			mode:   getWhole,
 			body: `[{"id":"s1","configId":"c1","name":"Products","sourceEntity":"PRODUCT","targetType":"product",
 				"mode":"STANDALONE","enabled":true},{"id":"s2","configId":"c1","name":"Lines","sourceEntity":"PO_LINE",
-				"targetType":"purchaseOrder","mode":"COMPOSITE_CHILD","childStrategy":"EMBED","compositeParent":"Orders"}]`,
-			want: "ID  NAME      SOURCE   TARGET TYPE    MODE             ENABLED\n" +
-				"s1  Products  PRODUCT  product        STANDALONE       true\n" +
-				"s2  Lines     PO_LINE  purchaseOrder  COMPOSITE_CHILD  \n",
+				"targetType":"purchaseOrder","mode":"COMPOSITE_CHILD","childStrategy":"EMBED","compositeParent":"Orders"},
+				{"id":"s3","name":"Vendors","sourceDataset":{"keyField":"ID","delimiter":";"},"fileMode":"SNAPSHOT",
+				"targetType":"vendor","mode":"STANDALONE","enabled":true},{"id":"s4","name":"Stock","sourceEntity":"STOCK",
+				"sourceDataset":{"keyField":"SKU"},"fileMode":"INCREMENTAL","targetType":"stock","mode":"STANDALONE"}]`,
+			want: "ID  NAME      SOURCE                   TARGET TYPE    MODE             ENABLED\n" +
+				"s1  Products  PRODUCT                  product        STANDALONE       true\n" +
+				"s2  Lines     PO_LINE                  purchaseOrder  COMPOSITE_CHILD  \n" +
+				"s3  Vendors   SNAPSHOT files           vendor         STANDALONE       true\n" +
+				"s4  Stock     STOCK INCREMENTAL files  stock          STANDALONE       \n",
 		},
 		{
 			args:   []string{"imports", "configurations", "schedule", "c1", optIn},

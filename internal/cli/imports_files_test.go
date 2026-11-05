@@ -13,9 +13,9 @@ const filesPath = "/importtool/acme1/streams/s1/files"
 // recovery of a conflict quote it.
 const filesList = "`epx imports streams files list STREAM_ID`"
 
-// streamGet is the command line that prints a stream whole, its fileMode
-// included, as help and the recovery of a conflict quote it.
-const streamGet = "`epx imports streams get ID -o json`"
+// fileModeShown is where a stream shows its fileMode, as help and the
+// recovery of a conflict quote it.
+const fileModeShown = "SOURCE of `epx imports streams get ID`"
 
 // TestImportFilesShowHowManyWait checks that LOAD ORDER places each waiting
 // file among all the files waiting, so a table shows when the service lists
@@ -222,8 +222,8 @@ func TestImportFileWritesOfRefusedInput(t *testing.T) {
 			want: "POST " + filesPath + ": 409 Conflict: refused (the stream imported or queued this content already, " +
 				"reads no files, or has a run in flight that reads what it would replace: " + filesList + " shows the " +
 				"files queued and the latest it dealt with (--history-limit, up to 500), by name, while Emporix " +
-				"matches content whatever the name; a stream without fileMode (" + streamGet + ") reads no files and " +
-				"takes none; otherwise wait until the run ends)\n",
+				"matches content whatever the name; a stream without fileMode (" + fileModeShown + " shows it) reads " +
+				"no files and takes none; otherwise wait until the run ends)\n",
 		},
 	} {
 		fake := newFakeEmporix(t)
@@ -248,7 +248,7 @@ func TestImportFileHelp(t *testing.T) {
 	modes := []string{
 		"A file-based stream reads its files by its fileMode, SNAPSHOT by default. A SNAPSHOT stream takes each " +
 			"file as the whole picture: its run reads only the most recently arrived waiting file",
-		"A stream without fileMode reads no files (" + streamGet + " shows it).",
+		"A stream without fileMode reads no files (" + fileModeShown + " shows it).",
 	}
 	for _, tt := range []struct {
 		args          []string

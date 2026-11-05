@@ -57,33 +57,40 @@ type fileLimits struct {
 	UploadSupported *bool       `json:"uploadSupported"`
 }
 
+// fileModeShownBy returns where a stream of streams shows its fileMode, as
+// help quotes it: the SOURCE of its get, e.g. "SOURCE of `epx imports streams
+// get ID`".
+func fileModeShownBy(streams resource[importStream]) string {
+	return "SOURCE of `epx " + streams.getLine() + "`"
+}
+
 // fileModesHelp says how a stream's run reads its waiting files, by the
 // stream's fileMode, in the help of the file queue and of its list, where
-// streamJSON is the command line that prints a stream whole
-// (resource.getJSON).
-func fileModesHelp(streamJSON string) string {
+// shownBy is where a stream shows its fileMode (fileModeShownBy).
+func fileModesHelp(shownBy string) string {
 	return "A file-based stream reads its files by its fileMode, SNAPSHOT by default. A SNAPSHOT stream\n" +
 		"takes each file as the whole picture: its run reads only the most recently arrived waiting\n" +
 		"file and may report the older ones superseded, in their MESSAGE. An INCREMENTAL stream takes\n" +
 		"each file as a change set: its run reads them all, in load order, a later file's values\n" +
 		"winning on a key that an earlier one carries too. A stream without fileMode reads no files\n" +
-		"(" + streamJSON + " shows it)."
+		"(" + shownBy + " shows it)."
 }
 
 // newImportFilesCommand returns the group of the file queue of a stream of
 // streams, nested in a group of its own (filesOf): list and limits, which
 // read it, and upload, order and delete.
 func newImportFilesCommand(a *app, streams resource[importStream]) *cobra.Command {
-	filesOf, streamJSON := streams.nested(filesUse), streams.getJSON()
-	files := streamFiles(filesOf, streamJSON)
+	filesOf, shownBy := streams.nested(filesUse), fileModeShownBy(streams)
+	modes := fileModesHelp(shownBy)
+	files := streamFiles(filesOf, modes)
 	return newGroup(filesOf.use, "Read and change the files that a file-based stream imports",
 		"Reads the file queue of a file-based import stream: the files that it waits to import, in\n"+
 			"the order that its next run reads them, and those it dealt with; uploads a file to it, sets\n"+
 			"the order of the waiting files and removes one. Nothing is imported until a run starts\n"+
-			"(`epx imports configurations trigger`).\n"+fileModesHelp(streamJSON),
+			"(`epx imports configurations trigger`).\n"+modes,
 		childCommand(a, filesOf, files),
 		childCommand(a, filesOf, fileUploadLimits(filesOf)),
-		fileUpload(filesOf, files, streamJSON).command(a),
+		fileUpload(filesOf, files, shownBy).command(a),
 		fileOrder(filesOf, files).command(a),
 		fileDelete(filesOf, files).command(a))
 }
@@ -103,16 +110,15 @@ func queueList(filesOf resource[importStream], files child[queuedFile[importFile
 }
 
 // streamFiles declares the file queue of a stream of filesOf (nested), which
-// list reads; streamJSON is the command line that prints a stream whole
-// (resource.getJSON).
-func streamFiles(filesOf resource[importStream], streamJSON string) child[queuedFile[importFile]] {
+// list reads; modes says how a stream reads its files (fileModesHelp).
+func streamFiles(filesOf resource[importStream], modes string) child[queuedFile[importFile]] {
 	return child[queuedFile[importFile]]{
 		use:   listUse,
 		sub:   filesSegment,
 		short: "List the files that a stream waits to import and those it dealt with",
 		long: "Reads the file queue of a file-based stream. First come the files waiting, in the order\n" +
 			"that its next run reads them: LOAD ORDER is a file's place among all the files waiting,\n" +
-			"e.g. 1 of 3.\n" + fileModesHelp(streamJSON) + "\n" +
+			"e.g. 1 of 3.\n" + modes + "\n" +
 			"Emporix lists up to 2000 waiting files: where more wait, the last LOAD ORDER listed ends\n" +
 			"below the total, e.g. 2000 of 2500, and " + queueLine(filesOf, "order") + " cannot reorder\n" +
 			"them. Then comes the history, newest first and without LOAD ORDER: up to --history-limit\n" +
@@ -169,15 +175,15 @@ func fileUploadLimits(filesOf resource[importStream]) child[fileLimits] {
 }
 
 // uploadConflict says what a 409 Conflict of an upload means and how to
-// recover, where list is the stream's file list and streamJSON the command
-// line that prints the stream whole, as help quotes them (queueList,
-// resource.getJSON).
-func uploadConflict(list, streamJSON string) string {
+// recover, where list is the stream's file list, as help quotes it
+// (queueList), and shownBy where the stream shows its fileMode
+// (fileModeShownBy).
+func uploadConflict(list, shownBy string) string {
 	return "the stream imported or queued this content already, reads no files, or has a run in flight that " +
 		"reads what it would replace: " + list + " shows the files queued and the latest it dealt with " +
 		"(--history-limit, up to " + strconv.Itoa(maxFileHistory) + "), by name, while Emporix matches content " +
-		"whatever the name; a stream without fileMode (" + streamJSON + ") reads no files and takes none; otherwise " +
-		"wait until the run ends"
+		"whatever the name; a stream without fileMode (" + shownBy + " shows it) reads no files and takes none; " +
+		"otherwise wait until the run ends"
 }
 
 // fileOrderConflict says what a 409 Conflict of an order of a stream's
@@ -249,9 +255,8 @@ func waitingTotal(listed int, total *int64, truncated bool) string {
 }
 
 // fileUpload uploads a file to files, the file queue of a stream of filesOf
-// (nested); streamJSON is the command line that prints a stream whole
-// (resource.getJSON).
-func fileUpload(filesOf resource[importStream], files child[queuedFile[importFile]], streamJSON string) *write {
+// (nested); shownBy is where a stream shows its fileMode (fileModeShownBy).
+func fileUpload(filesOf resource[importStream], files child[queuedFile[importFile]], shownBy string) *write {
 	stream, limits, list := filesOf.argument(), queueLine(filesOf, "limits"), queueList(filesOf, files)
 	return &write{
 		use: "upload " + stream, short: "Upload a file for a stream to import", method: http.MethodPost,
@@ -279,7 +284,7 @@ func fileUpload(filesOf resource[importStream], files child[queuedFile[importFil
 		req:     request{path: files.below(filesOf.path)}, scopes: importScopes(),
 		body: &formBody{form: form{uploadPart("file", "the delimited file in `PATH` to queue ("+uploadLimitHelp+
 			"), sent with its name").require()}},
-		conflict: uploadConflict(list, streamJSON),
+		conflict: uploadConflict(list, shownBy),
 	}
 }
 

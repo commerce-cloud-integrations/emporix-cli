@@ -1,7 +1,9 @@
 package cli
 
 import (
+	"encoding/json"
 	"net/http"
+	"reflect"
 	"strings"
 	"testing"
 )
@@ -113,35 +115,6 @@ func TestImportDiagnosticsFailWithoutEveryRecordedRow(t *testing.T) {
 	}
 }
 
-// TestImportHelpSaysWhereIDsComeFrom checks that the reads of a run or stream,
-// which have no list, take their ID from the reads of a configuration that
-// list them, and that a run's columns are explained wherever runs are shown.
-func TestImportHelpSaysWhereIDsComeFrom(t *testing.T) {
-	const runs = "`epx imports configurations runs CONFIGURATION_ID` shows"
-	for _, tt := range []struct {
-		args []string
-		want []string
-	}{
-		{args: []string{"runs", "get"}, want: []string{"a run's ID is the one that " + runs, "STATUS is QUEUED"}},
-		{args: []string{"runs", "errors"}, want: []string{"RUN_ID is the ID that " + runs + "; an unknown one lists"}},
-		{args: []string{"runs", "streams"}, want: []string{"RUN_ID is the ID that " + runs + "; an unknown one is not"}},
-		{args: []string{"runs", "diagnostics"}, want: []string{"RUN_ID is the ID that " + runs, "up to 50000"}},
-		{args: []string{"configurations", "runs"}, want: []string{"most recent first", "STATUS is QUEUED"}},
-		{args: []string{"streams", "get"}, want: []string{
-			"A stream's ID is the one that `epx imports configurations streams CONFIGURATION_ID` shows."}},
-		{args: []string{"streams", "records"}, want: []string{
-			"STREAM_ID is the ID that `epx imports configurations streams CONFIGURATION_ID` shows; an unknown one lists",
-		}},
-	} {
-		code, help, _ := runCLI(t, nil, append(append([]string{"imports"}, tt.args...), "--help")...)
-		for _, want := range tt.want {
-			if code != ExitOK || !strings.Contains(help, want) {
-				t.Errorf("%q: exit %d, help:\n%s\nwant %q in it", tt.args, code, help, want)
-			}
-		}
-	}
-}
-
 // TestImportReadsOfPartialResponses checks what the import reads show for
 // responses that leave values out: a queued run has no streams yet, a run
 // without diagnostics none to list, a tenant without thresholds of its own
@@ -155,7 +128,8 @@ func TestImportReadsOfPartialResponses(t *testing.T) {
 	}{
 		{args: []string{"runs", "streams", "r1"}, path: "/importtool/acme1/runs/r1",
 			body: `{"run":{"id":"r1","status":"QUEUED"}}`,
-			want: "STREAM  STATUS  READ  CREATED  UPDATED  SKIPPED  DELETED  FAILED  MESSAGE\n"},
+			want: "STREAM  STATUS  READ  CREATED  UPDATED  SKIPPED  DELETED  FAILED  UNRESOLVED  COLLAPSED  EMBEDDED  " +
+				"MESSAGE\n"},
 		{args: []string{"runs", "diagnostics", "r1"}, path: "/importtool/acme1/runs/r1/diagnostics",
 			body: `{"rows":[],"returned":0,"recorded":0}`,
 			want: "KIND  STREAM  KEY  LINKING FIELD  LINKING VALUE  WAITING LINES  OCCURRENCE\n"},
@@ -177,6 +151,116 @@ func TestImportReadsOfPartialResponses(t *testing.T) {
 		code, stdout, stderr := runImports(t, fake, tt.args...)
 		if code != ExitOK || stdout != tt.want {
 			t.Errorf("%q: exit %d, stderr %q, stdout:\n%s\nwant:\n%s", tt.args, code, stderr, stdout, tt.want)
+		}
+	}
+}
+
+// TestImportTablesRejectWhatJSONPrintsAsSent checks that a table of the
+// progress of a run's streams or of import streams fails (exit 1, nothing
+// printed) for a counter that is not a number, a sweep or file mode of
+// another type, and a sweep without the name of its stream, which a table
+// cannot identify; -o json prints them as sent.
+func TestImportTablesRejectWhatJSONPrintsAsSent(t *testing.T) {
+	type failure struct{ body, want string }
+	const runStreams = "decoding run stream response: "
+	for _, tt := range []struct {
+		args     []string
+		path     string
+		failures []failure
+	}{
+		{args: []string{"runs", "streams", "r1"}, path: "/importtool/acme1/runs/r1", failures: []failure{
+			{body: `{"run":{"id":"r1"},"streams":[{"streamName":"Lines","embedded":"many"}]}`,
+				want: runStreams + "json: cannot unmarshal string"},
+			{body: `{"run":{"id":"r1"},"streams":[{"streamName":"Lines","unresolvedParents":{"count":3}}]}`,
+				want: runStreams + "json: cannot unmarshal object"},
+			{body: `{"run":{"id":"r1"},"streams":[{"streamName":"Lines","collapsed":true}]}`,
+				want: runStreams + "json: cannot unmarshal bool"},
+			{body: `{"run":{"id":"r1"},"streams":[{"streamName":"Orders","sweep":"yes"}]}`,
+				want: runStreams + "json: cannot unmarshal string"},
+			{body: `{"run":{"id":"r1"},"streams":[{"sweep":true,"recordsRead":7}]}`,
+				want: runStreams + "item 1 has no identifier"},
+		}},
+		{args: []string{"streams", "get", "s1"}, path: "/importtool/acme1/streams/s1", failures: []failure{
+			{body: `{"id":"s1","fileMode":["SNAPSHOT"]}`, want: "decoding stream response: json: cannot unmarshal array"},
+		}},
+	} {
+		for _, c := range tt.failures {
+			fake := newFakeEmporix(t)
+			fake.route(tt.path, respond(http.StatusOK, c.body))
+			code, stdout, stderr := runImports(t, fake, tt.args...)
+			if code != ExitError || stdout != "" || !strings.Contains(stderr, c.want) {
+				t.Errorf("%q of %s: exit %d, stdout %q, stderr %q; want exit 1 and %q", tt.args, c.body, code, stdout,
+					stderr, c.want)
+			}
+			code, stdout, stderr = runImports(t, fake, append(tt.args, "-o", "json")...)
+			if code != ExitOK || stderr != "" || !reflect.DeepEqual(decodedJSON(t, stdout), decodedJSON(t, c.body)) {
+				t.Errorf("%q -o json of %s: exit %d, stderr %q, stdout:\n%s\nwant it as sent", tt.args, c.body, code,
+					stderr, stdout)
+			}
+		}
+	}
+}
+
+// decodedJSON returns the JSON value of text, its numbers kept as written.
+func decodedJSON(t *testing.T, text string) any {
+	t.Helper()
+	decoder := json.NewDecoder(strings.NewReader(text))
+	decoder.UseNumber()
+	var value any
+	if err := decoder.Decode(&value); err != nil {
+		t.Fatalf("decoding %q: %v", text, err)
+	}
+	return value
+}
+
+// TestImportHelpExplainsItsReads checks the help of the import reads: the
+// reads of a run or stream, which have no list, take their ID from the reads of
+// a configuration that list them; a run's columns, and how its counters add
+// up to READ, are explained wherever runs are shown, and per stream with the
+// counters only -o json has; every error code of a run is named; and a stream
+// imports an entity or files, which its SOURCE shows.
+func TestImportHelpExplainsItsReads(t *testing.T) {
+	const runs = "`epx imports configurations runs CONFIGURATION_ID` shows"
+	const modes = "SNAPSHOT files or INCREMENTAL files, read as `epx imports streams files` explains"
+	const sum = "READ is created + updated + skipped + deleted + failed + unresolvedParents + collapsed + embedded."
+	for _, tt := range []struct {
+		args []string
+		want []string
+	}{
+		{args: nil, want: []string{"each imports one source, an entity or files, into an Emporix type"}},
+		{args: []string{"runs", "get"}, want: []string{
+			"a run's ID is the one that " + runs, "STATUS is QUEUED", sum, "`epx imports runs streams` shows.",
+		}},
+		{args: []string{"configurations", "runs"}, want: []string{
+			"most recent first", "`epx imports runs streams` shows the counters", "STATUS is QUEUED", sum,
+		}},
+		{args: []string{"runs", "streams"}, want: []string{
+			"RUN_ID is the ID that " + runs + "; an unknown one is not found.", "add up to READ", "UNRESOLVED (",
+			"COLLAPSED (", "EMBEDDED (", "STREAM followed by sweep", "duplicateKeys (", "capSkipped (", "keylessSeen (",
+			"(filesRead, fileNames)",
+		}},
+		{args: []string{"runs", "errors"}, want: []string{
+			"RUN_ID is the ID that " + runs + "; an unknown one lists nothing.", "VALIDATION (", "NO_KEY (", "UPSERT (",
+			"CONFIGURATION (", "EXTERNAL_SYSTEM (", "MERGE or PATCH_EMBED (", "NO_LINKING_VALUE (",
+			"MARKER_DELETE, TOMBSTONE_DELETE or TOMBSTONE_NO_KEY (", "REJECTED_BY_SOURCE (", "STREAM_ERROR (",
+		}},
+		{args: []string{"runs", "diagnostics"}, want: []string{"RUN_ID is the ID that " + runs, "up to 50000"}},
+		{args: []string{"streams", "get"}, want: []string{
+			"one source of a configuration, an entity or files,", modes, "which may name no entity", "sourceDataset",
+			"A stream's ID is the one that `epx imports configurations streams CONFIGURATION_ID` shows.",
+		}},
+		{args: []string{"configurations", "streams"}, want: []string{
+			"in their sequence", modes, "which may name no entity", "sourceDataset",
+		}},
+		{args: []string{"streams", "records"}, want: []string{
+			"STREAM_ID is the ID that `epx imports configurations streams CONFIGURATION_ID` shows; an unknown one lists",
+		}},
+	} {
+		help := helpText(t, append([]string{"imports"}, tt.args...)...)
+		for _, want := range tt.want {
+			if !strings.Contains(help, want) {
+				t.Errorf("%q: help:\n%s\nwant %q in it", tt.args, help, want)
+			}
 		}
 	}
 }
