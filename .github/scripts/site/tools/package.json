@@ -1,0 +1,12 @@
+{
+  "private": true,
+  "description": "The programs that build the documentation site (.github/scripts/site/build.sh), at the versions it was checked with",
+  "dependencies": {
+    "mint": "4.2.1042",
+    "pagefind": "1.5.2"
+  },
+  "allowScripts": {
+    "esbuild@0.25.12": true,
+    "sharp@0.33.5": true
+  }
+}
