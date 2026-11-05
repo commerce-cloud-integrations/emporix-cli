@@ -228,6 +228,10 @@ client secrets of profiles in the OS keychain (no cgo), and on
 [x/term](https://pkg.go.dev/golang.org/x/term) and [x/sys](https://pkg.go.dev/golang.org/x/sys)
 to read a secret without showing it and to lock the configuration file on Windows.
 
+See [CONTRIBUTING.md](CONTRIBUTING.md) to report a bug or send a change,
+[SECURITY.md](SECURITY.md) to report a vulnerability, and [CHANGELOG.md](CHANGELOG.md) for the
+changes in each release.
+
 ## License
 
 Licensed under the [Apache License 2.0](LICENSE).
