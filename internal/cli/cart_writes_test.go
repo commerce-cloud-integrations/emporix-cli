@@ -152,15 +152,17 @@ func TestCartChainsAreChecked(t *testing.T) {
 // scope, which the scope sentences of the write and of its group leave out.
 func TestExternalPricesAreRequestedOnlyWithTheirFlag(t *testing.T) {
 	_, help, _ := runCLI(t, nil, "carts", "items", "create", "--help")
-	for _, want := range []string{
-		"--allow-external-prices also requests the cart.cart_manage_external_prices scope.\n\n" +
-			"Requires the cart.cart_manage scope.\n",
-		"--allow-external-prices   allow an item with an external price, product, fee or discount (requests " +
+	if want := "--allow-external-prices also requests the cart.cart_manage_external_prices scope.\n\n" +
+		"Requires the cart.cart_manage scope.\n"; !strings.Contains(help, want) {
+		t.Errorf("help %q; want %q", help, want)
+	}
+	for flag, want := range map[string]string{
+		"--allow-external-prices": "allow an item with an external price, product, fee or discount (requests " +
 			"cart.cart_manage_external_prices too)",
-		"--site site               site code",
+		"--site": "site site code",
 	} {
-		if !strings.Contains(help, want) {
-			t.Errorf("help %q; want %q", help, want)
+		if usage, _ := flagUsage(help, flag); !strings.HasPrefix(usage, want) {
+			t.Errorf("help %q; want %s %q", help, flag, want)
 		}
 	}
 	_, group, _ := runCLI(t, nil, "carts", "items", "--help")

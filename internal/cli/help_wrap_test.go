@@ -198,6 +198,94 @@ func overWidth(text string, width int) []string {
 	return wide
 }
 
+// overWidthUsage returns the lines of usage, a section of Cobra's usage,
+// wider than width but those that hold one word after their indent. pflag
+// breaks a flag usage only between words; a word wider than the room left
+// stands on a line of its own only where it ends the usage, as the rest of a
+// usage after such a word stays on its line, which this reports: rewording
+// the usage is the only fix. Unlike overWidth, any one word passes, not only
+// a backquoted span: pflag takes the first backquoted word of a flag usage
+// for the name of its value and drops the backquotes, so a flag usage has no
+// spans.
+func overWidthUsage(lines []string, width int) []string {
+	var wide []string
+	for _, line := range lines {
+		if utf8.RuneCountInString(line) > width && len(strings.Fields(line)) != 1 {
+			wide = append(wide, line)
+		}
+	}
+	return wide
+}
+
+// cobraHeading reports whether line is the heading of a section that
+// Cobra's usage template writes after the long help.
+func cobraHeading(line string) bool {
+	switch line {
+	case "Usage:", "Aliases:", "Examples:", "Available Commands:", "Additional Commands:",
+		"Flags:", "Global Flags:", "Additional help topics:":
+		return true
+	}
+	return false
+}
+
+// helpSections returns the lines of help, as --help shows it, by section:
+// each line under the heading of its section, such as "Flags:", up to the
+// blank line that ends it. The lines under no heading, the long help before
+// "Usage:", where Cobra's usage starts, and the lines after a section, are
+// under "". A section of Cobra's usage holds no blank line but an example.
+func helpSections(help string) map[string][]string {
+	sections := map[string][]string{}
+	name, usage := "", false // the section of the line, and whether the usage has started
+	for line := range strings.SplitSeq(help, "\n") {
+		switch {
+		case cobraHeading(line) && (usage || line == "Usage:"):
+			name, usage = line, true
+		case line == "" && usage:
+			name = ""
+		default:
+			sections[name] = append(sections[name], line)
+		}
+	}
+	return sections
+}
+
+// flagEntries returns the flags of a list of flags as help shows it, each
+// with the white space within it as single spaces: a flag starts a line with
+// a dash after the indent, and the lines after it, which the wrapping
+// indents further, are its usage too.
+func flagEntries(lines []string) []string {
+	var entries []string
+	for _, line := range lines {
+		trimmed := strings.TrimSpace(line)
+		starts := strings.HasPrefix(trimmed, "-") && len(line)-len(trimmed) <= len("      ")
+		switch {
+		case trimmed == "":
+		case starts || len(entries) == 0:
+			entries = append(entries, trimmed)
+		default:
+			entries[len(entries)-1] += " " + trimmed
+		}
+	}
+	for i, entry := range entries {
+		entries[i] = strings.Join(strings.Fields(entry), " ")
+	}
+	return entries
+}
+
+// flagUsage returns what the Flags section of help, the help of a command,
+// shows after flag, its lines joined (flagEntries), and whether it shows flag.
+func flagUsage(help, flag string) (string, bool) {
+	for _, entry := range flagEntries(helpSections(help)["Flags:"]) {
+		if len(entry) > 4 && entry[0] == '-' && entry[2:4] == ", " {
+			entry = entry[4:] // the shorthand, as in "-o, --output"
+		}
+		if usage, found := strings.CutPrefix(entry, flag+" "); found {
+			return usage, true
+		}
+	}
+	return "", false
+}
+
 // flat returns text as paragraphs, which blank lines separate, with the
 // white space within each as single spaces.
 func flat(text string) string {

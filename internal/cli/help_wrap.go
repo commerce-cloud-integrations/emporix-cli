@@ -2,15 +2,18 @@ package cli
 
 import (
 	"iter"
+	"strconv"
 	"strings"
 	"unicode/utf8"
 
 	"github.com/spf13/cobra"
 )
 
-// Help text is written as plain prose and wrapped in one place: the help of
-// every command shows its long help reflowed (longHelp, reflowHelp), so the
-// fragments that builders join never carry line breaks of their own.
+// Help text is written as plain prose and wrapped in one place (wrapHelp):
+// the help of every command shows its long help reflowed (longHelp), so the
+// fragments that builders join never carry line breaks of their own, and its
+// flags and global flags with their usages wrapped to the same width
+// (flagUsageTemplate).
 
 // helpWidth is the most characters that a line of long help takes, unless it
 // is one word, which no width splits. Lines filled up to 95 characters look
@@ -22,11 +25,12 @@ const helpWidth = 95
 // helpWidth (reflow).
 func longHelp(cmd *cobra.Command) string { return reflow(cmd.Long, helpWidth) }
 
-// reflowHelp makes the help of root, which every command below it uses,
-// show the long help reflowed (longHelp); Long stays as written. The help is
+// wrapHelp makes the help of root, which every command below it uses, show
+// the long help reflowed (longHelp) and the flags with their usages wrapped
+// (flagUsageTemplate); Long and the flags stay as written. The help is
 // reflowed only when it is shown, as a command's long help is finished by
 // then and a run that shows none spends nothing on it.
-func reflowHelp(root *cobra.Command) {
+func wrapHelp(root *cobra.Command) {
 	show := root.HelpFunc()
 	root.SetHelpFunc(func(cmd *cobra.Command, args []string) {
 		long := cmd.Long
@@ -34,6 +38,24 @@ func reflowHelp(root *cobra.Command) {
 		show(cmd, args)
 		cmd.Long = long
 	})
+	root.SetUsageTemplate(flagUsageTemplate(root.UsageTemplate()))
+}
+
+// flagUsages is how Cobra's usage template lists flags, and flagUsagesWrapped
+// how epx lists them: wrapped to a width.
+const (
+	flagUsages        = ".FlagUsages "
+	flagUsagesWrapped = ".FlagUsagesWrapped "
+)
+
+// flagUsageTemplate returns usage, a Cobra usage template, with each list of
+// flag usages wrapped to helpWidth and the rest of it unchanged. pflag breaks
+// a usage between words and aligns its lines under the first; a word wider
+// than the room left stays whole, and so does the rest of the usage after
+// it, on the same line. pflag counts bytes and keeps a line one short of
+// the width, so the lines of a usage take at most helpWidth-1 characters.
+func flagUsageTemplate(usage string) string {
+	return strings.ReplaceAll(usage, flagUsages, flagUsagesWrapped+strconv.Itoa(helpWidth)+" ")
 }
 
 // reflow returns text with each paragraph of prose wrapped to width: its

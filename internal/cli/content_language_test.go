@@ -48,27 +48,16 @@ func TestLocalizedWritesSayHowTheySendMaps(t *testing.T) {
 		{args: []string{"fees", "update"}, mode: feeLanguageHelp()},
 	} {
 		_, help, _ := runCLI(t, nil, append(tt.args, "--help")...)
-		long, flags, _ := strings.Cut(help, "\n\nUsage:")
+		long := strings.Join(helpSections(help)[""], "\n")
 		held := slices.DeleteFunc(slices.Clone(modes), func(mode string) bool { return !containsFlat(long, mode) })
 		if !slices.Equal(held, []string{tt.mode}) || !containsFlat(long, tt.mode+tt.extra) {
 			t.Errorf("%q: help %q; want only the language help %q, followed by %q", tt.args, long, tt.mode, tt.extra)
 		}
-		usage, given := flagUsage(flags, "--"+contentLanguageFlag)
+		usage, given := flagUsage(help, "--"+contentLanguageFlag)
 		if given != (tt.usage != "") || !strings.Contains(usage, tt.usage) {
-			t.Errorf("%q: flags %q; want --%s with %q", tt.args, flags, contentLanguageFlag, tt.usage)
+			t.Errorf("%q: help %q; want --%s with %q", tt.args, help, contentLanguageFlag, tt.usage)
 		}
 	}
-}
-
-// flagUsage returns the rest of the line of flags, as the help of a command
-// prints them, that names flag, and whether one does.
-func flagUsage(flags, flag string) (string, bool) {
-	for line := range strings.Lines(flags) {
-		if _, usage, found := strings.Cut(line, flag+" "); found {
-			return usage, true
-		}
-	}
-	return "", false
 }
 
 // TestMapsOnlyWritesRefuseALanguage checks that the brand and schema

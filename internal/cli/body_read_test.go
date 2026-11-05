@@ -413,17 +413,17 @@ func TestBodyFieldsLeaveOutFlagsNotGiven(t *testing.T) {
 // --body is given says so, within the parentheses that end it, if any.
 func TestRequiredBodyFlagsSaySo(t *testing.T) {
 	for _, tt := range []struct {
-		args []string
-		want string
+		args       []string
+		flag, want string
 	}{
-		{args: []string{"prices", "search"}, want: "a product ID whose prices to read (repeatable, up to 100; required " +
-			"without --body)\n"},
-		{args: []string{"prices", "match"}, want: "the code of the country to match the price for, e.g. NL (required " +
-			"without --body)\n"},
+		{args: []string{"prices", "search"}, flag: "--product", want: "ID a product ID whose prices to read " +
+			"(repeatable, up to 100; required without --body)"},
+		{args: []string{"prices", "match"}, flag: "--country", want: "code the code of the country to match the " +
+			"price for, e.g. NL (required without --body)"},
 	} {
 		code, stdout, stderr := runCLI(t, nil, append(tt.args, "--help")...)
-		if code != ExitOK || !strings.Contains(stdout, tt.want) {
-			t.Errorf("%q: exit %d, stdout %q, stderr %q; want %q", tt.args, code, stdout, stderr, tt.want)
+		if usage, _ := flagUsage(stdout, tt.flag); code != ExitOK || usage != tt.want {
+			t.Errorf("%q: exit %d, stdout %q, stderr %q; want %s %q", tt.args, code, stdout, stderr, tt.flag, tt.want)
 		}
 	}
 }

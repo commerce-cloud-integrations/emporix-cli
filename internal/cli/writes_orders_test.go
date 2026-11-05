@@ -115,8 +115,11 @@ func TestCompletedOrdersRequestTheirScope(t *testing.T) {
 		}
 		_, help, _ := runCLI(t, nil, slices.Concat(tt.args[:2], []string{"--help"})...)
 		if !strings.Contains(help, "\n--completed also requests the order.order_update_completed scope.\n\n"+
-			"Requires the order.order_update scope.") || !strings.Contains(help, "for an order that is "+
-			"COMPLETED, which Emporix changes only with one more scope (requests order.order_update_completed too)") {
+			"Requires the order.order_update scope.") {
+			t.Errorf("%q: help %q; want --completed explained", tt.args[:2], help)
+		}
+		if usage, _ := flagUsage(help, "--completed"); usage != "for an order that is COMPLETED, which Emporix "+
+			"changes only with one more scope (requests order.order_update_completed too)" {
 			t.Errorf("%q: help %q; want --completed explained", tt.args[:2], help)
 		}
 	}

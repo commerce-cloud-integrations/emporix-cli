@@ -177,7 +177,7 @@ func newRootCommand(a *app, out, errOut io.Writer) *cobra.Command {
 	if completion, _, err := root.Find([]string{"completion"}); err == nil {
 		explainCompletion(completion)
 	}
-	reflowHelp(root)
+	wrapHelp(root)
 	applyExitPolicy(root)
 	return root
 }
