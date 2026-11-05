@@ -15,6 +15,7 @@ set -euo pipefail
 here=$(cd "$(dirname "$0")" && pwd)
 repo=$(cd "$here/../../.." && pwd)
 out=${1:-$repo/.local/site-pages}
+case $out in /*) ;; *) out=$PWD/$out ;; esac
 base=${2-/emporix-cli}
 mint=${MINT:-$repo/.local/mint/node_modules/.bin/mint}
 pagefind=${PAGEFIND:-$repo/.local/pagefind/node_modules/.bin/pagefind}
@@ -36,7 +37,8 @@ grep -E "Indexed [0-9]+ pages" "$work/pagefind.log"
 rm -rf "$out"
 mv "$work/site" "$out"
 if [ -n "$base" ]; then
-	mkdir -p "$(dirname "$out")/pages-root"
-	ln -sfn "$out" "$(dirname "$out")/pages-root/${base#/}"
+	link=$(dirname "$out")/pages-root/${base#/}
+	mkdir -p "$(dirname "$link")"
+	ln -sfn "$out" "$link"
 fi
 echo "built $out (base ${base:-/})"

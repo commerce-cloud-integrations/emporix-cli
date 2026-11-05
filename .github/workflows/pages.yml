@@ -34,10 +34,13 @@ jobs:
         with:
           node-version: 24
 
-      # Exact versions: the build rewrites the export's paths and payloads, so a new
-      # Mintlify version is adopted only after it was checked.
+      # From the lockfile: the build rewrites the export's paths and payloads, so a new
+      # Mintlify version (or a dependency of it) is adopted only after it was checked.
       - name: Install Mintlify and Pagefind
-        run: npm install --no-audit --no-fund --prefix "$RUNNER_TEMP/tools" mint@4.2.1042 pagefind@1.5.2
+        run: |
+          mkdir -p "$RUNNER_TEMP/tools"
+          cp .github/scripts/site/tools/package.json .github/scripts/site/tools/package-lock.json "$RUNNER_TEMP/tools/"
+          npm ci --no-audit --no-fund --prefix "$RUNNER_TEMP/tools"
 
       - name: Configure Pages
         uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6.0.0
