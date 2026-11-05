@@ -59,3 +59,13 @@ func TestIndexingUnpagedListRejectsMalformedResponses(t *testing.T) {
 		}
 	}
 }
+
+// predefinedTypeNames returns the predefined entity types, which TYPE of the
+// RAG reads and reindex and --entity-type of reindex jobs complete without a
+// read.
+func predefinedTypeNames() []string { return []string{"PRODUCT", "ORDER", "CUSTOMER", "LEGAL-ENTITY"} }
+
+// entityTypeHelp is what the help of a command whose TYPE is an entity type
+// says it is, as helpText prints it.
+const entityTypeHelp = "TYPE is PRODUCT, ORDER, CUSTOMER or LEGAL-ENTITY in any case, or a custom " +
+	"entity type, whose ID `epx custom-entities list` shows. LEGAL-ENTITY takes a hyphen, not an underscore."

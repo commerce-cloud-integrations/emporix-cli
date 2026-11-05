@@ -110,11 +110,16 @@ func aiAgentReads() []readCase {
 	}
 }
 
+// searchTool is a search tool, which finds customers or legal entities in a
+// search index; its configuration is only in -o json.
+const searchTool = `{"id":"search-customer","type":"search","name":"Customer search","enabled":true,` +
+	`"config":{"prompt":"Find customers by name or number.","entityType":"customer","maxResults":5}}`
+
 // aiToolReads returns the reads of tools and tokens, and their searches.
 func aiToolReads() []readCase {
 	const scope = "ai.agent_read"
 	tools := `[{"id":"slack-tool","type":"slack","name":"Slack","enabled":true,"config":{"teamId":"T1"}},
-		{"id":"faq","type":"rag_emporix","name":"FAQ","config":{"entityType":"PRODUCT"}}]`
+		{"id":"faq","type":"rag_emporix","name":"FAQ","config":{"entityType":"PRODUCT"}},` + searchTool + `]`
 	named := `[{"id":"openai-key","name":"OpenAI key","metadata":{"version":1,"createdAt":"2026-05-02T08:00:00Z",
 		"modifiedAt":"2026-05-03T09:00:00Z"}},{"id":"mcp-key","name":"MCP key"}]`
 	return []readCase{
@@ -124,9 +129,10 @@ func aiToolReads() []readCase {
 			scopes:  []string{scope},
 			filters: listFilters{kinds: filterable},
 			body:    tools,
-			want: "ID          TYPE         ENABLED  NAME\n" +
-				"slack-tool  slack        true     Slack\n" +
-				"faq         rag_emporix           FAQ\n",
+			want: "ID               TYPE         ENABLED  NAME\n" +
+				"slack-tool       slack        true     Slack\n" +
+				"faq              rag_emporix           FAQ\n" +
+				"search-customer  search       true     Customer search\n",
 		},
 		{
 			args:   []string{"ai", "tools", "get", "faq"},

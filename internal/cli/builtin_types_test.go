@@ -153,7 +153,7 @@ func TestBuiltInTypesTakeEveryCaseUnlessExact(t *testing.T) {
 			t.Errorf("%v: typeArgument(%q, %v) = %v; want %q", tt.types.names(), tt.arg, tt.custom, err, tt.want)
 		}
 	}
-	if got, want := anyCase.kinds(), "PRODUCT, ORDER or a custom entity type"; got != want {
+	if got, want := anyCase.kinds(), "PRODUCT or ORDER in any case, or a custom entity type"; got != want {
 		t.Errorf("kinds %q; want %q", got, want)
 	}
 	fake := newFakeEmporix(t)

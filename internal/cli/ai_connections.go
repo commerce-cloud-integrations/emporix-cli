@@ -49,13 +49,20 @@ type aiMCPServer struct {
 	} `json:"config"`
 }
 
+// searchToolNeedsReindex says when a search tool, which finds what a reindex job of
+// its type indexed, first finds anything.
+const searchToolNeedsReindex = "The first search tool of an entity type (customer or legal-entity) finds nothing " +
+	"until a\nreindex job of that type (`epx indexing reindex-jobs create --entity-type CUSTOMER` or LEGAL-ENTITY),\n" +
+	"started after the tool is saved, ends."
+
 // newAIToolsCommand reads and writes the native tools of agents.
 func newAIToolsCommand(a *app) *cobra.Command {
 	r := agentic(resource[aiTool]{
 		use: "tools", noun: "agent tools",
 		long: "Reads the native tools that agents can use: TYPE is slack, teams, rag_custom (retrieval-\n" +
-			"augmented generation over the tenant's own vector database) or rag_emporix (over Emporix\n" +
-			"data); their configuration is only in -o json.",
+			"augmented generation over the tenant's own vector database), rag_emporix (over Emporix\n" +
+			"data) or search (customers or legal entities, found without embeddings in a search index\n" +
+			"that Emporix keeps); their configuration is only in -o json.\n" + searchToolNeedsReindex,
 		view: view[aiTool]{
 			singular: "tool",
 			header:   []string{columnID, columnType, columnEnabled, columnName},
@@ -66,8 +73,8 @@ func newAIToolsCommand(a *app) *cobra.Command {
 	})
 	return aiManagedGroup(a, r, aiItemWrites{
 		one: "an agent tool",
-		members: "The JSON holds its type (slack, teams, rag_custom or rag_emporix), name and config, and\n" +
-			"whether it is enabled.\n",
+		members: "The JSON holds its type (slack, teams, rag_custom, rag_emporix or search), name and config,\n" +
+			"and whether it is enabled.\n" + searchToolNeedsReindex + "\n",
 		disable: usedByAgents, remove: removeFromAgents,
 	})
 }

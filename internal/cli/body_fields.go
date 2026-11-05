@@ -26,15 +26,27 @@ func requireAll(fields []bodyField) []bodyField {
 	return all
 }
 
-// onlyWith returns f, a member that applies only with --flag (onlyWithFlag).
-func (f bodyField) onlyWith(flag string) bodyField {
-	add, own := f.value.add, f.value.flag
+// afterAdd returns f, whose hook runs on the command once f's flag is added
+// to it, with the name of that flag.
+func (f bodyField) afterAdd(hook func(cmd *cobra.Command, flag string)) bodyField {
+	add, flag := f.value.add, f.value.flag
 	f.value.add = func(cmd *cobra.Command, whole string) func() any {
 		value := add(cmd, whole)
-		onlyWithFlag(cmd, own, flag)
+		hook(cmd, flag)
 		return value
 	}
 	return f
+}
+
+// onlyWith returns f, a member that applies only with --flag (onlyWithFlag).
+func (f bodyField) onlyWith(flag string) bodyField {
+	return f.afterAdd(func(cmd *cobra.Command, own string) { onlyWithFlag(cmd, own, flag) })
+}
+
+// suggesting returns f, whose flag shells complete with values, never with
+// file names; it still takes any other value, which is sent as given.
+func (f bodyField) suggesting(values ...string) bodyField {
+	return f.afterAdd(func(cmd *cobra.Command, flag string) { completeChoices(cmd, flag, values) })
 }
 
 // onlyWithFlag makes --own of cmd apply only with --flag (flagOn): given
@@ -144,9 +156,7 @@ func (f bodyField) optional() bodyField {
 // Where --flag is not given, as where another flag gives the body whole,
 // neither is checked. The usage of --own says so.
 func (f bodyField) onlyWithChoice(flag, choice string) bodyField {
-	add, own := f.value.add, f.value.flag
-	f.value.add = func(cmd *cobra.Command, whole string) func() any {
-		value := add(cmd, whole)
+	return f.afterAdd(func(cmd *cobra.Command, own string) {
 		cmd.Flags().Lookup(own).Usage += " (only with --" + flag + " " + choice + ", which requires it)"
 		addPreRunCheck(cmd, func() error {
 			fs := cmd.Flags()
@@ -155,9 +165,7 @@ func (f bodyField) onlyWithChoice(flag, choice string) bodyField {
 			}
 			return usageError{fmt.Errorf("--%s applies only with --%s %s, which requires it", own, flag, choice)}
 		})
-		return value
-	}
-	return f
+	})
 }
 
 // fixedField is a member of a body that no flag sets: always value, such as

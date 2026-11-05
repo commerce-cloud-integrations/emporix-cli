@@ -339,8 +339,13 @@ Its writes require the indexing.search\_manage scope.
 
 Start a reindex job.
 
-Starts a job that indexes every entity of a type again: PRODUCT, ORDER or a custom entity
-type ([`epx custom-entities list`](/commands/custom-entities#epx-custom-entities-list)); with `--rag`, it also embeds products for RAG search.
+Starts a job that indexes every entity of TYPE again; with `--rag`, it also embeds products for
+RAG search.
+TYPE is PRODUCT, ORDER, CUSTOMER or LEGAL-ENTITY in any case, or a custom entity type,
+whose ID [`epx custom-entities list`](/commands/custom-entities#epx-custom-entities-list) shows.
+LEGAL-ENTITY takes a hyphen, not an underscore.
+Searches of customers and legal entities, in the Search Service and by the tools of agents,
+read what a CUSTOMER or LEGAL-ENTITY job indexes.
 Emporix answers with the job, or with the job of that type that is IN\_PROGRESS already.
 A job is PENDING while others take its turn, PUBLISHED once every entity was sent to the
 index and SUCCESS once the index took them all. For BATTERY\_INCLUDED, Emporix checks the
@@ -367,7 +372,7 @@ Requires the indexing.search\_manage scope.
 - `--dry-run`\
   Print the request instead of sending it (excludes `-o`).
 - `--entity-type <TYPE>`\
-  The TYPE of the entities to reindex: PRODUCT, ORDER or a custom entity type (required without `--file`).
+  The TYPE of the entities to reindex: PRODUCT, ORDER, CUSTOMER or LEGAL-ENTITY in any case, or a custom entity type (required without `--file`).
 - `--file <PATH>`\
   JSON request body in PATH, sent byte for byte instead of the one that epx makes (- reads standard input; sending it then needs `--yes`).
 - `-o, --output <format>`\
@@ -389,6 +394,7 @@ Also takes the [global flags](/commands#global-flags).
 
 ```sh
 epx indexing reindex-jobs create --entity-type PRODUCT --rag --wait
+epx indexing reindex-jobs create --entity-type LEGAL-ENTITY --wait
 epx indexing reindex-jobs create --file reindex.json --yes
 ```
 

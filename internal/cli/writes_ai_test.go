@@ -158,7 +158,11 @@ func aiConnectionWrites() []writeCase {
 			},
 		)
 	}
-	return cases
+	// A search tool, whose configuration --file sends as given.
+	return append(cases, writeCase{
+		args: []string{"ai", "tools", "update", "search-customer"}, file: searchTool, method: http.MethodPut,
+		path: aiAgenticPath + "tools/search-customer", query: "force=false", scopes: manage, status: http.StatusNoContent,
+	})
 }
 
 // aiCreditWrites are the writes that consume AI credits: chats with agents,

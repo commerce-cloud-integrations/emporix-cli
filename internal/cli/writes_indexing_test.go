@@ -45,6 +45,12 @@ func indexingWrites() []writeCase {
 			scopes: manage, status: http.StatusCreated, body: reindexJobBody, want: reindexJobJSON,
 		},
 		{
+			args:   []string{"indexing", "reindex-jobs", "create", "--entity-type", "LEGAL-ENTITY"},
+			sent:   `{"entityType":"LEGAL-ENTITY"}`,
+			method: http.MethodPost, path: "/indexing/acme1/reindex-jobs", scopes: manage, status: http.StatusCreated,
+			body: reindexJobBody, want: reindexJobJSON,
+		},
+		{
 			args: []string{"indexing", "reindex-jobs", "create"}, file: `{"entityType":"vehicle"}`,
 			method: http.MethodPost, path: "/indexing/acme1/reindex-jobs", scopes: manage, status: http.StatusOK,
 			body: reindexJobBody, want: reindexJobJSON,
@@ -54,6 +60,42 @@ func indexingWrites() []writeCase {
 			path: "/ai-rag-indexer/acme1/PRODUCT/reindex", scopes: []string{"ai.agent_manage"},
 			status: http.StatusNoContent,
 		},
+		{
+			args: []string{"ai", "rag", "reindex", "customer"}, method: http.MethodPost,
+			path: "/ai-rag-indexer/acme1/customer/reindex", scopes: []string{"ai.agent_manage"},
+			status: http.StatusNoContent,
+		},
+	}
+}
+
+// TestReindexJobCreateSendsTheEntityTypeAsGiven checks that --entity-type
+// takes every type, predefined in either case or custom, and sends it as
+// given: Emporix takes the predefined ones in any case, and
+// LEGAL-ENTITY with a hyphen. Its help names them; shells complete the
+// predefined ones (TestCompletionNeverSuggestsFiles).
+func TestReindexJobCreateSendsTheEntityTypeAsGiven(t *testing.T) {
+	sent := []string{"vehicle"} // a custom entity type
+	for _, name := range predefinedTypeNames() {
+		sent = append(sent, name, strings.ToLower(name))
+	}
+	for _, entityType := range sent {
+		fake := newFakeEmporix(t)
+		code, stdout, stderr := runIn(t, writeEnv(fake, false, ""),
+			"indexing", "reindex-jobs", "create", "--entity-type", entityType, "--dry-run")
+		if want := "\n\n{\"entityType\":\"" + entityType + "\"}\n"; code != ExitOK || !strings.HasSuffix(stdout, want) {
+			t.Errorf("%s: exit %d, stdout %q, stderr %q; want the body %q", entityType, code, stdout, stderr, want)
+		}
+		fake.assertNothingSent(t)
+	}
+	help := helpText(t, "indexing", "reindex-jobs", "create")
+	for _, want := range []string{
+		entityTypeHelp,
+		"to reindex: PRODUCT, ORDER, CUSTOMER or LEGAL-ENTITY in any case, or a custom entity type " +
+			"(required without --file)",
+	} {
+		if !strings.Contains(help, want) {
+			t.Errorf("help lacks %q:\n%s", want, help)
+		}
 	}
 }
 

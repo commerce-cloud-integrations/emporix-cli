@@ -47,6 +47,10 @@ func TestCompletionNeverSuggestsFiles(t *testing.T) {
 		{args: []string{"ai", "analytics", "executions", "helper", "--granularity", ""},
 			want: []string{"QUARTER\n", "MONTH\n", "WEEK\n"}},
 		{args: []string{"category-trees", "list", "--type", ""}, want: []string{"STANDARD\n", "CLASSIFICATION\n"}},
+		// The predefined entity types; --entity-type takes a custom one too
+		// (TestReindexJobCreateSendsTheEntityTypeAsGiven).
+		{args: []string{"indexing", "reindex-jobs", "create", "--entity-type", ""},
+			want: predefinedTypeNames()},
 		// --param repeats, so completion offers it again.
 		{args: []string{"api", "get", "/x", "-p", "a=1", "--pa"}, want: []string{"--param\t"}},
 	}

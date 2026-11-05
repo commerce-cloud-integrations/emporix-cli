@@ -49,12 +49,17 @@ func (b builtInTypes) names() []string {
 }
 
 // kinds says what a type argument that takes b is, for help: one of b, and
-// how it is written where b is exact, or a custom entity type.
+// how it is written (exactly, or in any case), or a custom entity
+// type; only a custom entity type where b has no types.
 func (b builtInTypes) kinds() string {
-	if b.exact {
+	switch {
+	case len(b.types) == 0:
+		return "a custom entity type"
+	case b.exact:
 		return alternatives(b.names()) + ", exactly as written, or a custom entity type"
+	default:
+		return alternatives(b.names()) + " in any case, or a custom entity type"
 	}
-	return alternatives(append(b.names(), "a custom entity type"))
 }
 
 // clause says, for help, that subject, such as TYPE, is what kinds says,

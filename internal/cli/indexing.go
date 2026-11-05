@@ -193,27 +193,43 @@ func (j *reindexJob) state() jobState {
 	return s
 }
 
+// predefinedEntityTypes returns the entity types that reindex jobs and the AI
+// RAG Indexer take besides the custom ones, in any case.
+func predefinedEntityTypes() builtInTypes {
+	return anyCaseTypes("PRODUCT", "ORDER", "CUSTOMER", "LEGAL-ENTITY")
+}
+
+// entityTypeSentences say, for help, what TYPE, an entity type, is: one of
+// predefinedEntityTypes, LEGAL-ENTITY with a hyphen, or a custom one.
+func entityTypeSentences() string {
+	return predefinedEntityTypes().clause("TYPE") + ".\nLEGAL-ENTITY takes a hyphen, not an underscore."
+}
+
 // reindexJobCreate starts a reindex job in jobs, which --wait follows as
 // the get of jobs reads it.
 func reindexJobCreate(jobs resource[reindexJob]) *write {
+	types := predefinedEntityTypes()
 	return &write{
 		use:   createUse,
 		short: "Start a reindex job",
-		long: "Starts a job that indexes every entity of a type again: PRODUCT, ORDER or a custom entity\n" +
-			"type (`epx custom-entities list`); with --rag, it also embeds products for RAG search.\n" +
+		long: "Starts a job that indexes every entity of TYPE again; with --rag, it also embeds products for\n" +
+			"RAG search.\n" + entityTypeSentences() + "\n" +
+			"Searches of customers and legal entities, in the Search Service and by the tools of agents,\n" +
+			"read what a CUSTOMER or LEGAL-ENTITY job indexes.\n" +
 			"Emporix answers with the job, or with the job of that type that is IN_PROGRESS already.\n" +
 			"A job is PENDING while others take its turn, PUBLISHED once every entity was sent to the\n" +
 			"index and SUCCESS once the index took them all. For BATTERY_INCLUDED, Emporix checks the\n" +
 			"stored keys before it starts a PRODUCT job (400 Bad Request when they are invalid, 502 when\n" +
 			"it cannot check them).",
 		example: "  epx indexing reindex-jobs create --entity-type PRODUCT --rag --wait\n" +
+			"  epx indexing reindex-jobs create --entity-type LEGAL-ENTITY --wait\n" +
 			"  epx indexing reindex-jobs create --file reindex.json --yes",
 		method: http.MethodPost,
 		req:    request{path: jobs.path},
 		scopes: []string{indexingManageScope},
 		body: &payload{typed: objectBody{
-			stringField("entityType", "entity-type",
-				"the `TYPE` of the entities to reindex: PRODUCT, ORDER or a custom entity type").require(),
+			stringField("entityType", "entity-type", "the `TYPE` of the entities to reindex: "+types.kinds()).
+				require().suggesting(types.names()...),
 			switchField("rag", "rag", "embed products for RAG search too (PRODUCT only)"),
 		}},
 		answer: followJob(jobs, (*reindexJob).state, []string{"PENDING", "IN_PROGRESS", "PUBLISHED"}, "SUCCESS"),

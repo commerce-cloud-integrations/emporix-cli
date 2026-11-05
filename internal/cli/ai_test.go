@@ -83,3 +83,41 @@ func TestAIModelsJSONKeepsTheProviders(t *testing.T) {
 		t.Fatalf("exit %d, stdout %q, stderr %q", code, stdout, stderr)
 	}
 }
+
+// TestAIToolsJSONHasTheSearchToolConfig checks that -o json prints the
+// configuration of a search tool, which the table leaves out, as sent.
+func TestAIToolsJSONHasTheSearchToolConfig(t *testing.T) {
+	fake := newFakeEmporix(t)
+	fake.route("/ai-service/acme1/agentic/tools/search-customer", respond(http.StatusOK, searchTool))
+	code, stdout, stderr := runCLI(t, fake.env(), "ai", "tools", "get", "search-customer", "-o", "json")
+	for _, want := range []string{
+		`"entityType": "customer"`, `"maxResults": 5`, `"prompt": "Find customers by name or number."`,
+	} {
+		if code != ExitOK || !strings.Contains(stdout, want) {
+			t.Fatalf("exit %d, stderr %q, stdout lacks %s:\n%s", code, stderr, want, stdout)
+		}
+	}
+}
+
+// TestAIToolsHelpNamesTheSearchToolAndItsReindex checks that the help of the
+// tools names the search type, and the reindex job that the first search
+// tool of an entity type waits for.
+func TestAIToolsHelpNamesTheSearchToolAndItsReindex(t *testing.T) {
+	const reindex = "The first search tool of an entity type (customer or legal-entity) finds nothing until a " +
+		"reindex job of that type (`epx indexing reindex-jobs create --entity-type CUSTOMER` or LEGAL-ENTITY), " +
+		"started after the tool is saved, ends."
+	for _, tt := range []struct {
+		args  []string
+		types string
+	}{
+		{args: []string{"ai", "tools", "list"}, types: "rag_emporix (over Emporix data) or search"},
+		{args: []string{"ai", "tools", "update"}, types: "(slack, teams, rag_custom, rag_emporix or search)"},
+	} {
+		help := helpText(t, tt.args...)
+		for _, want := range []string{tt.types, reindex} {
+			if !strings.Contains(help, want) {
+				t.Errorf("help of %q lacks %q:\n%s", tt.args, want, help)
+			}
+		}
+	}
+}

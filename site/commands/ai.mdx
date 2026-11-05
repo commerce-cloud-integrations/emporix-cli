@@ -1734,8 +1734,11 @@ Its writes require the ai.agent\_manage scope.
 List the fields of an entity type that can be embedded for RAG search.
 
 Reads the fields of an entity type, by path, that the AI RAG Indexer can embed.
-TYPE is PRODUCT, ORDER or a custom entity type ([`epx custom-entities list`](/commands/custom-entities#epx-custom-entities-list)). The fields come whole, so they are read with one
-request.
+TYPE is PRODUCT, ORDER, CUSTOMER or LEGAL-ENTITY in any case, or a custom entity type,
+whose ID [`epx custom-entities list`](/commands/custom-entities#epx-custom-entities-list) shows.
+LEGAL-ENTITY takes a hyphen, not an underscore.
+An unknown TYPE, such as LEGAL\_ENTITY, gets 400 Bad Request (exit 1).
+The fields come whole, so they are read with one request.
 
 Requires the ai.agent\_read scope.
 
@@ -1761,10 +1764,16 @@ Also takes the [global flags](/commands#global-flags).
 List the fields of an entity type that a vector search can filter by.
 
 Reads the fields of an entity type, by path, that a vector search can filter by before RAG
-retrieval, with their TYPE (string, integer, float, boolean, datetime, date, time,
-dictionary, list or object).
-TYPE is PRODUCT, ORDER or a custom entity type ([`epx custom-entities list`](/commands/custom-entities#epx-custom-entities-list)). The fields come whole, so they are read with one
-request.
+retrieval, with their data type in the TYPE column (string, integer, float, boolean,
+datetime, date, time, dictionary, list or object). PARENT is the path of the list of objects
+a field sits in, such as addresses, and empty outside a list; tables cut a long PARENT.
+A schema's REFERENCE attribute comes as two fields, its path (object) and that path with .id
+(string), the one to filter by.
+TYPE is PRODUCT, ORDER, CUSTOMER or LEGAL-ENTITY in any case, or a custom entity type,
+whose ID [`epx custom-entities list`](/commands/custom-entities#epx-custom-entities-list) shows.
+LEGAL-ENTITY takes a hyphen, not an underscore.
+An unknown TYPE, such as LEGAL\_ENTITY, gets 400 Bad Request (exit 1).
+The fields come whole, so they are read with one request.
 
 Requires the ai.agent\_read scope.
 
@@ -1773,7 +1782,7 @@ Requires the ai.agent\_read scope.
 **Flags**
 
 - `--columns <names>`\
-  Print only these columns of table and csv, in this order: comma-separated names (any case) among FIELD, TYPE.
+  Print only these columns of table and csv, in this order: comma-separated names (any case) among FIELD, TYPE, PARENT.
 - `--limit <n>`\
   Print at most n items; paged reads stop early where they safely can (0: every item).
 - `--no-headers`\
@@ -1790,10 +1799,14 @@ Also takes the [global flags](/commands#global-flags).
 Embed every entity of a type again for RAG search (deprecated by Emporix).
 
 Embeds every entity of a type again in the vector database, replacing its records there;
-it sends no body. Emporix has deprecated this endpoint: [`epx indexing reindex-jobs create`](/commands/indexing#epx-indexing-reindex-jobs-create)
-with `--rag` starts a reindex job that embeds products too, which its `--wait` follows.
-TYPE is PRODUCT, ORDER or a custom entity type ([`epx custom-entities list`](/commands/custom-entities#epx-custom-entities-list)). Emporix answers an unknown TYPE with 204 No Content (exit 0),
-so check the TYPE first.
+it sends no body. Emporix has deprecated this endpoint in favor of a reindex job:
+[`epx indexing reindex-jobs create`](/commands/indexing#epx-indexing-reindex-jobs-create), which `--wait` follows. Give it `--rag` for PRODUCT; for the
+other types, such as CUSTOMER and LEGAL-ENTITY, the job updates their embeddings without it.
+TYPE is PRODUCT, ORDER, CUSTOMER or LEGAL-ENTITY in any case, or a custom entity type,
+whose ID [`epx custom-entities list`](/commands/custom-entities#epx-custom-entities-list) shows.
+LEGAL-ENTITY takes a hyphen, not an underscore.
+Emporix has answered an unknown TYPE with 204 No Content (exit 0), not the
+400 Bad Request its reference gives, so check the TYPE first.
 
 Changes data: on a terminal, epx asks before it sends POST. `--yes` sends without
 asking (required without a terminal); `--dry-run` prints the request
@@ -2131,8 +2144,12 @@ Also takes the [global flags](/commands#global-flags).
 Read, upsert, change and delete agent tools.
 
 Reads the native tools that agents can use: TYPE is slack, teams, rag\_custom (retrieval-
-augmented generation over the tenant's own vector database) or rag\_emporix (over Emporix
-data); their configuration is only in `-o json`.
+augmented generation over the tenant's own vector database), rag\_emporix (over Emporix
+data) or search (customers or legal entities, found without embeddings in a search index
+that Emporix keeps); their configuration is only in `-o json`.
+The first search tool of an entity type (customer or legal-entity) finds nothing until a
+reindex job of that type ([`epx indexing reindex-jobs create --entity-type CUSTOMER`](/commands/indexing#epx-indexing-reindex-jobs-create) or LEGAL-ENTITY),
+started after the tool is saved, ends.
 
 Its reads require the ai.agent\_read scope.
 Its writes require the ai.agent\_manage scope.
@@ -2191,8 +2208,12 @@ Also takes the [global flags](/commands#global-flags).
 Show one tool.
 
 Reads the native tools that agents can use: TYPE is slack, teams, rag\_custom (retrieval-
-augmented generation over the tenant's own vector database) or rag\_emporix (over Emporix
-data); their configuration is only in `-o json`.
+augmented generation over the tenant's own vector database), rag\_emporix (over Emporix
+data) or search (customers or legal entities, found without embeddings in a search index
+that Emporix keeps); their configuration is only in `-o json`.
+The first search tool of an entity type (customer or legal-entity) finds nothing until a
+reindex job of that type ([`epx indexing reindex-jobs create --entity-type CUSTOMER`](/commands/indexing#epx-indexing-reindex-jobs-create) or LEGAL-ENTITY),
+started after the tool is saved, ends.
 
 Requires the ai.agent\_read scope.
 
@@ -2214,8 +2235,12 @@ Also takes the [global flags](/commands#global-flags).
 List agent tools.
 
 Reads the native tools that agents can use: TYPE is slack, teams, rag\_custom (retrieval-
-augmented generation over the tenant's own vector database) or rag\_emporix (over Emporix
-data); their configuration is only in `-o json`.
+augmented generation over the tenant's own vector database), rag\_emporix (over Emporix
+data) or search (customers or legal entities, found without embeddings in a search index
+that Emporix keeps); their configuration is only in `-o json`.
+The first search tool of an entity type (customer or legal-entity) finds nothing until a
+reindex job of that type ([`epx indexing reindex-jobs create --entity-type CUSTOMER`](/commands/indexing#epx-indexing-reindex-jobs-create) or LEGAL-ENTITY),
+started after the tool is saved, ends.
 
 Requires the ai.agent\_read scope.
 
@@ -2317,8 +2342,11 @@ Replaces the tool ID with the JSON in `--file`, or creates it with that ID where
 none exists (an upsert): Emporix answers with the id of one it created and nothing for one it
 replaced. With metadata.version, as [`epx ai tools get ID -o json`](/commands/ai#epx-ai-tools-get) prints it,
 Emporix replaces only that version: another is a conflict (exit 5).
-The JSON holds its type (slack, teams, rag\_custom or rag\_emporix), name and config, and
-whether it is enabled.
+The JSON holds its type (slack, teams, rag\_custom, rag\_emporix or search), name and config,
+and whether it is enabled.
+The first search tool of an entity type (customer or legal-entity) finds nothing until a
+reindex job of that type ([`epx indexing reindex-jobs create --entity-type CUSTOMER`](/commands/indexing#epx-indexing-reindex-jobs-create) or LEGAL-ENTITY),
+started after the tool is saved, ends.
 ID is the ID that [`epx ai tools list`](/commands/ai#epx-ai-tools-list) shows.
 
 Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without
