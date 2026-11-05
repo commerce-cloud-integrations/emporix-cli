@@ -29,14 +29,14 @@ python3 -I "$repo/site/sync.py" --check
 }
 mkdir "$work/site"
 unzip -q "$work/export.zip" -d "$work/site"
-python3 -I "$here/pages.py" "$work/site" "$base"
-python3 -I "$here/agents.py" "$work/site" "$repo/site" "$base" "${SITE_HOST:-https://commerce-cloud-integrations.github.io}"
+(cd "$work/site" && python3 -I "$here/pages.py" "$base" &&
+	python3 -I "$here/agents.py" "$base" "${SITE_HOST:-https://commerce-cloud-integrations.github.io}")
 "$pagefind" --site "$work/site" --root-selector "#content-area" \
 	--exclude-selectors "#page-context-menu, #page-context-menu-button, button" >"$work/pagefind.log"
 grep -E "Indexed [0-9]+ pages" "$work/pagefind.log"
 rm -rf "$out"
 mv "$work/site" "$out"
-if [ -n "$base" ]; then
+if [[ -n "$base" ]]; then
 	link=$(dirname "$out")/pages-root/${base#/}
 	mkdir -p "$(dirname "$link")"
 	ln -sfn "$out" "$link"

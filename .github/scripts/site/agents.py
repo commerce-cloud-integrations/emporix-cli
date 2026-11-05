@@ -1,15 +1,16 @@
 """Adds what LLM tools and search crawlers read to a static export of site/, for GitHub Pages.
 
-    python3 -I .github/scripts/site/agents.py EXPORT_DIR SITE_DIR BASE HOST
+    cd EXPORT_DIR && python3 -I .github/scripts/site/agents.py BASE HOST
     e.g. BASE=/emporix-cli HOST=https://commerce-cloud-integrations.github.io
 
-Run after pages.py. For every page of the navigation in SITE_DIR/docs.json it writes:
+Run after pages.py, in the export (the working directory). For every page of the navigation
+in site/docs.json (the site/ of this repository) it writes:
 
 - a Markdown copy of the page, at the page's path with .md (install.md, commands/products.md),
   which the HTML's text/markdown alternate links name; its links are made absolute;
 - a canonical link and a JSON-LD description in the page's <head>.
 
-And, at the root of EXPORT_DIR: llms.txt (the pages, by section, with their Markdown
+And, at the root of the export: llms.txt (the pages, by section, with their Markdown
 URLs), llms-full.txt (every page's Markdown in one file), sitemap.xml and robots.txt.
 
 Standard library only.
@@ -17,17 +18,19 @@ Standard library only.
 
 import html
 import json
+import os
 import re
 import sys
 from pathlib import Path
 
+SITE = Path(__file__).resolve().parents[3] / "site"
 FENCE = re.compile(r"^\s*```")
-IMPORT = re.compile(r"^import\s.+\sfrom\s.+$")
+IMPORT = re.compile(r"import\s")
+FROM = re.compile(r"\sfrom\s")
 # A line that is only a JSX tag, such as <Info> or </Card>; its content stays.
 JSX_TAG = re.compile(r"^\s*</?[A-Z][\w.]*(\s[^<>]*)?/?>\s*$")
 # An opening tag with string attributes, such as <Step title="Set your API key"> or <Card href="/x">.
 OPEN_TAG = re.compile(r'^\s*<([A-Z][\w.]*)((?:\s+[\w-]+="[^"]*")*)\s*/?>\s*$')
-ATTRIBUTE = re.compile(r'([\w-]+)="([^"]*)"')
 MD_LINK = re.compile(r"\]\((/[^)\s]*)\)")
 FRONT = re.compile(r"^---\n(.*?)\n---\n", re.S)
 
@@ -62,6 +65,17 @@ def frontmatter(text: str) -> tuple:
     return fields, text[match.end():]
 
 
+def attributes_of(text: str) -> dict:
+    """The attributes of an opening tag, from the attribute part that OPEN_TAG matched
+    (' title="Set your API key" href="/x"'): split at the quotes, names and values alternate."""
+    parts = text.split('"')
+    return {name.strip().rstrip("="): value for name, value in zip(parts[0::2], parts[1::2])}
+
+
+def is_import(line: str) -> bool:
+    return IMPORT.match(line) is not None and FROM.search(line) is not None
+
+
 def heading_of(attributes: dict) -> str:
     """The Markdown heading that stands for an opening tag with a title (a step, a card, a tab):
     a card with an href becomes a link. A tag without a title leaves no line."""
@@ -83,17 +97,34 @@ def markdown(body: str, origin: str) -> str:
         if FENCE.match(line):
             fenced = not fenced
         elif not fenced:
-            opening = OPEN_TAG.match(line)
-            if IMPORT.match(line) or JSX_TAG.match(line) and not opening:
+            line = markdown_line(line, origin)
+            if line is None:
                 continue
-            if opening:
-                line = heading_of(dict(ATTRIBUTE.findall(opening.group(2))))
-                if not line:
-                    continue
-            line = line.replace("\\{", "{").replace("\\}", "}").replace("\\_", "_")
-            line = MD_LINK.sub(lambda link: "](" + origin + link.group(1) + ")", line)
         out.append(line)
     return "\n".join(out).strip() + "\n"
+
+
+def markdown_line(line: str, origin: str):
+    """A line of an MDX page outside code blocks as Markdown (see markdown), or None where it
+    leaves no line."""
+    opening = OPEN_TAG.match(line)
+    if opening:
+        line = heading_of(attributes_of(opening.group(2)))
+        if not line:
+            return None
+    elif is_import(line) or JSX_TAG.match(line):
+        return None
+    line = line.replace("\\{", "{").replace("\\}", "}").replace("\\_", "_")
+    return MD_LINK.sub(lambda link: "](" + origin + link.group(1) + ")", line)
+
+
+def inside(root: str, relative: str) -> Path:
+    """The path of relative under root; a page name that leads out of root (../x) is refused."""
+    root = os.path.realpath(root)
+    path = os.path.realpath(os.path.join(root, relative))
+    if os.path.commonpath((root, path)) != root:
+        raise ValueError("page %s leads out of %s" % (relative, root))
+    return Path(path)
 
 
 def page_path(page: str) -> str:
@@ -124,14 +155,23 @@ def add_head(page_html: str, canonical: str, title: str, description: str, site:
 
 
 def main(args: list) -> int:
-    if len(args) != 4:
-        print("usage: agents.py EXPORT_DIR SITE_DIR BASE HOST", file=sys.stderr)
+    if len(args) != 2:
+        print("usage: agents.py BASE HOST   (in the export)", file=sys.stderr)
         return 2
-    export, source, base, host = Path(args[0]), Path(args[1]), args[2].rstrip("/"), args[3].rstrip("/")
+    base, host = args[0].rstrip("/"), args[1].rstrip("/")
     if not re.fullmatch(r"(/[A-Za-z0-9._-]+)*", base) or not host.startswith("https://"):
         print("agents.py: BASE is /name or empty, and HOST an https URL", file=sys.stderr)
         return 2
-    docs = json.loads((source / "docs.json").read_text(encoding="utf-8"))
+    try:
+        return write_pages(os.path.realpath(os.getcwd()), str(SITE), base, host)
+    except ValueError as err:
+        print("agents.py: %s" % err, file=sys.stderr)
+        return 1
+
+
+def write_pages(export: str, source: str, base: str, host: str) -> int:
+    """Writes the Markdown copies and head tags of the pages in export, then the indexes."""
+    docs = json.loads(Path(source, "docs.json").read_text(encoding="utf-8"))
     site = {"name": docs.get("name", ""), "url": host + base + "/"}
     entries = []  # (group, page, title, description, canonical, markdown URL, markdown text)
     seen = set()
@@ -139,8 +179,8 @@ def main(args: list) -> int:
         if page in seen:
             continue
         seen.add(page)
-        mdx = source / (page + ".mdx")
-        target = export / (page_path(page) + "/index.html" if page != "index" else "index.html")
+        mdx = inside(source, page + ".mdx")
+        target = inside(export, page_path(page) + "/index.html" if page != "index" else "index.html")
         if not mdx.is_file() or not target.is_file():
             print(f"agents.py: page {page} has no source or no exported HTML", file=sys.stderr)
             return 1
@@ -149,7 +189,7 @@ def main(args: list) -> int:
         description = fields.get("description", "")
         rel = page_path(page)
         canonical = host + base + "/" + (rel + "/" if rel else "")
-        md_path = export / (page + ".md")  # the name Mintlify's alternate links use (commands/index.md)
+        md_path = inside(export, page + ".md")  # the name Mintlify's alternate links use (commands/index.md)
         md_url = host + base + "/" + page + ".md"
         text = "# " + title + "\n\n" + ("> " + description + "\n\n" if description else "") + markdown(body, host + base)
         md_path.parent.mkdir(parents=True, exist_ok=True)
@@ -157,7 +197,7 @@ def main(args: list) -> int:
         page_html = target.read_text(encoding="utf-8")
         target.write_text(add_head(page_html, canonical, title, description, site), encoding="utf-8")
         entries.append((group, page, title, description, canonical, md_url, text))
-    write_indexes(export, docs, site, host, base, entries)
+    write_indexes(Path(export), docs, site, host, base, entries)
     return 0
 
 

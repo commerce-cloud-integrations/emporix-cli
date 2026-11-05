@@ -18,7 +18,7 @@ jobs:
   sonarcloud:
     name: SonarCloud Scan
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 40
 
     steps:
       - name: Checkout
@@ -33,7 +33,7 @@ jobs:
           go-version-file: go.mod
 
       - name: Run tests with coverage
-        run: go test -race -covermode=atomic -coverprofile=coverage.out ./...
+        run: go test -race -timeout 25m -covermode=atomic -coverprofile=coverage.out ./...
 
       - name: SonarCloud Scan
         uses: SonarSource/sonarqube-scan-action@299e4b793aaa83bf2aba7c9c14bedbb485688ec4

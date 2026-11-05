@@ -3,8 +3,9 @@
 // at deploy time (pagefind over the export). Loaded by every page (.github/scripts/site/pages.py).
 (function () {
   "use strict";
-  var base = (document.currentScript && document.currentScript.dataset.base) || "";
+  var base = document.currentScript?.dataset.base || "";
   var overlay = null;
+  var search = null;
   var loading = null;
 
   function load() {
@@ -34,7 +35,7 @@
       if (event.target === overlay) close();
     });
     document.body.appendChild(overlay);
-    new window.PagefindUI({
+    search = new window.PagefindUI({
       element: "#epx-search",
       baseUrl: base + "/",
       showSubResults: true,
@@ -46,7 +47,7 @@
 
   function open() {
     load().then(function () {
-      if (!overlay) build();
+      if (!search) build();
       overlay.classList.add("is-open");
       document.documentElement.classList.add("epx-search-open");
       var input = overlay.querySelector("input");
@@ -66,12 +67,12 @@
   }
 
   function isOpen() {
-    return overlay && overlay.classList.contains("is-open");
+    return overlay?.classList.contains("is-open");
   }
 
   // Capture phase, so that Mintlify's own handlers never see these events.
   document.addEventListener("click", function (event) {
-    var button = event.target.closest && event.target.closest("#search-bar-entry, #search-bar-entry-mobile");
+    var button = event.target.closest?.("#search-bar-entry, #search-bar-entry-mobile");
     if (!button) return;
     event.preventDefault();
     event.stopImmediatePropagation();

@@ -1,6 +1,8 @@
 """Turns a `mint export` of site/ into a static site for GitHub Pages under a base path.
 
-    python3 -I .github/scripts/site/pages.py EXPORT_DIR BASE      e.g. BASE=/emporix-cli
+    cd EXPORT_DIR && python3 -I .github/scripts/site/pages.py BASE      e.g. BASE=/emporix-cli
+
+It works on the export in the working directory.
 
 - The export's own server and launchers (serve.js, Start Docs.*) and the site's tooling
   (sync.py) are removed.
@@ -16,7 +18,7 @@
   requests a static host cannot answer (router prefetches, the export's live reload).
 - search.js and search.css (beside this file) are copied in and loaded by every page:
   they open Pagefind's search on the site's search button and Cmd/Ctrl+K. Run pagefind
-  over EXPORT_DIR afterwards (.github/scripts/site/build.sh does).
+  over the export afterwards (.github/scripts/site/build.sh does).
 
 Standard library only.
 """
@@ -29,6 +31,7 @@ import sys
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
+INDEX_HTML = "index.html"
 REMOVED = ("serve.js", "Start Docs.command", "Start Docs.bat", "sync.py")
 TEXT_SUFFIXES = (".html", ".js", ".css", ".json", ".txt", ".xml", ".webmanifest")
 # Entries that exist only once the build has run, and Mintlify's API paths.
@@ -45,14 +48,14 @@ SEARCH_TAGS = '<link rel="stylesheet" href="{base}/search.css"><script defer src
 def is_page_directory(entry: Path) -> bool:
     """Whether entry is a directory of pages: one with an index.html at any depth (the
     export writes DIR/index/index.html for a directory's own page)."""
-    return entry.is_dir() and entry.name != "_next" and next(entry.rglob("index.html"), None) is not None
+    return entry.is_dir() and entry.name != "_next" and next(entry.rglob(INDEX_HTML), None) is not None
 
 
 def top_level_paths(export: Path, pages: bool = True) -> list:
     """The export's top-level entries (and EXTRA_ENTRIES), longest first; without pages,
     only those that are not page directories (assets such as _next and favicon.svg)."""
     names = {entry.name for entry in export.iterdir() if pages or not is_page_directory(entry)}
-    names = (names | set(EXTRA_ENTRIES) | (set(PAGE_ENTRIES) if pages else set())) - {"index.html"}
+    names = (names | set(EXTRA_ENTRIES) | (set(PAGE_ENTRIES) if pages else set())) - {INDEX_HTML}
     return sorted(names, key=len, reverse=True)
 
 
@@ -128,29 +131,19 @@ REDIRECT = ('<!doctype html><meta charset="utf-8"><title>Redirecting</title>'
 def move_index_pages(export: Path, base: str) -> None:
     """Moves DIR/index/index.html to DIR/index.html (where that is free) and leaves a
     redirect to DIR/ in its place, so that search finds each page once."""
-    for index in sorted(export.rglob("index/index.html")):
+    for index in sorted(export.rglob("index/" + INDEX_HTML)):
         directory = index.parent.parent
-        if (directory / "index.html").exists() and directory != export:
+        if (directory / INDEX_HTML).exists() and directory != export:
             continue
         if directory != export:
-            shutil.move(str(index), str(directory / "index.html"))
+            shutil.move(str(index), str(directory / INDEX_HTML))
         relative = directory.relative_to(export).as_posix()
         url = base + "/" + ("" if relative == "." else relative + "/")
         index.write_text(REDIRECT.format(url=url), encoding="utf-8")
 
 
-def main(args: list) -> int:
-    if len(args) != 2 or not re.fullmatch(r"(/[A-Za-z0-9._-]+)*", args[1]):
-        print("usage: pages.py EXPORT_DIR BASE   (BASE: /name or empty)", file=sys.stderr)
-        return 2
-    export, base = Path(args[0]), args[1]
-    if not (export / "_next").is_dir() or not (export / "index.html").is_file():
-        print(f"pages.py: {export} is not an unpacked mint export", file=sys.stderr)
-        return 1
-    for name in REMOVED:
-        (export / name).unlink(missing_ok=True)
-    for name in OWN_FILES:
-        shutil.copyfile(HERE / name, export / name)
+def rewrite_files(export: Path, base: str) -> None:
+    """Rewrites the text files of export for base (see the module's description)."""
     rewrite = rewriter(base, top_level_paths(export))
     rewrite_assets = rewriter(base, top_level_paths(export, pages=False), root_links=False)
     tags = SEARCH_TAGS.format(base=base)
@@ -168,6 +161,21 @@ def main(args: list) -> int:
                 new = rewrite_assets(text)  # code may name pages ("/index") in other senses
             if new != text:
                 file.write_text(new, encoding="utf-8")
+
+
+def main(args: list) -> int:
+    if len(args) != 1 or not re.fullmatch(r"(/[A-Za-z0-9._-]+)*", args[0]):
+        print("usage: pages.py BASE   (in the export; BASE: /name or empty)", file=sys.stderr)
+        return 2
+    export, base = Path(os.path.realpath(os.getcwd())), args[0]
+    if not (export / "_next").is_dir() or not (export / INDEX_HTML).is_file():
+        print(f"pages.py: {export} is not an unpacked mint export", file=sys.stderr)
+        return 1
+    for name in REMOVED:
+        (export / name).unlink(missing_ok=True)
+    for name in OWN_FILES:
+        shutil.copyfile(HERE / name, export / name)
+    rewrite_files(export, base)
     move_index_pages(export, base)
     return 0
 
