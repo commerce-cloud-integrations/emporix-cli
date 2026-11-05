@@ -6,7 +6,8 @@
 #                                  tag and the tree must be clean (no modified or untracked files)
 #   .github/scripts/release.sh --snapshot  any commit, for testing
 #   .github/scripts/release.sh --publish   tagged release, then `gh release create` with the
-#                                  archives and the installers (install/install.sh,
+#                                  archives, the Homebrew formula and Scoop manifest
+#                                  (packages.sh: epx.rb, epx.json) and the installers (install/install.sh,
 #                                  install/install.ps1, served as
 #                                  releases/latest/download/install.{sh,ps1}), once the remote
 #                                  tag is verified to name the built commit. The maintainer
@@ -25,7 +26,8 @@
 # kind of builder, by any account and umask, has the same checksums. Tarballs need GNU tar
 # (gtar where tar is another one, as on macOS: brew install gnu-tar).
 # The tarballs (macOS and Linux) also hold the man pages, in man/.
-# Output: dist/<version>/epx_<version>_<os>_<arch>.{tar.gz,zip} and a checksums file.
+# Output: dist/<version>/epx_<version>_<os>_<arch>.{tar.gz,zip}, a checksums file and, for
+# a tagged release, epx.rb and epx.json.
 set -euo pipefail
 
 fail() { echo "release: $*" >&2; exit 1; }
@@ -116,6 +118,10 @@ for target in darwin/amd64 darwin/arm64 linux/amd64 linux/arm64 windows/amd64 wi
 	fi
 done
 (cd "$out" && shasum -a 256 epx_* >"epx_${version}_checksums.txt")
+# The Homebrew formula and the Scoop manifest, from the checksums (not listed there).
+if [[ "$mode" != --snapshot ]]; then
+	.github/scripts/packages.sh "$out"
+fi
 
 host=$stage/epx_${version}_$(go env GOHOSTOS)_$(go env GOHOSTARCH)/epx
 reported=$("$host" version) || fail "the host binary does not run"
@@ -127,10 +133,10 @@ installers=(install/install.sh install/install.ps1)
 
 # released reports whether the GitHub release of the version exists (1 only where gh
 # says it is not found; any other failure of gh fails the run): then it must be published
-# and hold exactly the archives, checksums file and installers built here, or the run
+# and hold exactly the archives, checksums file, packages and installers built here, or the run
 # fails, since a release is never replaced.
 released() {
-	local sums=epx_${version}_checksums.txt fetched=$stage/released draft want got installer
+	local sums=epx_${version}_checksums.txt fetched=$stage/released draft want got installer package
 	if ! draft=$(gh release view "$version" --json isDraft --jq .isDraft 2>"$stage/gh.err"); then
 		grep -q 'release not found' "$stage/gh.err" && return 1
 		fail "cannot read release $version: $(cat "$stage/gh.err")"
@@ -149,6 +155,9 @@ released() {
 	for installer in "${installers[@]}"; do
 		cmp -s "$installer" "$fetched/$(basename "$installer")" ||
 			fail "release $version holds another $(basename "$installer") than $commit"
+	done
+	for package in epx.rb epx.json; do
+		cmp -s "$out/$package" "$fetched/$package" || fail "release $version holds another $package than $commit"
 	done
 }
 

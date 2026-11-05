@@ -9,6 +9,10 @@ change or remove commands, columns or flags, and its notes list each such change
 
 ### New
 
+- Install with Homebrew on macOS and Linux (`brew install commerce-cloud-integrations/tap/epx`,
+  with man pages and shell completion) and with Scoop on Windows (bucket
+  `commerce-cloud-integrations/scoop-bucket`). Every release carries the formula and the
+  manifest as `epx.rb` and `epx.json`.
 - Man pages: `man epx` and one page per top-level command, such as `man epx-products`, with
   the same text as `--help`. The install script and npm install them; the release archives
   for macOS and Linux hold them in `man/`.

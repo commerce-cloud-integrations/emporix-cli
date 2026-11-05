@@ -1,11 +1,31 @@
 ---
 title: "Install epx"
-description: "Install epx with the install script, npm, a release archive, or Go, and set up shell completion."
+description: "Install epx with Homebrew, Scoop, the install script, npm, a release archive, or Go, and set up shell completion."
 sidebarTitle: "Install"
 ---
 
 epx is a single binary for macOS, Linux, and Windows, on x64 (amd64) and arm64. Install it
-with the install script, npm, a release archive, or Go.
+with Homebrew, Scoop, the install script, npm, a release archive, or Go.
+
+## Install with Homebrew
+
+On macOS or Linux:
+
+```sh
+brew install commerce-cloud-integrations/tap/epx
+```
+
+Homebrew installs `epx`, its [man pages](#read-the-man-pages), and shell completion for
+bash, zsh, and fish, so you can skip [setting up completion](#set-up-shell-completion).
+
+## Install with Scoop
+
+On Windows, in PowerShell:
+
+```powershell
+scoop bucket add commerce-cloud-integrations https://github.com/commerce-cloud-integrations/scoop-bucket
+scoop install commerce-cloud-integrations/epx
+```
 
 ## Install with the install script
 
@@ -123,7 +143,7 @@ man epx            # global flags, credentials, exit codes, and the commands
 man epx-products   # every products command
 ```
 
-The install script and npm install the man pages. The release archives for macOS and
+Homebrew, the install script, and npm install the man pages. The release archives for macOS and
 Linux hold them in `man/`; copy them into a directory that `man` reads, such as
 `/usr/local/share/man/man1`. On Windows, and for Go builds, use `--help` or the
 [CLI reference](/commands).
@@ -132,7 +152,10 @@ Linux hold them in `man/`; copy them into a directory that `man` reads, such as
 
 | Installed with | Upgrade |
 | --- | --- |
+| Homebrew | `brew upgrade epx` |
+| Scoop | `scoop update epx` |
 | npm | `npm update --global @commercecloudintegrations/epx-cli` |
+| The install script | Run the script again. |
 | A release archive | Replace the binary with the one from the new release. |
 | Go | Run `go install` again. |
 
@@ -196,8 +219,9 @@ default site of your profile.
 
 1. If you use [profiles](/configure#store-keys-in-profiles), remove each one with
    `epx profile remove`, which also deletes its client secret from the OS keychain.
-2. Remove epx: `npm uninstall --global @commercecloudintegrations/epx-cli`, or delete the `epx` binary you installed
-   from an archive or with Go.
+2. Remove epx: `brew uninstall epx`, `scoop uninstall epx`, or
+   `npm uninstall --global @commercecloudintegrations/epx-cli`, or delete the `epx` binary you installed
+   with the install script, from an archive, or with Go.
 3. Delete the `epx` folder from your configuration directory.
 
 Once epx is installed, you can [authenticate](/configure) with an API key and take the

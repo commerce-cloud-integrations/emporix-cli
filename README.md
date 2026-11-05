@@ -51,6 +51,25 @@ and its man pages into `~/.local/share/man/man1`, without sudo, adding that dire
 `v0.1.2`) to pin a release, `EPX_INSTALL_DIR` to choose the directory, or `EPX_NO_MODIFY_PATH=1`
 to leave your shell profile alone.
 
+### Homebrew
+
+On macOS or Linux:
+
+```sh
+brew install commerce-cloud-integrations/tap/epx
+```
+
+Homebrew installs the binary, the man pages and shell completion for bash, zsh and fish.
+
+### Scoop
+
+On Windows, in PowerShell:
+
+```powershell
+scoop bucket add commerce-cloud-integrations https://github.com/commerce-cloud-integrations/scoop-bucket
+scoop install commerce-cloud-integrations/epx
+```
+
 ### npm
 
 With Node.js 18 or later:
@@ -103,7 +122,10 @@ go build -o bin/epx ./cmd/epx
 
 | Installed with | Upgrade |
 | --- | --- |
+| Homebrew | `brew upgrade epx` |
+| Scoop | `scoop update epx` |
 | npm | `npm update --global @commercecloudintegrations/epx-cli` |
+| The install script | Run the script again. |
 | A release archive | Replace the binary with the one from the new release. |
 | Go | Run `go install` again. |
 
@@ -111,7 +133,8 @@ go build -o bin/epx ./cmd/epx
 
 1. If you use profiles, remove each one with `epx profile remove NAME`, which also deletes
    its client secret from the OS keychain.
-2. Remove epx: `npm uninstall --global @commercecloudintegrations/epx-cli`, or delete the `epx` binary you installed.
+2. Remove epx: `brew uninstall epx`, `scoop uninstall epx` or
+   `npm uninstall --global @commercecloudintegrations/epx-cli`, or delete the `epx` binary you installed.
 3. Delete the `epx` folder from your configuration directory: `~/.config` on Linux,
    `~/Library/Application Support` on macOS, `%AppData%` on Windows.
 
@@ -157,7 +180,7 @@ epx [command]
 # Run `--help` for detailed information about a command, its flags, and its scopes
 epx [command] --help
 
-# Or read the manual: epx, and each top-level command (installed by the script and npm)
+# Or read the manual: epx, and each top-level command (installed by Homebrew, the script and npm)
 man epx
 man epx-products
 ```
