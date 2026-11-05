@@ -118,14 +118,14 @@ func (j *jobWait) bind(_ *app, cmd *cobra.Command) endingPlanner {
 	cmd.Flags().Var(&w.interval, pollIntervalFlag, "how often --"+waitFlag+" reads the "+j.singular+least)
 	onlyWithFlag(cmd, waitTimeoutFlag, waitFlag)
 	onlyWithFlag(cmd, pollIntervalFlag, waitFlag)
-	cmd.Long += fmt.Sprintf("\n\n--%s then reads the job again every --%s, as `epx %s`\n"+
-		"does and with %s too, saying on standard error how its status\n"+
-		"changes, until it ends: then it prints the job and exits 0 if it ended %s, else 1.\n"+
-		"When --%s passes first, it prints the job as last read and exits 1; the job goes\n"+
-		"on. When a read of the job fails, it prints the job as last read and exits as that read\n"+
+	cmd.Long += fmt.Sprintf("\n\n--%s then reads the job again every --%s, as `epx %s` "+
+		"does and with %s too, saying on standard error how its status "+
+		"changes, until it ends: then it prints the job and exits 0 if it ended %s, else 1. "+
+		"When --%s passes first, it prints the job as last read and exits 1; the job goes "+
+		"on. When a read of the job fails, it prints the job as last read and exits as that read "+
 		"does, e.g. 4 when the job is not found.",
 		waitFlag, pollIntervalFlag, j.getLine, theScopes(j.scopes), j.done, waitTimeoutFlag)
-	cmd.Long += j.answer.help(j.done)
+	cmd.Long = joinParagraphs(cmd.Long, j.answer.help(j.done))
 	return w
 }
 

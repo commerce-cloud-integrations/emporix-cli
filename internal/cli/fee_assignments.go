@@ -35,20 +35,20 @@ func newFeeAssignmentsCommand(a *app) *cobra.Command {
 		row: func(f feeAssignment, _ language) []string {
 			return []string{f.ItemYrn, f.ID, f.SiteCode, strings.Join(f.FeeIDs, ",")}
 		},
-		legend: "ITEM is the item's YRN, ID the item fee's id and FEES the ids of its fees, as `epx fees list`\n" +
+		legend: "ITEM is the item's YRN, ID the item fee's id and FEES the ids of its fees, as `epx fees list` " +
 			"shows them; -o json shows the response as sent.",
 	}}
 	const (
 		long        = "Reads item fees: which fees apply to which item (a product or a payment type) on a site."
 		itemFees    = feeService + "/itemFees"
-		pagedInBody = "\nEmporix pages this search in its body, so epx sets pageNumber and pageSize there, also in\n" +
+		pagedInBody = "Emporix pages this search in its body, so epx sets pageNumber and pageSize there, also in " +
 			"the body of --body."
 	)
 	reads := []*cobra.Command{
 		rd.command(a, &command{
 			use:   listUse,
 			short: "List the item fees of a site",
-			long: long + "\nEmporix documents main as the default site, so --site is required; an unknown site lists\n" +
+			long: long + " Emporix documents main as the default site, so --site is required; an unknown site lists " +
 				"nothing.",
 			req:   request{path: itemFees, query: url.Values{siteCodeParam: {placeholderSite}}},
 			fetch: listing{},
@@ -56,9 +56,9 @@ func newFeeAssignmentsCommand(a *app) *cobra.Command {
 		rd.command(a, &command{
 			use:   collectionSearch,
 			short: "Search the item fees of items",
-			long: long + "\nReads the item fees of the items that --item names. Emporix requires a site, which --site\n" +
-				"names in the query and in the body the flags make, but does not filter by it: the item\n" +
-				"fees of other sites come too. --item takes the YRN of an item,\n" + yrnNote + ".",
+			long: long + " Reads the item fees of the items that --item names. Emporix requires a site, which --site " +
+				"names in the query and in the body the flags make, but does not filter by it: the item " +
+				"fees of other sites come too. --item takes the YRN of an item, " + yrnNote + ".",
 			req: request{path: itemFees + "/" + collectionSearch, query: url.Values{siteCodeParam: {placeholderSite}}},
 			// Emporix returns this search whole: it ignores paging in the query and in the body (seen live).
 			fetch: listing{read: (*emporix.Client).GetUnpaged}.search(
@@ -69,8 +69,8 @@ func newFeeAssignmentsCommand(a *app) *cobra.Command {
 		rd.command(a, &command{
 			use:   "search-by-product",
 			short: "Search the item fees of a product on sites",
-			long: long + "\nReads the item fees of the product that --product names on the sites that --site names: its\n" +
-				"id (as in `epx products list`), not its code." + pagedInBody,
+			long: long + " Reads the item fees of the product that --product names on the sites that --site names: its " +
+				"id (as in `epx products list`), not its code. " + pagedInBody,
 			req: request{path: itemFees + "/searchByProductId"},
 			fetch: listing{read: (*emporix.Client).GetAllBodyPaged}.search(
 				textField("productId", "product", "the `ID` of the product whose fees to read").require(),
@@ -80,8 +80,8 @@ func newFeeAssignmentsCommand(a *app) *cobra.Command {
 		rd.command(a, &command{
 			use:   "search-by-products",
 			short: "Search the item fees of products on a site",
-			long: long + "\nReads the item fees of the products that --products names on the site that --site names:\n" +
-				"their ids (as in `epx products list`), not their codes, separated by commas." + pagedInBody,
+			long: long + " Reads the item fees of the products that --products names on the site that --site names: " +
+				"their ids (as in `epx products list`), not their codes, separated by commas. " + pagedInBody,
 			req: request{path: itemFees + "/searchByProductIds"},
 			fetch: listing{read: (*emporix.Client).GetAllBodyPaged}.search(
 				textField("productIds", "products", "the `IDs` of the products whose fees to read, separated by "+
@@ -91,6 +91,6 @@ func newFeeAssignmentsCommand(a *app) *cobra.Command {
 		}),
 	}
 	return newGroup("assignments", "Read and change which items have which fees",
-		long+"\nIts writes assign fees to an item, by its YRN, or to a product, by its id.",
+		long+" Its writes assign fees to an item, by its YRN, or to a product, by its id.",
 		slices.Concat(reads, feeAssignmentWrites(a))...)
 }

@@ -42,11 +42,12 @@ func (rd reader[T]) fileCommand(a *app, f *fileRead) *cobra.Command {
 	completeFileNames(cmd, outFlag)
 	cmd.Flags().Var(&lang, languageFlag, "the `LANGUAGE` of the "+f.noun+"'s text, e.g. de, as the tenant "+
 		"configures it (default: the tenant's default language)")
-	cmd.Long += "\n\n" + changesNothing(http.MethodPost, "no body.") + "\nEmporix answers with the " + f.noun +
-		", which epx saves to the file that --" + outFlag + " names (readable by\nits owner only; a file there is " +
-		"replaced, but not a directory, device or link), or writes to\nstandard output with --" + outFlag +
-		" -, unless that is a terminal. An answer that is no " + f.noun + " fails\n(exit 1), and nothing is " +
-		"saved." + target.rule.helpEnding(scopeSentence(rd.scopes))
+	cmd.Long += "\n\n" + changesNothing(http.MethodPost, "no body.") + " Emporix answers with the " + f.noun +
+		", which epx saves to the file that --" + outFlag + " names (readable by its owner only; a file there is " +
+		"replaced, but not a directory, device or link), or writes to standard output with --" + outFlag +
+		" -, unless that is a terminal. An answer that is no " + f.noun + " fails (exit 1), and nothing is " +
+		"saved."
+	cmd.Long = target.rule.helpEnding(cmd.Long, scopeSentence(rd.scopes))
 	cmd.RunE = func(cc *cobra.Command, args []string) error {
 		client, path, query, err := target.open(cc.Context(), args)
 		if err != nil {

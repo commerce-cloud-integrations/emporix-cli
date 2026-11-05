@@ -44,19 +44,19 @@ func importConfigurationWrites(a *app, configurations resource[importConfig], jo
 	scopes := importScopes()
 	configuration := configurations.argument()
 	of := configurations.itemPath()
-	source := "\n" + configurations.argumentSource() + "."
+	source := configurations.argumentSource() + "."
 	return []*cobra.Command{
 		importTrigger(configurations, job).command(a),
 		(&write{
 			use: "update-schedule " + configuration, short: "Upsert the run schedule of a configuration",
 			method: http.MethodPut,
-			long: "Sets when the configuration " + configuration + " runs by itself, creating its schedule where\n" +
-				"it has none (an upsert), and prints the schedule. --cron is a Spring cron expression with\n" +
-				"six fields, seconds first, e.g. \"0 0 2 * * *\" for 02:00 every day (Emporix refuses one with\n" +
-				"five: 400 Bad Request), evaluated in --timezone, an IANA time zone such as Europe/Berlin.\n" +
-				"The schedule runs the configuration unless --enabled=false, which keeps it without running\n" +
-				"it: epx always sends enabled, as the schedule is replaced whole. --file gives the body\n" +
-				"instead." + source,
+			long: "Sets when the configuration " + configuration + " runs by itself, creating its schedule where " +
+				"it has none (an upsert), and prints the schedule. --cron is a Spring cron expression with " +
+				"six fields, seconds first, e.g. \"0 0 2 * * *\" for 02:00 every day (Emporix refuses one with " +
+				"five: 400 Bad Request), evaluated in --timezone, an IANA time zone such as Europe/Berlin. " +
+				"The schedule runs the configuration unless --enabled=false, which keeps it without running " +
+				"it: epx always sends enabled, as the schedule is replaced whole. --file gives the body " +
+				"instead. " + source,
 			example: "  epx imports configurations update-schedule 7c9e6679-7425-40de-944b-e07fc1f90ae7 " +
 				"--cron \"0 0 2 * * *\" --timezone Europe/Berlin",
 			req: request{path: of + "/schedule"}, scopes: scopes,
@@ -69,8 +69,8 @@ func importConfigurationWrites(a *app, configurations resource[importConfig], jo
 		(&write{
 			use: "delete-schedule " + configuration, short: "Delete the run schedule of a configuration",
 			method: http.MethodDelete,
-			long: "Deletes the schedule of the configuration " + configuration + ", which then runs only when it\n" +
-				"is triggered. Emporix answers alike when there is no schedule, also of a configuration that\n" +
+			long: "Deletes the schedule of the configuration " + configuration + ", which then runs only when it " +
+				"is triggered. Emporix answers alike when there is no schedule, also of a configuration that " +
 				"was deleted.",
 			req: request{path: of + "/schedule"}, scopes: scopes, body: noBody{},
 		}).command(a),
@@ -83,13 +83,13 @@ func importTrigger(configurations resource[importConfig], job *jobWait) *write {
 	configuration := configurations.argument()
 	return &write{
 		use: "trigger " + configuration, short: "Start an import run of a configuration", method: http.MethodPost,
-		long: "Starts an import run of the configuration " + configuration + ", a DELTA run unless --mode FULL,\n" +
-			"and prints the run, QUEUED until a worker of the Import Service takes it. --file gives the\n" +
-			"body instead, e.g. {\"mode\": \"FULL\", \"dryRun\": true, \"streamIds\": [\"ID\"]} for a dry run of\n" +
-			"some streams, which maps and checks records but writes none. A configuration that has a run\n" +
-			"QUEUED, RUNNING or RESUMABLE already is a conflict (exit 5). Emporix answers a run that it\n" +
-			"refuses, e.g. of streams whose mappings were never published, as any other: the run ends\n" +
-			"ABORTED, which --wait reports.\n" + configurations.argumentSource() + ".",
+		long: "Starts an import run of the configuration " + configuration + ", a DELTA run unless --mode FULL, " +
+			"and prints the run, QUEUED until a worker of the Import Service takes it. --file gives the " +
+			"body instead, e.g. {\"mode\": \"FULL\", \"dryRun\": true, \"streamIds\": [\"ID\"]} for a dry run of " +
+			"some streams, which maps and checks records but writes none. A configuration that has a run " +
+			"QUEUED, RUNNING or RESUMABLE already is a conflict (exit 5). Emporix answers a run that it " +
+			"refuses, e.g. of streams whose mappings were never published, as any other: the run ends " +
+			"ABORTED, which --wait reports. " + configurations.argumentSource() + ".",
 		example: "  epx imports configurations trigger 7c9e6679-7425-40de-944b-e07fc1f90ae7 --mode FULL --wait",
 		req:     request{path: configurations.itemPath() + "/runs"}, scopes: importScopes(), answer: job,
 		conflict: activeRunConflict,
@@ -104,11 +104,11 @@ func importRunWrites(a *app, runs resource[importRun], job *jobWait) []*cobra.Co
 	return []*cobra.Command{
 		(&write{
 			use: runs.itemUse("cancel"), short: "Cancel an import run", method: http.MethodPost,
-			long: "Asks the import run ID to stop, and prints what Emporix answers: whether it accepted the\n" +
-				"cancellation. A QUEUED run is CANCELLED at once; a running one stops when it can, or with\n" +
-				"--force at once, which also unblocks its configuration. A RESUMABLE run stops only with\n" +
-				"--force: without it, a conflict (exit 5). Emporix answers a run that is unknown or ended\n" +
-				"already with 409 Conflict and \"accepted\": false, which epx prints as the answer (exit 5)." +
+			long: "Asks the import run ID to stop, and prints what Emporix answers: whether it accepted the " +
+				"cancellation. A QUEUED run is CANCELLED at once; a running one stops when it can, or with " +
+				"--force at once, which also unblocks its configuration. A RESUMABLE run stops only with " +
+				"--force: without it, a conflict (exit 5). Emporix answers a run that is unknown or ended " +
+				"already with 409 Conflict and \"accepted\": false, which epx prints as the answer (exit 5). " +
 				runSource(runs),
 			req: request{path: runs.itemPath() + "/cancel"}, scopes: importScopes(), body: noBody{},
 			switches: forceSwitch("stop the run at once"), answers: emporix.Answers{FailureAnswered: true},
@@ -129,9 +129,9 @@ const cancelConflict = "a RESUMABLE run stops only with --force; an unknown or e
 func importRetry(runs resource[importRun], job *jobWait) *write {
 	return &write{
 		use: runs.itemUse("retry"), short: "Run the failed records of an import run again", method: http.MethodPost,
-		long: "Starts a run that imports again only the records that failed in the import run ID, and\n" +
-			"prints it, QUEUED until a worker takes it; the run ID keeps its counters. A configuration\n" +
-			"that has a run QUEUED, RUNNING or RESUMABLE already is a conflict (exit 5)." + runSource(runs),
+		long: "Starts a run that imports again only the records that failed in the import run ID, and " +
+			"prints it, QUEUED until a worker takes it; the run ID keeps its counters. A configuration " +
+			"that has a run QUEUED, RUNNING or RESUMABLE already is a conflict (exit 5). " + runSource(runs),
 		req: request{path: runs.itemPath() + "/retry"}, scopes: importScopes(), body: noBody{}, answer: job,
 		conflict: activeRunConflict,
 	}
@@ -140,5 +140,5 @@ func importRetry(runs resource[importRun], job *jobWait) *write {
 // runSource says, in the help of a write of an import run of runs, where its
 // ID comes from.
 func runSource(runs resource[importRun]) string {
-	return "\nID is the one that `epx " + runs.listLine() + "` shows."
+	return "ID is the one that `epx " + runs.listLine() + "` shows."
 }

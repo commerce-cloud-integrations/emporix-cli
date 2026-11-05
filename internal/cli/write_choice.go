@@ -73,18 +73,16 @@ func (c queryChoice) bind(cmd *cobra.Command) func(query url.Values, scopes []st
 }
 
 // scopeNote returns the paragraph that precedes the scope sentence of a write
-// with c: a line per flag, naming the scopes that it adds and what Emporix
+// with c: for each flag, the scopes that it adds and what Emporix
 // refuses without it, if it says; none without options.
 func (c queryChoice) scopeNote() string {
-	note := ""
+	notes := make([]string, 0, len(c.options))
 	for _, option := range c.options {
-		note += "\n--" + option.flag + " also requests " + theScopes(option.scopes) + "."
+		note := "--" + option.flag + " also requests " + theScopes(option.scopes) + "."
 		if option.refused != "" {
-			note += " Without it, Emporix\nrefuses " + option.refused + " (403 Forbidden, exit 3)."
+			note += " Without it, Emporix refuses " + option.refused + " (403 Forbidden, exit 3)."
 		}
+		notes = append(notes, note)
 	}
-	if note == "" {
-		return ""
-	}
-	return "\n" + note
+	return joinSentences(notes...)
 }

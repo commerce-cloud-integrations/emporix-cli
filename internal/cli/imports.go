@@ -98,11 +98,11 @@ func newImportsCommand(a *app) *cobra.Command {
 		newImportRunsCommand(a, runs, importRunWrites(a, runs, job)...),
 	}, importDataReads(a), importAnalyticsReads(a))
 	return newGroup(importsUse, "Read import configurations, runs and records; queue files, start and schedule runs",
-		"Reads the Import Service, which imports master data from external sources into Emporix:\n"+
-			"configurations, their streams (each imports one source, an entity or files, into an Emporix\n"+
-			"type), the file queue of a file-based stream, schedules and runs, the errors and diagnostics of\n"+
-			"a run, the records imported, statistics, job groups, health thresholds and the tenant's import\n"+
-			"limits. Emporix allows these reads only with "+importScope+", with which epx\n"+
+		"Reads the Import Service, which imports master data from external sources into Emporix: "+
+			"configurations, their streams (each imports one source, an entity or files, into an Emporix "+
+			"type), the file queue of a file-based stream, schedules and runs, the errors and diagnostics of "+
+			"a run, the records imported, statistics, job groups, health thresholds and the tenant's import "+
+			"limits. Emporix allows these reads only with "+importScope+", with which epx "+
 			"also queues files for a stream, and starts, retries, cancels and schedules runs.",
 		reads...)
 }
@@ -114,9 +114,9 @@ func importConfigurations() resource[importConfig] {
 		noun:  "import configurations",
 		short: "Read import configurations; start and schedule their runs",
 		under: importsUse,
-		long: "Reads import configurations, each a set of streams that run together: ENABLED says\n" +
-			"whether it is active, VERSION counts its changes and MODIFIED is when it last changed. Its\n" +
-			"description, source connection, creator and health thresholds are only in -o json. The\n" +
+		long: "Reads import configurations, each a set of streams that run together: ENABLED says " +
+			"whether it is active, VERSION counts its changes and MODIFIED is when it last changed. Its " +
+			"description, source connection, creator and health thresholds are only in -o json. The " +
 			"service returns the configurations whole, so they are read with one request.",
 		path:   "/importtool/{tenant}/configs",
 		scopes: importScopes(),
@@ -140,8 +140,8 @@ func newImportConfigurationsCommand(a *app, configurations resource[importConfig
 		childCommand(a, configurations, child[importSchedule]{
 			use:   "schedule",
 			short: "Show the run schedule of a configuration",
-			long: "Reads when an import configuration runs by itself: CRON is a cron expression with six fields\n" +
-				"(seconds first), evaluated in TIME ZONE, and NEXT RUN when it fires next. A configuration\n" +
+			long: "Reads when an import configuration runs by itself: CRON is a cron expression with six fields " +
+				"(seconds first), evaluated in TIME ZONE, and NEXT RUN when it fires next. A configuration " +
 				"without a schedule is not found (exit 4).",
 			fetch: single{items: oneItem},
 			view: view[importSchedule]{
@@ -155,8 +155,8 @@ func newImportConfigurationsCommand(a *app, configurations resource[importConfig
 		childCommand(a, configurations, child[orderedStream]{
 			use:   "stream-order",
 			short: "Show the order the streams of a configuration run in",
-			long: "Reads the order in which the streams of an import configuration run, which the service\n" +
-				"derives from their dependencies (also those their mappings add) and sequence: each STREAM\n" +
+			long: "Reads the order in which the streams of an import configuration run, which the service " +
+				"derives from their dependencies (also those their mappings add) and sequence: each STREAM " +
 				"runs after the streams that AFTER names.",
 			fetch:   single{items: streamOrderItems},
 			unknown: listsNothing,
@@ -178,7 +178,7 @@ func configurationStreams(v view[importStream]) child[importStream] {
 	return child[importStream]{
 		use:   streamsUse,
 		short: "List the streams of a configuration",
-		long: "Reads the streams of an import configuration, in their sequence. The service returns them\n" +
+		long: "Reads the streams of an import configuration, in their sequence. The service returns them " +
 			"whole, so they are read with one request.",
 		fetch:   listing{read: (*emporix.Client).GetUnpaged},
 		unknown: listsNothing,
@@ -198,7 +198,7 @@ func importStreams(configurations resource[importConfig]) (resource[importStream
 	v := importStreamView(queue)
 	streamsOf := configurationStreams(v)
 	listedBy := childListLine(configurations, streamsOf)
-	long := "Reads an import stream, which imports one source of a configuration, an entity or files,\n" +
+	long := "Reads an import stream, which imports one source of a configuration, an entity or files, " +
 		"into an Emporix type. A stream's ID is the one that `epx " + listedBy + "` shows."
 	return resource[importStream]{
 		use:      streamsUse,
@@ -207,7 +207,7 @@ func importStreams(configurations resource[importConfig]) (resource[importStream
 		under:    importsUse,
 		listedBy: listedBy,
 		long:     long,
-		about:    long + "\n" + queue + " reads and changes the queue of the files that a file-based\nstream imports.",
+		about:    joinSentences(long, queue+" reads and changes the queue of the files that a file-based stream imports."),
 		path:     "/importtool/{tenant}/streams",
 		scopes:   importScopes(),
 		view:     v,
@@ -220,12 +220,12 @@ func importStreamView(queue string) view[importStream] {
 	return view[importStream]{
 		singular: "stream",
 		header:   []string{columnID, columnName, "SOURCE", "TARGET TYPE", "MODE", columnEnabled},
-		legend: "SOURCE is the stream's source entity, followed for a file-based stream (which may name no\n" +
-			"entity) by SNAPSHOT files or INCREMENTAL files, read as " + queue + " explains.\n" +
-			"TARGET TYPE is the Emporix type it writes to (a discriminator, in -o json, may route records\n" +
-			"to others), MODE STANDALONE, or COMPOSITE_CHILD or COMPOSITE_MERGE for a stream that adds to\n" +
-			"the records of another. A stream's source dataset (sourceDataset, such as the key column and\n" +
-			"the file format), connection, and delta, delete, write and health settings are only in\n" +
+		legend: "SOURCE is the stream's source entity, followed for a file-based stream (which may name no " +
+			"entity) by SNAPSHOT files or INCREMENTAL files, read as " + queue + " explains. " +
+			"TARGET TYPE is the Emporix type it writes to (a discriminator, in -o json, may route records " +
+			"to others), MODE STANDALONE, or COMPOSITE_CHILD or COMPOSITE_MERGE for a stream that adds to " +
+			"the records of another. A stream's source dataset (sourceDataset, such as the key column and " +
+			"the file format), connection, and delta, delete, write and health settings are only in " +
 			"-o json.",
 		row: func(s importStream, _ language) []string {
 			return []string{s.ID, s.Name, s.source(), s.TargetType, s.Mode, formatBool(s.Enabled)}
@@ -241,7 +241,7 @@ func newImportStreamsCommand(a *app, streams resource[importStream]) *cobra.Comm
 		importReader(importedRecordView()).command(a, &command{
 			use:   "records " + streams.argument(),
 			short: "List the records a stream imported",
-			long: "Reads the records a stream imported, with the columns of `epx imports records`.\n" +
+			long: "Reads the records a stream imported, with the columns of `epx imports records`. " +
 				streams.argumentSentence(listsNothing),
 			req:   request{path: "/importtool/{tenant}/data/streams/" + placeholderID + "/records"},
 			fetch: listing{read: (*emporix.Client).GetAllContentPages},
@@ -267,7 +267,7 @@ func importDataReads(a *app) []*cobra.Command {
 		importReader(stringsView("imported type", columnType)).command(a, &command{
 			use:   typesUse,
 			short: "List the types that hold imported records",
-			long: "Reads the target types that hold imported records (`epx imports records` lists those of\n" +
+			long: "Reads the target types that hold imported records (`epx imports records` lists those of " +
 				"one). The service returns them whole, so they are read with one request.",
 			req:   request{path: "/importtool/{tenant}/data/types"},
 			fetch: listing{read: (*emporix.Client).GetUnpaged},
@@ -275,12 +275,12 @@ func importDataReads(a *app) []*cobra.Command {
 		importReader(importedRecordView()).command(a, &command{
 			use:   "records TYPE",
 			short: "List the imported records of a type",
-			long: "Reads the records imported into a target type: KEY is a record's natural key in the source,\n" +
-				"OUTCOME how it was last imported (UPSERTED, DELETED at the source, DELETED_TARGET in\n" +
-				"Emporix, FAILED or DRY_RUN) and IMPORTED when. -o json adds its stored fields, the Emporix\n" +
-				"id it was written under, and its configuration, stream and run. TYPE is one that\n" +
-				"`epx imports types` shows; an unknown one lists nothing. To search keys or filter by\n" +
-				"outcome, one page at a time: `epx api get /importtool/{tenant}/data/records -p type=TYPE\n" +
+			long: "Reads the records imported into a target type: KEY is a record's natural key in the source, " +
+				"OUTCOME how it was last imported (UPSERTED, DELETED at the source, DELETED_TARGET in " +
+				"Emporix, FAILED or DRY_RUN) and IMPORTED when. -o json adds its stored fields, the Emporix " +
+				"id it was written under, and its configuration, stream and run. TYPE is one that " +
+				"`epx imports types` shows; an unknown one lists nothing. To search keys or filter by " +
+				"outcome, one page at a time: `epx api get /importtool/{tenant}/data/records -p type=TYPE " +
 				"-p search=TEXT -p outcome=FAILED --scope " + importScope + "`.",
 			req:   request{path: "/importtool/{tenant}/data/records", query: url.Values{typeParam: {placeholderID}}},
 			fetch: listing{read: (*emporix.Client).GetAllContentPages},

@@ -52,12 +52,12 @@ func newPriceModelsCommand(a *app) *cobra.Command {
 	models := resource[priceModel]{
 		use:   "price-models",
 		short: "Read and change price models",
-		about: "Reads and changes price models, the tier structure that prices follow. create, update and\n" +
+		about: "Reads and changes price models, the tier structure that prices follow. create, update and " +
 			"delete change one; delete --force also deletes a model that prices use, with its prices.",
-		long: "Reads price models, the tier structure that prices follow. DEFAULT marks the tenant's\n" +
-			"default model, TYPE is the tier type (BASIC, TIERED or VOLUME), TIERS the minimum quantity\n" +
-			"of each tier, UNIT the quantity a price applies to, and TAX and MARKUP whether prices of\n" +
-			"the model include them (-o json adds descriptions and the tier ids that price tier values\n" +
+		long: "Reads price models, the tier structure that prices follow. DEFAULT marks the tenant's " +
+			"default model, TYPE is the tier type (BASIC, TIERED or VOLUME), TIERS the minimum quantity " +
+			"of each tier, UNIT the quantity a price applies to, and TAX and MARKUP whether prices of " +
+			"the model include them (-o json adds descriptions and the tier ids that price tier values " +
 			"refer to).",
 		path:    "/price/{tenant}/priceModels",
 		filters: listFilters{kinds: sortable},
@@ -93,18 +93,18 @@ func priceModelWrites(a *app, models resource[priceModel]) []*cobra.Command {
 	at := models.at()
 	create, update, remove := (&collectionWrites{
 		at: at, one: "a price model", scopes: []string{priceModelManage}, language: stringsOrMaps, upsert: true,
-		create: "Creates the price model in --file, a JSON object with name, includesTax, includesMarkup,\n" +
-			"measurementUnit and tierDefinition: tierType (BASIC, TIERED or VOLUME) and the minQuantity of\n" +
-			"each tier, e.g. " + `{"name": {"en": "Per kilogram"}, "includesTax": true,` + "\n" +
-			`"includesMarkup": false, "measurementUnit": {"quantity": 1, "unitCode": "kg"},` + "\n" +
-			`"tierDefinition": {"tierType": "BASIC", "tiers": [{"minQuantity": {"quantity": 0,` + "\n" +
+		create: "Creates the price model in --file, a JSON object with name, includesTax, includesMarkup, " +
+			"measurementUnit and tierDefinition: tierType (BASIC, TIERED or VOLUME) and the minQuantity of " +
+			"each tier, e.g. " + `{"name": {"en": "Per kilogram"}, "includesTax": true, ` +
+			`"includesMarkup": false, "measurementUnit": {"quantity": 1, "unitCode": "kg"}, ` +
+			`"tierDefinition": {"tierType": "BASIC", "tiers": [{"minQuantity": {"quantity": 0, ` +
 			`"unitCode": "kg"}}]}}` + ". Without an id, Emporix makes one, which the response gives.",
-		update: "Replaces the price model ID with the one in --file, a JSON object as\n" +
-			"`epx " + at.get + " -o json` prints it, or creates it with that id where none exists\n" +
+		update: "Replaces the price model ID with the one in --file, a JSON object as " +
+			"`epx " + at.get + " -o json` prints it, or creates it with that id where none exists " +
 			"(an upsert).",
-		remove: "Deletes the price model ID. Emporix refuses a model that prices use (400 Bad Request,\n" +
-			"exit 1) unless --force is given, which needs both scopes below and deletes those prices\n" +
-			"too: Emporix deletes them after the model, in the background." + unknownAsDeleted("ID"),
+		remove: "Deletes the price model ID. Emporix refuses a model that prices use (400 Bad Request, " +
+			"exit 1) unless --force is given, which needs both scopes below and deletes those prices " +
+			"too: Emporix deletes them after the model, in the background. " + unknownAsDeleted("ID"),
 	}).writes()
 	remove.choice = queryChoice{param: forceDeleteParam, options: []choiceOption{{
 		flag: forceParam, value: queryTrue, scopes: []string{priceModelAdmin},

@@ -73,10 +73,10 @@ func TestChildWithItsOwnScopesLeavesTheOptIn(t *testing.T) {
 func TestOptInHelp(t *testing.T) {
 	_, help, _ := runThings(t, newFakeEmporix(t), "secrets", "--help")
 	for _, want := range []string{
-		"Requires the secret.manage scope.\n" + optInSentence + "\n",
+		"Requires the secret.manage scope. " + optInSentence + "\n\n",
 		"--" + writeScopeFlag, "opt in to requesting secret.manage, which can also change data (required)",
 	} {
-		if !strings.Contains(help, want) {
+		if !containsFlat(help, want) {
 			t.Errorf("help %q; want %q", help, want)
 		}
 	}

@@ -219,7 +219,7 @@ func TestIAMWritesSayTheyChangeAccess(t *testing.T) {
 		if _, isWrite := cmd.Annotations[writeScopesAnnotation]; isWrite &&
 			strings.HasPrefix(cmd.CommandPath(), "epx iam ") {
 			writes++
-			if !strings.Contains(cmd.Long, accessChange+"\n") {
+			if !strings.Contains(cmd.Long, accessChange+"\n\n") {
 				t.Errorf("%s: help %q; want it to say %q", cmd.CommandPath(), cmd.Long, accessChange)
 			}
 		}

@@ -63,9 +63,9 @@ func newSegmentsCommand(a *app) *cobra.Command {
 	segments := resource[segment]{
 		use:   "segments",
 		short: "Read and change customer segments and what is assigned to them",
-		about: "Reads and changes customer segments, which group customers to offer them items such as\n" +
+		about: "Reads and changes customer segments, which group customers to offer them items such as " +
 			"products or categories, and what is assigned to them: customers, IAM groups and items.",
-		long: "Reads customer segments, which group customers to offer them items such as products or\n" +
+		long: "Reads customer segments, which group customers to offer them items such as products or " +
 			"categories. STATUS is ACTIVE or INACTIVE, and FROM and TO the validity window.",
 		path:    "/customer-segment/{tenant}/segments",
 		scopes:  []string{"customersegment.segment_read"},
@@ -80,7 +80,7 @@ func newSegmentsCommand(a *app) *cobra.Command {
 		},
 	}
 	reads := []*cobra.Command{
-		segments.searchCommand(a, "Reads the customer segments that an Emporix q filter finds (--query; without it,\n"+
+		segments.searchCommand(a, "Reads the customer segments that an Emporix q filter finds (--query; without it, "+
 			"every segment).", queryField()),
 		newSegmentCustomersCommand(a, segments),
 		newSegmentGroupsCommand(a, segments),
@@ -88,7 +88,7 @@ func newSegmentsCommand(a *app) *cobra.Command {
 		reader[segmentItem]{view: segmentItems().view, scopes: segments.scopes}.command(a, &command{
 			use:   "all-items",
 			short: "List the items of every segment",
-			long: "Reads the items assigned to every segment, products or categories (TYPE), with their\n" +
+			long: "Reads the items assigned to every segment, products or categories (TYPE), with their " +
 				"SEGMENT.",
 			req:   request{path: segments.path + "/items"},
 			fetch: listing{filters: listFilters{kinds: filterable}},
@@ -105,15 +105,15 @@ func newSegmentCustomersCommand(a *app, segments resource[segment]) *cobra.Comma
 	in := segments.nested(customersCommand)
 	return newChildGroup(a, in, customers, &childGroup{
 		short: "Read and change the customers of a segment",
-		long: "Reads the customers assigned to a segment, personal data included, and assigns and removes\n" +
+		long: "Reads the customers assigned to a segment, personal data included, and assigns and removes " +
 			"them, for B2B with their legal entity.",
 		search: &childSearch{short: "Search the customers of a segment", fields: []bodyField{queryField()},
-			long: "Reads the customers of a segment that an Emporix q filter finds (--query; without it,\n" +
-				"every one), personal data included.\n" + segmentCustomerOrder},
+			long: "Reads the customers of a segment that an Emporix q filter finds (--query; without it, " +
+				"every one), personal data included. " + segmentCustomerOrder},
 		items: []*childItem{
 			{
 				use: getUse, short: "Show one customer of a segment",
-				long: "Reads one customer assigned to a segment without a legal entity (B2C), personal data\n" +
+				long: "Reads one customer assigned to a segment without a legal entity (B2C), personal data " +
 					"included; one assigned with a legal entity (B2B) is not found (exit 4): get-b2b reads it.",
 			},
 			{
@@ -135,7 +135,7 @@ func newSegmentGroupsCommand(a *app, segments resource[segment]) *cobra.Command 
 		short: "Read and change the IAM groups of a segment",
 		long:  "Reads the IAM groups assigned to a segment, and assigns and removes them.",
 		search: &childSearch{short: "Search the IAM groups of a segment", fields: []bodyField{queryField()},
-			long: "Reads the IAM groups assigned to a segment that an Emporix q filter finds (--query;\n" +
+			long: "Reads the IAM groups assigned to a segment that an Emporix q filter finds (--query; " +
 				"without it, every one)."},
 		items: []*childItem{
 			{use: getUse, short: "Show one IAM group of a segment", long: "Reads one IAM group assigned to a segment."},
@@ -154,7 +154,7 @@ func newSegmentItemsCommand(a *app, segments resource[segment]) *cobra.Command {
 		short: "Read and change the items of a segment",
 		long:  "Reads the items assigned to a segment, products or categories, and assigns and removes them.",
 		search: &childSearch{short: "Search the items of a segment", fields: []bodyField{queryField()},
-			long: "Reads the items assigned to a segment, products or categories (TYPE), that an Emporix q\n" +
+			long: "Reads the items assigned to a segment, products or categories (TYPE), that an Emporix q " +
 				"filter finds (--query; without it, every one)."},
 		items: []*childItem{{
 			use: getUse, short: "Show one item of a segment",
@@ -182,7 +182,7 @@ func segmentItemTypeSentence() string {
 // in a different order per request without a sort, repeating some customers
 // and leaving out others across pages, so the reads send one
 // (segmentCustomers), phrased as the IAM lists say theirs (iamPagingNote).
-const segmentCustomerOrder = "list and search sort by id unless --sort says otherwise, an order that Emporix keeps\n" +
+const segmentCustomerOrder = "list and search sort by id unless --sort says otherwise, an order that Emporix keeps " +
 	"across pages: unsorted, it pages them in a different order per request."
 
 // segmentCustomers declares the customers of a segment, for B2B with their
@@ -193,7 +193,7 @@ func segmentCustomers() child[segmentCustomer] {
 		use:   listUse,
 		sub:   customersCommand,
 		short: "List the customers of a segment",
-		long: "Reads the customers of a segment (for B2B, with their legal entity), personal data included.\n" +
+		long: "Reads the customers of a segment (for B2B, with their legal entity), personal data included. " +
 			segmentCustomerOrder,
 		listQuery: url.Values{sortParameter: {"id"}},
 		fetch:     listing{filters: listFilters{kinds: filterable}},
@@ -201,7 +201,7 @@ func segmentCustomers() child[segmentCustomer] {
 		view: view[segmentCustomer]{
 			singular: "segment customer",
 			header:   []string{columnCustomer, columnName, columnEmail, columnLegalEntity, "ASSIGNMENT"},
-			legend: "CUSTOMER is the customer's id, not the NUMBER that `epx customers get` takes; ASSIGNMENT\n" +
+			legend: "CUSTOMER is the customer's id, not the NUMBER that `epx customers get` takes; ASSIGNMENT " +
 				"is MANUAL or AUTOMATIC.",
 			row: func(c segmentCustomer, _ language) []string {
 				return []string{
@@ -263,9 +263,9 @@ func newSegmentMatchCommand(a *app, path string) *cobra.Command {
 	}, scopes: []string{segmentManageScope}}.command(a, &command{
 		use:   "match",
 		short: "List the products that belong to segments",
-		long: "Reads which of the products that --product names (the product id, as in `epx products\n" +
-			"list`) belong to an active segment that --segment names, on the site that --site names,\n" +
-			"directly or through a category. Emporix answers them whole, in one response: a product\n" +
+		long: "Reads which of the products that --product names (the product id, as in `epx products " +
+			"list`) belong to an active segment that --segment names, on the site that --site names, " +
+			"directly or through a category. Emporix answers them whole, in one response: a product " +
 			"named twice is listed twice, and unknown products are left out.",
 		req: request{path: path + "/match"},
 		fetch: bodyRead{method: http.MethodPost, body: objectBody{

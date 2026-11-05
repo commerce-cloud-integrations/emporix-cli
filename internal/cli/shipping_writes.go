@@ -34,36 +34,36 @@ func zoneWrites(a *app, zones resource[shippingZone]) []*cobra.Command {
 	return []*cobra.Command{
 		(&write{
 			use: createUse, short: "Create a shipping zone", method: http.MethodPost,
-			long: "Creates a shipping zone of the site --site names from the JSON in --file: its id, name,\n" +
-				"shipTo (the countries it ships to, each with a postal code, or a prefix followed by *, where\n" +
-				"it ships to some only) and whether it is the site's default zone, as in\n" +
-				`{"id": "nl", "name": {"en": "Netherlands"}, "shipTo": [{"country": "NL"}], "default": true}.` + "\n" +
-				"The first zone of a site becomes its default zone whatever default says.\n" +
+			long: "Creates a shipping zone of the site --site names from the JSON in --file: its id, name, " +
+				"shipTo (the countries it ships to, each with a postal code, or a prefix followed by *, where " +
+				"it ships to some only) and whether it is the site's default zone, as in " +
+				`{"id": "nl", "name": {"en": "Netherlands"}, "shipTo": [{"country": "NL"}], "default": true}. ` +
+				"The first zone of a site becomes its default zone whatever default says. " +
 				"Emporix answers with the zone's id; a zone with that id exists already: a conflict (exit 5).",
 			req: request{path: zones.path}, scopes: manage, body: &payload{}, language: headerlessMaps,
 		}).command(a),
 		(&write{
 			use: zones.itemUse("update"), short: "Replace a shipping zone", method: http.MethodPut,
-			long: "Replaces the shipping zone ID of the site --site names with the zone in --file, as create\n" +
-				"takes it: a member that it leaves out is removed, and a name given as a string in one\n" +
-				"language (--content-language LANGUAGE) replaces every translation of it. Emporix refuses\n" +
-				"to make the default zone of a site not default (400 Bad Request, exit 1). An unknown ID is\n" +
+			long: "Replaces the shipping zone ID of the site --site names with the zone in --file, as create " +
+				"takes it: a member that it leaves out is removed, and a name given as a string in one " +
+				"language (--content-language LANGUAGE) replaces every translation of it. Emporix refuses " +
+				"to make the default zone of a site not default (400 Bad Request, exit 1). An unknown ID is " +
 				"not found (exit 4).",
 			req: request{path: zones.itemPath()}, scopes: manage, body: &payload{}, language: headerlessMaps,
 			ids: zones.itemIDs(),
 		}).command(a),
 		(&write{
 			use: zones.itemUse("patch"), short: "Change members of a shipping zone", method: http.MethodPatch,
-			long: "Changes the members of the shipping zone ID of the site --site names that the JSON in\n" +
-				"--file names, such as name or shipTo; the others keep their values, and a name merges into\n" +
+			long: "Changes the members of the shipping zone ID of the site --site names that the JSON in " +
+				"--file names, such as name or shipTo; the others keep their values, and a name merges into " +
 				"the zone's translations, per language. An unknown ID is not found (exit 4).",
 			req: request{path: zones.itemPath()}, scopes: manage, body: &payload{}, language: headerlessMaps,
 			ids: zones.itemIDs(),
 		}).command(a),
 		(&write{
 			use: zones.itemUse("delete"), short: "Delete a shipping zone", method: http.MethodDelete,
-			long: "Deletes the shipping zone ID of the site --site names with its shipping methods. Delivery\n" +
-				"times of the zone stay and still name it: delete them with `epx delivery-times delete ID`.\n" +
+			long: "Deletes the shipping zone ID of the site --site names with its shipping methods. Delivery " +
+				"times of the zone stay and still name it: delete them with `epx delivery-times delete ID`. " +
 				"An unknown ID is not found (exit 4).",
 			req: request{path: zones.itemPath()}, scopes: manage, body: noBody{},
 			ids: zones.itemIDs(),
@@ -80,35 +80,35 @@ func methodWrites(a *app, methodsOf resource[shippingZone], methods child[shippi
 	method := func(verb string) childTarget { return childItemTarget(methodsOf, methods, verb, nil) }
 	get := method(getUse)
 	item, ids := request{path: get.path}, childItemIDs(methodsOf, methods, &get)
-	zoneHelp, itemHelp := "\n"+methodsOf.argumentSentence(notFound), childItemHelp(methodsOf, methods, &get)
+	zoneHelp, itemHelp := methodsOf.argumentSentence(notFound), childItemHelp(methodsOf, methods, &get)
 	return []*cobra.Command{
 		(&write{
 			use: createUse + " " + methodsOf.argument(), short: "Create a shipping method of a zone", method: http.MethodPost,
-			long: "Creates a shipping method of a zone from the JSON in --file: its id, name, active, fees\n" +
-				"(each a cost from a minOrderValue, optionally for the customers of a shippingGroupId),\n" +
-				"maxOrderValue and shippingTaxCode, as\n" +
-				"`epx shipping zones methods get SHIPPING_ZONE_ID ID -o json` prints one. Emporix answers\n" +
-				"with the method's id; a method with that id exists already: a conflict (exit 5)." + zoneHelp,
+			long: "Creates a shipping method of a zone from the JSON in --file: its id, name, active, fees " +
+				"(each a cost from a minOrderValue, optionally for the customers of a shippingGroupId), " +
+				"maxOrderValue and shippingTaxCode, as " +
+				"`epx shipping zones methods get SHIPPING_ZONE_ID ID -o json` prints one. Emporix answers " +
+				"with the method's id; a method with that id exists already: a conflict (exit 5). " + zoneHelp,
 			req: request{path: methods.below(methodsOf.path)}, scopes: manage, body: &payload{},
 			language: headerlessMaps, ids: argumentIDs{methodsOf.argument(): methodsOf.ids()},
 		}).command(a),
 		(&write{
 			use: method("update").use, short: "Replace a shipping method of a zone", method: http.MethodPut,
-			long: "Replaces the shipping method ID of a zone with the method in --file, as create takes it: a\n" +
-				"member that it leaves out is removed." + itemHelp,
+			long: "Replaces the shipping method ID of a zone with the method in --file, as create takes it: a " +
+				"member that it leaves out is removed. " + itemHelp,
 			req: item, scopes: manage, body: &payload{}, language: headerlessMaps, ids: ids,
 		}).command(a),
 		(&write{
 			use: method("patch").use, short: "Change members of a shipping method of a zone",
 			method: http.MethodPatch,
-			long: "Changes the members of the shipping method ID of a zone that the JSON in --file names, such\n" +
-				"as active or fees; the others keep their values." + itemHelp,
+			long: "Changes the members of the shipping method ID of a zone that the JSON in --file names, such " +
+				"as active or fees; the others keep their values. " + itemHelp,
 			req: item, scopes: manage, body: &payload{}, language: headerlessMaps, ids: ids,
 		}).command(a),
 		(&write{
 			use: method("delete").use, short: "Delete a shipping method of a zone", method: http.MethodDelete,
-			long: "Deletes the shipping method ID of a zone. The time slots of delivery times that name it\n" +
-				"stay and still name it." + itemHelp,
+			long: "Deletes the shipping method ID of a zone. The time slots of delivery times that name it " +
+				"stay and still name it. " + itemHelp,
 			req: item, scopes: manage, body: noBody{}, ids: ids,
 		}).command(a),
 	}
@@ -121,25 +121,25 @@ func groupWrites(a *app, groups resource[shippingGroup]) []*cobra.Command {
 	return []*cobra.Command{
 		(&write{
 			use: createUse, short: "Create a shipping group", method: http.MethodPost,
-			long: "Creates a shipping group of the site --site names from the JSON in --file: its id and\n" +
-				`description, as in {"id": "vip", "description": {"en": "Free shipping"}}. A fee of a` + "\n" +
-				"shipping method applies to the customers of a group (`epx shipping customers create`) when\n" +
-				"it names the group as its shippingGroupId. Emporix answers with the group's id; a group\n" +
+			long: "Creates a shipping group of the site --site names from the JSON in --file: its id and " +
+				`description, as in {"id": "vip", "description": {"en": "Free shipping"}}. A fee of a ` +
+				"shipping method applies to the customers of a group (`epx shipping customers create`) when " +
+				"it names the group as its shippingGroupId. Emporix answers with the group's id; a group " +
 				"with that id exists already: a conflict (exit 5).",
 			req: request{path: groups.path}, scopes: manage, body: &payload{}, language: headerlessMaps,
 		}).command(a),
 		(&write{
 			use: groups.itemUse("update"), short: "Replace a shipping group", method: http.MethodPut,
-			long: "Replaces the shipping group ID of the site --site names with the group in --file, as create\n" +
-				"takes it. Emporix answers an unknown ID with 409 Conflict (exit 5):\n" + unknownGroup + ".",
+			long: "Replaces the shipping group ID of the site --site names with the group in --file, as create " +
+				"takes it. Emporix answers an unknown ID with 409 Conflict (exit 5): " + unknownGroup + ".",
 			req: request{path: groups.itemPath()}, scopes: manage, body: &payload{}, language: headerlessMaps,
 			ids: groups.itemIDs(), conflict: unknownGroup,
 		}).command(a),
 		(&write{
 			use: groups.itemUse("delete"), short: "Delete a shipping group", method: http.MethodDelete,
-			long: "Deletes the shipping group ID of the site --site names. Fees of shipping methods that name\n" +
-				"it as their shippingGroupId stay and still name it, and customers assigned to it stay assigned\n" +
-				"to it (`epx shipping customers`)." + unknownAsDeleted("ID"),
+			long: "Deletes the shipping group ID of the site --site names. Fees of shipping methods that name " +
+				"it as their shippingGroupId stay and still name it, and customers assigned to it stay assigned " +
+				"to it (`epx shipping customers`). " + unknownAsDeleted("ID"),
 			req: request{path: groups.itemPath()}, scopes: manage, body: noBody{},
 			ids: groups.itemIDs(),
 		}).command(a),
@@ -155,26 +155,26 @@ func customerGroupWrites(a *app, customers resource[shippingCustomer]) []*cobra.
 	return []*cobra.Command{
 		(&write{
 			use: createUse, short: "Assign a customer to a shipping group", method: http.MethodPost,
-			long: "Assigns a customer to a shipping group of the site --site names: the JSON in --file names\n" +
-				"the customer id and the group's, as in " + relation + ". A customer\n" +
-				"that belongs to a group already is a conflict (exit 5): change its group with update.\n" +
+			long: "Assigns a customer to a shipping group of the site --site names: the JSON in --file names " +
+				"the customer id and the group's, as in " + relation + ". A customer " +
+				"that belongs to a group already is a conflict (exit 5): change its group with update. " +
 				"Emporix checks neither the customer nor the group: unknown ids are assigned too.",
 			req: request{path: customers.path}, scopes: manage, body: &payload{},
 		}).command(a),
 		(&write{
 			use: customers.itemUse("update"), short: "Change the shipping group of a customer", method: http.MethodPut,
-			long: "Assigns the customer CUSTOMER (the customer id) to the shipping group that the JSON in --file\n" +
-				"names, as create takes it, in place of the group it belongs to on the site --site names; a\n" +
-				"customerId in the JSON is ignored. Emporix answers a customer without a shipping group with\n" +
-				"409 Conflict (exit 5):\n" + noGroup + ".",
+			long: "Assigns the customer CUSTOMER (the customer id) to the shipping group that the JSON in --file " +
+				"names, as create takes it, in place of the group it belongs to on the site --site names; a " +
+				"customerId in the JSON is ignored. Emporix answers a customer without a shipping group with " +
+				"409 Conflict (exit 5): " + noGroup + ".",
 			req: request{path: customers.itemPath()}, scopes: manage, body: &payload{},
 			ids: customers.itemIDs(), conflict: noGroup,
 		}).command(a),
 		(&write{
 			use: customers.itemUse("delete"), short: "Remove a customer from its shipping group",
 			method: http.MethodDelete,
-			long: "Removes the customer CUSTOMER (the customer id) from its shipping group on the site --site\n" +
-				"names. Emporix answers a CUSTOMER without a shipping group, or an unknown one, as one that\n" +
+			long: "Removes the customer CUSTOMER (the customer id) from its shipping group on the site --site " +
+				"names. Emporix answers a CUSTOMER without a shipping group, or an unknown one, as one that " +
 				"it removed (204 No Content).",
 			req: request{path: customers.itemPath()}, scopes: manage, body: noBody{},
 			ids: customers.itemIDs(),

@@ -45,10 +45,10 @@ func sites() resource[site] {
 	return resource[site]{
 		use:   "sites",
 		short: "Read, create and change sites and their mixins",
-		long: "Reads active sites. Inactive sites are not included: Emporix returns them only with the\n" +
-			"write-capable " + siteManageScope + " scope, so `get CODE` of an inactive site is refused (403,\n" +
-			"exit 3) without it. `epx sites codes` lists the codes of every site, inactive ones too (opt-in);\n" +
-			"to read inactive sites whole, run\n" +
+		long: "Reads active sites. Inactive sites are not included: Emporix returns them only with the " +
+			"write-capable " + siteManageScope + " scope, so `get CODE` of an inactive site is refused (403, " +
+			"exit 3) without it. `epx sites codes` lists the codes of every site, inactive ones too (opt-in); " +
+			"to read inactive sites whole, run " +
 			"`epx api get '/site/{tenant}/sites?includeInactive=true' --scope " + siteManageScope + "`.",
 		path:    "/site/{tenant}/sites",
 		filters: listFilters{kinds: filterable},
@@ -78,9 +78,9 @@ func newSitesCommand(a *app) *cobra.Command {
 		codes.command(a, &command{
 			use:   "codes",
 			short: "List the codes of every site, inactive ones too",
-			long: "Reads the code of every site, active or not. Emporix lists inactive sites only with the\n" +
-				"write-capable " + siteManageScope + " and " + siteReadScope + " scopes together (each alone\n" +
-				"answers 403), so this read is opt-in; `epx sites list` shows active sites whole without a scope.\n" +
+			long: "Reads the code of every site, active or not. Emporix lists inactive sites only with the " +
+				"write-capable " + siteManageScope + " and " + siteReadScope + " scopes together (each alone " +
+				"answers 403), so this read is opt-in; `epx sites list` shows active sites whole without a scope. " +
 				"Emporix sends no total for the codes, so their pages are read until an empty one.",
 			req:   request{path: "/site/{tenant}/siteslist", query: url.Values{"includeInactive": {queryTrue}}},
 			fetch: listing{filters: listFilters{kinds: filterable}},
@@ -95,22 +95,22 @@ func newSitesCommand(a *app) *cobra.Command {
 func siteWrites(a *app, sites resource[site]) []*cobra.Command {
 	manage := []string{siteManageScope}
 	item := request{path: sites.itemPath()}
-	const unknown = "\nAn unknown CODE is not found (exit 4)."
+	const unknown = "An unknown CODE is not found (exit 4)."
 	return []*cobra.Command{
 		(&write{
 			use: createUse, short: "Create a site", method: http.MethodPost,
-			long: "Creates a site from the JSON in --file, shaped as `epx sites get CODE -o json` prints one.\n" +
-				"The reference requires code, name, defaultLanguage, languages, currency, homeBase (an\n" +
-				"address with country and zipCode), shipToCountries and taxDeterminationBasedOn\n" +
-				"(BILLING_ADDRESS or SHIPPING_ADDRESS); active, default, includesTax,\n" +
+			long: "Creates a site from the JSON in --file, shaped as `epx sites get CODE -o json` prints one. " +
+				"The reference requires code, name, defaultLanguage, languages, currency, homeBase (an " +
+				"address with country and zipCode), shipToCountries and taxDeterminationBasedOn " +
+				"(BILLING_ADDRESS or SHIPPING_ADDRESS); active, default, includesTax, " +
 				"availableCurrencies, payment, shipping, tax, mixins and cartCalculationScale are optional.",
 			req: request{path: sites.path}, scopes: manage, body: &payload{},
 		}).command(a),
 		(&write{
 			use: sites.itemUse("update"), short: "Replace a site", method: http.MethodPut,
-			long: "Replaces the site CODE with the JSON in --file, shaped as create takes it: a member that it\n" +
-				"leaves out is removed. It changes the payment, shipping and tax configurations that the body\n" +
-				"gives too; Emporix changes an inactive one only with --expand naming it, e.g. payment:all." +
+			long: "Replaces the site CODE with the JSON in --file, shaped as create takes it: a member that it " +
+				"leaves out is removed. It changes the payment, shipping and tax configurations that the body " +
+				"gives too; Emporix changes an inactive one only with --expand naming it, e.g. payment:all. " +
 				unknown,
 			req: item, scopes: manage, body: &payload{}, ids: sites.itemIDs(),
 			params: queryFlags{optional: []paramFlag{{param: expandParam, flag: expandParam,
@@ -118,13 +118,13 @@ func siteWrites(a *app, sites resource[site]) []*cobra.Command {
 		}).command(a),
 		(&write{
 			use: sites.itemUse("patch"), short: "Change members of a site", method: http.MethodPatch,
-			long: "Changes the members of the site CODE that the JSON in --file gives, such as\n" +
-				`{"languages": ["en", "nl"]}; the others keep their values.` + unknown,
+			long: "Changes the members of the site CODE that the JSON in --file gives, such as " +
+				`{"languages": ["en", "nl"]}; the others keep their values.` + " " + unknown,
 			req: item, scopes: manage, body: &payload{}, ids: sites.itemIDs(),
 		}).command(a),
 		(&write{
 			use: sites.itemUse("delete"), short: "Delete a site", method: http.MethodDelete,
-			long: "Deletes the site CODE; it sends no body. Emporix refuses to delete the default site." +
+			long: "Deletes the site CODE; it sends no body. Emporix refuses to delete the default site. " +
 				unknown,
 			req: item, scopes: manage, body: noBody{}, ids: sites.itemIDs(),
 		}).command(a),
@@ -141,7 +141,7 @@ func newSiteMixinsCommand(a *app, sites resource[site]) *cobra.Command {
 		use:   listUse,
 		sub:   mixinsOf.use,
 		short: "List the mixins of a site",
-		long: "Reads the mixins of a site, the custom settings that extend it (such as coupon or customer\n" +
+		long: "Reads the mixins of a site, the custom settings that extend it (such as coupon or customer " +
 			"settings), by NAME, each VALUE cut (-o json prints them whole). A site without mixins lists none.",
 		// Emporix documents site.site_manage for mixins, but serves them without a scope (live), so
 		// none is requested, whatever the scopes of sites.
@@ -157,7 +157,7 @@ func newSiteMixinsCommand(a *app, sites resource[site]) *cobra.Command {
 	}
 	return newChildGroup(a, mixinsOf, mixins, &childGroup{
 		short: "Read and change the mixins of a site",
-		long: "Reads the mixins of a site, the custom settings that extend it, and creates, changes and\n" +
+		long: "Reads the mixins of a site, the custom settings that extend it, and creates, changes and " +
 			"deletes them. " + sites.argumentSource() + ".",
 		items: []*childItem{{
 			use:   getUse,
@@ -179,33 +179,33 @@ func siteMixinWrites(a *app, mixinsOf resource[site], mixins child[namedValue]) 
 	get := mixin(getUse)
 	item, ids := request{path: get.path}, childItemIDs(mixinsOf, mixins, &get)
 	manage := []string{siteManageScope}
-	const unknown = "\nAn unknown site or mixin is not found (exit 4)."
+	const unknown = "An unknown site or mixin is not found (exit 4)."
 	return []*cobra.Command{
 		(&write{
 			use: createUse + " " + siteCode, short: "Add mixins to a site", method: http.MethodPost,
-			long: "Adds mixins to the site " + siteCode + ": the JSON object in --file maps the name of each to its\n" +
-				`fields, e.g. {"generalShopSettings": {"logoUrl": "https://shop.acme.example/logo.png"}}.` + "\n" +
-				"Emporix checks each against the schema that its metadata.schema names; a mixin that the\n" +
+			long: "Adds mixins to the site " + siteCode + ": the JSON object in --file maps the name of each to its " +
+				`fields, e.g. {"generalShopSettings": {"logoUrl": "https://shop.acme.example/logo.png"}}. ` +
+				"Emporix checks each against the schema that its metadata.schema names; a mixin that the " +
 				"site has already is a conflict (exit 5).",
 			req: request{path: mixins.below(mixinsOf.path)}, scopes: manage, body: &payload{},
 			ids: argumentIDs{siteCode: mixinsOf.ids()},
 		}).command(a),
 		(&write{
 			use: mixin("update").use, short: "Replace a mixin of a site", method: http.MethodPut,
-			long: "Replaces the mixin NAME of the site " + siteCode + " with the JSON object in --file; the\n" +
-				"reference's example gives it as create does, in an object named after the mixin." + unknown,
+			long: "Replaces the mixin NAME of the site " + siteCode + " with the JSON object in --file; the " +
+				"reference's example gives it as create does, in an object named after the mixin. " + unknown,
 			req: item, scopes: manage, body: &payload{}, ids: ids,
 		}).command(a),
 		(&write{
 			use: mixin("patch").use, short: "Change fields of a mixin of a site",
 			method: http.MethodPatch,
-			long: "Changes the fields of the mixin NAME of the site " + siteCode + " that the JSON object in\n" +
+			long: "Changes the fields of the mixin NAME of the site " + siteCode + " that the JSON object in " +
 				`--file gives, such as {"active": true}; the others keep their values.`,
 			req: item, scopes: manage, body: &payload{}, ids: ids,
 		}).command(a),
 		(&write{
 			use: mixin("delete").use, short: "Delete a mixin of a site", method: http.MethodDelete,
-			long: "Deletes the mixin NAME of the site " + siteCode + "; it sends no body." + unknown,
+			long: "Deletes the mixin NAME of the site " + siteCode + "; it sends no body. " + unknown,
 			req:  item, scopes: manage, body: noBody{}, ids: ids,
 		}).command(a),
 	}

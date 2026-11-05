@@ -31,11 +31,11 @@ func vendors() resource[vendor] {
 	return resource[vendor]{
 		use:   "vendors",
 		short: "Read and change vendors",
-		about: "Reads and changes vendors, the sellers of a marketplace tenant; `epx vendor-locations`\n" +
-			"reads and changes their locations.\n" + versionedWritesNote,
-		long: "Reads vendors, the sellers of a marketplace tenant. TYPE is COMPANY or SUBSIDIARY, PARENT\n" +
-			"the vendor a subsidiary belongs to and COUNTRY the country of registration. Registration\n" +
-			"details, contact details and locations are only in -o json; `epx vendor-locations` lists\n" +
+		about: "Reads and changes vendors, the sellers of a marketplace tenant; `epx vendor-locations` " +
+			"reads and changes their locations. " + versionedWritesNote,
+		long: "Reads vendors, the sellers of a marketplace tenant. TYPE is COMPANY or SUBSIDIARY, PARENT " +
+			"the vendor a subsidiary belongs to and COUNTRY the country of registration. Registration " +
+			"details, contact details and locations are only in -o json; `epx vendor-locations` lists " +
 			"the locations.",
 		path:    "/vendor/{tenant}/vendors",
 		scopes:  []string{vendorScope},
@@ -58,10 +58,10 @@ func newVendorsCommand(a *app) *cobra.Command {
 		"Reads the vendors that an Emporix q filter finds (--query; without it, every vendor).",
 		queryField())}
 	writes := r.versionedWrites(a, []string{vendorManageScope}, &versioned{
-		members: "name (required), type (COMPANY, the default, or SUBSIDIARY), parentId (the vendor a\n" +
-			"subsidiary belongs to), legalInfo, contactDetails (a list of contacts, each as\n" +
-			"{\"email\": ...}, which is all Emporix keeps of one), locations (its vendor locations, each\n" +
-			"as {\"id\": ...} or in full, as get prints it) and mixins; parentId and locations must name\n" +
+		members: "name (required), type (COMPANY, the default, or SUBSIDIARY), parentId (the vendor a " +
+			"subsidiary belongs to), legalInfo, contactDetails (a list of contacts, each as " +
+			"{\"email\": ...}, which is all Emporix keeps of one), locations (its vendor locations, each " +
+			"as {\"id\": ...} or in full, as get prints it) and mixins; parentId and locations must name " +
 			"items that exist (400 Bad Request, exit 1, otherwise).",
 		required:   "name and type",
 		deleteNote: "Its subsidiaries stay and still name it as their parentId.",
@@ -76,9 +76,9 @@ func newVendorLocationsCommand(a *app) *cobra.Command {
 	locations := resource[location]{
 		use:   "vendor-locations",
 		short: "Read and change the locations of vendors",
-		about: "Reads and changes the locations of vendors, contact emails included. A vendor names its\n" +
-			"locations in locations, each as {\"id\": ...}.\n" + versionedWritesNote,
-		long:    "Reads the locations of vendors, contact emails included." + locationColumns,
+		about: "Reads and changes the locations of vendors, contact emails included. A vendor names its " +
+			"locations in locations, each as {\"id\": ...}. " + versionedWritesNote,
+		long:    "Reads the locations of vendors, contact emails included. " + locationColumns,
 		path:    "/vendor/{tenant}/locations",
 		scopes:  []string{vendorScope},
 		filters: listFilters{kinds: filterable},

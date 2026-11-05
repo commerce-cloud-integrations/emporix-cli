@@ -33,12 +33,12 @@ func newPriceListsCommand(a *app) *cobra.Command {
 	lists := resource[priceList]{
 		use:   "price-lists",
 		short: "Read and change price lists and their prices",
-		long: "Reads price lists. A price list holds prices in one currency for one site that apply\n" +
-			"between FROM and TO to its countries or regions, and to its customer groups (a preview\n" +
-			"feature of Emporix) or to one legal entity and its subsidiaries. Empty COUNTRIES and\n" +
+		long: "Reads price lists. A price list holds prices in one currency for one site that apply " +
+			"between FROM and TO to its countries or regions, and to its customer groups (a preview " +
+			"feature of Emporix) or to one legal entity and its subsidiaries. Empty COUNTRIES and " +
 			"REGIONS apply everywhere; empty CUSTOMER GROUPS and LEGAL ENTITY apply to every customer.",
-		about: "Reads and changes price lists and, in `prices`, the prices of one. A price list holds\n" +
-			"prices in one currency for one site that apply between their validity dates to its\n" +
+		about: "Reads and changes price lists and, in `prices`, the prices of one. A price list holds " +
+			"prices in one currency for one site that apply between their validity dates to its " +
 			"countries or regions, and to its customer groups or to one legal entity.",
 		path:    "/price/{tenant}/price-lists",
 		scopes:  []string{"price.pricelist_read"},
@@ -77,7 +77,7 @@ func priceListPrices(pricesOf resource[priceList]) child[priceListPrice] {
 		view: view[priceListPrice]{
 			singular: "price list price",
 			header:   []string{columnID, columnItem, columnType, "MODEL", columnTiers},
-			legend: "TIERS lists each tier value as sent; -o json pairs it with the id of its tier in the price\n" +
+			legend: "TIERS lists each tier value as sent; -o json pairs it with the id of its tier in the price " +
 				"model MODEL (`epx price-models get MODEL`; an empty MODEL is the default model).",
 			row: func(p priceListPrice, _ language) []string {
 				return []string{p.ID, p.ItemID.ID, p.ItemID.ItemType, p.PriceModelID, p.TierValues.String()}
@@ -94,7 +94,7 @@ func newPriceListPricesCommand(a *app, lists resource[priceList]) *cobra.Command
 	reads := []*cobra.Command{
 		childCommand(a, pricesOf, prices),
 		childSearchCommand(a, pricesOf, prices, "Search the prices of a price list",
-			"Reads the prices of a price list, in its currency, that an Emporix q filter finds\n"+
+			"Reads the prices of a price list, in its currency, that an Emporix q filter finds "+
 				"(--query; without it, every one).", queryField()),
 		childItemCommand(a, pricesOf, prices, &childItem{
 			use:   getUse,

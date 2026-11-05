@@ -58,7 +58,7 @@ func newIndexingCommand(a *app) *cobra.Command {
 	storefront := resource[indexProvider]{
 		use:  "public",
 		noun: "index providers as a storefront sees them",
-		long: "Reads the public index provider configurations, as a storefront sees them. The search key\n" +
+		long: "Reads the public index provider configurations, as a storefront sees them. The search key " +
 			"is only in -o json.",
 		path: "/indexing/{tenant}/public/configurations",
 		read: (*emporix.Client).GetUnpaged,
@@ -68,7 +68,7 @@ func newIndexingCommand(a *app) *cobra.Command {
 		use:   "providers",
 		noun:  "index providers",
 		short: "Read, create, update and delete index providers",
-		long: "Reads index provider configurations. Search and write keys are only in -o json;\n" +
+		long: "Reads index provider configurations. Search and write keys are only in -o json; " +
 			"`epx indexing providers public` shows what a storefront sees and needs no scope.",
 		path:   "/indexing/{tenant}/configurations",
 		scopes: []string{indexingScope},
@@ -76,7 +76,7 @@ func newIndexingCommand(a *app) *cobra.Command {
 		view:   providerView("provider"),
 	}
 	return newGroup(indexingUse, "Read and configure search index providers; reindex",
-		"Reads and configures the search index providers (e.g. Algolia) and starts and follows\n"+
+		"Reads and configures the search index providers (e.g. Algolia) and starts and follows "+
 			"reindex jobs.",
 		newResourceCommand(a, providers, newResourceCommand(a, storefront),
 			providerCreate(providers).command(a), providerUpdate(providers).command(a),
@@ -89,10 +89,10 @@ func newIndexingCommand(a *app) *cobra.Command {
 }
 
 // providerFields says what the body of a provider configuration holds.
-const providerFields = "The JSON in --file holds provider (ALGOLIA or BATTERY_INCLUDED, required), active,\n" +
-	"applicationId, indexName, searchKey, writeKey and, for BATTERY_INCLUDED, excludedMixinKeys\n" +
-	"or includedMixinPaths. Only one provider can be active at a time. Emporix checks the keys\n" +
-	"of BATTERY_INCLUDED before it stores them: it refuses invalid ones (400 Bad Request, exit 1)\n" +
+const providerFields = "The JSON in --file holds provider (ALGOLIA or BATTERY_INCLUDED, required), active, " +
+	"applicationId, indexName, searchKey, writeKey and, for BATTERY_INCLUDED, excludedMixinKeys " +
+	"or includedMixinPaths. Only one provider can be active at a time. Emporix checks the keys " +
+	"of BATTERY_INCLUDED before it stores them: it refuses invalid ones (400 Bad Request, exit 1) " +
 	"and stores nothing when it cannot check them (502 Bad Gateway)."
 
 // providerCreate creates the configuration of an index provider in
@@ -101,7 +101,7 @@ func providerCreate(providers resource[indexProvider]) *write {
 	return &write{
 		use:     createUse,
 		short:   "Create an index provider configuration",
-		long:    "Creates the configuration of an index provider, whose ID is the provider's name.\n" + providerFields,
+		long:    "Creates the configuration of an index provider, whose ID is the provider's name. " + providerFields,
 		example: "  epx indexing providers create --file algolia.json --dry-run",
 		method:  http.MethodPost,
 		req:     request{path: providers.path},
@@ -116,10 +116,10 @@ func providerUpdate(providers resource[indexProvider]) *write {
 	return &write{
 		use:   providers.itemUse("update"),
 		short: "Replace an index provider configuration",
-		long: "Replaces the configuration of PROVIDER, as `epx indexing providers list` shows it. The\n" +
-			"reference documents not found (exit 4) for an unknown one, as update creates none; for\n" +
-			"BATTERY_INCLUDED Emporix checks the write key first, so an invalid configuration is answered\n" +
-			"400 before that (the not-found answer was not checked with a valid key).\n" + providerFields,
+		long: "Replaces the configuration of PROVIDER, as `epx indexing providers list` shows it. The " +
+			"reference documents not found (exit 4) for an unknown one, as update creates none; for " +
+			"BATTERY_INCLUDED Emporix checks the write key first, so an invalid configuration is answered " +
+			"400 before that (the not-found answer was not checked with a valid key). " + providerFields,
 		example: "  epx indexing providers update ALGOLIA --file algolia.json",
 		method:  http.MethodPut,
 		req:     request{path: providers.itemPath()},
@@ -135,9 +135,9 @@ func reindexProducts() *write {
 	return &write{
 		use:   "reindex",
 		short: "Reindex every product (deprecated by Emporix)",
-		long: "Reindexes every product of the tenant, sending the mode FULL, the only one there is, unless\n" +
-			"--file gives the body. Emporix has deprecated this endpoint: `epx indexing reindex-jobs create`\n" +
-			"starts a reindex job instead, which its --wait follows. For BATTERY_INCLUDED, Emporix checks\n" +
+		long: "Reindexes every product of the tenant, sending the mode FULL, the only one there is, unless " +
+			"--file gives the body. Emporix has deprecated this endpoint: `epx indexing reindex-jobs create` " +
+			"starts a reindex job instead, which its --wait follows. For BATTERY_INCLUDED, Emporix checks " +
 			"the stored keys first (400 Bad Request when they are invalid, 502 when it cannot check them).",
 		example: "  epx indexing reindex --dry-run",
 		method:  http.MethodPost,
@@ -160,8 +160,8 @@ func reindexJobs() resource[reindexJob] {
 		use:   "reindex-jobs",
 		under: indexingUse,
 		short: "Read and start reindex jobs",
-		long: "Reads reindex jobs and their progress. Emporix fails when asked for the number of jobs,\n" +
-			"so list cannot check it: a job that moves between pages while they are read can be shown\n" +
+		long: "Reads reindex jobs and their progress. Emporix fails when asked for the number of jobs, " +
+			"so list cannot check it: a job that moves between pages while they are read can be shown " +
 			"twice or missed.",
 		path:    "/indexing/{tenant}/reindex-jobs",
 		filters: listFilters{kinds: filterable},
@@ -203,7 +203,7 @@ func entityBuiltInTypes() builtInTypes {
 // builtIn, the entityBuiltInTypes that its caller declares a command with,
 // LEGAL-ENTITY with a hyphen, or a custom one.
 func entityTypeSentences(builtIn builtInTypes) string {
-	return builtIn.clause("TYPE") + ".\nLEGAL-ENTITY takes a hyphen, not an underscore."
+	return builtIn.clause("TYPE") + ". LEGAL-ENTITY takes a hyphen, not an underscore."
 }
 
 // reindexJobCreate starts a reindex job in jobs, which --wait follows as
@@ -213,14 +213,14 @@ func reindexJobCreate(jobs resource[reindexJob]) *write {
 	return &write{
 		use:   createUse,
 		short: "Start a reindex job",
-		long: "Starts a job that indexes every entity of TYPE again; with --rag, it also embeds products for\n" +
-			"RAG search.\n" + entityTypeSentences(types) + "\n" +
-			"Searches of customers and legal entities, in the Search Service and by the tools of agents,\n" +
-			"read what a CUSTOMER or LEGAL-ENTITY job indexes.\n" +
-			"Emporix answers with the job, or with the job of that type that is IN_PROGRESS already.\n" +
-			"A job is PENDING while others take its turn, PUBLISHED once every entity was sent to the\n" +
-			"index and SUCCESS once the index took them all. For BATTERY_INCLUDED, Emporix checks the\n" +
-			"stored keys before it starts a PRODUCT job (400 Bad Request when they are invalid, 502 when\n" +
+		long: "Starts a job that indexes every entity of TYPE again; with --rag, it also embeds products for " +
+			"RAG search. " + entityTypeSentences(types) + " " +
+			"Searches of customers and legal entities, in the Search Service and by the tools of agents, " +
+			"read what a CUSTOMER or LEGAL-ENTITY job indexes. " +
+			"Emporix answers with the job, or with the job of that type that is IN_PROGRESS already. " +
+			"A job is PENDING while others take its turn, PUBLISHED once every entity was sent to the " +
+			"index and SUCCESS once the index took them all. For BATTERY_INCLUDED, Emporix checks the " +
+			"stored keys before it starts a PRODUCT job (400 Bad Request when they are invalid, 502 when " +
 			"it cannot check them).",
 		example: "  epx indexing reindex-jobs create --entity-type PRODUCT --rag --wait\n" +
 			"  epx indexing reindex-jobs create --entity-type LEGAL-ENTITY --wait\n" +

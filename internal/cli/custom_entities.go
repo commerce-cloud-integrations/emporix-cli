@@ -44,10 +44,10 @@ func newCustomEntitiesCommand(a *app) *cobra.Command {
 	entities := customEntities()
 	export := exportCommand(a, entities.path, &export{
 		short: "Export custom entity types with their schemas",
-		long: "Reads an export package of the custom entity types that --type names (the ID that\n" +
-			"`epx custom-entities list` shows): each type with its schemas, without metadata, and\n" +
-			"none of their instances. Emporix leaves out an ID that names no custom entity type (a\n" +
-			"built-in type such as PRODUCT too); if none is left, it answers with an empty package\n" +
+		long: "Reads an export package of the custom entity types that --type names (the ID that " +
+			"`epx custom-entities list` shows): each type with its schemas, without metadata, and " +
+			"none of their instances. Emporix leaves out an ID that names no custom entity type (a " +
+			"built-in type such as PRODUCT too); if none is left, it answers with an empty package " +
 			"(exit 0).",
 		scopes:    []string{schemaManage},
 		selection: listValue(typeParam, "a custom entity type `ID` to export (repeatable)"),
@@ -63,10 +63,10 @@ func customEntities() resource[customEntity] {
 		use:   "custom-entities",
 		noun:  "custom entity types",
 		short: "Read and change custom entity types and their instances",
-		long:  "Reads custom entity types: entities a tenant defines.\n" + instancesSentence,
-		about: "Reads and changes custom entity types: entities a tenant defines. create, update\n" +
-			"and delete change types; export exports types with their schemas (opt-in), which\n" +
-			"import imports.\n" + instancesSentence,
+		long:  "Reads custom entity types: entities a tenant defines. " + instancesSentence,
+		about: "Reads and changes custom entity types: entities a tenant defines. create, update " +
+			"and delete change types; export exports types with their schemas (opt-in), which " +
+			"import imports. " + instancesSentence,
 		path:    "/schema/{tenant}/custom-entities",
 		filters: listFilters{kinds: filterable},
 		view: view[customEntity]{
@@ -97,8 +97,8 @@ func newCustomInstancesCommand(a *app, entities resource[customEntity]) *cobra.C
 			header:    []string{columnID, columnName, "OWNER", columnVersion},
 			localized: true,
 			siteAware: true,
-			legend: "OWNER is an instance's owner, by default who created it (EMPLOYEE, CUSTOMER or SERVICE,\n" +
-				"and the user or client id). epx requests the scope of the type, not the tenant-wide\n" +
+			legend: "OWNER is an instance's owner, by default who created it (EMPLOYEE, CUSTOMER or SERVICE, " +
+				"and the user or client id). epx requests the scope of the type, not the tenant-wide " +
 				"schema.custominstance_read that Emporix also accepts.",
 			row: func(i customInstance, lang language) []string {
 				return []string{i.ID, i.Name.in(lang), i.Owner.String(), i.Metadata.Version.String()}
@@ -108,7 +108,7 @@ func newCustomInstancesCommand(a *app, entities resource[customEntity]) *cobra.C
 	reads := []*cobra.Command{
 		childCommand(a, typesOf, instances),
 		childSearchCommand(a, typesOf, instances, "Search the instances of a custom entity type",
-			"Reads the instances of a custom entity type that an Emporix q filter finds (--query;\n"+
+			"Reads the instances of a custom entity type that an Emporix q filter finds (--query; "+
 				"without it, every one).", queryField()),
 		childItemCommand(a, typesOf, instances, &childItem{
 			use:   "get",
@@ -117,7 +117,7 @@ func newCustomInstancesCommand(a *app, entities resource[customEntity]) *cobra.C
 		}),
 	}
 	return newGroup(instancesUse, "Read and change the instances of a custom entity type",
-		"Reads the instances of a custom entity type, every one (list), those a filter finds\n"+
+		"Reads the instances of a custom entity type, every one (list), those a filter finds "+
 			"(search) or one (get), and creates, changes and deletes them, one at a time or in bulk.",
 		slices.Concat(reads, customInstanceWrites(a, typesOf, instances))...)
 }

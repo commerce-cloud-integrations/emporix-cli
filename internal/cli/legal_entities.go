@@ -33,11 +33,11 @@ func newLegalEntitiesCommand(a *app) *cobra.Command {
 	entities := resource[legalEntity]{
 		use:   "legal-entities",
 		short: "Read and change legal entities (B2B companies); read their parents",
-		about: "Reads and changes legal entities, the companies of B2B customers and their subsidiaries,\n" +
-			"personal data included.\n" + versionedWritesNote,
-		long: "Reads legal entities, the companies of B2B customers and their subsidiaries, personal data\n" +
-			"included (approval groups name customers). TYPE is COMPANY or SUBSIDIARY, PARENT the legal\n" +
-			"entity a subsidiary belongs to, COUNTRY the country of registration. Registration details,\n" +
+		about: "Reads and changes legal entities, the companies of B2B customers and their subsidiaries, " +
+			"personal data included. " + versionedWritesNote,
+		long: "Reads legal entities, the companies of B2B customers and their subsidiaries, personal data " +
+			"included (approval groups name customers). TYPE is COMPANY or SUBSIDIARY, PARENT the legal " +
+			"entity a subsidiary belongs to, COUNTRY the country of registration. Registration details, " +
 			"addresses, customer groups, approval groups and restrictions are only in -o json.",
 		path:    "/customer-management/{tenant}/legal-entities",
 		scopes:  []string{legalEntityReadScope},
@@ -48,25 +48,25 @@ func newLegalEntitiesCommand(a *app) *cobra.Command {
 		use:   "hierarchy",
 		sub:   "parent-hierarchy",
 		short: "List a legal entity and its parents",
-		long: "Reads a legal entity and every one above it, up to its company, in the order Emporix\n" +
+		long: "Reads a legal entity and every one above it, up to its company, in the order Emporix " +
 			"sends them, personal data included; the columns are those of `epx legal-entities list`.",
 		fetch:   listing{read: (*emporix.Client).GetUnpaged},
 		unknown: listsNothing,
 		view:    legalEntityView(),
 	}), entities.searchCommand(a,
-		"Reads the legal entities, personal data included, that an Emporix q filter finds (--query;\n"+
+		"Reads the legal entities, personal data included, that an Emporix q filter finds (--query; "+
 			"without it, every legal entity).", queryField())}
 	writes := entities.versionedWrites(a, []string{"customermanagement.legalentity_manage"}, &versioned{
 		members: legalEntityMembers, required: "name and type",
-		createNote: "A create that Emporix refuses as a conflict may still make the IAM customer groups of\n" +
+		createNote: "A create that Emporix refuses as a conflict may still make the IAM customer groups of " +
 			"the legal entity.",
-		updateNote: "Keep every customer group that Emporix made for the legal entity (Admin, Buyer, Requester\n" +
-			"and Contact) in customerGroups: without the Contact group, Emporix deletes that group from\n" +
-			"IAM; without another, it leaves that group in IAM, where deleting the legal entity no\n" +
+		updateNote: "Keep every customer group that Emporix made for the legal entity (Admin, Buyer, Requester " +
+			"and Contact) in customerGroups: without the Contact group, Emporix deletes that group from " +
+			"IAM; without another, it leaves that group in IAM, where deleting the legal entity no " +
 			"longer removes it.",
-		deleteNote: "The assignments are the contact assignments of it and of its subsidiaries and the segment\n" +
-			"assignments that name it; the IAM customer groups those still in its customerGroups. Its\n" +
-			"customer locations stay, and its customers no longer name it (one with no other legal\n" +
+		deleteNote: "The assignments are the contact assignments of it and of its subsidiaries and the segment " +
+			"assignments that name it; the IAM customer groups those still in its customerGroups. Its " +
+			"customer locations stay, and its customers no longer name it (one with no other legal " +
 			"entity becomes a B2C customer).",
 		unknown: answeredDeleted,
 		cascade: "the legal entity with its subsidiaries, assignments and IAM customer groups",
@@ -75,11 +75,11 @@ func newLegalEntitiesCommand(a *app) *cobra.Command {
 }
 
 // legalEntityMembers are the members of the body of a legal entity's create.
-const legalEntityMembers = "name (required), type (COMPANY, the default, or SUBSIDIARY), parentId (the legal\n" +
-	"entity a subsidiary belongs to), legalInfo, accountLimit, customerGroups (IAM groups),\n" +
-	"entitiesAddresses and approvalGroup (its customer locations and contact assignments),\n" +
-	"restrictions and mixins; parentId, customerGroups, entitiesAddresses and approvalGroup must\n" +
-	"name items that exist (400 Bad Request, exit 1, otherwise), the last three each as\n" +
+const legalEntityMembers = "name (required), type (COMPANY, the default, or SUBSIDIARY), parentId (the legal " +
+	"entity a subsidiary belongs to), legalInfo, accountLimit, customerGroups (IAM groups), " +
+	"entitiesAddresses and approvalGroup (its customer locations and contact assignments), " +
+	"restrictions and mixins; parentId, customerGroups, entitiesAddresses and approvalGroup must " +
+	"name items that exist (400 Bad Request, exit 1, otherwise), the last three each as " +
 	"{\"id\": ...} or in full, as get prints it."
 
 // legalEntityView is the table of legal entities.

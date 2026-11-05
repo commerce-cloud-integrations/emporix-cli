@@ -8,10 +8,10 @@ func newCustomerLocationsCommand(a *app) *cobra.Command {
 	locations := resource[location]{
 		use:   "customer-locations",
 		short: "Read and change the locations of B2B customers",
-		about: "Reads and changes the locations of B2B customers (legal entities), contact emails\n" +
-			"included. A legal entity names its locations in entitiesAddresses, each as {\"id\": ...}.\n" +
+		about: "Reads and changes the locations of B2B customers (legal entities), contact emails " +
+			"included. A legal entity names its locations in entitiesAddresses, each as {\"id\": ...}. " +
 			versionedWritesNote,
-		long:    "Reads the locations of B2B customers (legal entities), contact emails included." + locationColumns,
+		long:    "Reads the locations of B2B customers (legal entities), contact emails included. " + locationColumns,
 		path:    "/customer-management/{tenant}/locations",
 		scopes:  []string{"customermanagement.location_read"},
 		filters: listFilters{kinds: filterable},

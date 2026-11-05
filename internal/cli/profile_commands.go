@@ -19,14 +19,14 @@ func newProfileCommand(a *app) *cobra.Command {
 	group := &cobra.Command{
 		Use:   "profile",
 		Short: "Manage profiles: named settings and credentials of a tenant",
-		Long: "A profile keeps the settings of one API key: its tenant, API URL and client ID, and a default\n" +
-			"site and language. Profiles are in epx/config.json in your configuration directory (~/.config on\n" +
-			"Linux, ~/Library/Application Support on macOS, %AppData% on Windows), which only you may read;\n" +
-			"the client secret of each is in the OS keychain (the macOS Keychain, the Windows Credential\n" +
+		Long: "A profile keeps the settings of one API key: its tenant, API URL and client ID, and a default " +
+			"site and language. Profiles are in epx/config.json in your configuration directory (~/.config on " +
+			"Linux, ~/Library/Application Support on macOS, %AppData% on Windows), which only you may read; " +
+			"the client secret of each is in the OS keychain (the macOS Keychain, the Windows Credential " +
 			"Manager or a Secret Service on Linux), never in that file.\n\n" +
-			"A command uses the profile that --profile names, else the one EPX_PROFILE names, else the\n" +
-			"default (`epx profile use`), but only where no EMPORIX_ variable is set: those give the whole\n" +
-			"API key, never mixed with a profile's. --tenant overrides the profile's tenant. These commands\n" +
+			"A command uses the profile that --profile names, else the one EPX_PROFILE names, else the " +
+			"default (`epx profile use`), but only where no EMPORIX_ variable is set: those give the whole " +
+			"API key, never mixed with a profile's. --tenant overrides the profile's tenant. These commands " +
 			"change only the configuration file and the keychain: they send nothing to Emporix.",
 	}
 	group.AddCommand(newProfileAddCommand(a), newProfileListCommand(a), newProfileShowCommand(a),
@@ -61,10 +61,10 @@ func newProfileAddCommand(a *app) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "add NAME",
 		Short: "Add a profile, or replace one, with its client secret in the OS keychain",
-		Long: "Adds the profile NAME, or replaces the profile of that name, and stores its client secret in\n" +
-			"the OS keychain. On a terminal, epx asks for the secret without showing it; otherwise it reads\n" +
-			"the first line of standard input. It never takes the secret from a flag. Where no profile is\n" +
-			"the default, as for the first one, it becomes the default. Nothing is sent to Emporix: `epx\n" +
+		Long: "Adds the profile NAME, or replaces the profile of that name, and stores its client secret in " +
+			"the OS keychain. On a terminal, epx asks for the secret without showing it; otherwise it reads " +
+			"the first line of standard input. It never takes the secret from a flag. Where no profile is " +
+			"the default, as for the first one, it becomes the default. Nothing is sent to Emporix: `epx " +
 			"auth status` with --profile NAME checks the API key.",
 		Example: "  epx profile add dev --tenant acme1 --client-id CLIENT_ID --site AcmeStore_NL --language nl\n" +
 			"  printf '%s\\n' \"$CLIENT_SECRET\" | epx profile add ci --tenant acme1 --client-id CLIENT_ID",
@@ -241,7 +241,7 @@ func newProfileShowCommand(a *app) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "show NAME",
 		Short: "Show a profile and whether its client secret is stored",
-		Long: "Shows the settings of the profile NAME and whether the OS keychain holds its client secret.\n" +
+		Long: "Shows the settings of the profile NAME and whether the OS keychain holds its client secret. " +
 			"The secret itself is never shown.",
 		Args:              profileArgs,
 		ValidArgsFunction: a.completeProfiles,
@@ -304,9 +304,9 @@ func newProfileRemoveCommand(a *app) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "remove NAME",
 		Short: "Remove a profile and its client secret",
-		Long: "Removes the profile NAME and deletes its client secret from the OS keychain. On a terminal,\n" +
-			"epx asks first; --" + yesFlag + " removes it without asking, as scripts must. Removing the default\n" +
-			"profile leaves no default. Where the keychain cannot delete the secret, the profile is removed\n" +
+		Long: "Removes the profile NAME and deletes its client secret from the OS keychain. On a terminal, " +
+			"epx asks first; --" + yesFlag + " removes it without asking, as scripts must. Removing the default " +
+			"profile leaves no default. Where the keychain cannot delete the secret, the profile is removed " +
 			"all the same, and the error names the keychain entry (service " + config.KeychainService +
 			", account NAME) that still holds it.",
 		Args:              profileArgs,

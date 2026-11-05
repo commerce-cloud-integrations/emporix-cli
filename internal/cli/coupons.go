@@ -64,24 +64,24 @@ const columnDiscount = "DISCOUNT"
 // only with the write-capable coupon.coupon_manage scope, so those reads are
 // opt-in, and creates, changes, redeems and deletes them (couponWrites).
 func newCouponsCommand(a *app) *cobra.Command {
-	const long = "Reads coupons, customer ids included (issuedTo, validFor in -o json). DISCOUNT is a\n" +
-		"percentage, an amount or FREE_SHIPPING. STATUS is VALID, INACTIVE, EXPIRED or USED, as\n" +
-		"Emporix computes it: --query status:VALUE matches no coupon and --sort status is ignored.\n" +
-		"REDEEMED counts redemptions, out of the maximum when there is one; Emporix counts those for\n" +
-		"a legal entity apart, per legal entity (legalEntityRedemptions, only in -o json). Other\n" +
-		"restrictions (valid from, minimum order value, customers, categories, segments) are only in\n" +
-		"-o json.\n" +
-		"`epx coupons redemptions` and `redemption` read the redemptions of a coupon, all or one.\n" +
-		"`epx coupons list` leaves out deleted coupons; `epx coupons get CODE` still shows one, in\n" +
-		"the table as a live one (-o json has deleted: true). Deleted coupons are listed too, one\n" +
-		"page at a time, by\n" +
+	const long = "Reads coupons, customer ids included (issuedTo, validFor in -o json). DISCOUNT is a " +
+		"percentage, an amount or FREE_SHIPPING. STATUS is VALID, INACTIVE, EXPIRED or USED, as " +
+		"Emporix computes it: --query status:VALUE matches no coupon and --sort status is ignored. " +
+		"REDEEMED counts redemptions, out of the maximum when there is one; Emporix counts those for " +
+		"a legal entity apart, per legal entity (legalEntityRedemptions, only in -o json). Other " +
+		"restrictions (valid from, minimum order value, customers, categories, segments) are only in " +
+		"-o json. " +
+		"`epx coupons redemptions` and `redemption` read the redemptions of a coupon, all or one. " +
+		"`epx coupons list` leaves out deleted coupons; `epx coupons get CODE` still shows one, in " +
+		"the table as a live one (-o json has deleted: true). Deleted coupons are listed too, one " +
+		"page at a time, by " +
 		"`epx api get /coupon/{tenant}/coupons -p showDeleted=true --scope coupon.coupon_read`."
 	coupons := resource[coupon]{
 		use:   "coupons",
 		short: "Read, create, change and redeem coupons",
 		long:  long,
-		about: long + "\n`epx coupons create`, `update`, `patch` and `delete` change coupons, `redeem` redeems one\n" +
-			"outside a checkout, `redemption-delete` deletes a redemption, and `referral-create` creates\n" +
+		about: long + " `epx coupons create`, `update`, `patch` and `delete` change coupons, `redeem` redeems one " +
+			"outside a checkout, `redemption-delete` deletes a redemption, and `referral-create` creates " +
 			"the referral coupon of a customer.",
 		path:    "/coupon/{tenant}/coupons",
 		scopes:  []string{"coupon.coupon_read"},
@@ -92,7 +92,7 @@ func newCouponsCommand(a *app) *cobra.Command {
 	redemptions := child[redemption]{
 		use:   "redemptions",
 		short: "List the redemptions of a coupon",
-		long: "Reads the redemptions of a coupon (personal data): the order, customer and legal entity\n" +
+		long: "Reads the redemptions of a coupon (personal data): the order, customer and legal entity " +
 			"of each, and when it was redeemed (`epx coupons redemption` shows one).",
 		scopes: []string{couponManage},
 		fetch:  listing{filters: listFilters{kinds: filterable}},
@@ -101,7 +101,7 @@ func newCouponsCommand(a *app) *cobra.Command {
 			header: []string{
 				columnID, "ORDER", columnCustomer, columnLegalEntity, "ORDER TOTAL", columnDiscount, "REDEEMED AT",
 			},
-			legend: "ORDER TOTAL is the order's value and DISCOUNT the amount the coupon took off it. The\n" +
+			legend: "ORDER TOTAL is the order's value and DISCOUNT the amount the coupon took off it. The " +
 				"narrower coupon.coupon_redeem scope reads only the redemptions a caller made itself.",
 			row: func(r redemption, _ language) []string {
 				return []string{r.ID, r.OrderCode, r.CustomerNumber, r.LegalEntityID, r.OrderTotal.String(),
@@ -144,10 +144,10 @@ func newReferralCouponCommand(a *app) *cobra.Command {
 	return reader[coupon]{view: couponView()}.command(a, &command{
 		use:   "referral " + profiles.argument(),
 		short: "Show the referral coupon of a customer",
-		long: "Reads the referral coupon of a customer: the coupon issued to the customer (issuedTo in\n" +
-			"-o json) to share with the people they refer, also a deleted one, which the table shows as\n" +
-			"a live one (-o json has deleted: true). Its columns are those of `epx coupons list`.\n" +
-			profiles.argumentSource() + "; a customer without a\n" +
+		long: "Reads the referral coupon of a customer: the coupon issued to the customer (issuedTo in " +
+			"-o json) to share with the people they refer, also a deleted one, which the table shows as " +
+			"a live one (-o json has deleted: true). Its columns are those of `epx coupons list`. " +
+			profiles.argumentSource() + "; a customer without a " +
 			"referral coupon, or an unknown one, is not found (exit 4).",
 		req:   request{path: referralCouponsPath + "/" + placeholderID},
 		fetch: single{items: oneItem},
@@ -168,15 +168,15 @@ func newCouponValidationCommand(a *app, coupons resource[coupon]) *cobra.Command
 	return check.command(a, &command{
 		use:   "validate " + coupons.argument(),
 		short: "Check whether a coupon can be redeemed",
-		long: "Checks whether a coupon can be redeemed for an order of --order-total that it takes\n" +
-			"--discount off, by --customer (a customer number) where given: Emporix runs every check of\n" +
-			"a redemption without redeeming the coupon. REDEEMABLE is true when it can be. Emporix\n" +
-			"refuses a coupon that cannot be redeemed with an error that says why: one that the customer\n" +
-			"may not redeem with " + forbiddenRefusal + ". An unknown coupon is not found (exit 4).\n" +
-			legalEntityNote + "\n" +
-			"Emporix answers a redeemable coupon without a body; -o json prints true then. The scope,\n" +
-			"which epx requests also without --customer, lets a credential redeem coupons on a\n" +
-			"customer's behalf too.\n" +
+		long: "Checks whether a coupon can be redeemed for an order of --order-total that it takes " +
+			"--discount off, by --customer (a customer number) where given: Emporix runs every check of " +
+			"a redemption without redeeming the coupon. REDEEMABLE is true when it can be. Emporix " +
+			"refuses a coupon that cannot be redeemed with an error that says why: one that the customer " +
+			"may not redeem with " + forbiddenRefusal + ". An unknown coupon is not found (exit 4). " +
+			legalEntityNote + " " +
+			"Emporix answers a redeemable coupon without a body; -o json prints true then. The scope, " +
+			"which epx requests also without --customer, lets a credential redeem coupons on a " +
+			"customer's behalf too. " +
 			coupons.argumentSource() + ".",
 		req:   request{path: coupons.path + "/" + placeholderID + "/validation"},
 		ids:   argumentIDs{coupons.argument(): coupons.ids()},

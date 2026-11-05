@@ -40,10 +40,10 @@ type scopeKind struct {
 
 // groupScopeSentence says which OAuth scopes the commands below group
 // request, at any depth, by kind (scopeKind): where they are of one kind and
-// their scopes agree, the scope sentence of one of them; otherwise a line per
-// kind, its reads first, that names their scopes where they agree and says
-// that they differ otherwise, followed by optInSentence where reads are
-// opt-in, and by the note on the scopes the lines name (typeNote). Without
+// their scopes agree, the scope sentence of one of them; otherwise a sentence
+// per kind, its reads first, that names their scopes where they agree and
+// says that they differ otherwise, followed by optInSentence where reads are
+// opt-in, and by the note on the scopes the sentences name (typeNote). Without
 // reads or writes, nothing.
 func groupScopeSentence(group *cobra.Command) string {
 	kinds := slices.DeleteFunc([]scopeKind{
@@ -53,18 +53,18 @@ func groupScopeSentence(group *cobra.Command) string {
 	if len(kinds) == 1 && len(kinds[0].sets) == 1 {
 		return kinds[0].sentence(strings.Fields(kinds[0].sets[0]))
 	}
-	lines := make([]string, len(kinds))
-	var named []string // the scopes that the lines name, those of kinds whose scopes agree
+	sentences := make([]string, len(kinds))
+	var named []string // the scopes that the sentences name, those of kinds whose scopes agree
 	for i, kind := range kinds {
-		lines[i] = "Its " + kind.name + " " + groupRequirement(kind.sets)
+		sentences[i] = "Its " + kind.name + " " + groupRequirement(kind.sets)
 		if kind.optIn {
-			lines[i] += optInNote(strings.Fields(strings.Join(kind.sets, " ")))
+			sentences[i] = joinSentences(sentences[i], optInNote(strings.Fields(strings.Join(kind.sets, " "))))
 		}
 		if len(kind.sets) == 1 {
 			named = append(named, strings.Fields(kind.sets[0])...)
 		}
 	}
-	return strings.Join(lines, "\n") + typeNote(named)
+	return joinSentences(strings.Join(sentences, " "), typeNote(named))
 }
 
 // groupRequirement says what the commands of one or more scope sets require,
@@ -99,7 +99,9 @@ func scopeSets(cmd *cobra.Command, annotation string) []string {
 // scopeSentence says which OAuth scopes a read requests, as a write's
 // (writeScopeSentence), followed by optInSentence when one of them is
 // write-capable.
-func scopeSentence(scopes []string) string { return writeScopeSentence(scopes) + optInNote(scopes) }
+func scopeSentence(scopes []string) string {
+	return joinSentences(writeScopeSentence(scopes), optInNote(scopes))
+}
 
 // noScopeSentence ends the help of a command that requests no scope.
 const noScopeSentence = "No OAuth scope is needed."
@@ -111,7 +113,7 @@ func writeScopeSentence(scopes []string) string {
 	if len(scopes) == 0 {
 		return noScopeSentence
 	}
-	return "Requires " + theScopes(scopes) + "." + typeNote(scopes)
+	return joinSentences("Requires "+theScopes(scopes)+".", typeNote(scopes))
 }
 
 // theScopes names one or more scopes, e.g. "the a.read scope" or "the
@@ -128,13 +130,13 @@ func theScopes(scopes []string) string {
 const optInSentence = "Opt-in: epx requests a write-capable scope for a read only when given --" +
 	writeScopeFlag + "."
 
-// optInNote returns what follows a scope sentence naming scopes: a new line
-// with optInSentence when one of them is write-capable, else nothing.
+// optInNote returns what follows a scope sentence naming scopes:
+// optInSentence when one of them is write-capable, else nothing.
 func optInNote(scopes []string) string {
 	if !writeCapable(scopes) {
 		return ""
 	}
-	return "\n" + optInSentence
+	return optInSentence
 }
 
 // writeCapable reports whether one of scopes may also change data. Only a

@@ -77,16 +77,16 @@ func newWebhooksCommand(a *app) *cobra.Command {
 		row:      func(d dashboardAccess, _ language) []string { return []string{d.URL} },
 	}, scopes: []string{webhookManageScope}}
 	return newGroup("webhooks", "Read and change webhook configurations and subscriptions; read statistics",
-		"Reads the tenant's webhooks: where events are sent, which events it subscribes to, how many\n"+
-			"webhooks it sent, and a link to its webhook dashboard; changes where events are sent and\n"+
+		"Reads the tenant's webhooks: where events are sent, which events it subscribes to, how many "+
+			"webhooks it sent, and a link to its webhook dashboard; changes where events are sent and "+
 			"which events it subscribes to.",
 		newWebhookConfigurationsCommand(a),
 		newWebhookSubscriptionsCommand(a),
 		statistics.command(a, &command{
 			use:   "statistics",
 			short: "Show how many webhooks were sent per month",
-			long: "Reads the monthly webhook LIMIT and the webhooks sent per month, for the months Emporix\n" +
-				"reports by default. For other months, run\n" +
+			long: "Reads the monthly webhook LIMIT and the webhooks sent per month, for the months Emporix " +
+				"reports by default. For other months, run " +
 				"`epx api get /webhook/{tenant}/statistics -p fromYearMonth=2026-01 -p toYearMonth=2026-06 --scope " +
 				webhookScope + "`.",
 			req:   request{path: "/webhook/{tenant}/statistics"},
@@ -95,9 +95,9 @@ func newWebhooksCommand(a *app) *cobra.Command {
 		dashboard.command(a, &command{
 			use:   "dashboard-access",
 			short: "Show a link that logs in to the webhook dashboard",
-			long: "Reads a URL that logs in to the tenant's webhook dashboard, the Svix application portal of\n" +
-				"a tenant whose webhooks Emporix sends through its shared Svix account (provider\n" +
-				"SVIX_SHARED). The URL holds its own authentication, so treat it as a secret; -o json also\n" +
+			long: "Reads a URL that logs in to the tenant's webhook dashboard, the Svix application portal of " +
+				"a tenant whose webhooks Emporix sends through its shared Svix account (provider " +
+				"SVIX_SHARED). The URL holds its own authentication, so treat it as a secret; -o json also " +
 				"prints the portal's token.",
 			req:   request{path: "/webhook/{tenant}/dashboard-access"},
 			fetch: single{items: oneItem},
@@ -118,12 +118,12 @@ func newWebhookSubscriptionsCommand(a *app) *cobra.Command {
 		},
 	}, scopes: []string{webhookScope}}
 	return newGroup("subscriptions", "Read and change the webhook events that the tenant subscribes to",
-		"Reads the webhook events and whether the tenant subscribes to them, and subscribes to\n"+
+		"Reads the webhook events and whether the tenant subscribes to them, and subscribes to "+
 			"events or unsubscribes from them.",
 		subscriptions.command(a, &command{
 			use:   listUse,
 			short: "List the webhook events and whether the tenant subscribes to them",
-			long: "Reads every webhook event type and whether the tenant receives it: STATUS is SUBSCRIBED,\n" +
+			long: "Reads every webhook event type and whether the tenant receives it: STATUS is SUBSCRIBED, " +
 				"UNSUBSCRIBED or NONE. The service returns them whole, so they are read with one request.",
 			req:   request{path: path},
 			fetch: listing{read: (*emporix.Client).GetUnpaged},
@@ -138,9 +138,9 @@ func newWebhookConfigurationsCommand(a *app) *cobra.Command {
 		noun:  "webhook configurations",
 		short: "Read, create, change and delete webhook configurations",
 		under: "webhooks",
-		long: "Reads webhook configurations: PROVIDER is SVIX_SHARED, SVIX or HTTP, DESTINATION where\n" +
-			"events are sent and ENTRIES counts the event entries, each with its own destination,\n" +
-			"headers and filter (inactive ones included), which only -o json shows. The service returns\n" +
+		long: "Reads webhook configurations: PROVIDER is SVIX_SHARED, SVIX or HTTP, DESTINATION where " +
+			"events are sent and ENTRIES counts the event entries, each with its own destination, " +
+			"headers and filter (inactive ones included), which only -o json shows. The service returns " +
 			"the configurations whole, so they are read with one request.",
 		path:   "/webhook/{tenant}/config",
 		scopes: []string{webhookScope},

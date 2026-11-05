@@ -8,8 +8,7 @@ description: "Read, create, change and delete brands."
 
 Reads brands.
 
-Its reads need no OAuth scope.
-Its writes require the brand.brand\_manage scope.
+Its reads need no OAuth scope. Its writes require the brand.brand\_manage scope.
 
 **Command:** `epx brands [flags]`, `epx brands [command]`
 
@@ -34,19 +33,11 @@ Its writes require the brand.brand\_manage scope.
 
 Create a brand.
 
-Creates a brand from the JSON in `--file`, such as
-`{"name": "Acme", "localizedName": {"en": "Acme", "de": "Acme"}}`, and prints the brand that
-Emporix answers with, including its id. Emporix generates the id unless the JSON names one;
-an id that exists already is a conflict, while a name that exists already makes a second
-brand.
+Creates a brand from the JSON in `--file`, such as `{"name": "Acme", "localizedName": {"en": "Acme", "de": "Acme"}}`, and prints the brand that Emporix answers with, including its id. Emporix generates the id unless the JSON names one; an id that exists already is a conflict, while a name that exists already makes a second brand.
 
-Localized text in the body is a map of translations, e.g. `{"en": "Acme", "de": "Acme"}`,
-as `-o json` of a read prints it, sent with Content-Language: \*. Emporix refuses a string in
-its place.
+Localized text in the body is a map of translations, e.g. `{"en": "Acme", "de": "Acme"}`, as `-o json` of a read prints it, sent with Content-Language: \*. Emporix refuses a string in its place.
 
-Changes data: on a terminal, epx asks before it sends POST. `--yes` sends without
-asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
-instead of sending it.
+Changes data: on a terminal, epx asks before it sends POST. `--yes` sends without asking (required without a terminal, or with `--file` -); `--dry-run` prints the request instead of sending it.
 
 Requires the brand.brand\_manage scope.
 
@@ -71,10 +62,7 @@ Delete a brand.
 
 Deletes the brand ID.
 
-Deletes data, which cannot be undone.
-On a terminal, epx sends DELETE only once you type ID at its prompt.
-`--yes` sends without asking (required without a terminal);
-`--dry-run` prints the request instead of sending it.
+Deletes data, which cannot be undone. On a terminal, epx sends DELETE only once you type ID at its prompt. `--yes` sends without asking (required without a terminal); `--dry-run` prints the request instead of sending it.
 
 Requires the brand.brand\_manage scope.
 
@@ -149,18 +137,11 @@ Also takes the [global flags](/commands#global-flags).
 
 Change members of a brand.
 
-Changes the members of the brand ID that the JSON in `--file` names, such as name or
-localizedDescription; the others keep their values. A map of translations in it, such as
-localizedName, adds to the brand's: the languages it names change, the others stay. Unlike
-update, Emporix does not check a metadata.version in it. An unknown ID is not found. It prints the brand that Emporix answers with.
+Changes the members of the brand ID that the JSON in `--file` names, such as name or localizedDescription; the others keep their values. A map of translations in it, such as localizedName, adds to the brand's: the languages it names change, the others stay. Unlike update, Emporix does not check a metadata.version in it. An unknown ID is not found. It prints the brand that Emporix answers with.
 
-Localized text in the body is a map of translations, e.g. `{"en": "Acme", "de": "Acme"}`,
-as `-o json` of a read prints it, sent with Content-Language: \*. Emporix refuses a string in
-its place.
+Localized text in the body is a map of translations, e.g. `{"en": "Acme", "de": "Acme"}`, as `-o json` of a read prints it, sent with Content-Language: \*. Emporix refuses a string in its place.
 
-Changes data: on a terminal, epx asks before it sends PATCH. `--yes` sends without
-asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
-instead of sending it.
+Changes data: on a terminal, epx asks before it sends PATCH. `--yes` sends without asking (required without a terminal, or with `--file` -); `--dry-run` prints the request instead of sending it.
 
 Requires the brand.brand\_manage scope.
 
@@ -183,16 +164,11 @@ Also takes the [global flags](/commands#global-flags).
 
 Replace a brand.
 
-Replaces the brand ID with the JSON in `--file`: a member that it leaves out is removed.
-An unknown ID is not found. It prints the brand that Emporix answers with.
+Replaces the brand ID with the JSON in `--file`: a member that it leaves out is removed. An unknown ID is not found. It prints the brand that Emporix answers with.
 
-Localized text in the body is a map of translations, e.g. `{"en": "Acme", "de": "Acme"}`,
-as `-o json` of a read prints it, sent with Content-Language: \*. Emporix refuses a string in
-its place.
+Localized text in the body is a map of translations, e.g. `{"en": "Acme", "de": "Acme"}`, as `-o json` of a read prints it, sent with Content-Language: \*. Emporix refuses a string in its place.
 
-Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without
-asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
-instead of sending it.
+Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without asking (required without a terminal, or with `--file` -); `--dry-run` prints the request instead of sending it.
 
 Requires the brand.brand\_manage scope.
 

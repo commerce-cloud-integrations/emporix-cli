@@ -189,34 +189,34 @@ func TestCustomEntityWriteHelp(t *testing.T) {
 		args []string
 		want []string
 	}{
-		{args: []string{"custom-entities", "create"}, want: []string{"The id has capital letters, digits and\n" +
-			"underscores, the first a letter.", "which it grants only minutes\nlater: until then, " +
+		{args: []string{"custom-entities", "create"}, want: []string{"The id has capital letters, digits and " +
+			"underscores, the first a letter.", "which it grants only minutes later: until then, " +
 			"the instance commands of the type exit with code 3.", "sent with Content-Language: *. Emporix refuses " +
-			"a string in\nits place."}},
+			"a string in its place."}},
 		{args: []string{"custom-entities", "delete"}, want: []string{"answers an unknown ID as deleted, not as not found.",
-			"remain granted: the instances of a deleted\ntype then read as an empty list."}},
+			"remain granted: the instances of a deleted type then read as an empty list."}},
 		{args: []string{"custom-entities", "import"}, want: []string{"the references of its schemas then name the copy."}},
-		{args: []string{"custom-entities", "update"}, want: []string{"or creates the type where none\nexists (an upsert)",
+		{args: []string{"custom-entities", "update"}, want: []string{"or creates the type where none exists (an upsert)",
 			"Requires the schema.schema_manage scope.\n\nUsage:"}},
 		{args: []string{"custom-entities", "instances", "update"}, want: []string{"(an upsert)",
-			"CUSTOM_ENTITY_ID is the ID that `epx custom-entities list` shows, and ID the one that\n" +
+			"CUSTOM_ENTITY_ID is the ID that `epx custom-entities list` shows, and ID the one that " +
 				"`epx custom-entities instances list CUSTOM_ENTITY_ID` shows.",
 			"(true without it), requesting custom.<type>_read where it is true or not given: true or false",
-			"Emporix checks the items that the references of the instance name (unless\n" +
-				"--validate-references false) with epx's token, which reads the instances of CUSTOM_ENTITY_ID\n" +
-				"alone: a reference to an instance of another custom entity type is then expected to fail\n" +
+			"Emporix checks the items that the references of the instance name (unless " +
+				"--validate-references false) with epx's token, which reads the instances of CUSTOM_ENTITY_ID " +
+				"alone: a reference to an instance of another custom entity type is then expected to fail " +
 				"with 400 Bad Request,",
-			"\n\nWhere --validate-references is true or not given, epx also requests\n" +
-				"the custom.<type>_read scope.\n\nRequires the custom.<type>_manage scope.\n<type> is the custom " +
+			"\n\nWhere --validate-references is true or not given, epx also requests " +
+				"the custom.<type>_read scope.\n\nRequires the custom.<type>_manage scope. <type> is the custom " +
 				"entity type in lower case (custom.document_manage for DOCUMENT).\n\nUsage:"}},
 		{args: []string{"custom-entities", "instances", "delete"}, want: []string{
-			"Requires the custom.<type>_manage scope.\n<type> is the custom entity type in lower case " +
+			"Requires the custom.<type>_manage scope. <type> is the custom entity type in lower case " +
 				"(custom.document_manage for DOCUMENT).\n\nUsage:"}},
-		{args: []string{"custom-entities", "instances", "patch"}, want: []string{"an add whose path ends in\n" +
+		{args: []string{"custom-entities", "instances", "patch"}, want: []string{"an add whose path ends in " +
 			"/- appends to an array", "(true without it), requesting custom.<type>_read where it is true or not given"}},
 		{args: []string{"custom-entities", "instances", "create"}, want: []string{
 			`{"mixins": {"SCHEMA_ID": {…}}, "metadata": {"mixins": {"SCHEMA_ID": "URL"}}}`,
-			"A localized\nattribute, unlike the name, is a list of translations, such as\n" +
+			"A localized attribute, unlike the name, is a list of translations, such as " +
 				`[{"language": "en", "value": "Report"}].`, "sent with Content-Language: *"}},
 		{args: []string{"custom-entities", "instances", "bulk-patch"}, want: []string{
 			"(false without it, although its reference says true), requesting custom.<type>_read where it is true:",
@@ -226,28 +226,28 @@ func TestCustomEntityWriteHelp(t *testing.T) {
 			"Emporix grants (exit code 3), and a type created in the last minutes has none yet."}},
 		{args: []string{"custom-entities", "instances", "bulk-create"}, want: []string{
 			"(false without it), requesting custom.<type>_read where it is true:",
-			"With --validate-references true, Emporix checks the items that the references of each\n",
-			"instance with a reference to an item that does not exist fails with 500 Internal Server\n" +
+			"With --validate-references true, Emporix checks the items that the references of each ",
+			"instance with a reference to an item that does not exist fails with 500 Internal Server " +
 				"Error (nothing is created)",
-			"\n\nWhere --validate-references is true, epx also requests\nthe custom.<type>_read scope.\n\nRequires the " +
+			"\n\nWhere --validate-references is true, epx also requests the custom.<type>_read scope.\n\nRequires the " +
 				"custom.<type>_manage scope.",
 			"Emporix takes up to 200 items in one request (epx refuses more)"}},
 		{args: []string{"custom-entities", "instances", "bulk-delete"}, want: []string{
-			"CUSTOM_ENTITY_ID is the ID that `epx custom-entities list` shows.\n",
-			"Emporix takes up to 1000 items in one request (epx refuses more), carries out each on\nits own",
+			"CUSTOM_ENTITY_ID is the ID that `epx custom-entities list` shows.",
+			"Emporix takes up to 1000 items in one request (epx refuses more), carries out each on its own",
 			"Emporix answers an unknown id as deleted."}},
 		{args: []string{"custom-entities", "instances", "search"}, want: []string{
 			"`epx custom-entities instances list CUSTOM_ENTITY_ID`"}},
 		{args: []string{"custom-entities", "instances"}, want: []string{"Its reads require the " +
-			"custom.<type>_read scope.\nIts writes require the custom.<type>_manage scope.\n<type> is the custom " +
+			"custom.<type>_read scope. Its writes require the custom.<type>_manage scope. <type> is the custom " +
 			"entity type in lower case (custom.document_manage, custom.document_read for DOCUMENT).\n\nUsage:"}},
-		{args: []string{"custom-entities"}, want: []string{"export exports types with their schemas (opt-in), which\n" +
-			"import imports.\n`epx custom-entities instances` reads and changes the instances of a type.\n\n",
+		{args: []string{"custom-entities"}, want: []string{"export exports types with their schemas (opt-in), which " +
+			"import imports. `epx custom-entities instances` reads and changes the instances of a type.\n\n",
 			"Its writes require different OAuth scopes"}},
 	} {
 		code, help, stderr := runCLI(t, nil, append(slices.Clone(tt.args), "--help")...)
 		for _, want := range tt.want {
-			if code != ExitOK || !strings.Contains(help, want) {
+			if code != ExitOK || !containsFlat(help, want) {
 				t.Errorf("%q: exit %d, stderr %q, help %q; want %q", tt.args, code, stderr, help, want)
 			}
 		}

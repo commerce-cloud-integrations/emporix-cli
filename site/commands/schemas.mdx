@@ -6,14 +6,9 @@ description: "Read, create, change and delete custom schemas and schema referenc
 
 ## epx schemas
 
-Reads custom schemas, the attribute sets that extend Emporix entities. TYPES lists the
-entity types a schema applies to and ATTRIBUTES counts its top-level attributes (`-o json`
-prints their definitions). [`epx schemas references`](/commands/schemas#epx-schemas-references) reads schema references and
-[`epx schemas types`](/commands/schemas#epx-schemas-types) the entity types that have schemas.
+Reads custom schemas, the attribute sets that extend Emporix entities. TYPES lists the entity types a schema applies to and ATTRIBUTES counts its top-level attributes (`-o json` prints their definitions). [`epx schemas references`](/commands/schemas#epx-schemas-references) reads schema references and [`epx schemas types`](/commands/schemas#epx-schemas-types) the entity types that have schemas.
 
-Its reads require different OAuth scopes; the help of each names them.
-Opt-in: epx requests a write-capable scope for a read only when given `--allow-write-scope`.
-Its writes require the schema.schema\_manage scope.
+Its reads require different OAuth scopes; the help of each names them. Opt-in: epx requests a write-capable scope for a read only when given `--allow-write-scope`. Its writes require the schema.schema\_manage scope.
 
 **Command:** `epx schemas [flags]`, `epx schemas [command]`
 
@@ -44,19 +39,11 @@ Its writes require the schema.schema\_manage scope.
 
 Create a schema.
 
-Creates a schema from the JSON in `--file`: its name (translations), the entity types it
-extends and its attributes, such as [`epx schemas parse -o json`](/commands/schemas#epx-schemas-parse) prints them once a name and
-types are added. It prints the id that Emporix answers with; one that exists already is a
-conflict.
-Name entity types by their ids, with \_, such as VENDOR\_LOCATION.
+Creates a schema from the JSON in `--file`: its name (translations), the entity types it extends and its attributes, such as [`epx schemas parse -o json`](/commands/schemas#epx-schemas-parse) prints them once a name and types are added. It prints the id that Emporix answers with; one that exists already is a conflict. Name entity types by their ids, with \_, such as VENDOR\_LOCATION.
 
-Localized text in the body is a map of translations, e.g. `{"en": "Acme", "de": "Acme"}`,
-as `-o json` of a read prints it, sent with Content-Language: \*. Emporix refuses a string in
-its place.
+Localized text in the body is a map of translations, e.g. `{"en": "Acme", "de": "Acme"}`, as `-o json` of a read prints it, sent with Content-Language: \*. Emporix refuses a string in its place.
 
-Changes data: on a terminal, epx asks before it sends POST. `--yes` sends without
-asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
-instead of sending it.
+Changes data: on a terminal, epx asks before it sends POST. `--yes` sends without asking (required without a terminal, or with `--file` -); `--dry-run` prints the request instead of sending it.
 
 Requires the schema.schema\_manage scope.
 
@@ -79,13 +66,9 @@ Also takes the [global flags](/commands#global-flags).
 
 Delete a schema.
 
-Deletes the schema ID, every version of it.
-Emporix answers an unknown ID as a deleted one (204), so epx exits with 0.
+Deletes the schema ID, every version of it. Emporix answers an unknown ID as a deleted one (204), so epx exits with 0.
 
-Deletes data, which cannot be undone.
-On a terminal, epx sends DELETE only once you type ID at its prompt.
-`--yes` sends without asking (required without a terminal);
-`--dry-run` prints the request instead of sending it.
+Deletes data, which cannot be undone. On a terminal, epx sends DELETE only once you type ID at its prompt. `--yes` sends without asking (required without a terminal); `--dry-run` prints the request instead of sending it.
 
 Requires the schema.schema\_manage scope.
 
@@ -106,10 +89,7 @@ Also takes the [global flags](/commands#global-flags).
 
 Show one schema.
 
-Reads custom schemas, the attribute sets that extend Emporix entities. TYPES lists the
-entity types a schema applies to and ATTRIBUTES counts its top-level attributes (`-o json`
-prints their definitions). [`epx schemas references`](/commands/schemas#epx-schemas-references) reads schema references and
-[`epx schemas types`](/commands/schemas#epx-schemas-types) the entity types that have schemas.
+Reads custom schemas, the attribute sets that extend Emporix entities. TYPES lists the entity types a schema applies to and ATTRIBUTES counts its top-level attributes (`-o json` prints their definitions). [`epx schemas references`](/commands/schemas#epx-schemas-references) reads schema references and [`epx schemas types`](/commands/schemas#epx-schemas-types) the entity types that have schemas.
 
 No OAuth scope is needed.
 
@@ -132,10 +112,7 @@ Also takes the [global flags](/commands#global-flags).
 
 List schemas.
 
-Reads custom schemas, the attribute sets that extend Emporix entities. TYPES lists the
-entity types a schema applies to and ATTRIBUTES counts its top-level attributes (`-o json`
-prints their definitions). [`epx schemas references`](/commands/schemas#epx-schemas-references) reads schema references and
-[`epx schemas types`](/commands/schemas#epx-schemas-types) the entity types that have schemas.
+Reads custom schemas, the attribute sets that extend Emporix entities. TYPES lists the entity types a schema applies to and ATTRIBUTES counts its top-level attributes (`-o json` prints their definitions). [`epx schemas references`](/commands/schemas#epx-schemas-references) reads schema references and [`epx schemas types`](/commands/schemas#epx-schemas-types) the entity types that have schemas.
 
 No OAuth scope is needed.
 
@@ -166,16 +143,11 @@ Also takes the [global flags](/commands#global-flags).
 
 Parse a JSON schema file into a schema.
 
-Parses the JSON schema file of `--json-schema` into the schema that Emporix makes of it, and
-stores nothing: the table lists its attributes; `-o json` prints the schema, which
-[`epx schemas create`](/commands/schemas#epx-schemas-create) takes once its missing members, such as its name and types, are added,
-or, with `--id`, [`epx schemas update ID`](/commands/schemas#epx-schemas-update).
+Parses the JSON schema file of `--json-schema` into the schema that Emporix makes of it, and stores nothing: the table lists its attributes; `-o json` prints the schema, which [`epx schemas create`](/commands/schemas#epx-schemas-create) takes once its missing members, such as its name and types, are added, or, with `--id`, [`epx schemas update ID`](/commands/schemas#epx-schemas-update).
 
-Changes nothing: Emporix serves this read as POST with a multipart/form-data
-body, which the flags make.
+Changes nothing: Emporix serves this read as POST with a multipart/form-data body, which the flags make.
 
-Requires the schema.schema\_manage scope.
-Opt-in: epx requests a write-capable scope for a read only when given `--allow-write-scope`.
+Requires the schema.schema\_manage scope. Opt-in: epx requests a write-capable scope for a read only when given `--allow-write-scope`.
 
 **Command:** `epx schemas parse [flags]`
 
@@ -200,12 +172,9 @@ Also takes the [global flags](/commands#global-flags).
 
 Read, create, change and delete schema references.
 
-Reads schema references: schemas uploaded as a JSON schema file, for attribute types that
-schemas cannot define. TYPES lists the entity types a reference applies to; the file's
-URL is only in `-o json`.
+Reads schema references: schemas uploaded as a JSON schema file, for attribute types that schemas cannot define. TYPES lists the entity types a reference applies to; the file's URL is only in `-o json`.
 
-Its reads need no OAuth scope.
-Its writes require the schema.schema\_manage scope.
+Its reads need no OAuth scope. Its writes require the schema.schema\_manage scope.
 
 **Command:** `epx schemas references [flags]`, `epx schemas references [command]`
 
@@ -228,22 +197,11 @@ Its writes require the schema.schema\_manage scope.
 
 Create a schema reference.
 
-Creates a schema reference: the JSON schema file of `--json-schema` with the JSON in
-`--file`, which names the reference and the entity types it applies to, such as
-`{"name": {"en": "Specifications"}, "types": ["PRODUCT"]}`. It prints the id that Emporix answers
-with; one that exists already is a conflict.
-It sends both as a multipart/form-data body, the file as its file field.
-Name entity types by their ids, with \_, such as VENDOR\_LOCATION. A read of a reference shows that
-type as VENDOR.LOCATION; a write that sends it so makes Emporix answer reads of references
-with 500.
+Creates a schema reference: the JSON schema file of `--json-schema` with the JSON in `--file`, which names the reference and the entity types it applies to, such as `{"name": {"en": "Specifications"}, "types": ["PRODUCT"]}`. It prints the id that Emporix answers with; one that exists already is a conflict. It sends both as a multipart/form-data body, the file as its file field. Name entity types by their ids, with \_, such as VENDOR\_LOCATION. A read of a reference shows that type as VENDOR.LOCATION; a write that sends it so makes Emporix answer reads of references with 500.
 
-Localized text in the body is a map of translations, e.g. `{"en": "Acme", "de": "Acme"}`,
-as `-o json` of a read prints it, sent with Content-Language: \*. Emporix refuses a string in
-its place.
+Localized text in the body is a map of translations, e.g. `{"en": "Acme", "de": "Acme"}`, as `-o json` of a read prints it, sent with Content-Language: \*. Emporix refuses a string in its place.
 
-Changes data: on a terminal, epx asks before it sends POST. `--yes` sends without
-asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
-instead of sending it.
+Changes data: on a terminal, epx asks before it sends POST. `--yes` sends without asking (required without a terminal, or with `--file` -); `--dry-run` prints the request instead of sending it.
 
 Requires the schema.schema\_manage scope.
 
@@ -268,14 +226,9 @@ Also takes the [global flags](/commands#global-flags).
 
 Delete a schema reference.
 
-Deletes the schema reference ID. The JSON schema file that it holds stays
-where Emporix stored it.
-Emporix answers an unknown ID as a deleted one (204), so epx exits with 0.
+Deletes the schema reference ID. The JSON schema file that it holds stays where Emporix stored it. Emporix answers an unknown ID as a deleted one (204), so epx exits with 0.
 
-Deletes data, which cannot be undone.
-On a terminal, epx sends DELETE only once you type ID at its prompt.
-`--yes` sends without asking (required without a terminal);
-`--dry-run` prints the request instead of sending it.
+Deletes data, which cannot be undone. On a terminal, epx sends DELETE only once you type ID at its prompt. `--yes` sends without asking (required without a terminal); `--dry-run` prints the request instead of sending it.
 
 Requires the schema.schema\_manage scope.
 
@@ -296,9 +249,7 @@ Also takes the [global flags](/commands#global-flags).
 
 Show one reference.
 
-Reads schema references: schemas uploaded as a JSON schema file, for attribute types that
-schemas cannot define. TYPES lists the entity types a reference applies to; the file's
-URL is only in `-o json`.
+Reads schema references: schemas uploaded as a JSON schema file, for attribute types that schemas cannot define. TYPES lists the entity types a reference applies to; the file's URL is only in `-o json`.
 
 No OAuth scope is needed.
 
@@ -321,9 +272,7 @@ Also takes the [global flags](/commands#global-flags).
 
 List schema references.
 
-Reads schema references: schemas uploaded as a JSON schema file, for attribute types that
-schemas cannot define. TYPES lists the entity types a reference applies to; the file's
-URL is only in `-o json`.
+Reads schema references: schemas uploaded as a JSON schema file, for attribute types that schemas cannot define. TYPES lists the entity types a reference applies to; the file's URL is only in `-o json`.
 
 No OAuth scope is needed.
 
@@ -354,21 +303,11 @@ Also takes the [global flags](/commands#global-flags).
 
 Replace a schema reference.
 
-Replaces the schema reference ID: the JSON schema file of `--json-schema` with the JSON
-in `--file`, which names the reference, its types and, as metadata.version, the version that it
-replaces (VERSION in [`epx schemas references get ID`](/commands/schemas#epx-schemas-references-get)). An unknown ID is not found.
-It sends both as a multipart/form-data body, the file as its file field.
-Name entity types by their ids, with \_, such as VENDOR\_LOCATION. A read of a reference shows that
-type as VENDOR.LOCATION; a write that sends it so makes Emporix answer reads of references
-with 500.
+Replaces the schema reference ID: the JSON schema file of `--json-schema` with the JSON in `--file`, which names the reference, its types and, as metadata.version, the version that it replaces (VERSION in [`epx schemas references get ID`](/commands/schemas#epx-schemas-references-get)). An unknown ID is not found. It sends both as a multipart/form-data body, the file as its file field. Name entity types by their ids, with \_, such as VENDOR\_LOCATION. A read of a reference shows that type as VENDOR.LOCATION; a write that sends it so makes Emporix answer reads of references with 500.
 
-Localized text in the body is a map of translations, e.g. `{"en": "Acme", "de": "Acme"}`,
-as `-o json` of a read prints it, sent with Content-Language: \*. Emporix refuses a string in
-its place.
+Localized text in the body is a map of translations, e.g. `{"en": "Acme", "de": "Acme"}`, as `-o json` of a read prints it, sent with Content-Language: \*. Emporix refuses a string in its place.
 
-Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without
-asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
-instead of sending it.
+Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without asking (required without a terminal, or with `--file` -); `--dry-run` prints the request instead of sending it.
 
 Requires the schema.schema\_manage scope.
 
@@ -418,19 +357,11 @@ Also takes the [global flags](/commands#global-flags).
 
 Replace a schema.
 
-Replaces the schema ID with the JSON in `--file`: its name, types and attributes and, optionally,
-as metadata.version, the version that it replaces (VERSION in [`epx schemas get ID`](/commands/schemas#epx-schemas-get); an older
-one is a conflict). Every update, with a version or without, releases a new version of the
-schema. An unknown ID is not found.
-Name entity types by their ids, with \_, such as VENDOR\_LOCATION.
+Replaces the schema ID with the JSON in `--file`: its name, types and attributes and, optionally, as metadata.version, the version that it replaces (VERSION in [`epx schemas get ID`](/commands/schemas#epx-schemas-get); an older one is a conflict). Every update, with a version or without, releases a new version of the schema. An unknown ID is not found. Name entity types by their ids, with \_, such as VENDOR\_LOCATION.
 
-Localized text in the body is a map of translations, e.g. `{"en": "Acme", "de": "Acme"}`,
-as `-o json` of a read prints it, sent with Content-Language: \*. Emporix refuses a string in
-its place.
+Localized text in the body is a map of translations, e.g. `{"en": "Acme", "de": "Acme"}`, as `-o json` of a read prints it, sent with Content-Language: \*. Emporix refuses a string in its place.
 
-Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without
-asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
-instead of sending it.
+Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without asking (required without a terminal, or with `--file` -); `--dry-run` prints the request instead of sending it.
 
 Requires the schema.schema\_manage scope.
 
@@ -453,15 +384,9 @@ Also takes the [global flags](/commands#global-flags).
 
 Change the entity types of a schema.
 
-Sets the entity types of the schema ID to those of the JSON array in `--file`, such as
-`["PRODUCT", "ORDER"]`, in the version that `--version` names: the latest is VERSION in
-[`epx schemas get ID`](/commands/schemas#epx-schemas-get), and an earlier one may be named too. `--mode` ADD adds the types instead,
-REMOVE removes them. It releases no new version of the schema. An unknown ID is not found.
-Name entity types by their ids, with \_, such as VENDOR\_LOCATION.
+Sets the entity types of the schema ID to those of the JSON array in `--file`, such as `["PRODUCT", "ORDER"]`, in the version that `--version` names: the latest is VERSION in [`epx schemas get ID`](/commands/schemas#epx-schemas-get), and an earlier one may be named too. `--mode` ADD adds the types instead, REMOVE removes them. It releases no new version of the schema. An unknown ID is not found. Name entity types by their ids, with \_, such as VENDOR\_LOCATION.
 
-Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without
-asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
-instead of sending it.
+Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without asking (required without a terminal, or with `--file` -); `--dry-run` prints the request instead of sending it.
 
 Requires the schema.schema\_manage scope.
 

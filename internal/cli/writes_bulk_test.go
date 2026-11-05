@@ -176,27 +176,27 @@ func TestWriteHelpEndsWithItsScopes(t *testing.T) {
 		want []string
 	}{
 		{args: []string{"prices", "update"}, want: []string{
-			"or creates it with that id where none exists\n(an upsert; not with --partial",
+			"or creates it with that id where none exists (an upsert; not with --partial",
 			"PRICE_ID is the ID that `epx prices list --site S` shows.\n\nChanges data: on a terminal, epx asks " +
 				"before it sends PUT.", "instead of sending it.\n\nRequires the price.price_manage scope.\n\nUsage:",
 			"--partial         change only the fields", "sending it then needs --yes; required)"}},
 		{args: []string{"availability", "bulk-update"}, want: []string{"(an upsert).\n\n" +
-			"Emporix takes up to 200 items in one request (epx refuses more), carries out each on\nits own",
-			"(one that failed with 500, 502, 503 or 504\nmay have been carried out all the same)",
+			"Emporix takes up to 200 items in one request (epx refuses more), carries out each on its own",
+			"(one that failed with 500, 502, 503 or 504 may have been carried out all the same)",
 			"(for example 5 for a 409 Conflict, 4 for a 404), else 1.\n\n" +
 				"Changes data: on a terminal, epx asks before it sends PUT.",
 			"instead of sending it.\n\nRequires the availability.availability_manage scope.\n\nUsage:"}},
 		{args: []string{"prices", "bulk-create"}, want: []string{"a JSON array of prices", "Emporix takes up to 200 items"}},
-		{args: []string{"availability"}, want: []string{"Its reads need no OAuth scope.\nIts writes require the " +
+		{args: []string{"availability"}, want: []string{"Its reads need no OAuth scope. Its writes require the " +
 			"availability.availability_manage scope.\n\nUsage:"}},
 		{args: []string{"prices"}, want: []string{"Reads and changes prices.", "bulk-create and bulk-update many",
 			"bulk-create Create prices in bulk", "bulk-update Upsert prices in bulk",
-			"Its reads require different OAuth scopes; the help of each names them.\nIts writes require the " +
+			"Its reads require different OAuth scopes; the help of each names them. Its writes require the " +
 				"price.price_manage scope.\n\nUsage:"}},
 	} {
 		code, help, stderr := runCLI(t, nil, append(tt.args, "--help")...)
 		for _, want := range tt.want {
-			if code != ExitOK || !strings.Contains(help, want) {
+			if code != ExitOK || !containsFlat(help, want) {
 				t.Errorf("%q: exit %d, stderr %q, help %q; want %q", tt.args, code, stderr, help, want)
 			}
 		}

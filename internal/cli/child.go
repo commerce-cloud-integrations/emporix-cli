@@ -50,7 +50,7 @@ func childCommand[P, T any](a *app, parent resource[P], c child[T]) *cobra.Comma
 	return rd.command(a, &command{
 		use:   c.use + " " + parent.argument(),
 		short: c.short,
-		long:  c.long + "\n" + parent.argumentSentence(unknownFor(rd.scopes, cmp.Or(c.unknown, notFound))),
+		long:  joinSentences(c.long, parent.argumentSentence(unknownFor(rd.scopes, cmp.Or(c.unknown, notFound)))),
 		req:   c.listRequest(parent.path),
 		fetch: c.fetch,
 		ids:   argumentIDs{parent.argument(): parent.ids()},
@@ -152,7 +152,7 @@ func childSearchCommand[P, T any](a *app, parent resource[P], c child[T], short,
 	search.use = c.searchUse()
 	search.sub = c.collection() + "/" + collectionSearch
 	search.short = short
-	search.long = long + "\n" + searchSentence(childListLine(parent, c))
+	search.long = joinSentences(long, searchSentence(childListLine(parent, c)))
 	search.fetch = members.search(fields...)
 	return childCommand(a, parent, search)
 }
@@ -216,7 +216,7 @@ func childItemCommand[P, T any](a *app, parent resource[P], c child[T], item *ch
 	return c.reader(parent.scopes).command(a, &command{
 		use:     target.use,
 		short:   item.short,
-		long:    item.long + childItemHelp(parent, c, &target),
+		long:    joinSentences(item.long, childItemHelp(parent, c, &target)),
 		req:     request{path: target.path, query: c.query},
 		fetch:   single{items: itemShape(item.items)},
 		choices: item.choices,
@@ -267,7 +267,7 @@ func childItemHelp[P, T any](parent resource[P], c child[T], target *childTarget
 func childItemAnswerHelp[P, T any](parent resource[P], c child[T], target *childTarget, item unknownParent) string {
 	unknown := unknownFor(c.reader(parent.scopes).scopes, notFound)
 	arguments := itemAnswerSentence(target.args, target.columns, childListLine(parent, c), item)
-	return "\n" + parent.argumentSentence(unknown) + "\n" + arguments
+	return parent.argumentSentence(unknown) + " " + arguments
 }
 
 // childItemTarget returns how the command verb addresses one item of c below

@@ -67,9 +67,9 @@ func (o *settingOwner) writes() []*write {
 	return []*write{
 		{
 			use: strings.TrimSpace(o.prefix + "create " + o.client), short: "Create " + o.some,
-			long: "Creates " + o.settings + " from the JSON array of settings that --file gives,\n" +
-				"each with its key and value (and optionally secured, description, readOnly, restricted and\n" +
-				"schemaUrl), and prints the settings created. Emporix answers 409 Conflict (exit 5) when one of\n" +
+			long: "Creates " + o.settings + " from the JSON array of settings that --file gives, " +
+				"each with its key and value (and optionally secured, description, readOnly, restricted and " +
+				"schemaUrl), and prints the settings created. Emporix answers 409 Conflict (exit 5) when one of " +
 				"the keys exists already (the other keys of the request may be created then): change it with " +
 				epx + o.prefix + "update`.",
 			method: http.MethodPost, req: request{path: o.path}, scopes: scopes, body: &payload{},
@@ -77,16 +77,16 @@ func (o *settingOwner) writes() []*write {
 		},
 		{
 			use: o.prefix + "update " + o.client + "KEY", short: "Replace " + o.one,
-			long: "Replaces " + o.setting + " with the setting that --file gives, a JSON\n" +
-				"object with the key KEY (Emporix refuses another) and its value, and prints the setting. Give\n" +
-				"every member to keep, such as secured, description and version, as\n" +
-				epx + o.read + " -o json` shows them. Emporix refuses a key that was never set (404 Not Found,\n" +
+			long: "Replaces " + o.setting + " with the setting that --file gives, a JSON " +
+				"object with the key KEY (Emporix refuses another) and its value, and prints the setting. Give " +
+				"every member to keep, such as secured, description and version, as " +
+				epx + o.read + " -o json` shows them. Emporix refuses a key that was never set (404 Not Found, " +
 				"exit 4): create it with " + create + ".",
 			method: http.MethodPut, req: item, scopes: scopes, body: &payload{}, ids: o.ids(),
 		},
 		{
 			use: o.prefix + "delete " + o.client + "KEY", short: "Delete " + o.one, method: http.MethodDelete,
-			long: "Deletes " + o.setting + ", as\n" + epx + o.read + "` shows it; Emporix then applies its\n" +
+			long: "Deletes " + o.setting + ", as " + epx + o.read + "` shows it; Emporix then applies its " +
 				"default, if it has one. A key that is not set is not found (exit 4).",
 			req: item, scopes: scopes, body: noBody{}, ids: o.ids(),
 		},

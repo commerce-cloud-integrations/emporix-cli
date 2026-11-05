@@ -47,7 +47,7 @@ func TestParamScopesNameTheirFlag(t *testing.T) {
 	}).command(&app{})
 	flag := cmd.Flags().Lookup("check")
 	const usage = "whether to check, requesting a.a_read where it is true or not given: true or false"
-	const help = "\n\nWhere --check is true or not given, epx also requests\nthe a.a_read scope.\n\n" +
+	const help = "\n\nWhere --check is true or not given, epx also requests the a.a_read scope.\n\n" +
 		"Requires the a.a_manage scope."
 	if got := flag.Annotations[writeScopesAnnotation]; !slices.Equal(got, []string{"a.a_read"}) || flag.Usage != usage ||
 		!strings.HasSuffix(cmd.Long, help) {

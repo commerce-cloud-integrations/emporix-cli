@@ -6,16 +6,9 @@ description: "Read import configurations, runs and records; queue files, start a
 
 ## epx imports
 
-Reads the Import Service, which imports master data from external sources into Emporix:
-configurations, their streams (each imports one source, an entity or files, into an Emporix
-type), the file queue of a file-based stream, schedules and runs, the errors and diagnostics of
-a run, the records imported, statistics, job groups, health thresholds and the tenant's import
-limits. Emporix allows these reads only with importtool.import\_trigger, with which epx
-also queues files for a stream, and starts, retries, cancels and schedules runs.
+Reads the Import Service, which imports master data from external sources into Emporix: configurations, their streams (each imports one source, an entity or files, into an Emporix type), the file queue of a file-based stream, schedules and runs, the errors and diagnostics of a run, the records imported, statistics, job groups, health thresholds and the tenant's import limits. Emporix allows these reads only with importtool.import\_trigger, with which epx also queues files for a stream, and starts, retries, cancels and schedules runs.
 
-Its reads require the importtool.import\_trigger scope.
-Opt-in: epx requests a write-capable scope for a read only when given `--allow-write-scope`.
-Its writes require the importtool.import\_trigger scope.
+Its reads require the importtool.import\_trigger scope. Opt-in: epx requests a write-capable scope for a read only when given `--allow-write-scope`. Its writes require the importtool.import\_trigger scope.
 
 **Command:** `epx imports [flags]`, `epx imports [command]`
 
@@ -46,14 +39,9 @@ Its writes require the importtool.import\_trigger scope.
 
 Read import configurations; start and schedule their runs.
 
-Reads import configurations, each a set of streams that run together: ENABLED says
-whether it is active, VERSION counts its changes and MODIFIED is when it last changed. Its
-description, source connection, creator and health thresholds are only in `-o json`. The
-service returns the configurations whole, so they are read with one request.
+Reads import configurations, each a set of streams that run together: ENABLED says whether it is active, VERSION counts its changes and MODIFIED is when it last changed. Its description, source connection, creator and health thresholds are only in `-o json`. The service returns the configurations whole, so they are read with one request.
 
-Its reads require the importtool.import\_trigger scope.
-Opt-in: epx requests a write-capable scope for a read only when given `--allow-write-scope`.
-Its writes require the importtool.import\_trigger scope.
+Its reads require the importtool.import\_trigger scope. Opt-in: epx requests a write-capable scope for a read only when given `--allow-write-scope`. Its writes require the importtool.import\_trigger scope.
 
 **Command:** `epx imports configurations [flags]`, `epx imports configurations [command]`
 
@@ -84,14 +72,9 @@ Its writes require the importtool.import\_trigger scope.
 
 Delete the run schedule of a configuration.
 
-Deletes the schedule of the configuration CONFIGURATION\_ID, which then runs only when it
-is triggered. Emporix answers alike when there is no schedule, also of a configuration that
-was deleted.
+Deletes the schedule of the configuration CONFIGURATION\_ID, which then runs only when it is triggered. Emporix answers alike when there is no schedule, also of a configuration that was deleted.
 
-Deletes data, which cannot be undone.
-On a terminal, epx sends DELETE only once you type CONFIGURATION\_ID at its prompt.
-`--yes` sends without asking (required without a terminal);
-`--dry-run` prints the request instead of sending it.
+Deletes data, which cannot be undone. On a terminal, epx sends DELETE only once you type CONFIGURATION\_ID at its prompt. `--yes` sends without asking (required without a terminal); `--dry-run` prints the request instead of sending it.
 
 Requires the importtool.import\_trigger scope.
 
@@ -112,13 +95,9 @@ Also takes the [global flags](/commands#global-flags).
 
 Show one configuration.
 
-Reads import configurations, each a set of streams that run together: ENABLED says
-whether it is active, VERSION counts its changes and MODIFIED is when it last changed. Its
-description, source connection, creator and health thresholds are only in `-o json`. The
-service returns the configurations whole, so they are read with one request.
+Reads import configurations, each a set of streams that run together: ENABLED says whether it is active, VERSION counts its changes and MODIFIED is when it last changed. Its description, source connection, creator and health thresholds are only in `-o json`. The service returns the configurations whole, so they are read with one request.
 
-Requires the importtool.import\_trigger scope.
-Opt-in: epx requests a write-capable scope for a read only when given `--allow-write-scope`.
+Requires the importtool.import\_trigger scope. Opt-in: epx requests a write-capable scope for a read only when given `--allow-write-scope`.
 
 **Command:** `epx imports configurations get ID [flags]`
 
@@ -139,13 +118,9 @@ Also takes the [global flags](/commands#global-flags).
 
 List import configurations.
 
-Reads import configurations, each a set of streams that run together: ENABLED says
-whether it is active, VERSION counts its changes and MODIFIED is when it last changed. Its
-description, source connection, creator and health thresholds are only in `-o json`. The
-service returns the configurations whole, so they are read with one request.
+Reads import configurations, each a set of streams that run together: ENABLED says whether it is active, VERSION counts its changes and MODIFIED is when it last changed. Its description, source connection, creator and health thresholds are only in `-o json`. The service returns the configurations whole, so they are read with one request.
 
-Requires the importtool.import\_trigger scope.
-Opt-in: epx requests a write-capable scope for a read only when given `--allow-write-scope`.
+Requires the importtool.import\_trigger scope. Opt-in: epx requests a write-capable scope for a read only when given `--allow-write-scope`.
 
 **Command:** `epx imports configurations list [flags]`
 
@@ -170,19 +145,9 @@ Also takes the [global flags](/commands#global-flags).
 
 List the runs of a configuration.
 
-Reads the run history of an import configuration, most recent first; [`epx imports runs streams`](/commands/imports#epx-imports-runs-streams)
-shows the counters of each stream of a run.
-CONFIGURATION\_ID is the ID that [`epx imports configurations list`](/commands/imports#epx-imports-configurations-list) shows; an unknown one lists nothing.
-STATUS is QUEUED, RUNNING, RESUMABLE (interrupted; it resumes by itself), SUCCEEDED,
-PARTIAL (records failed or a limit skipped some, or a stream did not run), FAILED, CANCELLED
-or ABORTED (refused: nothing was read), MODE FULL or DELTA, followed by dry run for a run that
-wrote nothing, STARTED when the run was requested, FINISHED when it ended, READ the records it
-read and FAILED those that failed. `-o json` adds its message, queue position and other counters;
-READ is created + updated + skipped + deleted + failed + unresolvedParents + collapsed +
-embedded.
+Reads the run history of an import configuration, most recent first; [`epx imports runs streams`](/commands/imports#epx-imports-runs-streams) shows the counters of each stream of a run. CONFIGURATION\_ID is the ID that [`epx imports configurations list`](/commands/imports#epx-imports-configurations-list) shows; an unknown one lists nothing. STATUS is QUEUED, RUNNING, RESUMABLE (interrupted; it resumes by itself), SUCCEEDED, PARTIAL (records failed or a limit skipped some, or a stream did not run), FAILED, CANCELLED or ABORTED (refused: nothing was read), MODE FULL or DELTA, followed by dry run for a run that wrote nothing, STARTED when the run was requested, FINISHED when it ended, READ the records it read and FAILED those that failed. `-o json` adds its message, queue position and other counters; READ is created + updated + skipped + deleted + failed + unresolvedParents + collapsed + embedded.
 
-Requires the importtool.import\_trigger scope.
-Opt-in: epx requests a write-capable scope for a read only when given `--allow-write-scope`.
+Requires the importtool.import\_trigger scope. Opt-in: epx requests a write-capable scope for a read only when given `--allow-write-scope`.
 
 **Command:** `epx imports configurations runs CONFIGURATION_ID [flags]`
 
@@ -207,13 +172,9 @@ Also takes the [global flags](/commands#global-flags).
 
 Show the run schedule of a configuration.
 
-Reads when an import configuration runs by itself: CRON is a cron expression with six fields
-(seconds first), evaluated in TIME ZONE, and NEXT RUN when it fires next. A configuration
-without a schedule is not found (exit 4).
-CONFIGURATION\_ID is the ID that [`epx imports configurations list`](/commands/imports#epx-imports-configurations-list) shows; an unknown one is not found.
+Reads when an import configuration runs by itself: CRON is a cron expression with six fields (seconds first), evaluated in TIME ZONE, and NEXT RUN when it fires next. A configuration without a schedule is not found (exit 4). CONFIGURATION\_ID is the ID that [`epx imports configurations list`](/commands/imports#epx-imports-configurations-list) shows; an unknown one is not found.
 
-Requires the importtool.import\_trigger scope.
-Opt-in: epx requests a write-capable scope for a read only when given `--allow-write-scope`.
+Requires the importtool.import\_trigger scope. Opt-in: epx requests a write-capable scope for a read only when given `--allow-write-scope`.
 
 **Command:** `epx imports configurations schedule CONFIGURATION_ID [flags]`
 
@@ -234,13 +195,9 @@ Also takes the [global flags](/commands#global-flags).
 
 Show the order the streams of a configuration run in.
 
-Reads the order in which the streams of an import configuration run, which the service
-derives from their dependencies (also those their mappings add) and sequence: each STREAM
-runs after the streams that AFTER names.
-CONFIGURATION\_ID is the ID that [`epx imports configurations list`](/commands/imports#epx-imports-configurations-list) shows; an unknown one lists nothing.
+Reads the order in which the streams of an import configuration run, which the service derives from their dependencies (also those their mappings add) and sequence: each STREAM runs after the streams that AFTER names. CONFIGURATION\_ID is the ID that [`epx imports configurations list`](/commands/imports#epx-imports-configurations-list) shows; an unknown one lists nothing.
 
-Requires the importtool.import\_trigger scope.
-Opt-in: epx requests a write-capable scope for a read only when given `--allow-write-scope`.
+Requires the importtool.import\_trigger scope. Opt-in: epx requests a write-capable scope for a read only when given `--allow-write-scope`.
 
 **Command:** `epx imports configurations stream-order CONFIGURATION_ID [flags]`
 
@@ -261,19 +218,9 @@ Also takes the [global flags](/commands#global-flags).
 
 List the streams of a configuration.
 
-Reads the streams of an import configuration, in their sequence. The service returns them
-whole, so they are read with one request.
-CONFIGURATION\_ID is the ID that [`epx imports configurations list`](/commands/imports#epx-imports-configurations-list) shows; an unknown one lists nothing.
-SOURCE is the stream's source entity, followed for a file-based stream (which may name no
-entity) by SNAPSHOT files or INCREMENTAL files, read as [`epx imports streams files`](/commands/imports#epx-imports-streams-files) explains.
-TARGET TYPE is the Emporix type it writes to (a discriminator, in `-o json`, may route records
-to others), MODE STANDALONE, or COMPOSITE\_CHILD or COMPOSITE\_MERGE for a stream that adds to
-the records of another. A stream's source dataset (sourceDataset, such as the key column and
-the file format), connection, and delta, delete, write and health settings are only in
-`-o json`.
+Reads the streams of an import configuration, in their sequence. The service returns them whole, so they are read with one request. CONFIGURATION\_ID is the ID that [`epx imports configurations list`](/commands/imports#epx-imports-configurations-list) shows; an unknown one lists nothing. SOURCE is the stream's source entity, followed for a file-based stream (which may name no entity) by SNAPSHOT files or INCREMENTAL files, read as [`epx imports streams files`](/commands/imports#epx-imports-streams-files) explains. TARGET TYPE is the Emporix type it writes to (a discriminator, in `-o json`, may route records to others), MODE STANDALONE, or COMPOSITE\_CHILD or COMPOSITE\_MERGE for a stream that adds to the records of another. A stream's source dataset (sourceDataset, such as the key column and the file format), connection, and delta, delete, write and health settings are only in `-o json`.
 
-Requires the importtool.import\_trigger scope.
-Opt-in: epx requests a write-capable scope for a read only when given `--allow-write-scope`.
+Requires the importtool.import\_trigger scope. Opt-in: epx requests a write-capable scope for a read only when given `--allow-write-scope`.
 
 **Command:** `epx imports configurations streams CONFIGURATION_ID [flags]`
 
@@ -298,25 +245,11 @@ Also takes the [global flags](/commands#global-flags).
 
 Start an import run of a configuration.
 
-Starts an import run of the configuration CONFIGURATION\_ID, a DELTA run unless `--mode` FULL,
-and prints the run, QUEUED until a worker of the Import Service takes it. `--file` gives the
-body instead, e.g. `{"mode": "FULL", "dryRun": true, "streamIds": ["ID"]}` for a dry run of
-some streams, which maps and checks records but writes none. A configuration that has a run
-QUEUED, RUNNING or RESUMABLE already is a conflict (exit 5). Emporix answers a run that it
-refuses, e.g. of streams whose mappings were never published, as any other: the run ends
-ABORTED, which `--wait` reports.
-CONFIGURATION\_ID is the ID that [`epx imports configurations list`](/commands/imports#epx-imports-configurations-list) shows.
+Starts an import run of the configuration CONFIGURATION\_ID, a DELTA run unless `--mode` FULL, and prints the run, QUEUED until a worker of the Import Service takes it. `--file` gives the body instead, e.g. `{"mode": "FULL", "dryRun": true, "streamIds": ["ID"]}` for a dry run of some streams, which maps and checks records but writes none. A configuration that has a run QUEUED, RUNNING or RESUMABLE already is a conflict (exit 5). Emporix answers a run that it refuses, e.g. of streams whose mappings were never published, as any other: the run ends ABORTED, which `--wait` reports. CONFIGURATION\_ID is the ID that [`epx imports configurations list`](/commands/imports#epx-imports-configurations-list) shows.
 
-Changes data: on a terminal, epx asks before it sends POST. `--yes` sends without
-asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
-instead of sending it.
+Changes data: on a terminal, epx asks before it sends POST. `--yes` sends without asking (required without a terminal, or with `--file` -); `--dry-run` prints the request instead of sending it.
 
-`--wait` then reads the job again every `--poll-interval`, as [`epx imports runs get`](/commands/imports#epx-imports-runs-get)
-does and with the importtool.import\_trigger scope too, saying on standard error how its status
-changes, until it ends: then it prints the job and exits 0 if it ended SUCCEEDED, else 1.
-When `--wait-timeout` passes first, it prints the job as last read and exits 1; the job goes
-on. When a read of the job fails, it prints the job as last read and exits as that read
-does, e.g. 4 when the job is not found.
+`--wait` then reads the job again every `--poll-interval`, as [`epx imports runs get`](/commands/imports#epx-imports-runs-get) does and with the importtool.import\_trigger scope too, saying on standard error how its status changes, until it ends: then it prints the job and exits 0 if it ended SUCCEEDED, else 1. When `--wait-timeout` passes first, it prints the job as last read and exits 1; the job goes on. When a read of the job fails, it prints the job as last read and exits as that read does, e.g. 4 when the job is not found.
 
 Requires the importtool.import\_trigger scope.
 
@@ -353,18 +286,9 @@ epx imports configurations trigger 7c9e6679-7425-40de-944b-e07fc1f90ae7 --mode F
 
 Upsert the run schedule of a configuration.
 
-Sets when the configuration CONFIGURATION\_ID runs by itself, creating its schedule where
-it has none (an upsert), and prints the schedule. `--cron` is a Spring cron expression with
-six fields, seconds first, e.g. `"0 0 2 * * *"` for 02:00 every day (Emporix refuses one with
-five: 400 Bad Request), evaluated in `--timezone`, an IANA time zone such as Europe/Berlin.
-The schedule runs the configuration unless `--enabled=false`, which keeps it without running
-it: epx always sends enabled, as the schedule is replaced whole. `--file` gives the body
-instead.
-CONFIGURATION\_ID is the ID that [`epx imports configurations list`](/commands/imports#epx-imports-configurations-list) shows.
+Sets when the configuration CONFIGURATION\_ID runs by itself, creating its schedule where it has none (an upsert), and prints the schedule. `--cron` is a Spring cron expression with six fields, seconds first, e.g. `"0 0 2 * * *"` for 02:00 every day (Emporix refuses one with five: 400 Bad Request), evaluated in `--timezone`, an IANA time zone such as Europe/Berlin. The schedule runs the configuration unless `--enabled=false`, which keeps it without running it: epx always sends enabled, as the schedule is replaced whole. `--file` gives the body instead. CONFIGURATION\_ID is the ID that [`epx imports configurations list`](/commands/imports#epx-imports-configurations-list) shows.
 
-Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without
-asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
-instead of sending it.
+Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without asking (required without a terminal, or with `--file` -); `--dry-run` prints the request instead of sending it.
 
 Requires the importtool.import\_trigger scope.
 
@@ -399,14 +323,9 @@ epx imports configurations update-schedule 7c9e6679-7425-40de-944b-e07fc1f90ae7 
 
 Show the thresholds that rate the health of import streams.
 
-Reads the thresholds that rate an import stream GREEN, AMBER or RED in the statistics: the
-tenant's, and the built-in defaults that each one it leaves empty falls back to. A stream is
-AMBER or RED once this share of its records failed (FAILURE RATIO, 0 to 1) or its newest data
-is this many hours old (STALE HOURS), and RED after a failed run when FAILED RUN RED is true.
-A configuration or stream may set its own (in their `-o json`).
+Reads the thresholds that rate an import stream GREEN, AMBER or RED in the statistics: the tenant's, and the built-in defaults that each one it leaves empty falls back to. A stream is AMBER or RED once this share of its records failed (FAILURE RATIO, 0 to 1) or its newest data is this many hours old (STALE HOURS), and RED after a failed run when FAILED RUN RED is true. A configuration or stream may set its own (in their `-o json`).
 
-Requires the importtool.import\_trigger scope.
-Opt-in: epx requests a write-capable scope for a read only when given `--allow-write-scope`.
+Requires the importtool.import\_trigger scope. Opt-in: epx requests a write-capable scope for a read only when given `--allow-write-scope`.
 
 **Command:** `epx imports health-thresholds [flags]`
 
@@ -427,12 +346,9 @@ Also takes the [global flags](/commands#global-flags).
 
 List the job groups that scope the import statistics.
 
-Reads the tenant's job groups, named sets of import configurations that the import
-statistics can be scoped to: CONFIGURATIONS counts them (`-o json` lists their IDs). The
-service returns them whole, so they are read with one request.
+Reads the tenant's job groups, named sets of import configurations that the import statistics can be scoped to: CONFIGURATIONS counts them (`-o json` lists their IDs). The service returns them whole, so they are read with one request.
 
-Requires the importtool.import\_trigger scope.
-Opt-in: epx requests a write-capable scope for a read only when given `--allow-write-scope`.
+Requires the importtool.import\_trigger scope. Opt-in: epx requests a write-capable scope for a read only when given `--allow-write-scope`.
 
 **Command:** `epx imports job-groups [flags]`
 
@@ -457,13 +373,9 @@ Also takes the [global flags](/commands#global-flags).
 
 Show the tenant's import limits.
 
-Reads the tenant's import limits: a run writes at most MAX RECORDS PER TYPE records per
-target type (it skips the rest and ends PARTIAL), at most MAX CONCURRENT RUNS runs execute at
-once (others wait, QUEUED), and BATCH SIZE records are written per request, by WORKERS
-writers in parallel. Emporix support raises a limit on request.
+Reads the tenant's import limits: a run writes at most MAX RECORDS PER TYPE records per target type (it skips the rest and ends PARTIAL), at most MAX CONCURRENT RUNS runs execute at once (others wait, QUEUED), and BATCH SIZE records are written per request, by WORKERS writers in parallel. Emporix support raises a limit on request.
 
-Requires the importtool.import\_trigger scope.
-Opt-in: epx requests a write-capable scope for a read only when given `--allow-write-scope`.
+Requires the importtool.import\_trigger scope. Opt-in: epx requests a write-capable scope for a read only when given `--allow-write-scope`.
 
 **Command:** `epx imports license [flags]`
 
@@ -484,15 +396,9 @@ Also takes the [global flags](/commands#global-flags).
 
 List the imported records of a type.
 
-Reads the records imported into a target type: KEY is a record's natural key in the source,
-OUTCOME how it was last imported (UPSERTED, DELETED at the source, DELETED\_TARGET in
-Emporix, FAILED or DRY\_RUN) and IMPORTED when. `-o json` adds its stored fields, the Emporix
-id it was written under, and its configuration, stream and run. TYPE is one that
-[`epx imports types`](/commands/imports#epx-imports-types) shows; an unknown one lists nothing. To search keys or filter by
-outcome, one page at a time: [`epx api get /importtool/{tenant}/data/records -p type=TYPE -p search=TEXT -p outcome=FAILED --scope importtool.import_trigger`](/commands/api#epx-api-get).
+Reads the records imported into a target type: KEY is a record's natural key in the source, OUTCOME how it was last imported (UPSERTED, DELETED at the source, DELETED\_TARGET in Emporix, FAILED or DRY\_RUN) and IMPORTED when. `-o json` adds its stored fields, the Emporix id it was written under, and its configuration, stream and run. TYPE is one that [`epx imports types`](/commands/imports#epx-imports-types) shows; an unknown one lists nothing. To search keys or filter by outcome, one page at a time: [`epx api get /importtool/{tenant}/data/records -p type=TYPE -p search=TEXT -p outcome=FAILED --scope importtool.import_trigger`](/commands/api#epx-api-get).
 
-Requires the importtool.import\_trigger scope.
-Opt-in: epx requests a write-capable scope for a read only when given `--allow-write-scope`.
+Requires the importtool.import\_trigger scope. Opt-in: epx requests a write-capable scope for a read only when given `--allow-write-scope`.
 
 **Command:** `epx imports records TYPE [flags]`
 
@@ -517,12 +423,9 @@ Also takes the [global flags](/commands#global-flags).
 
 Read, cancel and retry import runs.
 
-Reads import runs; a run's ID is the one that [`epx imports configurations runs CONFIGURATION_ID`](/commands/imports#epx-imports-configurations-runs) shows.
-Its `-o json` adds the progress of each stream of the run, which [`epx imports runs streams`](/commands/imports#epx-imports-runs-streams) shows.
+Reads import runs; a run's ID is the one that [`epx imports configurations runs CONFIGURATION_ID`](/commands/imports#epx-imports-configurations-runs) shows. Its `-o json` adds the progress of each stream of the run, which [`epx imports runs streams`](/commands/imports#epx-imports-runs-streams) shows.
 
-Its reads require the importtool.import\_trigger scope.
-Opt-in: epx requests a write-capable scope for a read only when given `--allow-write-scope`.
-Its writes require the importtool.import\_trigger scope.
+Its reads require the importtool.import\_trigger scope. Opt-in: epx requests a write-capable scope for a read only when given `--allow-write-scope`. Its writes require the importtool.import\_trigger scope.
 
 **Command:** `epx imports runs [flags]`, `epx imports runs [command]`
 
@@ -547,16 +450,9 @@ Its writes require the importtool.import\_trigger scope.
 
 Cancel an import run.
 
-Asks the import run ID to stop, and prints what Emporix answers: whether it accepted the
-cancellation. A QUEUED run is CANCELLED at once; a running one stops when it can, or with
-`--force` at once, which also unblocks its configuration. A RESUMABLE run stops only with
-`--force`: without it, a conflict (exit 5). Emporix answers a run that is unknown or ended
-already with 409 Conflict and `"accepted"`: false, which epx prints as the answer (exit 5).
-ID is the one that [`epx imports configurations runs CONFIGURATION_ID`](/commands/imports#epx-imports-configurations-runs) shows.
+Asks the import run ID to stop, and prints what Emporix answers: whether it accepted the cancellation. A QUEUED run is CANCELLED at once; a running one stops when it can, or with `--force` at once, which also unblocks its configuration. A RESUMABLE run stops only with `--force`: without it, a conflict (exit 5). Emporix answers a run that is unknown or ended already with 409 Conflict and `"accepted"`: false, which epx prints as the answer (exit 5). ID is the one that [`epx imports configurations runs CONFIGURATION_ID`](/commands/imports#epx-imports-configurations-runs) shows.
 
-Changes data: on a terminal, epx asks before it sends POST. `--yes` sends without
-asking (required without a terminal); `--dry-run` prints the request
-instead of sending it.
+Changes data: on a terminal, epx asks before it sends POST. `--yes` sends without asking (required without a terminal); `--dry-run` prints the request instead of sending it.
 
 Requires the importtool.import\_trigger scope.
 
@@ -579,18 +475,9 @@ Also takes the [global flags](/commands#global-flags).
 
 List the source rows behind a run's repeated keys and missing parents.
 
-Reads the source rows behind a run's feed-quality counters, which do not fail a run: KIND is
-REPEATED\_KEY for a row whose KEY the run had already imported (OCCURRENCE times before), or
-UNRESOLVED\_PARENT for a child line whose parent was missing: LINKING FIELD and LINKING VALUE
-are the parent key it points at, WAITING LINES the lines waiting for that parent. The service
-keeps a capped sample per stream and kind; `-o json` says how many rows it recorded, its cap
-and whether a stream reached it (the run's counters give the totals). Every recorded row is
-read, up to 50000; a run that recorded more fails, and its rows are read per stream:
-[`epx api get /importtool/{tenant}/runs/RUN_ID/diagnostics -p streamId=ID -p limit=50000 --scope importtool.import_trigger`](/commands/api#epx-api-get).
-RUN\_ID is the ID that [`epx imports configurations runs CONFIGURATION_ID`](/commands/imports#epx-imports-configurations-runs) shows; an unknown one lists nothing.
+Reads the source rows behind a run's feed-quality counters, which do not fail a run: KIND is REPEATED\_KEY for a row whose KEY the run had already imported (OCCURRENCE times before), or UNRESOLVED\_PARENT for a child line whose parent was missing: LINKING FIELD and LINKING VALUE are the parent key it points at, WAITING LINES the lines waiting for that parent. The service keeps a capped sample per stream and kind; `-o json` says how many rows it recorded, its cap and whether a stream reached it (the run's counters give the totals). Every recorded row is read, up to 50000; a run that recorded more fails, and its rows are read per stream: [`epx api get /importtool/{tenant}/runs/RUN_ID/diagnostics -p streamId=ID -p limit=50000 --scope importtool.import_trigger`](/commands/api#epx-api-get). RUN\_ID is the ID that [`epx imports configurations runs CONFIGURATION_ID`](/commands/imports#epx-imports-configurations-runs) shows; an unknown one lists nothing.
 
-Requires the importtool.import\_trigger scope.
-Opt-in: epx requests a write-capable scope for a read only when given `--allow-write-scope`.
+Requires the importtool.import\_trigger scope. Opt-in: epx requests a write-capable scope for a read only when given `--allow-write-scope`.
 
 **Command:** `epx imports runs diagnostics RUN_ID [flags]`
 
@@ -611,23 +498,9 @@ Also takes the [global flags](/commands#global-flags).
 
 List the errors of a run.
 
-Reads the errors recorded during an import run: KEY is the natural key of the record that
-failed, STAGE the step it failed in (such as MAPPING or UPSERT), CODE what kind of error it is
-and MESSAGE what went wrong. Its stream and time are only in `-o json`. CODE is VALIDATION (the
-mapped record was invalid, so it was not written), NO\_KEY (its key column was empty), UPSERT
-(the target refused the write), CONFIGURATION (something to change in the import's own
-configuration, such as a missing base URL, refused credentials or an unknown path),
-EXTERNAL\_SYSTEM (another system answered with an error, such as the source with a 5xx), MERGE
-or PATCH\_EMBED (a composite merge or an embed into the parent failed), NO\_LINKING\_VALUE (a
-child row without the key of its parent), MARKER\_DELETE, TOMBSTONE\_DELETE or TOMBSTONE\_NO\_KEY
-(a delete the source marked could not be applied), REJECTED\_BY\_SOURCE (the source refused the
-record for its data, such as a file row with more array elements than the stream allows; the
-other records are imported) or STREAM\_ERROR (the stream failed as a whole). For CONFIGURATION
-and EXTERNAL\_SYSTEM, MESSAGE says what to change.
-RUN\_ID is the ID that [`epx imports configurations runs CONFIGURATION_ID`](/commands/imports#epx-imports-configurations-runs) shows; an unknown one lists nothing.
+Reads the errors recorded during an import run: KEY is the natural key of the record that failed, STAGE the step it failed in (such as MAPPING or UPSERT), CODE what kind of error it is and MESSAGE what went wrong. Its stream and time are only in `-o json`. CODE is VALIDATION (the mapped record was invalid, so it was not written), NO\_KEY (its key column was empty), UPSERT (the target refused the write), CONFIGURATION (something to change in the import's own configuration, such as a missing base URL, refused credentials or an unknown path), EXTERNAL\_SYSTEM (another system answered with an error, such as the source with a 5xx), MERGE or PATCH\_EMBED (a composite merge or an embed into the parent failed), NO\_LINKING\_VALUE (a child row without the key of its parent), MARKER\_DELETE, TOMBSTONE\_DELETE or TOMBSTONE\_NO\_KEY (a delete the source marked could not be applied), REJECTED\_BY\_SOURCE (the source refused the record for its data, such as a file row with more array elements than the stream allows; the other records are imported) or STREAM\_ERROR (the stream failed as a whole). For CONFIGURATION and EXTERNAL\_SYSTEM, MESSAGE says what to change. RUN\_ID is the ID that [`epx imports configurations runs CONFIGURATION_ID`](/commands/imports#epx-imports-configurations-runs) shows; an unknown one lists nothing.
 
-Requires the importtool.import\_trigger scope.
-Opt-in: epx requests a write-capable scope for a read only when given `--allow-write-scope`.
+Requires the importtool.import\_trigger scope. Opt-in: epx requests a write-capable scope for a read only when given `--allow-write-scope`.
 
 **Command:** `epx imports runs errors RUN_ID [flags]`
 
@@ -652,18 +525,9 @@ Also takes the [global flags](/commands#global-flags).
 
 Show one run.
 
-Reads import runs; a run's ID is the one that [`epx imports configurations runs CONFIGURATION_ID`](/commands/imports#epx-imports-configurations-runs) shows.
-Its `-o json` adds the progress of each stream of the run, which [`epx imports runs streams`](/commands/imports#epx-imports-runs-streams) shows.
-STATUS is QUEUED, RUNNING, RESUMABLE (interrupted; it resumes by itself), SUCCEEDED,
-PARTIAL (records failed or a limit skipped some, or a stream did not run), FAILED, CANCELLED
-or ABORTED (refused: nothing was read), MODE FULL or DELTA, followed by dry run for a run that
-wrote nothing, STARTED when the run was requested, FINISHED when it ended, READ the records it
-read and FAILED those that failed. `-o json` adds its message, queue position and other counters;
-READ is created + updated + skipped + deleted + failed + unresolvedParents + collapsed +
-embedded.
+Reads import runs; a run's ID is the one that [`epx imports configurations runs CONFIGURATION_ID`](/commands/imports#epx-imports-configurations-runs) shows. Its `-o json` adds the progress of each stream of the run, which [`epx imports runs streams`](/commands/imports#epx-imports-runs-streams) shows. STATUS is QUEUED, RUNNING, RESUMABLE (interrupted; it resumes by itself), SUCCEEDED, PARTIAL (records failed or a limit skipped some, or a stream did not run), FAILED, CANCELLED or ABORTED (refused: nothing was read), MODE FULL or DELTA, followed by dry run for a run that wrote nothing, STARTED when the run was requested, FINISHED when it ended, READ the records it read and FAILED those that failed. `-o json` adds its message, queue position and other counters; READ is created + updated + skipped + deleted + failed + unresolvedParents + collapsed + embedded.
 
-Requires the importtool.import\_trigger scope.
-Opt-in: epx requests a write-capable scope for a read only when given `--allow-write-scope`.
+Requires the importtool.import\_trigger scope. Opt-in: epx requests a write-capable scope for a read only when given `--allow-write-scope`.
 
 **Command:** `epx imports runs get ID [flags]`
 
@@ -684,21 +548,11 @@ Also takes the [global flags](/commands#global-flags).
 
 Run the failed records of an import run again.
 
-Starts a run that imports again only the records that failed in the import run ID, and
-prints it, QUEUED until a worker takes it; the run ID keeps its counters. A configuration
-that has a run QUEUED, RUNNING or RESUMABLE already is a conflict (exit 5).
-ID is the one that [`epx imports configurations runs CONFIGURATION_ID`](/commands/imports#epx-imports-configurations-runs) shows.
+Starts a run that imports again only the records that failed in the import run ID, and prints it, QUEUED until a worker takes it; the run ID keeps its counters. A configuration that has a run QUEUED, RUNNING or RESUMABLE already is a conflict (exit 5). ID is the one that [`epx imports configurations runs CONFIGURATION_ID`](/commands/imports#epx-imports-configurations-runs) shows.
 
-Changes data: on a terminal, epx asks before it sends POST. `--yes` sends without
-asking (required without a terminal); `--dry-run` prints the request
-instead of sending it.
+Changes data: on a terminal, epx asks before it sends POST. `--yes` sends without asking (required without a terminal); `--dry-run` prints the request instead of sending it.
 
-`--wait` then reads the job again every `--poll-interval`, as [`epx imports runs get`](/commands/imports#epx-imports-runs-get)
-does and with the importtool.import\_trigger scope too, saying on standard error how its status
-changes, until it ends: then it prints the job and exits 0 if it ended SUCCEEDED, else 1.
-When `--wait-timeout` passes first, it prints the job as last read and exits 1; the job goes
-on. When a read of the job fails, it prints the job as last read and exits as that read
-does, e.g. 4 when the job is not found.
+`--wait` then reads the job again every `--poll-interval`, as [`epx imports runs get`](/commands/imports#epx-imports-runs-get) does and with the importtool.import\_trigger scope too, saying on standard error how its status changes, until it ends: then it prints the job and exits 0 if it ended SUCCEEDED, else 1. When `--wait-timeout` passes first, it prints the job as last read and exits 1; the job goes on. When a read of the job fails, it prints the job as last read and exits as that read does, e.g. 4 when the job is not found.
 
 Requires the importtool.import\_trigger scope.
 
@@ -725,23 +579,9 @@ Also takes the [global flags](/commands#global-flags).
 
 Show the progress of each stream of a run.
 
-Reads the progress of each stream of an import run: STATUS is QUEUED, RUNNING, SUCCEEDED,
-PARTIAL, FAILED, SKIPPED or ABORTED (not run because of its configuration, such as mappings
-never published, as MESSAGE says). READ counts the records the stream read, and the counters
-after it add up to READ: CREATED, UPDATED, SKIPPED (unchanged, or not written because the
-tenant's limit of records per type was reached), DELETED, FAILED, UNRESOLVED (child records
-whose parent was not found; [`epx imports runs diagnostics`](/commands/imports#epx-imports-runs-diagnostics) lists those parents), COLLAPSED
-(rows that repeated a key of the same batch, merged before the write, the last one winning)
-and EMBEDDED (child records that their parent wrote inside its own record). A STREAM followed
-by sweep is the repair pass that read again the parents a child stream had not found, not a
-second stream. `-o json` adds duplicateKeys (rows whose key the run had imported already, which
-[`epx imports runs diagnostics`](/commands/imports#epx-imports-runs-diagnostics) lists too), capSkipped (whether the tenant's limit of records
-per type skipped records), keylessSeen (whether a record had no key: an error NO\_KEY) and the
-files a file-based stream read (filesRead, fileNames). A queued run lists nothing yet.
-RUN\_ID is the ID that [`epx imports configurations runs CONFIGURATION_ID`](/commands/imports#epx-imports-configurations-runs) shows; an unknown one is not found.
+Reads the progress of each stream of an import run: STATUS is QUEUED, RUNNING, SUCCEEDED, PARTIAL, FAILED, SKIPPED or ABORTED (not run because of its configuration, such as mappings never published, as MESSAGE says). READ counts the records the stream read, and the counters after it add up to READ: CREATED, UPDATED, SKIPPED (unchanged, or not written because the tenant's limit of records per type was reached), DELETED, FAILED, UNRESOLVED (child records whose parent was not found; [`epx imports runs diagnostics`](/commands/imports#epx-imports-runs-diagnostics) lists those parents), COLLAPSED (rows that repeated a key of the same batch, merged before the write, the last one winning) and EMBEDDED (child records that their parent wrote inside its own record). A STREAM followed by sweep is the repair pass that read again the parents a child stream had not found, not a second stream. `-o json` adds duplicateKeys (rows whose key the run had imported already, which [`epx imports runs diagnostics`](/commands/imports#epx-imports-runs-diagnostics) lists too), capSkipped (whether the tenant's limit of records per type skipped records), keylessSeen (whether a record had no key: an error NO\_KEY) and the files a file-based stream read (filesRead, fileNames). A queued run lists nothing yet. RUN\_ID is the ID that [`epx imports configurations runs CONFIGURATION_ID`](/commands/imports#epx-imports-configurations-runs) shows; an unknown one is not found.
 
-Requires the importtool.import\_trigger scope.
-Opt-in: epx requests a write-capable scope for a read only when given `--allow-write-scope`.
+Requires the importtool.import\_trigger scope. Opt-in: epx requests a write-capable scope for a read only when given `--allow-write-scope`.
 
 **Command:** `epx imports runs streams RUN_ID [flags]`
 
@@ -762,15 +602,9 @@ Also takes the [global flags](/commands#global-flags).
 
 Show the import statistics of the last 30 days.
 
-Reads the import statistics of the last 30 days for the whole tenant: RUNS counts the runs
-started, SUCCEEDED, PARTIAL, FAILED and CANCELLED how they ended, ACTIVE those queued or
-running now, and RECORDS READ and RECORDS FAILED the records. `-o json` adds the rates, a daily
-series, each stream's health, the failing streams, an error breakdown and the streams added
-or removed. Another window or scope, e.g. one configuration ([`epx imports job-groups`](/commands/imports#epx-imports-job-groups) lists
-sets of them): [`epx api get /importtool/{tenant}/stats -p configId=ID -p from=2026-09-01T00:00:00Z -p granularity=WEEK --scope importtool.import_trigger`](/commands/api#epx-api-get).
+Reads the import statistics of the last 30 days for the whole tenant: RUNS counts the runs started, SUCCEEDED, PARTIAL, FAILED and CANCELLED how they ended, ACTIVE those queued or running now, and RECORDS READ and RECORDS FAILED the records. `-o json` adds the rates, a daily series, each stream's health, the failing streams, an error breakdown and the streams added or removed. Another window or scope, e.g. one configuration ([`epx imports job-groups`](/commands/imports#epx-imports-job-groups) lists sets of them): [`epx api get /importtool/{tenant}/stats -p configId=ID -p from=2026-09-01T00:00:00Z -p granularity=WEEK --scope importtool.import_trigger`](/commands/api#epx-api-get).
 
-Requires the importtool.import\_trigger scope.
-Opt-in: epx requests a write-capable scope for a read only when given `--allow-write-scope`.
+Requires the importtool.import\_trigger scope. Opt-in: epx requests a write-capable scope for a read only when given `--allow-write-scope`.
 
 **Command:** `epx imports statistics [flags]`
 
@@ -791,14 +625,9 @@ Also takes the [global flags](/commands#global-flags).
 
 Read import streams and the records they imported; queue their files.
 
-Reads an import stream, which imports one source of a configuration, an entity or files,
-into an Emporix type. A stream's ID is the one that [`epx imports configurations streams CONFIGURATION_ID`](/commands/imports#epx-imports-configurations-streams) shows.
-[`epx imports streams files`](/commands/imports#epx-imports-streams-files) reads and changes the queue of the files that a file-based
-stream imports.
+Reads an import stream, which imports one source of a configuration, an entity or files, into an Emporix type. A stream's ID is the one that [`epx imports configurations streams CONFIGURATION_ID`](/commands/imports#epx-imports-configurations-streams) shows. [`epx imports streams files`](/commands/imports#epx-imports-streams-files) reads and changes the queue of the files that a file-based stream imports.
 
-Its reads require the importtool.import\_trigger scope.
-Opt-in: epx requests a write-capable scope for a read only when given `--allow-write-scope`.
-Its writes require the importtool.import\_trigger scope.
+Its reads require the importtool.import\_trigger scope. Opt-in: epx requests a write-capable scope for a read only when given `--allow-write-scope`. Its writes require the importtool.import\_trigger scope.
 
 **Command:** `epx imports streams [flags]`, `epx imports streams [command]`
 
@@ -817,20 +646,9 @@ Its writes require the importtool.import\_trigger scope.
 
 Read and change the files that a file-based stream imports.
 
-Reads the file queue of a file-based import stream: the files that it waits to import, in
-the order that its next run reads them, and those it dealt with; uploads a file to it, sets
-the order of the waiting files and removes one. Nothing is imported until a run starts
-([`epx imports configurations trigger`](/commands/imports#epx-imports-configurations-trigger)).
-A file-based stream reads its files by its fileMode, SNAPSHOT by default. A SNAPSHOT stream
-takes each file as the whole picture: its run reads only the most recently arrived waiting
-file and may report the older ones superseded, in their MESSAGE. An INCREMENTAL stream takes
-each file as a change set: its run reads them all, in load order, a later file's values
-winning on a key that an earlier one carries too. A stream without fileMode reads no files
-(SOURCE of [`epx imports streams get ID`](/commands/imports#epx-imports-streams-get) shows it).
+Reads the file queue of a file-based import stream: the files that it waits to import, in the order that its next run reads them, and those it dealt with; uploads a file to it, sets the order of the waiting files and removes one. Nothing is imported until a run starts ([`epx imports configurations trigger`](/commands/imports#epx-imports-configurations-trigger)). A file-based stream reads its files by its fileMode, SNAPSHOT by default. A SNAPSHOT stream takes each file as the whole picture: its run reads only the most recently arrived waiting file and may report the older ones superseded, in their MESSAGE. An INCREMENTAL stream takes each file as a change set: its run reads them all, in load order, a later file's values winning on a key that an earlier one carries too. A stream without fileMode reads no files (SOURCE of [`epx imports streams get ID`](/commands/imports#epx-imports-streams-get) shows it).
 
-Its reads require the importtool.import\_trigger scope.
-Opt-in: epx requests a write-capable scope for a read only when given `--allow-write-scope`.
-Its writes require the importtool.import\_trigger scope.
+Its reads require the importtool.import\_trigger scope. Opt-in: epx requests a write-capable scope for a read only when given `--allow-write-scope`. Its writes require the importtool.import\_trigger scope.
 
 **Command:** `epx imports streams files [flags]`, `epx imports streams files [command]`
 
@@ -853,16 +671,9 @@ Its writes require the importtool.import\_trigger scope.
 
 Remove a waiting file from a stream's queue.
 
-Removes the waiting file ID from the queue of the stream STREAM\_ID and deletes its
-content. Only a waiting file is removed: one that a run claimed or imported is a conflict
-(exit 5), as is any while the stream's job has a run in flight.
-STREAM\_ID is the ID that [`epx imports configurations streams CONFIGURATION_ID`](/commands/imports#epx-imports-configurations-streams) shows; an unknown one is not found.
-ID is the ID that [`epx imports streams files list STREAM_ID`](/commands/imports#epx-imports-streams-files-list) shows; an unknown one is not found.
+Removes the waiting file ID from the queue of the stream STREAM\_ID and deletes its content. Only a waiting file is removed: one that a run claimed or imported is a conflict (exit 5), as is any while the stream's job has a run in flight. STREAM\_ID is the ID that [`epx imports configurations streams CONFIGURATION_ID`](/commands/imports#epx-imports-configurations-streams) shows; an unknown one is not found. ID is the ID that [`epx imports streams files list STREAM_ID`](/commands/imports#epx-imports-streams-files-list) shows; an unknown one is not found.
 
-Deletes data, which cannot be undone.
-On a terminal, epx sends DELETE only once you type ID at its prompt.
-`--yes` sends without asking (required without a terminal);
-`--dry-run` prints the request instead of sending it.
+Deletes data, which cannot be undone. On a terminal, epx sends DELETE only once you type ID at its prompt. `--yes` sends without asking (required without a terminal); `--dry-run` prints the request instead of sending it.
 
 Requires the importtool.import\_trigger scope.
 
@@ -883,17 +694,9 @@ Also takes the [global flags](/commands#global-flags).
 
 Show the most bytes that an upload to a stream takes.
 
-Reads the largest file that the environment takes in [`epx imports streams files upload`](/commands/imports#epx-imports-streams-files-upload):
-MAX UPLOAD BYTES, which the API gateway in front of the Import Service sets where GATEWAY
-LIMITED is true (it refuses a larger file with its own 413 before the service sees it), and
-UPLOAD SUPPORTED, false where the environment has nowhere to store an uploaded file (an
-upload is then answered 503 Service Unavailable). A larger file can be published at an
-HTTP(S) URL that the stream's connection reads instead, a change that needs
-importtool.import\_manage, which epx does not request.
-STREAM\_ID is the ID that [`epx imports configurations streams CONFIGURATION_ID`](/commands/imports#epx-imports-configurations-streams) shows; an unknown one is not found.
+Reads the largest file that the environment takes in [`epx imports streams files upload`](/commands/imports#epx-imports-streams-files-upload): MAX UPLOAD BYTES, which the API gateway in front of the Import Service sets where GATEWAY LIMITED is true (it refuses a larger file with its own 413 before the service sees it), and UPLOAD SUPPORTED, false where the environment has nowhere to store an uploaded file (an upload is then answered 503 Service Unavailable). A larger file can be published at an HTTP(S) URL that the stream's connection reads instead, a change that needs importtool.import\_manage, which epx does not request. STREAM\_ID is the ID that [`epx imports configurations streams CONFIGURATION_ID`](/commands/imports#epx-imports-configurations-streams) shows; an unknown one is not found.
 
-Requires the importtool.import\_trigger scope.
-Opt-in: epx requests a write-capable scope for a read only when given `--allow-write-scope`.
+Requires the importtool.import\_trigger scope. Opt-in: epx requests a write-capable scope for a read only when given `--allow-write-scope`.
 
 **Command:** `epx imports streams files limits STREAM_ID [flags]`
 
@@ -914,26 +717,9 @@ Also takes the [global flags](/commands#global-flags).
 
 List the files that a stream waits to import and those it dealt with.
 
-Reads the file queue of a file-based stream. First come the files waiting, in the order
-that its next run reads them: LOAD ORDER is a file's place among all the files waiting,
-e.g. 1 of 3.
-A file-based stream reads its files by its fileMode, SNAPSHOT by default. A SNAPSHOT stream
-takes each file as the whole picture: its run reads only the most recently arrived waiting
-file and may report the older ones superseded, in their MESSAGE. An INCREMENTAL stream takes
-each file as a change set: its run reads them all, in load order, a later file's values
-winning on a key that an earlier one carries too. A stream without fileMode reads no files
-(SOURCE of [`epx imports streams get ID`](/commands/imports#epx-imports-streams-get) shows it).
-Emporix lists up to 2000 waiting files: where more wait, the last LOAD ORDER listed ends
-below the total, e.g. 2000 of 2500, and [`epx imports streams files order`](/commands/imports#epx-imports-streams-files-order) cannot reorder
-them. Then comes the history, newest first and without LOAD ORDER: up to `--history-limit`
-files that a run claimed (STATUS IN\_PROGRESS), read to the end (PROCESSED, also with
-records that failed, as MESSAGE says) or could not import (FAILED: it can be uploaded
-again). SIZE is in bytes, QUEUED when the file was uploaded, PROCESSED when its import
-ended and READ the records read from it. A file's load rank and run are only in `-o json`.
-STREAM\_ID is the ID that [`epx imports configurations streams CONFIGURATION_ID`](/commands/imports#epx-imports-configurations-streams) shows; an unknown one is not found.
+Reads the file queue of a file-based stream. First come the files waiting, in the order that its next run reads them: LOAD ORDER is a file's place among all the files waiting, e.g. 1 of 3. A file-based stream reads its files by its fileMode, SNAPSHOT by default. A SNAPSHOT stream takes each file as the whole picture: its run reads only the most recently arrived waiting file and may report the older ones superseded, in their MESSAGE. An INCREMENTAL stream takes each file as a change set: its run reads them all, in load order, a later file's values winning on a key that an earlier one carries too. A stream without fileMode reads no files (SOURCE of [`epx imports streams get ID`](/commands/imports#epx-imports-streams-get) shows it). Emporix lists up to 2000 waiting files: where more wait, the last LOAD ORDER listed ends below the total, e.g. 2000 of 2500, and [`epx imports streams files order`](/commands/imports#epx-imports-streams-files-order) cannot reorder them. Then comes the history, newest first and without LOAD ORDER: up to `--history-limit` files that a run claimed (STATUS IN\_PROGRESS), read to the end (PROCESSED, also with records that failed, as MESSAGE says) or could not import (FAILED: it can be uploaded again). SIZE is in bytes, QUEUED when the file was uploaded, PROCESSED when its import ended and READ the records read from it. A file's load rank and run are only in `-o json`. STREAM\_ID is the ID that [`epx imports configurations streams CONFIGURATION_ID`](/commands/imports#epx-imports-configurations-streams) shows; an unknown one is not found.
 
-Requires the importtool.import\_trigger scope.
-Opt-in: epx requests a write-capable scope for a read only when given `--allow-write-scope`.
+Requires the importtool.import\_trigger scope. Opt-in: epx requests a write-capable scope for a read only when given `--allow-write-scope`.
 
 **Command:** `epx imports streams files list STREAM_ID [flags]`
 
@@ -956,18 +742,9 @@ Also takes the [global flags](/commands#global-flags).
 
 Set the order in which a stream imports its waiting files.
 
-Sets the order in which the stream STREAM\_ID reads its waiting files: `--id` names each one,
-the first to load first, as [`epx imports streams files list STREAM_ID`](/commands/imports#epx-imports-streams-files-list) shows its ID;
-`--file` gives the JSON array of their ids instead. The order matters only for an INCREMENTAL
-stream, as that list says. Emporix takes every waiting file, no more and no fewer
-(otherwise 400 Bad Request, exit 1), and answers with the waiting files in their new order.
-A stream whose job has a run in flight, or with more waiting files than the list shows, is
-a conflict (exit 5).
-STREAM\_ID is the ID that [`epx imports configurations streams CONFIGURATION_ID`](/commands/imports#epx-imports-configurations-streams) shows; an unknown one is not found.
+Sets the order in which the stream STREAM\_ID reads its waiting files: `--id` names each one, the first to load first, as [`epx imports streams files list STREAM_ID`](/commands/imports#epx-imports-streams-files-list) shows its ID; `--file` gives the JSON array of their ids instead. The order matters only for an INCREMENTAL stream, as that list says. Emporix takes every waiting file, no more and no fewer (otherwise 400 Bad Request, exit 1), and answers with the waiting files in their new order. A stream whose job has a run in flight, or with more waiting files than the list shows, is a conflict (exit 5). STREAM\_ID is the ID that [`epx imports configurations streams CONFIGURATION_ID`](/commands/imports#epx-imports-configurations-streams) shows; an unknown one is not found.
 
-Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without
-asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
-instead of sending it.
+Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without asking (required without a terminal, or with `--file` -); `--dry-run` prints the request instead of sending it.
 
 Requires the importtool.import\_trigger scope.
 
@@ -998,30 +775,9 @@ epx imports streams files order 3fa85f64-5717-4562-b3fc-2c963f66afa6 --id 9b1deb
 
 Upload a file for a stream to import.
 
-Uploads the delimited file (CSV or a variant) that `--upload` names to the queue of the
-file-based stream STREAM\_ID, which imports it on its next run: nothing is imported now.
-The file's name is sent with it and tells Emporix a compression, such as .gz. Emporix
-answers with the file queued, whose id [`epx imports streams files order`](/commands/imports#epx-imports-streams-files-order) and
-[`epx imports streams files delete`](/commands/imports#epx-imports-streams-files-delete) take. Which waiting files a run reads depends on the
-stream's fileMode, as [`epx imports streams files list STREAM_ID`](/commands/imports#epx-imports-streams-files-list) says.
-Emporix knows a file by its content, whatever its name, and never imports it twice: content
-that the stream imported or queued already is a conflict (exit 5), as is an upload to a
-stream that reads no files or one that would replace content that a run in flight reads; a
-file that FAILED is taken again.
-epx sends a file of up to 30 MB including the form, and the environment may take less
-([`epx imports streams files limits`](/commands/imports#epx-imports-streams-files-limits)): Emporix answers a larger one with
-413 Request Entity Too Large (exit 1). A large file may need a longer `--timeout`, e.g.
-`--timeout` 5m, as it bounds the whole request.
-A 503 Service Unavailable (exit 1) comes from an environment that cannot store uploads
-(UPLOAD SUPPORTED false in [`epx imports streams files limits`](/commands/imports#epx-imports-streams-files-limits)), which queued nothing, or from
-a gateway that failed, after which the file may have been queued: check
-[`epx imports streams files list STREAM_ID`](/commands/imports#epx-imports-streams-files-list) before you send it again; if it was
-queued, a resend is a conflict (exit 5), not a second import.
-STREAM\_ID is the ID that [`epx imports configurations streams CONFIGURATION_ID`](/commands/imports#epx-imports-configurations-streams) shows; an unknown one is not found.
+Uploads the delimited file (CSV or a variant) that `--upload` names to the queue of the file-based stream STREAM\_ID, which imports it on its next run: nothing is imported now. The file's name is sent with it and tells Emporix a compression, such as .gz. Emporix answers with the file queued, whose id [`epx imports streams files order`](/commands/imports#epx-imports-streams-files-order) and [`epx imports streams files delete`](/commands/imports#epx-imports-streams-files-delete) take. Which waiting files a run reads depends on the stream's fileMode, as [`epx imports streams files list STREAM_ID`](/commands/imports#epx-imports-streams-files-list) says. Emporix knows a file by its content, whatever its name, and never imports it twice: content that the stream imported or queued already is a conflict (exit 5), as is an upload to a stream that reads no files or one that would replace content that a run in flight reads; a file that FAILED is taken again. epx sends a file of up to 30 MB including the form, and the environment may take less ([`epx imports streams files limits`](/commands/imports#epx-imports-streams-files-limits)): Emporix answers a larger one with 413 Request Entity Too Large (exit 1). A large file may need a longer `--timeout`, e.g. `--timeout` 5m, as it bounds the whole request. A 503 Service Unavailable (exit 1) comes from an environment that cannot store uploads (UPLOAD SUPPORTED false in [`epx imports streams files limits`](/commands/imports#epx-imports-streams-files-limits)), which queued nothing, or from a gateway that failed, after which the file may have been queued: check [`epx imports streams files list STREAM_ID`](/commands/imports#epx-imports-streams-files-list) before you send it again; if it was queued, a resend is a conflict (exit 5), not a second import. STREAM\_ID is the ID that [`epx imports configurations streams CONFIGURATION_ID`](/commands/imports#epx-imports-configurations-streams) shows; an unknown one is not found.
 
-Changes data: on a terminal, epx asks before it sends POST. `--yes` sends without
-asking (required without a terminal); `--dry-run` prints the request
-instead of sending it.
+Changes data: on a terminal, epx asks before it sends POST. `--yes` sends without asking (required without a terminal); `--dry-run` prints the request instead of sending it.
 
 Requires the importtool.import\_trigger scope.
 
@@ -1050,18 +806,9 @@ epx imports streams files upload 3fa85f64-5717-4562-b3fc-2c963f66afa6 --upload v
 
 Show one stream.
 
-Reads an import stream, which imports one source of a configuration, an entity or files,
-into an Emporix type. A stream's ID is the one that [`epx imports configurations streams CONFIGURATION_ID`](/commands/imports#epx-imports-configurations-streams) shows.
-SOURCE is the stream's source entity, followed for a file-based stream (which may name no
-entity) by SNAPSHOT files or INCREMENTAL files, read as [`epx imports streams files`](/commands/imports#epx-imports-streams-files) explains.
-TARGET TYPE is the Emporix type it writes to (a discriminator, in `-o json`, may route records
-to others), MODE STANDALONE, or COMPOSITE\_CHILD or COMPOSITE\_MERGE for a stream that adds to
-the records of another. A stream's source dataset (sourceDataset, such as the key column and
-the file format), connection, and delta, delete, write and health settings are only in
-`-o json`.
+Reads an import stream, which imports one source of a configuration, an entity or files, into an Emporix type. A stream's ID is the one that [`epx imports configurations streams CONFIGURATION_ID`](/commands/imports#epx-imports-configurations-streams) shows. SOURCE is the stream's source entity, followed for a file-based stream (which may name no entity) by SNAPSHOT files or INCREMENTAL files, read as [`epx imports streams files`](/commands/imports#epx-imports-streams-files) explains. TARGET TYPE is the Emporix type it writes to (a discriminator, in `-o json`, may route records to others), MODE STANDALONE, or COMPOSITE\_CHILD or COMPOSITE\_MERGE for a stream that adds to the records of another. A stream's source dataset (sourceDataset, such as the key column and the file format), connection, and delta, delete, write and health settings are only in `-o json`.
 
-Requires the importtool.import\_trigger scope.
-Opt-in: epx requests a write-capable scope for a read only when given `--allow-write-scope`.
+Requires the importtool.import\_trigger scope. Opt-in: epx requests a write-capable scope for a read only when given `--allow-write-scope`.
 
 **Command:** `epx imports streams get ID [flags]`
 
@@ -1082,11 +829,9 @@ Also takes the [global flags](/commands#global-flags).
 
 List the records a stream imported.
 
-Reads the records a stream imported, with the columns of [`epx imports records`](/commands/imports#epx-imports-records).
-STREAM\_ID is the ID that [`epx imports configurations streams CONFIGURATION_ID`](/commands/imports#epx-imports-configurations-streams) shows; an unknown one lists nothing.
+Reads the records a stream imported, with the columns of [`epx imports records`](/commands/imports#epx-imports-records). STREAM\_ID is the ID that [`epx imports configurations streams CONFIGURATION_ID`](/commands/imports#epx-imports-configurations-streams) shows; an unknown one lists nothing.
 
-Requires the importtool.import\_trigger scope.
-Opt-in: epx requests a write-capable scope for a read only when given `--allow-write-scope`.
+Requires the importtool.import\_trigger scope. Opt-in: epx requests a write-capable scope for a read only when given `--allow-write-scope`.
 
 **Command:** `epx imports streams records STREAM_ID [flags]`
 
@@ -1111,11 +856,9 @@ Also takes the [global flags](/commands#global-flags).
 
 List the types that hold imported records.
 
-Reads the target types that hold imported records ([`epx imports records`](/commands/imports#epx-imports-records) lists those of
-one). The service returns them whole, so they are read with one request.
+Reads the target types that hold imported records ([`epx imports records`](/commands/imports#epx-imports-records) lists those of one). The service returns them whole, so they are read with one request.
 
-Requires the importtool.import\_trigger scope.
-Opt-in: epx requests a write-capable scope for a read only when given `--allow-write-scope`.
+Requires the importtool.import\_trigger scope. Opt-in: epx requests a write-capable scope for a read only when given `--allow-write-scope`.
 
 **Command:** `epx imports types [flags]`
 

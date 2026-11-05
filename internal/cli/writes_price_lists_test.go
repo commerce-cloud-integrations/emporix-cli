@@ -272,7 +272,7 @@ func TestPriceWritesSayHowEmporixReadsThem(t *testing.T) {
 		{args: []string{"price-lists", "update"}, want: priceListLanguageHelp, without: contentLanguageHelp},
 		{args: []string{"price-models", "create"}, want: contentLanguageHelp, without: priceListLanguageHelp},
 		{args: []string{"price-lists", "prices", "bulk-delete"},
-			want:    "Emporix takes up to 200 items in one request (epx refuses more) and answers for\nall of them at once",
+			want:    "Emporix takes up to 200 items in one request (epx refuses more) and answers for all of them at once",
 			without: "the result of each"},
 		{args: []string{"price-models", "delete"},
 			want: "\n\n--force also requests the price.pricemodel_manage_admin scope.\n\n" +
@@ -281,7 +281,7 @@ func TestPriceWritesSayHowEmporixReadsThem(t *testing.T) {
 	} {
 		_, help, _ := runCLI(t, nil, append(tt.args, "--help")...)
 		long, _, _ := strings.Cut(help, "\n\nUsage:")
-		if !strings.Contains(long, tt.want) || strings.Contains(long, tt.without) {
+		if !containsFlat(long, tt.want) || containsFlat(long, tt.without) {
 			t.Errorf("%q: help %q; want %q, without %q", tt.args, long, tt.want, tt.without)
 		}
 	}

@@ -104,9 +104,9 @@ func productWriteCases() []writeCase {
 // recalculate names neither. The products group states the scopes of its
 // reads, with their opt-in, and those of its writes.
 func TestProductWritesStateTheirOptionalScopes(t *testing.T) {
-	const publish = "\n\n--allow-publish also requests the product.product_publish scope. Without it, Emporix\n" +
+	const publish = "\n\n--allow-publish also requests the product.product_publish scope. Without it, Emporix " +
 		"refuses a product that the write publishes (403 Forbidden, exit 3)."
-	const unpublish = "\n--allow-unpublish also requests the product.product_unpublish scope. Without it, Emporix\n" +
+	const unpublish = " --allow-unpublish also requests the product.product_unpublish scope. Without it, Emporix " +
 		"refuses a product that the write unpublishes (403 Forbidden, exit 3)."
 	const requires = "\n\nRequires the product.product_manage scope.\n\nUsage:"
 	const usage = "allow the write to publish products, which needs a scope of its own (requests " +
@@ -121,19 +121,19 @@ func TestProductWritesStateTheirOptionalScopes(t *testing.T) {
 			want = publish + unpublish + requires
 		}
 		code, help, _ := runCLI(t, nil, "products", tt.use, "--help")
-		if code != ExitOK || !strings.Contains(help, want) || !strings.Contains(help, usage) ||
-			strings.Contains(help, unpublish) != tt.unpublish {
+		if code != ExitOK || !containsFlat(help, want) || !containsFlat(help, usage) ||
+			containsFlat(help, unpublish) != tt.unpublish {
 			t.Errorf("products %s: exit %d, help:\n%s\nwant %q", tt.use, code, help, want)
 		}
 	}
 	code, help, _ := runCLI(t, nil, "products", "recalculate", "--help")
-	if code != ExitOK || strings.Contains(help, "--allow-") || !strings.Contains(help, "sending it."+requires) {
+	if code != ExitOK || containsFlat(help, "--allow-") || !containsFlat(help, "sending it."+requires) {
 		t.Errorf("products recalculate: exit %d, help:\n%s", code, help)
 	}
 	code, help, _ = runCLI(t, nil, "products", "--help")
-	const group = "Its reads require different OAuth scopes; the help of each names them.\n" + optInSentence +
-		"\nIts writes require the product.product_manage scope.\n\nUsage:"
-	if code != ExitOK || !strings.HasPrefix(help, "Reads and changes products.") || !strings.Contains(help, group) {
+	const group = "Its reads require different OAuth scopes; the help of each names them. " + optInSentence +
+		" Its writes require the product.product_manage scope.\n\nUsage:"
+	if code != ExitOK || !strings.HasPrefix(help, "Reads and changes products.") || !containsFlat(help, group) {
 		t.Errorf("products: exit %d, help:\n%s\nwant %q", code, help, group)
 	}
 }

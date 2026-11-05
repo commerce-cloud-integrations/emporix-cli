@@ -82,7 +82,7 @@ const (
 )
 
 // quoteSentence ends the help of the shipping quotes of a destination.
-const quoteSentence = "Emporix answers a destination or cart total that no method serves, or an\n" +
+const quoteSentence = "Emporix answers a destination or cart total that no method serves, or an " +
 	"unknown site, with 400 Bad Request (exit 1)."
 
 // The shipping calculations, which Emporix serves as POST without changing
@@ -105,9 +105,9 @@ func newShippingQuoteCommand(a *app) *cobra.Command {
 	return quote.command(a, &command{
 		use:   "quote",
 		short: "Calculate the shipping fee of each method to a destination",
-		long: "Calculates what each shipping method of a site's zones that ship to a destination costs for\n" +
-			"a cart total: one row per method, with its zone, its FEE and its shipping TAX CODE. With\n" +
-			"--customer, the fees of the customer's shipping group apply (`epx shipping customers`).\n" +
+		long: "Calculates what each shipping method of a site's zones that ship to a destination costs for " +
+			"a cart total: one row per method, with its zone, its FEE and its shipping TAX CODE. With " +
+			"--customer, the fees of the customer's shipping group apply (`epx shipping customers`). " +
 			quoteSentence,
 		req:   request{path: shippingPath("quote")},
 		fetch: bodyRead{method: http.MethodPost, body: destinationQuoteBody(), fetch: single{items: quoteMethods}},
@@ -132,8 +132,8 @@ func newShippingMinimumQuoteCommand(a *app) *cobra.Command {
 	return shippingFeeReader().command(a, &command{
 		use:   "quote-minimum",
 		short: "Calculate the lowest shipping fee to a destination",
-		long: "Calculates the lowest shipping fee of a site to a destination for a cart total, as a cart\n" +
-			"shows it before a delivery window is chosen. TAX CODE is the method's shipping tax code.\n" +
+		long: "Calculates the lowest shipping fee of a site to a destination for a cart total, as a cart " +
+			"shows it before a delivery window is chosen. TAX CODE is the method's shipping tax code. " +
 			quoteSentence,
 		req:   request{path: shippingPath("quote/minimum")},
 		fetch: bodyRead{method: http.MethodPost, body: destinationQuoteBody(), fetch: single{items: oneItem}},
@@ -147,9 +147,9 @@ func newShippingSlotQuoteCommand(a *app) *cobra.Command {
 	slot := shippingFeeReader().command(a, &command{
 		use:   "quote-slot",
 		short: "Calculate the shipping fee of a delivery time slot",
-		long: "Calculates the shipping fee of a delivery time slot for a cart total: --delivery-time and\n" +
-			"--slot are the IDs that `epx delivery-times list` and `epx delivery-times slots list` show.\n" +
-			"The destination is optional; --country and --postal-code go together. An unknown delivery\n" +
+		long: "Calculates the shipping fee of a delivery time slot for a cart total: --delivery-time and " +
+			"--slot are the IDs that `epx delivery-times list` and `epx delivery-times slots list` show. " +
+			"The destination is optional; --country and --postal-code go together. An unknown delivery " +
 			"time is not found (exit 4).",
 		req: request{path: shippingPath("quote/slot")},
 		fetch: bodyRead{method: http.MethodPost, body: objectBody(slices.Concat(cartFields(), destinationFields(),
@@ -172,9 +172,9 @@ func newFindSitesCommand(a *app) *cobra.Command {
 	return sites.command(a, &command{
 		use:   "find-sites",
 		short: "List the sites that ship to a postal code",
-		long: "Lists the sites with a shipping zone that ships to a postal code: ZONES lists the zones that\n" +
-			"Emporix returns with each site, and METHODS their shipping methods (-o json adds the\n" +
-			"zones' destinations and fees). Emporix matched no site without --country on the tenant\n" +
+		long: "Lists the sites with a shipping zone that ships to a postal code: ZONES lists the zones that " +
+			"Emporix returns with each site, and METHODS their shipping methods (-o json adds the " +
+			"zones' destinations and fees). Emporix matched no site without --country on the tenant " +
 			"tested.",
 		req: request{path: "/shipping/{tenant}/findSite"},
 		fetch: bodyRead{method: http.MethodPost, body: objectBody{

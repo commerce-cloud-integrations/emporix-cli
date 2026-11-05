@@ -6,14 +6,9 @@ description: "Read, create, update and delete products."
 
 ## epx products
 
-Reads and changes products. Reads find products published and unpublished (without the
-product.product\_read\_unpublished scope, Emporix would silently omit unpublished products).
-create, update and patch change one product, bulk-create and bulk-update up to 200,
-import any number in batches, each from `--file`; recalculate rebuilds variant trees; delete deletes one.
+Reads and changes products. Reads find products published and unpublished (without the product.product\_read\_unpublished scope, Emporix would silently omit unpublished products). create, update and patch change one product, bulk-create and bulk-update up to 200, import any number in batches, each from `--file`; recalculate rebuilds variant trees; delete deletes one.
 
-Its reads require different OAuth scopes; the help of each names them.
-Opt-in: epx requests a write-capable scope for a read only when given `--allow-write-scope`.
-Its writes require the product.product\_manage scope.
+Its reads require different OAuth scopes; the help of each names them. Opt-in: epx requests a write-capable scope for a read only when given `--allow-write-scope`. Its writes require the product.product\_manage scope.
 
 **Command:** `epx products [flags]`, `epx products [command]`
 
@@ -50,26 +45,15 @@ Its writes require the product.product\_manage scope.
 
 Create products in bulk.
 
-Creates the products in `--file`, a JSON array of products, each as create takes it.
-Emporix answers each product with its index, id, code (the HTTP status of the product, e.g.
-201) and status (e.g. CREATED), and a message where it failed.
+Creates the products in `--file`, a JSON array of products, each as create takes it. Emporix answers each product with its index, id, code (the HTTP status of the product, e.g. 201) and status (e.g. CREATED), and a message where it failed.
 
-Localized text in the body, such as a name, is a map of translations, e.g.
-`{"en": "gram", "de": "Gramm"}`, as `-o json` of a read prints it, or with `--content-language`
-LANGUAGE a string in that language, e.g. `"gram"` with `--content-language` en.
+Localized text in the body, such as a name, is a map of translations, e.g. `{"en": "gram", "de": "Gramm"}`, as `-o json` of a read prints it, or with `--content-language` LANGUAGE a string in that language, e.g. `"gram"` with `--content-language` en.
 
-Emporix takes up to 200 items in one request (epx refuses more), carries out each on
-its own and answers with the result of each: when one failed, epx prints the response,
-lists the items that failed on standard error (one that failed with 500, 502, 503 or 504
-may have been carried out all the same) and exits with the code that their failures
-share (for example 5 for a 409 Conflict, 4 for a 404), else 1.
+Emporix takes up to 200 items in one request (epx refuses more), carries out each on its own and answers with the result of each: when one failed, epx prints the response, lists the items that failed on standard error (one that failed with 500, 502, 503 or 504 may have been carried out all the same) and exits with the code that their failures share (for example 5 for a 409 Conflict, 4 for a 404), else 1.
 
-Changes data: on a terminal, epx asks before it sends POST. `--yes` sends without
-asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
-instead of sending it.
+Changes data: on a terminal, epx asks before it sends POST. `--yes` sends without asking (required without a terminal, or with `--file` -); `--dry-run` prints the request instead of sending it.
 
-`--allow-publish` also requests the product.product\_publish scope. Without it, Emporix
-refuses a product that the write publishes (403 Forbidden, exit 3).
+`--allow-publish` also requests the product.product\_publish scope. Without it, Emporix refuses a product that the write publishes (403 Forbidden, exit 3).
 
 Requires the product.product\_manage scope.
 
@@ -102,29 +86,15 @@ Also takes the [global flags](/commands#global-flags).
 
 Upsert products in bulk.
 
-Upserts the products in `--file`, a JSON array of products, each complete and with its id, as
-update takes it. import sends more than 200 in batches.
-Emporix answers each product with its index, id, code (the HTTP status of the product, e.g.
-201) and status (e.g. CREATED), and a message where it failed.
+Upserts the products in `--file`, a JSON array of products, each complete and with its id, as update takes it. import sends more than 200 in batches. Emporix answers each product with its index, id, code (the HTTP status of the product, e.g. 201) and status (e.g. CREATED), and a message where it failed.
 
-Localized text in the body, such as a name, is a map of translations, e.g.
-`{"en": "gram", "de": "Gramm"}`, as `-o json` of a read prints it, or with `--content-language`
-LANGUAGE a string in that language, e.g. `"gram"` with `--content-language` en.
+Localized text in the body, such as a name, is a map of translations, e.g. `{"en": "gram", "de": "Gramm"}`, as `-o json` of a read prints it, or with `--content-language` LANGUAGE a string in that language, e.g. `"gram"` with `--content-language` en.
 
-Emporix takes up to 200 items in one request (epx refuses more), carries out each on
-its own and answers with the result of each: when one failed, epx prints the response,
-lists the items that failed on standard error (one that failed with 500, 502, 503 or 504
-may have been carried out all the same) and exits with the code that their failures
-share (for example 5 for a 409 Conflict, 4 for a 404), else 1.
+Emporix takes up to 200 items in one request (epx refuses more), carries out each on its own and answers with the result of each: when one failed, epx prints the response, lists the items that failed on standard error (one that failed with 500, 502, 503 or 504 may have been carried out all the same) and exits with the code that their failures share (for example 5 for a 409 Conflict, 4 for a 404), else 1.
 
-Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without
-asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
-instead of sending it.
+Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without asking (required without a terminal, or with `--file` -); `--dry-run` prints the request instead of sending it.
 
-`--allow-publish` also requests the product.product\_publish scope. Without it, Emporix
-refuses a product that the write publishes (403 Forbidden, exit 3).
-`--allow-unpublish` also requests the product.product\_unpublish scope. Without it, Emporix
-refuses a product that the write unpublishes (403 Forbidden, exit 3).
+`--allow-publish` also requests the product.product\_publish scope. Without it, Emporix refuses a product that the write publishes (403 Forbidden, exit 3). `--allow-unpublish` also requests the product.product\_unpublish scope. Without it, Emporix refuses a product that the write unpublishes (403 Forbidden, exit 3).
 
 Requires the product.product\_manage scope.
 
@@ -159,20 +129,13 @@ Also takes the [global flags](/commands#global-flags).
 
 Create a product.
 
-Creates the product in the JSON object of `--file`, as the Product Service takes it (without an
-id, Emporix makes one), and prints its id. Emporix refuses it as a conflict (exit 5) when a
-product has its id or code.
+Creates the product in the JSON object of `--file`, as the Product Service takes it (without an id, Emporix makes one), and prints its id. Emporix refuses it as a conflict (exit 5) when a product has its id or code.
 
-Localized text in the body, such as a name, is a map of translations, e.g.
-`{"en": "gram", "de": "Gramm"}`, as `-o json` of a read prints it, or with `--content-language`
-LANGUAGE a string in that language, e.g. `"gram"` with `--content-language` en.
+Localized text in the body, such as a name, is a map of translations, e.g. `{"en": "gram", "de": "Gramm"}`, as `-o json` of a read prints it, or with `--content-language` LANGUAGE a string in that language, e.g. `"gram"` with `--content-language` en.
 
-Changes data: on a terminal, epx asks before it sends POST. `--yes` sends without
-asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
-instead of sending it.
+Changes data: on a terminal, epx asks before it sends POST. `--yes` sends without asking (required without a terminal, or with `--file` -); `--dry-run` prints the request instead of sending it.
 
-`--allow-publish` also requests the product.product\_publish scope. Without it, Emporix
-refuses a product that the write publishes (403 Forbidden, exit 3).
+`--allow-publish` also requests the product.product\_publish scope. Without it, Emporix refuses a product that the write publishes (403 Forbidden, exit 3).
 
 Requires the product.product\_manage scope.
 
@@ -205,16 +168,9 @@ Also takes the [global flags](/commands#global-flags).
 
 Delete a product.
 
-Deletes the product ID. A parent variant product (PARENT\_VARIANT, or DYNAMIC\_VARIANT with
-variants below it) is deleted only with `--force`, with every variant below it
-(without it, Emporix answers 400 Bad Request, exit 1). An unknown ID is no error: Emporix
-answers as for a deleted product.
+Deletes the product ID. A parent variant product (PARENT\_VARIANT, or DYNAMIC\_VARIANT with variants below it) is deleted only with `--force`, with every variant below it (without it, Emporix answers 400 Bad Request, exit 1). An unknown ID is no error: Emporix answers as for a deleted product.
 
-Deletes data, which cannot be undone.
-With `--force`, it deletes the product and every variant below it with one request.
-On a terminal, epx sends DELETE only once you type ID at its prompt.
-`--yes` sends without asking (required without a terminal);
-`--dry-run` prints the request instead of sending it.
+Deletes data, which cannot be undone. With `--force`, it deletes the product and every variant below it with one request. On a terminal, epx sends DELETE only once you type ID at its prompt. `--yes` sends without asking (required without a terminal); `--dry-run` prints the request instead of sending it.
 
 Requires the product.product\_manage scope.
 
@@ -237,22 +193,11 @@ Also takes the [global flags](/commands#global-flags).
 
 Show one product.
 
-Reads products, published and unpublished (without the product.product\_read\_unpublished
-scope, Emporix would silently omit unpublished products).
+Reads products, published and unpublished (without the product.product\_read\_unpublished scope, Emporix would silently omit unpublished products).
 
-Where a mixin's schema is site-aware, an item may hold, besides the mixin NAME, an overlay
-for a site, NAME\_\_SITE, with the values that differ there. `--mixin-site` SITE sends SITE as
-the emporix-site header: Emporix then merges the overlay of SITE into NAME (nested objects
-member by member; arrays and other values are replaced, not merged; a null leaves the
-base value) and leaves out every overlay. A site without an overlay, or one the tenant
-lacks (codes are case-sensitive; epx does not check them), gets NAME as stored. Without
-`--mixin-site`, mixins and overlays are read as stored, whatever the default site of the
-profile. Tables leave mixins (attribute values) out; `-o json` and `-o yaml` print them, as
-`--stream` does on a list.
+Where a mixin's schema is site-aware, an item may hold, besides the mixin NAME, an overlay for a site, NAME\_\_SITE, with the values that differ there. `--mixin-site` SITE sends SITE as the emporix-site header: Emporix then merges the overlay of SITE into NAME (nested objects member by member; arrays and other values are replaced, not merged; a null leaves the base value) and leaves out every overlay. A site without an overlay, or one the tenant lacks (codes are case-sensitive; epx does not check them), gets NAME as stored. Without `--mixin-site`, mixins and overlays are read as stored, whatever the default site of the profile. Tables leave mixins (attribute values) out; `-o json` and `-o yaml` print them, as `--stream` does on a list.
 
-A merged item is that site's view, not the item as stored. Do not write it back with
-update, bulk-update or (products) import, which replace whole items and would delete every
-overlay, nor build a patch from it: NAME would take the site's values.
+A merged item is that site's view, not the item as stored. Do not write it back with update, bulk-update or (products) import, which replace whole items and would delete every overlay, nor build a patch from it: NAME would take the site's values.
 
 Requires the product.product\_read\_unpublished scope.
 
@@ -277,32 +222,15 @@ Also takes the [global flags](/commands#global-flags).
 
 Upsert the products of a file in batches.
 
-Upserts the products in `--file`, a JSON array of any number of products, each complete and
-with its id as update takes it, as bulk-update does up to 200. To resume an import that
-stopped, send the products from the item that its error names: a product sent again is
-upserted again, but one whose metadata.version the import changed is a conflict.
-Emporix answers each product with its index, id, code (the HTTP status of the product, e.g.
-201) and status (e.g. CREATED), and a message where it failed.
+Upserts the products in `--file`, a JSON array of any number of products, each complete and with its id as update takes it, as bulk-update does up to 200. To resume an import that stopped, send the products from the item that its error names: a product sent again is upserted again, but one whose metadata.version the import changed is a conflict. Emporix answers each product with its index, id, code (the HTTP status of the product, e.g. 201) and status (e.g. CREATED), and a message where it failed.
 
-Localized text in the body, such as a name, is a map of translations, e.g.
-`{"en": "gram", "de": "Gramm"}`, as `-o json` of a read prints it, or with `--content-language`
-LANGUAGE a string in that language, e.g. `"gram"` with `--content-language` en.
+Localized text in the body, such as a name, is a map of translations, e.g. `{"en": "gram", "de": "Gramm"}`, as `-o json` of a read prints it, or with `--content-language` LANGUAGE a string in that language, e.g. `"gram"` with `--content-language` en.
 
-epx sends the items in requests of up to 200, in order, confirmed once, and stops at a
-request that fails as a whole, sending none after it. Emporix carries out each on
-its own and answers with the result of each: when one failed, epx prints the response,
-lists the items that failed on standard error (one that failed with 500, 502, 503 or 504
-may have been carried out all the same) and exits with the code that their failures
-share (for example 5 for a 409 Conflict, 4 for a 404), else 1.
+epx sends the items in requests of up to 200, in order, confirmed once, and stops at a request that fails as a whole, sending none after it. Emporix carries out each on its own and answers with the result of each: when one failed, epx prints the response, lists the items that failed on standard error (one that failed with 500, 502, 503 or 504 may have been carried out all the same) and exits with the code that their failures share (for example 5 for a 409 Conflict, 4 for a 404), else 1.
 
-Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without
-asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
-instead of sending it.
+Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without asking (required without a terminal, or with `--file` -); `--dry-run` prints the request instead of sending it.
 
-`--allow-publish` also requests the product.product\_publish scope. Without it, Emporix
-refuses a product that the write publishes (403 Forbidden, exit 3).
-`--allow-unpublish` also requests the product.product\_unpublish scope. Without it, Emporix
-refuses a product that the write unpublishes (403 Forbidden, exit 3).
+`--allow-publish` also requests the product.product\_publish scope. Without it, Emporix refuses a product that the write publishes (403 Forbidden, exit 3). `--allow-unpublish` also requests the product.product\_unpublish scope. Without it, Emporix refuses a product that the write unpublishes (403 Forbidden, exit 3).
 
 Requires the product.product\_manage scope.
 
@@ -337,22 +265,11 @@ Also takes the [global flags](/commands#global-flags).
 
 List products.
 
-Reads products, published and unpublished (without the product.product\_read\_unpublished
-scope, Emporix would silently omit unpublished products).
+Reads products, published and unpublished (without the product.product\_read\_unpublished scope, Emporix would silently omit unpublished products).
 
-Where a mixin's schema is site-aware, an item may hold, besides the mixin NAME, an overlay
-for a site, NAME\_\_SITE, with the values that differ there. `--mixin-site` SITE sends SITE as
-the emporix-site header: Emporix then merges the overlay of SITE into NAME (nested objects
-member by member; arrays and other values are replaced, not merged; a null leaves the
-base value) and leaves out every overlay. A site without an overlay, or one the tenant
-lacks (codes are case-sensitive; epx does not check them), gets NAME as stored. Without
-`--mixin-site`, mixins and overlays are read as stored, whatever the default site of the
-profile. Tables leave mixins (attribute values) out; `-o json` and `-o yaml` print them, as
-`--stream` does on a list.
+Where a mixin's schema is site-aware, an item may hold, besides the mixin NAME, an overlay for a site, NAME\_\_SITE, with the values that differ there. `--mixin-site` SITE sends SITE as the emporix-site header: Emporix then merges the overlay of SITE into NAME (nested objects member by member; arrays and other values are replaced, not merged; a null leaves the base value) and leaves out every overlay. A site without an overlay, or one the tenant lacks (codes are case-sensitive; epx does not check them), gets NAME as stored. Without `--mixin-site`, mixins and overlays are read as stored, whatever the default site of the profile. Tables leave mixins (attribute values) out; `-o json` and `-o yaml` print them, as `--stream` does on a list.
 
-A merged item is that site's view, not the item as stored. Do not write it back with
-update, bulk-update or (products) import, which replace whole items and would delete every
-overlay, nor build a patch from it: NAME would take the site's values.
+A merged item is that site's view, not the item as stored. Do not write it back with update, bulk-update or (products) import, which replace whole items and would delete every overlay, nor build a patch from it: NAME would take the site's values.
 
 Requires the product.product\_read\_unpublished scope.
 
@@ -385,23 +302,13 @@ Also takes the [global flags](/commands#global-flags).
 
 Change members of a product.
 
-Changes the members of product ID that the JSON object of `--file` names; the others stay,
-and mixins are merged member by member (update removes a mixin).
-Emporix refuses it as a conflict (exit 5) when another product has its code or, given
-metadata.version, when the product changed since that version.
+Changes the members of product ID that the JSON object of `--file` names; the others stay, and mixins are merged member by member (update removes a mixin). Emporix refuses it as a conflict (exit 5) when another product has its code or, given metadata.version, when the product changed since that version.
 
-Localized text in the body, such as a name, is a map of translations, e.g.
-`{"en": "gram", "de": "Gramm"}`, as `-o json` of a read prints it, or with `--content-language`
-LANGUAGE a string in that language, e.g. `"gram"` with `--content-language` en.
+Localized text in the body, such as a name, is a map of translations, e.g. `{"en": "gram", "de": "Gramm"}`, as `-o json` of a read prints it, or with `--content-language` LANGUAGE a string in that language, e.g. `"gram"` with `--content-language` en.
 
-Changes data: on a terminal, epx asks before it sends PATCH. `--yes` sends without
-asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
-instead of sending it.
+Changes data: on a terminal, epx asks before it sends PATCH. `--yes` sends without asking (required without a terminal, or with `--file` -); `--dry-run` prints the request instead of sending it.
 
-`--allow-publish` also requests the product.product\_publish scope. Without it, Emporix
-refuses a product that the write publishes (403 Forbidden, exit 3).
-`--allow-unpublish` also requests the product.product\_unpublish scope. Without it, Emporix
-refuses a product that the write unpublishes (403 Forbidden, exit 3).
+`--allow-publish` also requests the product.product\_publish scope. Without it, Emporix refuses a product that the write publishes (403 Forbidden, exit 3). `--allow-unpublish` also requests the product.product\_unpublish scope. Without it, Emporix refuses a product that the write unpublishes (403 Forbidden, exit 3).
 
 Requires the product.product\_manage scope.
 
@@ -436,18 +343,9 @@ Also takes the [global flags](/commands#global-flags).
 
 Recalculate the variant trees of dynamic variant products.
 
-Starts the recalculation of the variant trees of DYNAMIC\_VARIANT products once their products
-are written in bulk (a write of one product updates its tree at once). Emporix finds the root
-product of each ID, at any level, and starts one job per root, which
-[`epx products recalculation-jobs list`](/commands/products#epx-products-recalculation-jobs-list) shows (jobs). An ID that is unknown, is not of a
-DYNAMIC\_VARIANT product, or whose root has a job pending or processing is skipped
-(skippedProductIds, left out when none is); where every ID is, the answer has no jobs.
-Takes up to 1000 IDs, given with `--product` or in the JSON object of `--file`
-(`{"productIds": [...]}`).
+Starts the recalculation of the variant trees of DYNAMIC\_VARIANT products once their products are written in bulk (a write of one product updates its tree at once). Emporix finds the root product of each ID, at any level, and starts one job per root, which [`epx products recalculation-jobs list`](/commands/products#epx-products-recalculation-jobs-list) shows (jobs). An ID that is unknown, is not of a DYNAMIC\_VARIANT product, or whose root has a job pending or processing is skipped (skippedProductIds, left out when none is); where every ID is, the answer has no jobs. Takes up to 1000 IDs, given with `--product` or in the JSON object of `--file` (`{"productIds": [...]}`).
 
-Changes data: on a terminal, epx asks before it sends POST. `--yes` sends without
-asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
-instead of sending it.
+Changes data: on a terminal, epx asks before it sends POST. `--yes` sends without asking (required without a terminal, or with `--file` -); `--dry-run` prints the request instead of sending it.
 
 Requires the product.product\_manage scope.
 
@@ -472,15 +370,9 @@ Also takes the [global flags](/commands#global-flags).
 
 Read variant recalculation jobs.
 
-Reads the jobs that rebuild the variant tree of a DYNAMIC\_VARIANT product once a
-recalculation was triggered, one per ROOT PRODUCT (an id). STATUS is PENDING, PROCESSING,
-FINISHED, FAILED or FAILED\_PERMANENT, ATTEMPTS counts processing attempts and ERROR says why a
-job failed; `-o json` adds the product ids it was requested for and when processing started,
-and leaves out each of processingStartedAt, finishedAt and error until it is set.
-Emporix removes jobs about 30 days after they end. The jobs of one status: [`epx api get /product/{tenant}/products/recalculate/jobs -p status=FAILED --scope product.product_manage`](/commands/api#epx-api-get).
+Reads the jobs that rebuild the variant tree of a DYNAMIC\_VARIANT product once a recalculation was triggered, one per ROOT PRODUCT (an id). STATUS is PENDING, PROCESSING, FINISHED, FAILED or FAILED\_PERMANENT, ATTEMPTS counts processing attempts and ERROR says why a job failed; `-o json` adds the product ids it was requested for and when processing started, and leaves out each of processingStartedAt, finishedAt and error until it is set. Emporix removes jobs about 30 days after they end. The jobs of one status: [`epx api get /product/{tenant}/products/recalculate/jobs -p status=FAILED --scope product.product_manage`](/commands/api#epx-api-get).
 
-Requires the product.product\_manage scope.
-Opt-in: epx requests a write-capable scope for a read only when given `--allow-write-scope`.
+Requires the product.product\_manage scope. Opt-in: epx requests a write-capable scope for a read only when given `--allow-write-scope`.
 
 **Command:** `epx products recalculation-jobs [flags]`, `epx products recalculation-jobs [command]`
 
@@ -497,15 +389,9 @@ Opt-in: epx requests a write-capable scope for a read only when given `--allow-w
 
 Show one recalculation job.
 
-Reads the jobs that rebuild the variant tree of a DYNAMIC\_VARIANT product once a
-recalculation was triggered, one per ROOT PRODUCT (an id). STATUS is PENDING, PROCESSING,
-FINISHED, FAILED or FAILED\_PERMANENT, ATTEMPTS counts processing attempts and ERROR says why a
-job failed; `-o json` adds the product ids it was requested for and when processing started,
-and leaves out each of processingStartedAt, finishedAt and error until it is set.
-Emporix removes jobs about 30 days after they end. The jobs of one status: [`epx api get /product/{tenant}/products/recalculate/jobs -p status=FAILED --scope product.product_manage`](/commands/api#epx-api-get).
+Reads the jobs that rebuild the variant tree of a DYNAMIC\_VARIANT product once a recalculation was triggered, one per ROOT PRODUCT (an id). STATUS is PENDING, PROCESSING, FINISHED, FAILED or FAILED\_PERMANENT, ATTEMPTS counts processing attempts and ERROR says why a job failed; `-o json` adds the product ids it was requested for and when processing started, and leaves out each of processingStartedAt, finishedAt and error until it is set. Emporix removes jobs about 30 days after they end. The jobs of one status: [`epx api get /product/{tenant}/products/recalculate/jobs -p status=FAILED --scope product.product_manage`](/commands/api#epx-api-get).
 
-Requires the product.product\_manage scope.
-Opt-in: epx requests a write-capable scope for a read only when given `--allow-write-scope`.
+Requires the product.product\_manage scope. Opt-in: epx requests a write-capable scope for a read only when given `--allow-write-scope`.
 
 **Command:** `epx products recalculation-jobs get ID [flags]`
 
@@ -526,15 +412,9 @@ Also takes the [global flags](/commands#global-flags).
 
 List variant recalculation jobs.
 
-Reads the jobs that rebuild the variant tree of a DYNAMIC\_VARIANT product once a
-recalculation was triggered, one per ROOT PRODUCT (an id). STATUS is PENDING, PROCESSING,
-FINISHED, FAILED or FAILED\_PERMANENT, ATTEMPTS counts processing attempts and ERROR says why a
-job failed; `-o json` adds the product ids it was requested for and when processing started,
-and leaves out each of processingStartedAt, finishedAt and error until it is set.
-Emporix removes jobs about 30 days after they end. The jobs of one status: [`epx api get /product/{tenant}/products/recalculate/jobs -p status=FAILED --scope product.product_manage`](/commands/api#epx-api-get).
+Reads the jobs that rebuild the variant tree of a DYNAMIC\_VARIANT product once a recalculation was triggered, one per ROOT PRODUCT (an id). STATUS is PENDING, PROCESSING, FINISHED, FAILED or FAILED\_PERMANENT, ATTEMPTS counts processing attempts and ERROR says why a job failed; `-o json` adds the product ids it was requested for and when processing started, and leaves out each of processingStartedAt, finishedAt and error until it is set. Emporix removes jobs about 30 days after they end. The jobs of one status: [`epx api get /product/{tenant}/products/recalculate/jobs -p status=FAILED --scope product.product_manage`](/commands/api#epx-api-get).
 
-Requires the product.product\_manage scope.
-Opt-in: epx requests a write-capable scope for a read only when given `--allow-write-scope`.
+Requires the product.product\_manage scope. Opt-in: epx requests a write-capable scope for a read only when given `--allow-write-scope`.
 
 **Command:** `epx products recalculation-jobs list [flags]`
 
@@ -559,26 +439,13 @@ Also takes the [global flags](/commands#global-flags).
 
 Search products.
 
-Reads the products, published and unpublished, that an Emporix q filter finds (`--query`;
-without it, every product).
-It reads and shows them as [`epx products list`](/commands/products#epx-products-list) does.
+Reads the products, published and unpublished, that an Emporix q filter finds (`--query`; without it, every product). It reads and shows them as [`epx products list`](/commands/products#epx-products-list) does.
 
-Changes nothing: Emporix serves this read as POST with a JSON body, which the
-flags make or `--body` gives whole.
+Changes nothing: Emporix serves this read as POST with a JSON body, which the flags make or `--body` gives whole.
 
-Where a mixin's schema is site-aware, an item may hold, besides the mixin NAME, an overlay
-for a site, NAME\_\_SITE, with the values that differ there. `--mixin-site` SITE sends SITE as
-the emporix-site header: Emporix then merges the overlay of SITE into NAME (nested objects
-member by member; arrays and other values are replaced, not merged; a null leaves the
-base value) and leaves out every overlay. A site without an overlay, or one the tenant
-lacks (codes are case-sensitive; epx does not check them), gets NAME as stored. Without
-`--mixin-site`, mixins and overlays are read as stored, whatever the default site of the
-profile. Tables leave mixins (attribute values) out; `-o json` and `-o yaml` print them, as
-`--stream` does on a list.
+Where a mixin's schema is site-aware, an item may hold, besides the mixin NAME, an overlay for a site, NAME\_\_SITE, with the values that differ there. `--mixin-site` SITE sends SITE as the emporix-site header: Emporix then merges the overlay of SITE into NAME (nested objects member by member; arrays and other values are replaced, not merged; a null leaves the base value) and leaves out every overlay. A site without an overlay, or one the tenant lacks (codes are case-sensitive; epx does not check them), gets NAME as stored. Without `--mixin-site`, mixins and overlays are read as stored, whatever the default site of the profile. Tables leave mixins (attribute values) out; `-o json` and `-o yaml` print them, as `--stream` does on a list.
 
-A merged item is that site's view, not the item as stored. Do not write it back with
-update, bulk-update or (products) import, which replace whole items and would delete every
-overlay, nor build a patch from it: NAME would take the site's values.
+A merged item is that site's view, not the item as stored. Do not write it back with update, bulk-update or (products) import, which replace whole items and would delete every overlay, nor build a patch from it: NAME would take the site's values.
 
 Requires the product.product\_read\_unpublished scope.
 
@@ -613,24 +480,13 @@ Also takes the [global flags](/commands#global-flags).
 
 Upsert a product.
 
-Replaces product ID with the JSON object of `--file`, the complete product: an upsert, as
-Emporix creates the product where none has the ID (and answers with its id and yrn). Mixins
-left out are removed.
-Emporix refuses it as a conflict (exit 5) when another product has its code or, given
-metadata.version, when the product changed since that version.
+Replaces product ID with the JSON object of `--file`, the complete product: an upsert, as Emporix creates the product where none has the ID (and answers with its id and yrn). Mixins left out are removed. Emporix refuses it as a conflict (exit 5) when another product has its code or, given metadata.version, when the product changed since that version.
 
-Localized text in the body, such as a name, is a map of translations, e.g.
-`{"en": "gram", "de": "Gramm"}`, as `-o json` of a read prints it, or with `--content-language`
-LANGUAGE a string in that language, e.g. `"gram"` with `--content-language` en.
+Localized text in the body, such as a name, is a map of translations, e.g. `{"en": "gram", "de": "Gramm"}`, as `-o json` of a read prints it, or with `--content-language` LANGUAGE a string in that language, e.g. `"gram"` with `--content-language` en.
 
-Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without
-asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
-instead of sending it.
+Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without asking (required without a terminal, or with `--file` -); `--dry-run` prints the request instead of sending it.
 
-`--allow-publish` also requests the product.product\_publish scope. Without it, Emporix
-refuses a product that the write publishes (403 Forbidden, exit 3).
-`--allow-unpublish` also requests the product.product\_unpublish scope. Without it, Emporix
-refuses a product that the write unpublishes (403 Forbidden, exit 3).
+`--allow-publish` also requests the product.product\_publish scope. Without it, Emporix refuses a product that the write publishes (403 Forbidden, exit 3). `--allow-unpublish` also requests the product.product\_unpublish scope. Without it, Emporix refuses a product that the write unpublishes (403 Forbidden, exit 3).
 
 Requires the product.product\_manage scope.
 

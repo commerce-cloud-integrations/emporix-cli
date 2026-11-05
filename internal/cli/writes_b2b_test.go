@@ -141,34 +141,34 @@ func TestB2BWriteBodies(t *testing.T) {
 // send.
 func TestB2BWritesHelp(t *testing.T) {
 	for args, want := range map[string][]string{
-		"customer-locations create": {"shaped as\n`epx customer-locations get ID -o json` prints one:\ntype (required",
+		"customer-locations create": {"shaped as `epx customer-locations get ID -o json` prints one: type (required",
 			"leave out \"phones\": []"},
-		"vendors create": {"locations (its vendor locations, each\nas {\"id\": ...} or in full, as get prints it)",
-			"each as\n{\"email\": ...}", "parentId and locations must name\nitems that exist (400 Bad Request, exit 1"},
-		"legal-entities create": {"the last three each as\n{\"id\": ...} or in full, as get prints it.",
-			"must\nname items that exist", "may still make the IAM customer groups"},
+		"vendors create": {"locations (its vendor locations, each as {\"id\": ...} or in full, as get prints it)",
+			"each as {\"email\": ...}", "parentId and locations must name items that exist (400 Bad Request, exit 1"},
+		"legal-entities create": {"the last three each as {\"id\": ...} or in full, as get prints it.",
+			"must name items that exist", "may still make the IAM customer groups"},
 		"contact-assignments create": {"A second assignment of a customer to the same legal entity is a conflict",
 			"also assigns it to the parent company"},
-		"contact-assignments update": {"or creates it with that id where none exists (an upsert); it requires\n" +
+		"contact-assignments update": {"or creates it with that id where none exists (an upsert); it requires " +
 			"legalEntity and customer; a type left out becomes CONTACT",
 			"With metadata.version as `epx contact-assignments get ID -o json`",
-			"without metadata.version, it replaces it whatever its version.\n" +
-				"ID is the ID that `epx contact-assignments list` shows.\n"},
-		"legal-entities update": {"it requires\nname and type.", "list` shows.\nKeep every customer group",
-			"(Admin, Buyer, Requester\nand Contact)", "without the Contact group, Emporix deletes that group"},
-		"legal-entities delete": {"Deletes the legal entity ID; it sends no body.\nID is the ID that `epx " +
-			"legal-entities list` shows; an unknown one " + string(answeredDeleted) + ".\nThe assignments are",
+			"without metadata.version, it replaces it whatever its version. " +
+				"ID is the ID that `epx contact-assignments list` shows.\n\n"},
+		"legal-entities update": {"it requires name and type.", "list` shows. Keep every customer group",
+			"(Admin, Buyer, Requester and Contact)", "without the Contact group, Emporix deletes that group"},
+		"legal-entities delete": {"Deletes the legal entity ID; it sends no body. ID is the ID that `epx " +
+			"legal-entities list` shows; an unknown one " + string(answeredDeleted) + ". The assignments are",
 			"customer locations stay", "with its subsidiaries, assignments and IAM customer groups with one request"},
 		"vendors delete": {"vendors list` shows; an unknown one " + string(answeredDeleted) +
-			".\nIts subsidiaries stay"},
-		"contact-assignments delete": {"list` shows; an unknown one is not found.\n"},
-		"customer-locations delete":  {"is not found.\nA legal entity that names it"},
-		"vendor-locations delete":    {"is not found.\nA vendor that names it in locations no longer does."},
-		"vendor-locations":           {"each as {\"id\": ...}.\n" + versionedWritesNote + "\n"},
+			". Its subsidiaries stay"},
+		"contact-assignments delete": {"list` shows; an unknown one is not found.\n\n"},
+		"customer-locations delete":  {"is not found. A legal entity that names it"},
+		"vendor-locations delete":    {"is not found. A vendor that names it in locations no longer does."},
+		"vendor-locations":           {"each as {\"id\": ...}. " + versionedWritesNote + "\n"},
 	} {
 		_, help, _ := runCLI(t, nil, append(strings.Fields(args), "--help")...)
 		for _, part := range want {
-			if !strings.Contains(help, part) {
+			if !containsFlat(help, part) {
 				t.Errorf("%s help %q; want %q", args, help, part)
 			}
 		}

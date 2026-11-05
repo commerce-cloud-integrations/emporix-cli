@@ -6,13 +6,9 @@ description: "Read, upload, link and change media assets."
 
 ## epx media
 
-Reads media assets: files Emporix stores (BLOB) or links to files elsewhere (LINK). ACCESS
-is PUBLIC or PRIVATE; STATUS is PENDING until an upload completes, then READY or empty;
-BYTES is the file size as sent, and REFERENCES the items an asset belongs to (type and
-id). URLs are only in `-o json`; [`epx media download-url`](/commands/media#epx-media-download-url) gives one that downloads the file.
+Reads media assets: files Emporix stores (BLOB) or links to files elsewhere (LINK). ACCESS is PUBLIC or PRIVATE; STATUS is PENDING until an upload completes, then READY or empty; BYTES is the file size as sent, and REFERENCES the items an asset belongs to (type and id). URLs are only in `-o json`; [`epx media download-url`](/commands/media#epx-media-download-url) gives one that downloads the file.
 
-Its reads require the media.asset\_read scope.
-Its writes require the media.asset\_manage scope.
+Its reads require the media.asset\_read scope. Its writes require the media.asset\_manage scope.
 
 **Command:** `epx media [flags]`, `epx media [command]`
 
@@ -41,21 +37,9 @@ Its writes require the media.asset\_manage scope.
 
 Create a media asset: a link, or a file to upload.
 
-Creates a media asset from the JSON in `--file` and prints its id. A LINK asset points to a
-file elsewhere, e.g. `{"type": "LINK", "access": "PUBLIC", "url": "https://example.com/a.pdf"}`.
-A BLOB asset is a file that Emporix stores: `--upload` PATH sends the file in a
-multipart/form-data form, with the JSON of `--file` as its body field, e.g.
-`{"type": "BLOB", "access": "PRIVATE", "details": {"filename": "a", "mimeType": "application/pdf"}}`.
-Emporix takes a file of up to 30 MB including the form; a large file may need a longer
-`--timeout`, e.g. `--timeout` 5m, as it bounds the whole request.
-Without `--upload`, the JSON of a BLOB asset is refused before anything is sent, as Emporix
-takes one only with its file.
-refIds assigns the asset to items, e.g. `[{"type": "PRODUCT", "id": "100200"}]`; an asset of a
-PRODUCT or CATEGORY must be PUBLIC. An id that exists already is a conflict (exit 5).
+Creates a media asset from the JSON in `--file` and prints its id. A LINK asset points to a file elsewhere, e.g. `{"type": "LINK", "access": "PUBLIC", "url": "https://example.com/a.pdf"}`. A BLOB asset is a file that Emporix stores: `--upload` PATH sends the file in a multipart/form-data form, with the JSON of `--file` as its body field, e.g. `{"type": "BLOB", "access": "PRIVATE", "details": {"filename": "a", "mimeType": "application/pdf"}}`. Emporix takes a file of up to 30 MB including the form; a large file may need a longer `--timeout`, e.g. `--timeout` 5m, as it bounds the whole request. Without `--upload`, the JSON of a BLOB asset is refused before anything is sent, as Emporix takes one only with its file. refIds assigns the asset to items, e.g. `[{"type": "PRODUCT", "id": "100200"}]`; an asset of a PRODUCT or CATEGORY must be PUBLIC. An id that exists already is a conflict (exit 5).
 
-Changes data: on a terminal, epx asks before it sends POST. `--yes` sends without
-asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
-instead of sending it.
+Changes data: on a terminal, epx asks before it sends POST. `--yes` sends without asking (required without a terminal, or with `--file` -); `--dry-run` prints the request instead of sending it.
 
 Requires the media.asset\_manage scope.
 
@@ -87,13 +71,9 @@ epx media create --upload manual.pdf --file manual.json
 
 Delete a media asset.
 
-Deletes the media asset ID, and the file of a BLOB asset. An unknown ID is no error: Emporix
-answers as for a deleted asset.
+Deletes the media asset ID, and the file of a BLOB asset. An unknown ID is no error: Emporix answers as for a deleted asset.
 
-Deletes data, which cannot be undone.
-On a terminal, epx sends DELETE only once you type ID at its prompt.
-`--yes` sends without asking (required without a terminal);
-`--dry-run` prints the request instead of sending it.
+Deletes data, which cannot be undone. On a terminal, epx sends DELETE only once you type ID at its prompt. `--yes` sends without asking (required without a terminal); `--dry-run` prints the request instead of sending it.
 
 Requires the media.asset\_manage scope.
 
@@ -114,12 +94,7 @@ Also takes the [global flags](/commands#global-flags).
 
 Show a URL that downloads an asset.
 
-Reads a URL that downloads an asset. For a private stored file it is a signed URL that
-works without a token until EXPIRES (15 minutes by default), so treat it as a secret; for
-a public file or a link, PROVIDER CLOUDINARY or LINK, it is the asset's permanent URL.
-Reading the URL of a pending upload whose file is stored makes Emporix complete it; one
-whose file is not stored yet fails.
-ASSET\_ID is the ID that [`epx media list`](/commands/media#epx-media-list) shows; an unknown one is not found.
+Reads a URL that downloads an asset. For a private stored file it is a signed URL that works without a token until EXPIRES (15 minutes by default), so treat it as a secret; for a public file or a link, PROVIDER CLOUDINARY or LINK, it is the asset's permanent URL. Reading the URL of a pending upload whose file is stored makes Emporix complete it; one whose file is not stored yet fails. ASSET\_ID is the ID that [`epx media list`](/commands/media#epx-media-list) shows; an unknown one is not found.
 
 Requires the media.asset\_read scope.
 
@@ -140,10 +115,7 @@ Also takes the [global flags](/commands#global-flags).
 
 Show one asset.
 
-Reads media assets: files Emporix stores (BLOB) or links to files elsewhere (LINK). ACCESS
-is PUBLIC or PRIVATE; STATUS is PENDING until an upload completes, then READY or empty;
-BYTES is the file size as sent, and REFERENCES the items an asset belongs to (type and
-id). URLs are only in `-o json`; [`epx media download-url`](/commands/media#epx-media-download-url) gives one that downloads the file.
+Reads media assets: files Emporix stores (BLOB) or links to files elsewhere (LINK). ACCESS is PUBLIC or PRIVATE; STATUS is PENDING until an upload completes, then READY or empty; BYTES is the file size as sent, and REFERENCES the items an asset belongs to (type and id). URLs are only in `-o json`; [`epx media download-url`](/commands/media#epx-media-download-url) gives one that downloads the file.
 
 Requires the media.asset\_read scope.
 
@@ -164,10 +136,7 @@ Also takes the [global flags](/commands#global-flags).
 
 List media assets.
 
-Reads media assets: files Emporix stores (BLOB) or links to files elsewhere (LINK). ACCESS
-is PUBLIC or PRIVATE; STATUS is PENDING until an upload completes, then READY or empty;
-BYTES is the file size as sent, and REFERENCES the items an asset belongs to (type and
-id). URLs are only in `-o json`; [`epx media download-url`](/commands/media#epx-media-download-url) gives one that downloads the file.
+Reads media assets: files Emporix stores (BLOB) or links to files elsewhere (LINK). ACCESS is PUBLIC or PRIVATE; STATUS is PENDING until an upload completes, then READY or empty; BYTES is the file size as sent, and REFERENCES the items an asset belongs to (type and id). URLs are only in `-o json`; [`epx media download-url`](/commands/media#epx-media-download-url) gives one that downloads the file.
 
 Requires the media.asset\_read scope.
 
@@ -196,14 +165,9 @@ Also takes the [global flags](/commands#global-flags).
 
 Change members of a media asset.
 
-Changes the media asset ID with the JSON Patch (RFC 6902) in `--file`, an array of operations
-such as `[{"op": "add", "path": "/refIds/-", "value": {"type": "PRODUCT", "id": "100200"}}]`,
-also of a BLOB asset, whose file it keeps; its type and access cannot change.
-An unknown ID is not found (exit 4).
+Changes the media asset ID with the JSON Patch (RFC 6902) in `--file`, an array of operations such as `[{"op": "add", "path": "/refIds/-", "value": {"type": "PRODUCT", "id": "100200"}}]`, also of a BLOB asset, whose file it keeps; its type and access cannot change. An unknown ID is not found (exit 4).
 
-Changes data: on a terminal, epx asks before it sends PATCH. `--yes` sends without
-asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
-instead of sending it.
+Changes data: on a terminal, epx asks before it sends PATCH. `--yes` sends without asking (required without a terminal, or with `--file` -); `--dry-run` prints the request instead of sending it.
 
 Requires the media.asset\_manage scope.
 
@@ -226,17 +190,9 @@ Also takes the [global flags](/commands#global-flags).
 
 Start an upload of a file straight to storage.
 
-Starts an upload session: creates a PENDING BLOB asset from the JSON in `--file`, as create
-takes it (`"uploadType"`: `"form"` asks for a form instead of a PUT for a PRIVATE asset), and
-prints where to send its file: the method, URL and headers or form fields of a request to
-the storage (GCS for a PRIVATE asset, CLOUDINARY for a PUBLIC one), valid for 15 minutes
-or an hour, so treat it as a secret. epx does not send the file there; once the storage
-has it, the asset is READY. Emporix enables direct uploads per tenant; elsewhere it answers
-403 Forbidden (exit 1) and creates no asset.
+Starts an upload session: creates a PENDING BLOB asset from the JSON in `--file`, as create takes it (`"uploadType"`: `"form"` asks for a form instead of a PUT for a PRIVATE asset), and prints where to send its file: the method, URL and headers or form fields of a request to the storage (GCS for a PRIVATE asset, CLOUDINARY for a PUBLIC one), valid for 15 minutes or an hour, so treat it as a secret. epx does not send the file there; once the storage has it, the asset is READY. Emporix enables direct uploads per tenant; elsewhere it answers 403 Forbidden (exit 1) and creates no asset.
 
-Changes data: on a terminal, epx asks before it sends POST. `--yes` sends without
-asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
-instead of sending it.
+Changes data: on a terminal, epx asks before it sends POST. `--yes` sends without asking (required without a terminal, or with `--file` -); `--dry-run` prints the request instead of sending it.
 
 Requires the media.asset\_manage scope.
 
@@ -259,19 +215,9 @@ Also takes the [global flags](/commands#global-flags).
 
 Replace a media asset, or the file of one.
 
-Replaces the media asset ID with the JSON in `--file`; its type and access cannot change.
-The JSON of a LINK asset gives its url; a BLOB asset is replaced with its file: `--upload` PATH
-sends the new file in a multipart/form-data form, with the JSON as its body field
-(up to 30 MB including the form; a large file may need a longer
-`--timeout`, e.g. `--timeout` 5m). [`epx media patch`](/commands/media#epx-media-patch) changes a BLOB asset without sending its
-file again.
-Without `--upload`, the JSON of a BLOB asset is refused before anything is sent, as Emporix
-takes one only with its file.
-An unknown ID is not found (exit 4).
+Replaces the media asset ID with the JSON in `--file`; its type and access cannot change. The JSON of a LINK asset gives its url; a BLOB asset is replaced with its file: `--upload` PATH sends the new file in a multipart/form-data form, with the JSON as its body field (up to 30 MB including the form; a large file may need a longer `--timeout`, e.g. `--timeout` 5m). [`epx media patch`](/commands/media#epx-media-patch) changes a BLOB asset without sending its file again. Without `--upload`, the JSON of a BLOB asset is refused before anything is sent, as Emporix takes one only with its file. An unknown ID is not found (exit 4).
 
-Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without
-asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
-instead of sending it.
+Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without asking (required without a terminal, or with `--file` -); `--dry-run` prints the request instead of sending it.
 
 Requires the media.asset\_manage scope.
 

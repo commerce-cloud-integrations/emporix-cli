@@ -30,30 +30,30 @@ func newBrandsCommand(a *app) *cobra.Command {
 		},
 	}
 	manage := []string{"brand.brand_manage"}
-	const answer = " It prints the brand that Emporix answers with."
+	const answer = "It prints the brand that Emporix answers with."
 	return newResourceCommand(a, brands,
 		(&write{
 			use: createUse, short: "Create a brand", method: http.MethodPost,
-			long: "Creates a brand from the JSON in --file, such as\n" +
-				`{"name": "Acme", "localizedName": {"en": "Acme", "de": "Acme"}}, and prints the brand that` + "\n" +
-				"Emporix answers with, including its id. Emporix generates the id unless the JSON names one;\n" +
-				"an id that exists already is a conflict, while a name that exists already makes a second\n" +
+			long: "Creates a brand from the JSON in --file, such as " +
+				`{"name": "Acme", "localizedName": {"en": "Acme", "de": "Acme"}}, and prints the brand that ` +
+				"Emporix answers with, including its id. Emporix generates the id unless the JSON names one; " +
+				"an id that exists already is a conflict, while a name that exists already makes a second " +
 				"brand.",
 			req: request{path: brands.path}, scopes: manage, body: &payload{}, language: mapsOnly,
 		}).command(a),
 		(&write{
 			use: brands.itemUse("update"), short: "Replace a brand", method: http.MethodPut,
-			long: "Replaces the brand ID with the JSON in --file: a member that it leaves out is removed.\n" +
-				"An unknown ID is not found." + answer,
+			long: "Replaces the brand ID with the JSON in --file: a member that it leaves out is removed. " +
+				"An unknown ID is not found. " + answer,
 			req: request{path: brands.itemPath()}, scopes: manage, body: &payload{}, language: mapsOnly,
 			ids: brands.itemIDs(),
 		}).command(a),
 		(&write{
 			use: brands.itemUse("patch"), short: "Change members of a brand", method: http.MethodPatch,
-			long: "Changes the members of the brand ID that the JSON in --file names, such as name or\n" +
-				"localizedDescription; the others keep their values. A map of translations in it, such as\n" +
-				"localizedName, adds to the brand's: the languages it names change, the others stay. Unlike\n" +
-				"update, Emporix does not check a metadata.version in it. An unknown ID is not found." + answer,
+			long: "Changes the members of the brand ID that the JSON in --file names, such as name or " +
+				"localizedDescription; the others keep their values. A map of translations in it, such as " +
+				"localizedName, adds to the brand's: the languages it names change, the others stay. Unlike " +
+				"update, Emporix does not check a metadata.version in it. An unknown ID is not found. " + answer,
 			req: request{path: brands.itemPath()}, scopes: manage, body: &payload{}, language: mapsOnly,
 			ids: brands.itemIDs(),
 		}).command(a),

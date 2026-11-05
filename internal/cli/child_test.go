@@ -47,8 +47,8 @@ func TestChildItemReadOnASite(t *testing.T) {
 	if want := "shelf THING_ID ID"; shelf.Use != want {
 		t.Errorf("use %q, want %q", shelf.Use, want)
 	}
-	if want := "Reads one shelf of a store.\n" +
-		"THING_ID is the ID that `epx things stores list --site S` shows; an unknown one is not found.\n" +
+	if want := "Reads one shelf of a store. " +
+		"THING_ID is the ID that `epx things stores list --site S` shows; an unknown one is not found. " +
 		"ID is the ID that `epx things stores shelves THING_ID --site S` shows; an unknown one is not found.\n\n" +
 		"Requires the store.read scope."; shelf.Long != want {
 		t.Errorf("help %q, want %q", shelf.Long, want)
@@ -91,8 +91,8 @@ func TestChildSearch(t *testing.T) {
 	if want := "search-shelves THING_ID"; search.Use != want {
 		t.Errorf("use %q, want %q", search.Use, want)
 	}
-	if want := "Reads the shelves a q filter finds.\n" +
-		"It reads and shows them as `epx things stores shelves THING_ID --site S` does.\n" +
+	if want := "Reads the shelves a q filter finds. " +
+		"It reads and shows them as `epx things stores shelves THING_ID --site S` does. " +
 		"THING_ID is the ID that `epx things stores list --site S` shows; an unknown one is not found.\n\n" +
 		"Changes nothing:"; !strings.HasPrefix(search.Long, want) {
 		t.Errorf("help %q, want it to start with %q", search.Long, want)
@@ -153,12 +153,12 @@ func TestChildListSendsBothQueries(t *testing.T) {
 // scope it requires.
 func TestChildItemHelp(t *testing.T) {
 	_, help, _ := runThings(t, newFakeEmporix(t), "named-part", "--help")
-	want := "Reads one part of a thing by name.\n" +
-		"THING_ID is the ID that `epx things list` shows; an unknown one is not found.\n" +
-		"NAME and ID are the NAME and ID that `epx things parts THING_ID` shows; an unknown one is not found.\n" +
+	want := "Reads one part of a thing by name. " +
+		"THING_ID is the ID that `epx things list` shows; an unknown one is not found. " +
+		"NAME and ID are the NAME and ID that `epx things parts THING_ID` shows; an unknown one is not found. " +
 		"NAME is a part's name.\n\n" +
 		"Requires the part.read scope.\n\nUsage:\n  epx things named-part THING_ID NAME ID"
-	if !strings.HasPrefix(help, want) {
+	if !strings.HasPrefix(flat(help), flat(want)) {
 		t.Fatalf("help:\n%s\nwant it to start with:\n%s", help, want)
 	}
 }

@@ -81,21 +81,21 @@ const everyLanguage = "*"
 
 // localizedMaps begins what the help of a write whose body holds localized
 // text says of it.
-const localizedMaps = "Localized text in the body, such as a name, is a map of translations, e.g.\n"
+const localizedMaps = "Localized text in the body, such as a name, is a map of translations, e.g."
 
 // contentLanguageHelp follows what a write whose body holds localized text
 // sends, in its help.
-const contentLanguageHelp = localizedMaps +
+const contentLanguageHelp = localizedMaps + " " +
 	`{"en": "gram", "de": "Gramm"}, as -o json of a read prints it, or with --` + contentLanguageFlag +
-	"\nLANGUAGE a string in that language, e.g. \"gram\" with --" + contentLanguageFlag + " en."
+	" LANGUAGE a string in that language, e.g. \"gram\" with --" + contentLanguageFlag + " en."
 
 // headerlessMapsHelp follows what a write of headerlessMaps sends,
 // in its help: its service reads maps of translations sent without a
 // Content-Language header, and refuses them with Content-Language: *.
-const headerlessMapsHelp = localizedMaps +
-	`{"en": "Netherlands", "nl": "Nederland"}, as -o json of a read prints it, sent without a` + "\n" +
-	"Content-Language header (--" + contentLanguageFlag + " " + everyLanguage + ", the default), or with\n--" +
-	contentLanguageFlag + " LANGUAGE a string in that language, sent with that Content-Language,\ne.g. " +
+const headerlessMapsHelp = localizedMaps + " " +
+	`{"en": "Netherlands", "nl": "Nederland"}, as -o json of a read prints it, sent without a ` +
+	"Content-Language header (--" + contentLanguageFlag + " " + everyLanguage + ", the default), or with --" +
+	contentLanguageFlag + " LANGUAGE a string in that language, sent with that Content-Language, e.g. " +
 	`"Netherlands" with --` + contentLanguageFlag + " en."
 
 // mapsSent says how a write of mapsOnly sends localized text, which the help
@@ -103,12 +103,12 @@ const headerlessMapsHelp = localizedMaps +
 // member such as a brand's name may be plain text, which the service takes as
 // a string.
 const mapsSent = "Localized text in the body is a map of translations, e.g. " +
-	`{"en": "Acme", "de": "Acme"},` + "\nas -o json of a read prints it, sent with Content-Language: " +
+	`{"en": "Acme", "de": "Acme"},` + " as -o json of a read prints it, sent with Content-Language: " +
 	everyLanguage + "."
 
 // mapsOnlyHelp follows what a write of mapsOnly sends, in its help, where its
 // service refuses a string.
-const mapsOnlyHelp = mapsSent + " Emporix refuses a string in\nits place."
+const mapsOnlyHelp = mapsSent + " Emporix refuses a string in its place."
 
 // contentLanguage is a --content-language value: everyLanguage, or a language
 // code, lower-cased as a --language value is; it implements pflag.Value, so

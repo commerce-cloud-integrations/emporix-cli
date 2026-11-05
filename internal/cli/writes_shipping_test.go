@@ -112,11 +112,11 @@ func shippingWrites() []writeCase {
 func TestChildWritesNameTheirArguments(t *testing.T) {
 	const (
 		zone   = "SHIPPING_ZONE_ID is the ID that `epx shipping zones list --site S` shows"
-		method = "\nID is the ID that `epx shipping zones methods list SHIPPING_ZONE_ID --site S` shows; an unknown " +
-			"one is not found.\n"
+		method = " ID is the ID that `epx shipping zones methods list SHIPPING_ZONE_ID --site S` shows; an unknown " +
+			"one is not found.\n\n"
 		time = "DELIVERY_TIME_ID is the ID that `epx delivery-times list` shows"
-		slot = "\nID is the ID that `epx delivery-times slots list DELIVERY_TIME_ID` shows; an unknown one is not " +
-			"found.\n"
+		slot = " ID is the ID that `epx delivery-times slots list DELIVERY_TIME_ID` shows; an unknown one is not " +
+			"found.\n\n"
 		unknown = "; an unknown one is not found."
 	)
 	root := newTestRoot()
@@ -132,16 +132,16 @@ func TestChildWritesNameTheirArguments(t *testing.T) {
 			want: zone + unknown + method},
 		{args: []string{"shipping", "zones", "methods", "delete"}, use: "delete SHIPPING_ZONE_ID ID",
 			want: zone + unknown + method},
-		{args: []string{"delivery-times", "slots", "create"}, use: "create DELIVERY_TIME_ID", want: time + unknown + "\n"},
+		{args: []string{"delivery-times", "slots", "create"}, use: "create DELIVERY_TIME_ID", want: time + unknown + "\n\n"},
 		{args: []string{"delivery-times", "slots", "update"}, use: "update DELIVERY_TIME_ID ID",
 			want: time + unknown + slot},
 		{args: []string{"delivery-times", "slots", "patch"}, use: "patch DELIVERY_TIME_ID ID",
 			want: time + unknown + slot},
 		{args: []string{"delivery-times", "slots", "delete"}, use: "delete DELIVERY_TIME_ID ID",
-			want: time + unknown + "\nID is the ID that `epx delivery-times slots list DELIVERY_TIME_ID` shows; an " +
-				"unknown one is answered as one that Emporix deleted (204 No Content).\n"},
+			want: time + unknown + " ID is the ID that `epx delivery-times slots list DELIVERY_TIME_ID` shows; an " +
+				"unknown one is answered as one that Emporix deleted (204 No Content).\n\n"},
 		{args: []string{"delivery-times", "slots", "delete-all"}, use: "delete-all DELIVERY_TIME_ID",
-			want: time + unknown + "\n"},
+			want: time + unknown + "\n\n"},
 	} {
 		cmd, _, err := root.Find(tt.args)
 		if err != nil || cmd.Use != tt.use || !strings.Contains(cmd.Long, tt.want) {

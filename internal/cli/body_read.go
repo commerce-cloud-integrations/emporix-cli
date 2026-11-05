@@ -93,7 +93,7 @@ type makeBody func(ctx context.Context) (emporix.Body, error)
 func jsonRead(cmd *cobra.Command, typed bodyBinder) (made makeBody, sends string) {
 	body := bodyFile{flag: bodyFlag, limit: maxBodyFileBytes}.bindWith(cmd, "send the JSON request body in `FILE` as "+
 		"given (- reads standard input) instead of the one the other flags make", typed)
-	return body.make, "a JSON body, which the\nflags make or --body gives whole."
+	return body.make, "a JSON body, which the flags make or --body gives whole."
 }
 
 // bodyBinder is the body that the typed flags of a read or a write make: a
@@ -406,7 +406,7 @@ func searchSentence(list string) string {
 // the body that fields make (or --body), read and shown as list reads and
 // shows the collection (listing.search), as its help says (searchSentence).
 func (r resource[T]) searchCommand(a *app, long string, fields ...bodyField) *cobra.Command {
-	return r.searchRead(a, long+"\n"+searchSentence(r.listLine()), fields)
+	return r.searchRead(a, long+" "+searchSentence(r.listLine()), fields)
 }
 
 // searchRead returns `search` with the help long: a POST to the collection's
@@ -423,7 +423,7 @@ func (r resource[T]) searchRead(a *app, long string, fields []bodyField) *cobra.
 // querySearchCommand returns the search of r that sends the Emporix q filter
 // of --query in its body (queryField), with a help generated from r's nouns.
 func (r resource[T]) querySearchCommand(a *app) *cobra.Command {
-	return r.searchCommand(a, "Reads the "+r.nouns()+" that an Emporix q filter finds (--query; without it,\n"+
+	return r.searchCommand(a, "Reads the "+r.nouns()+" that an Emporix q filter finds (--query; without it, "+
 		"every one).", queryField())
 }
 
@@ -441,7 +441,7 @@ type searchListing struct {
 // that search shows the IDs as no list is beside it, and the extra reads.
 func newSearchedResourceCommand[T any](a *app, r resource[T], extra ...*cobra.Command) *cobra.Command {
 	get := r
-	get.long += "\n" + itemSentence(r.header[:1], r.header[:1], r.listLine())
+	get.long = joinSentences(get.long, itemSentence(r.header[:1], r.header[:1], r.listLine()))
 	reads := append([]*cobra.Command{r.searchRead(a, r.search.long, r.search.fields), get.getCommand(a)}, extra...)
 	return newGroup(r.use, r.summary(), r.groupHelp(), reads...)
 }

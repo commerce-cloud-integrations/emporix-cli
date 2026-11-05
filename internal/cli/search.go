@@ -87,7 +87,7 @@ func searchDocumentTypes() builtInTypes {
 func searchTypes() builtInTypes { return searchDocumentTypes().withoutScopes() }
 
 // badQuery says how the Search Service answers a malformed --query (live).
-const badQuery = "\nEmporix answers a list's malformed --query with an internal error (500 Internal Server\n" +
+const badQuery = "Emporix answers a list's malformed --query with an internal error (500 Internal Server " +
 	"Error, exit 1)."
 
 // newSearchCommand reads the Search Service, which searches customers, legal
@@ -101,8 +101,8 @@ func newSearchCommand(a *app) *cobra.Command {
 		noun:  "saved searches",
 		short: "Read, upsert and delete saved searches",
 		under: searchUse,
-		long: "Reads saved searches: queries and filters (only in -o json) stored to run against a search\n" +
-			"INDEX of a type." + badQuery,
+		long: "Reads saved searches: queries and filters (only in -o json) stored to run against a search " +
+			"INDEX of a type. " + badQuery,
 		path:    searchPerType + "queries",
 		scopes:  []string{searchScope},
 		filters: listFilters{kinds: filterable},
@@ -117,10 +117,10 @@ func newSearchCommand(a *app) *cobra.Command {
 	}
 	jobs := indexJobs()
 	return newGroup(searchUse, "Search documents; read and change search indexes and saved searches",
-		"Reads the Search Service (a preview at Emporix), which searches customers, legal entities\n"+
-			"and the instances of custom entity types: the documents a search finds, its indexes and\n"+
-			"saved searches, kept per type, and the jobs that create, update and delete the indexes;\n"+
-			"changes the indexes and saved searches.\n"+types.builtIn.sentence(),
+		"Reads the Search Service (a preview at Emporix), which searches customers, legal entities "+
+			"and the instances of custom entity types: the documents a search finds, its indexes and "+
+			"saved searches, kept per type, and the jobs that create, update and delete the indexes; "+
+			"changes the indexes and saved searches. "+types.builtIn.sentence(),
 		documentsCommand(a, searchDocumentTypes()),
 		indexesCommand(a, indexJobWait(jobs), types),
 		perTypeCommand(a, queries, savedSearchWrites(), types),
@@ -136,9 +136,9 @@ func indexesCommand(a *app, job *jobWait, types exactTypes) *cobra.Command {
 		noun:  "search indexes",
 		short: "Read, upsert, delete, export and import search indexes",
 		under: searchUse,
-		long: "Reads search indexes: which fields of the documents of a type can be searched.\n" +
-			"STATUS is building, ready or failed and FIELDS the indexed fields (-o json shows how each is\n" +
-			"searched). --query matches STATUS in upper case (`status:READY`; `status:ready` matches no index)." + badQuery,
+		long: "Reads search indexes: which fields of the documents of a type can be searched. " +
+			"STATUS is building, ready or failed and FIELDS the indexed fields (-o json shows how each is " +
+			"searched). --query matches STATUS in upper case (`status:READY`; `status:ready` matches no index). " + badQuery,
 		path:    searchPerType + "indexes",
 		scopes:  []string{searchScope},
 		filters: listFilters{kinds: filterable},
@@ -154,10 +154,10 @@ func indexesCommand(a *app, job *jobWait, types exactTypes) *cobra.Command {
 	}
 	indexExport := exportCommand(a, indexes.path, &export{
 		short: "Export search indexes",
-		long: "Reads an export package of the search indexes that --index names, as TYPE/ID (the TYPE and\n" +
-			"ID that `epx search indexes list` shows): their configuration, without status or metadata.\n" +
-			"Emporix answers an unknown index as not found (exit 4).\n" + types.builtIn.sentence() + "\n" +
-			types.kept("A search index") + "is exported with --body.",
+		long: "Reads an export package of the search indexes that --index names, as TYPE/ID (the TYPE and " +
+			"ID that `epx search indexes list` shows): their configuration, without status or metadata. " +
+			"Emporix answers an unknown index as not found (exit 4). " + types.builtIn.sentence() + " " +
+			types.kept("A search index") + " is exported with --body.",
 		scopes: []string{searchManageScope},
 		selection: objectsValue("index", "a search index to export, as `TYPE/ID` (repeatable)",
 			indexSelection(newTypeRule(indexes.scopes, types.builtIn))),
@@ -173,11 +173,11 @@ func indexJobs() resource[indexJob] {
 		use:   "jobs",
 		noun:  "index jobs",
 		under: searchUse,
-		long: "Reads the jobs that create, update and delete search indexes: TYPE is create_index,\n" +
-			"update_index or delete_index, STATUS in_progress, success or failure as the table and JSON\n" +
-			"show them, and RESULT what the job recorded when it finished. --query matches the upper-case\n" +
-			"form (`status:SUCCESS` and `type:UPDATE_INDEX` are checked; a lower-case filter, such as\n" +
-			"`status:success`, matches no job)." + badQuery,
+		long: "Reads the jobs that create, update and delete search indexes: TYPE is create_index, " +
+			"update_index or delete_index, STATUS in_progress, success or failure as the table and JSON " +
+			"show them, and RESULT what the job recorded when it finished. --query matches the upper-case " +
+			"form (`status:SUCCESS` and `type:UPDATE_INDEX` are checked; a lower-case filter, such as " +
+			"`status:success`, matches no job). " + badQuery,
 		path:    searchService + "/jobs",
 		scopes:  []string{searchScope},
 		filters: listFilters{kinds: filterable},
@@ -213,15 +213,15 @@ func documentsCommand(a *app, types builtInTypes) *cobra.Command {
 	return documents.command(a, &command{
 		use:   "documents TYPE",
 		short: "Search customers, legal entities or the instances of a custom entity type",
-		long: "Reads the documents of a type that the saved search --saved-search finds with the text of\n" +
-			"--text (`epx search queries for-type TYPE` lists them): customers, legal entities or the\n" +
-			"instances of a custom entity type, as a search index holds them. SCORE is how well a document\n" +
-			"matches; its other fields are only in -o json. --body gives a search of an index by its own\n" +
-			"queries and filters instead. An unknown saved search, or index of --body, is not found\n" +
-			"(exit 4).\n" + typeSentence(types) + "\n" +
-			"Known limitation: for customer or legal-entity, epx requests the read scope that\n" +
-			"finds every document, so a credential that holds only a restricted one, such as\n" +
-			"customer.customer_read--DE, or only the own-read scope, such as customer.customer_read_own,\n" +
+		long: "Reads the documents of a type that the saved search --saved-search finds with the text of " +
+			"--text (`epx search queries for-type TYPE` lists them): customers, legal entities or the " +
+			"instances of a custom entity type, as a search index holds them. SCORE is how well a document " +
+			"matches; its other fields are only in -o json. --body gives a search of an index by its own " +
+			"queries and filters instead. An unknown saved search, or index of --body, is not found " +
+			"(exit 4). " + typeSentence(types) + " " +
+			"Known limitation: for customer or legal-entity, epx requests the read scope that " +
+			"finds every document, so a credential that holds only a restricted one, such as " +
+			"customer.customer_read--DE, or only the own-read scope, such as customer.customer_read_own, " +
 			"fails with exit code 3.",
 		req:     request{path: searchPerType + placeholderID},
 		ids:     argumentIDs{columnType: customEntities().ids()},
@@ -272,18 +272,18 @@ func perTypeCommand[T any](a *app, r resource[T], writes perTypeWrites, types ex
 		singular: r.singular,
 		req:      request{path: searchPerType + placeholderParent + "/" + r.use + "/" + placeholderID},
 		arguments: "TYPE and ID are a " + r.singular + "'s type and ID, as `epx " + r.under + " " + r.use +
-			" list`\nshows them",
+			" list` shows them",
 		ids: argumentIDs{columnType: listedTypes, columnID: listedIDs(rd, ofType, listed, columnID)},
 	}
-	r.long += "\n" + types.builtIn.sentence() + "\n" + types.kept("A "+r.singular) + "is listed too; `epx api` " +
-		"reaches it by its path, such as\n" + types.api("get", target.req, r.scopes, "") + "."
+	r.long = joinSentences(r.long, types.builtIn.sentence(), types.kept("A "+r.singular)+" is listed too; `epx api` "+
+		"reaches it by its path, such as "+types.api("get", target.req, r.scopes, "")+".")
 	return newGroup(r.use, r.summary(), r.long, slices.Concat([]*cobra.Command{
 		r.listCommand(a),
 		rd.command(a, &command{
 			use:   "for-type TYPE",
 			short: "List the " + r.nouns() + " of a type",
-			long: r.long + "\nTYPE is the type of " + r.nouns() + ", as `epx " + r.listLine() +
-				"` shows it; an\nunknown type lists nothing.",
+			long: r.long + " TYPE is the type of " + r.nouns() + ", as `epx " + r.listLine() +
+				"` shows it; an unknown type lists nothing.",
 			req:     ofType,
 			fetch:   listed,
 			ids:     argumentIDs{columnType: listedTypes},
@@ -292,7 +292,7 @@ func perTypeCommand[T any](a *app, r resource[T], writes perTypeWrites, types ex
 		rd.command(a, &command{
 			use:     "get TYPE ID",
 			short:   "Show one " + r.singular,
-			long:    r.long + "\n" + target.arguments + "; an unknown one is not found (exit 4).",
+			long:    joinSentences(r.long, target.arguments+"; an unknown one is not found (exit 4)."),
 			req:     target.req,
 			fetch:   single{items: oneItem},
 			ids:     target.ids,
@@ -342,11 +342,11 @@ func newExactTypes(builtIn builtInTypes, use string) exactTypes {
 }
 
 // kept returns, for help, subject, such as "A saved search", kept under
-// another spelling of one of t, ending the line, so that its caller's
-// sentence goes on from a new one: "A saved search kept under another
-// spelling of a built-in type, such as CUSTOMER,\n".
+// another spelling of one of t, which its caller's sentence goes on from:
+// "A saved search kept under another spelling of a built-in type, such as
+// CUSTOMER,".
 func (t exactTypes) kept(subject string) string {
-	return subject + " kept under another spelling of a built-in type, such as " + t.otherSpelling + ",\n"
+	return subject + " kept under another spelling of a built-in type, such as " + t.otherSpelling + ","
 }
 
 // api returns, quoted, the `epx api` command line that sends method to the

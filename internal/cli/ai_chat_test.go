@@ -144,8 +144,8 @@ func TestAIHelpNamesCreditsAndJobs(t *testing.T) {
 	}
 	cmd, _, err := root.Find([]string{"ai", "agents", "export"})
 	if err != nil || !strings.Contains(cmd.Short, "creates an export job") ||
-		!strings.Contains(cmd.Long, "Emporix keeps each export as a job of type\nEXPORT") ||
-		!strings.Contains(cmd.Long, "\n"+readScopedNote+"\n\n") ||
+		!strings.Contains(cmd.Long, "Emporix keeps each export as a job of type EXPORT") ||
+		!strings.Contains(cmd.Long, " "+readScopedNote+"\n\n") ||
 		!strings.HasSuffix(cmd.Long, "\n\nRequires the ai.agent_read scope.") {
 		t.Errorf("ai agents export: %v, summary %q, help %q; want it to name its job and its read scope", err,
 			cmd.Short, cmd.Long)

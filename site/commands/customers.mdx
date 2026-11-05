@@ -6,12 +6,9 @@ description: "Read and change customers and their addresses."
 
 ## epx customers
 
-Reads and changes customer profiles, personal data included, and their addresses,
-imports customers with their passwords and sets until when imported passwords are
-migrated.
+Reads and changes customer profiles, personal data included, and their addresses, imports customers with their passwords and sets until when imported passwords are migrated.
 
-Its reads require different OAuth scopes; the help of each names them.
-Its writes require different OAuth scopes; the help of each names them.
+Its reads require different OAuth scopes; the help of each names them. Its writes require different OAuth scopes; the help of each names them.
 
 **Command:** `epx customers [flags]`, `epx customers [command]`
 
@@ -46,8 +43,7 @@ Read and change the addresses of a customer.
 
 Reads and changes the addresses of a customer, personal data included, and their tags.
 
-Its reads require the customer.customer\_read scope.
-Its writes require the customer.customer\_manage scope.
+Its reads require the customer.customer\_read scope. Its writes require the customer.customer\_manage scope.
 
 **Command:** `epx customers addresses [flags]`, `epx customers addresses [command]`
 
@@ -76,14 +72,9 @@ Its writes require the customer.customer\_manage scope.
 
 Tag an address of a customer.
 
-Adds the tags that `--tags` names, such as BILLING or SHIPPING, to the address ID of the
-customer CUSTOMER\_NUMBER.
-CUSTOMER\_NUMBER is the NUMBER that [`epx customers list`](/commands/customers#epx-customers-list) shows, and ID the ID that
-[`epx customers addresses list CUSTOMER_NUMBER`](/commands/customers#epx-customers-addresses-list) shows.
+Adds the tags that `--tags` names, such as BILLING or SHIPPING, to the address ID of the customer CUSTOMER\_NUMBER. CUSTOMER\_NUMBER is the NUMBER that [`epx customers list`](/commands/customers#epx-customers-list) shows, and ID the ID that [`epx customers addresses list CUSTOMER_NUMBER`](/commands/customers#epx-customers-addresses-list) shows.
 
-Changes data: on a terminal, epx asks before it sends POST. `--yes` sends without
-asking (required without a terminal); `--dry-run` prints the request
-instead of sending it.
+Changes data: on a terminal, epx asks before it sends POST. `--yes` sends without asking (required without a terminal); `--dry-run` prints the request instead of sending it.
 
 Requires the customer.customer\_manage scope.
 
@@ -106,13 +97,9 @@ Also takes the [global flags](/commands#global-flags).
 
 Add an address to a customer.
 
-Adds the address in `--file`, a JSON object with at least contactName, to the customer
-CUSTOMER\_NUMBER; Emporix makes its id unless the body gives one, and answers with it.
-CUSTOMER\_NUMBER is the NUMBER that [`epx customers list`](/commands/customers#epx-customers-list) shows.
+Adds the address in `--file`, a JSON object with at least contactName, to the customer CUSTOMER\_NUMBER; Emporix makes its id unless the body gives one, and answers with it. CUSTOMER\_NUMBER is the NUMBER that [`epx customers list`](/commands/customers#epx-customers-list) shows.
 
-Changes data: on a terminal, epx asks before it sends POST. `--yes` sends without
-asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
-instead of sending it.
+Changes data: on a terminal, epx asks before it sends POST. `--yes` sends without asking (required without a terminal, or with `--file` -); `--dry-run` prints the request instead of sending it.
 
 Requires the customer.customer\_manage scope.
 
@@ -135,14 +122,9 @@ Also takes the [global flags](/commands#global-flags).
 
 Delete an address of a customer.
 
-Deletes the address ID of the customer CUSTOMER\_NUMBER.
-CUSTOMER\_NUMBER is the NUMBER that [`epx customers list`](/commands/customers#epx-customers-list) shows, and ID the ID that
-[`epx customers addresses list CUSTOMER_NUMBER`](/commands/customers#epx-customers-addresses-list) shows.
+Deletes the address ID of the customer CUSTOMER\_NUMBER. CUSTOMER\_NUMBER is the NUMBER that [`epx customers list`](/commands/customers#epx-customers-list) shows, and ID the ID that [`epx customers addresses list CUSTOMER_NUMBER`](/commands/customers#epx-customers-addresses-list) shows.
 
-Deletes data, which cannot be undone.
-On a terminal, epx sends DELETE only once you type ID at its prompt.
-`--yes` sends without asking (required without a terminal);
-`--dry-run` prints the request instead of sending it.
+Deletes data, which cannot be undone. On a terminal, epx sends DELETE only once you type ID at its prompt. `--yes` sends without asking (required without a terminal); `--dry-run` prints the request instead of sending it.
 
 Requires the customer.customer\_manage scope.
 
@@ -163,11 +145,7 @@ Also takes the [global flags](/commands#global-flags).
 
 Show one address of a customer.
 
-Reads one address of a customer, personal data included.
-CUSTOMER\_NUMBER is the NUMBER that [`epx customers list`](/commands/customers#epx-customers-list) shows; an unknown one is not found.
-ID is the ID that [`epx customers addresses list CUSTOMER_NUMBER`](/commands/customers#epx-customers-addresses-list) shows; an unknown one is not found.
-DEFAULT marks the default address; TAGS are labels such as BILLING or SHIPPING. Phone
-numbers, states and extra address lines are only in `-o json`.
+Reads one address of a customer, personal data included. CUSTOMER\_NUMBER is the NUMBER that [`epx customers list`](/commands/customers#epx-customers-list) shows; an unknown one is not found. ID is the ID that [`epx customers addresses list CUSTOMER_NUMBER`](/commands/customers#epx-customers-addresses-list) shows; an unknown one is not found. DEFAULT marks the default address; TAGS are labels such as BILLING or SHIPPING. Phone numbers, states and extra address lines are only in `-o json`.
 
 Requires the customer.customer\_read scope.
 
@@ -188,10 +166,7 @@ Also takes the [global flags](/commands#global-flags).
 
 List the addresses of a customer.
 
-Reads the addresses of a customer, personal data included.
-CUSTOMER\_NUMBER is the NUMBER that [`epx customers list`](/commands/customers#epx-customers-list) shows; an unknown one is not found.
-DEFAULT marks the default address; TAGS are labels such as BILLING or SHIPPING. Phone
-numbers, states and extra address lines are only in `-o json`.
+Reads the addresses of a customer, personal data included. CUSTOMER\_NUMBER is the NUMBER that [`epx customers list`](/commands/customers#epx-customers-list) shows; an unknown one is not found. DEFAULT marks the default address; TAGS are labels such as BILLING or SHIPPING. Phone numbers, states and extra address lines are only in `-o json`.
 
 Requires the customer.customer\_read scope.
 
@@ -216,14 +191,9 @@ Also takes the [global flags](/commands#global-flags).
 
 Change an address of a customer.
 
-Changes the members of the address ID of the customer CUSTOMER\_NUMBER that `--file` gives,
-a JSON object such as `{"isDefault": true}`; Emporix keeps the others.
-CUSTOMER\_NUMBER is the NUMBER that [`epx customers list`](/commands/customers#epx-customers-list) shows, and ID the ID that
-[`epx customers addresses list CUSTOMER_NUMBER`](/commands/customers#epx-customers-addresses-list) shows.
+Changes the members of the address ID of the customer CUSTOMER\_NUMBER that `--file` gives, a JSON object such as `{"isDefault": true}`; Emporix keeps the others. CUSTOMER\_NUMBER is the NUMBER that [`epx customers list`](/commands/customers#epx-customers-list) shows, and ID the ID that [`epx customers addresses list CUSTOMER_NUMBER`](/commands/customers#epx-customers-addresses-list) shows.
 
-Changes data: on a terminal, epx asks before it sends PATCH. `--yes` sends without
-asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
-instead of sending it.
+Changes data: on a terminal, epx asks before it sends PATCH. `--yes` sends without asking (required without a terminal, or with `--file` -); `--dry-run` prints the request instead of sending it.
 
 Requires the customer.customer\_manage scope.
 
@@ -246,14 +216,9 @@ Also takes the [global flags](/commands#global-flags).
 
 Remove tags from an address of a customer.
 
-Removes the tags that `--tags` names from the address ID of the customer CUSTOMER\_NUMBER.
-CUSTOMER\_NUMBER is the NUMBER that [`epx customers list`](/commands/customers#epx-customers-list) shows, and ID the ID that
-[`epx customers addresses list CUSTOMER_NUMBER`](/commands/customers#epx-customers-addresses-list) shows.
+Removes the tags that `--tags` names from the address ID of the customer CUSTOMER\_NUMBER. CUSTOMER\_NUMBER is the NUMBER that [`epx customers list`](/commands/customers#epx-customers-list) shows, and ID the ID that [`epx customers addresses list CUSTOMER_NUMBER`](/commands/customers#epx-customers-addresses-list) shows.
 
-Deletes data, which cannot be undone.
-On a terminal, epx sends DELETE only once you type ID at its prompt.
-`--yes` sends without asking (required without a terminal);
-`--dry-run` prints the request instead of sending it.
+Deletes data, which cannot be undone. On a terminal, epx sends DELETE only once you type ID at its prompt. `--yes` sends without asking (required without a terminal); `--dry-run` prints the request instead of sending it.
 
 Requires the customer.customer\_manage scope.
 
@@ -276,16 +241,9 @@ Also takes the [global flags](/commands#global-flags).
 
 Upsert an address of a customer.
 
-Changes the members of the address ID of the customer CUSTOMER\_NUMBER that `--file` gives,
-a JSON object as [`epx customers addresses get CUSTOMER_NUMBER ID -o json`](/commands/customers#epx-customers-addresses-get) prints it,
-keeping those it leaves out, such as its tags, or creates the address with that id where
-none exists (an upsert).
-CUSTOMER\_NUMBER is the NUMBER that [`epx customers list`](/commands/customers#epx-customers-list) shows, and ID the ID that
-[`epx customers addresses list CUSTOMER_NUMBER`](/commands/customers#epx-customers-addresses-list) shows.
+Changes the members of the address ID of the customer CUSTOMER\_NUMBER that `--file` gives, a JSON object as [`epx customers addresses get CUSTOMER_NUMBER ID -o json`](/commands/customers#epx-customers-addresses-get) prints it, keeping those it leaves out, such as its tags, or creates the address with that id where none exists (an upsert). CUSTOMER\_NUMBER is the NUMBER that [`epx customers list`](/commands/customers#epx-customers-list) shows, and ID the ID that [`epx customers addresses list CUSTOMER_NUMBER`](/commands/customers#epx-customers-addresses-list) shows.
 
-Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without
-asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
-instead of sending it.
+Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without asking (required without a terminal, or with `--file` -); `--dry-run` prints the request instead of sending it.
 
 Requires the customer.customer\_manage scope.
 
@@ -308,17 +266,9 @@ Also takes the [global flags](/commands#global-flags).
 
 Create a customer.
 
-Creates the customer profile in `--file`, a JSON object with at least contactEmail, such as
-[`epx customers get NUMBER -o json`](/commands/customers#epx-customers-get) prints one; Emporix makes the customer number unless
-the body gives it as id, and answers with it. An account with that email that exists
-already is a conflict (exit 5).
-Emporix ignores a customerNumber that a profile gives (no error).
-Emporix emails a new customer a link to set a password only with `--password-reset-email`
-(without it, epx sends sendPasswordResetNotifications=false, where Emporix's default is true).
+Creates the customer profile in `--file`, a JSON object with at least contactEmail, such as [`epx customers get NUMBER -o json`](/commands/customers#epx-customers-get) prints one; Emporix makes the customer number unless the body gives it as id, and answers with it. An account with that email that exists already is a conflict (exit 5). Emporix ignores a customerNumber that a profile gives (no error). Emporix emails a new customer a link to set a password only with `--password-reset-email` (without it, epx sends sendPasswordResetNotifications=false, where Emporix's default is true).
 
-Changes data: on a terminal, epx asks before it sends POST. `--yes` sends without
-asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
-instead of sending it.
+Changes data: on a terminal, epx asks before it sends POST. `--yes` sends without asking (required without a terminal, or with `--file` -); `--dry-run` prints the request instead of sending it.
 
 Requires the customer.customer\_manage scope.
 
@@ -343,14 +293,9 @@ Also takes the [global flags](/commands#global-flags).
 
 Delete a customer.
 
-Deletes the customer profile NUMBER and its accounts. Emporix answers 202 Accepted, and
-the profile is not found from then on.
-NUMBER is the NUMBER that [`epx customers list`](/commands/customers#epx-customers-list) shows.
+Deletes the customer profile NUMBER and its accounts. Emporix answers 202 Accepted, and the profile is not found from then on. NUMBER is the NUMBER that [`epx customers list`](/commands/customers#epx-customers-list) shows.
 
-Deletes data, which cannot be undone.
-On a terminal, epx sends DELETE only once you type NUMBER at its prompt.
-`--yes` sends without asking (required without a terminal);
-`--dry-run` prints the request instead of sending it.
+Deletes data, which cannot be undone. On a terminal, epx sends DELETE only once you type NUMBER at its prompt. `--yes` sends without asking (required without a terminal); `--dry-run` prints the request instead of sending it.
 
 Requires the customer.customer\_manage scope.
 
@@ -371,12 +316,7 @@ Also takes the [global flags](/commands#global-flags).
 
 Show one customer.
 
-Reads customer profiles, personal data included. NUMBER is the customer number that get
-takes, EMAIL the contact email (that of the account, with which the customer signs in,
-may differ), BUSINESS MODEL is B2B (assigned to a company) or B2C, and ON HOLD marks a
-suspended profile. B2B data and the default address are only in `-o json`; Emporix leaves
-out a profile's addresses, accounts and mixins unless asked to expand them, which epx
-does not: [`epx customers addresses list`](/commands/customers#epx-customers-addresses-list) lists the addresses.
+Reads customer profiles, personal data included. NUMBER is the customer number that get takes, EMAIL the contact email (that of the account, with which the customer signs in, may differ), BUSINESS MODEL is B2B (assigned to a company) or B2C, and ON HOLD marks a suspended profile. B2B data and the default address are only in `-o json`; Emporix leaves out a profile's addresses, accounts and mixins unless asked to expand them, which epx does not: [`epx customers addresses list`](/commands/customers#epx-customers-addresses-list) lists the addresses.
 
 Requires the customer.customer\_read scope.
 
@@ -397,22 +337,11 @@ Also takes the [global flags](/commands#global-flags).
 
 Import customers with their passwords.
 
-Imports the customer profiles in `--file`, a JSON array of profiles as create takes them,
-each with an account that holds its email and exactly one of passwordHash, a hash that
-Emporix checks as its own, or legacyAuth, the hash of another system and its algorithm,
-which Emporix replaces with its own as the customer signs in. Customers with legacyAuth
-need a password migration retention: [`epx customers password-migration update`](/commands/customers#epx-customers-password-migration-update) sets it.
-Emporix ignores a customerNumber that a profile gives (no error).
+Imports the customer profiles in `--file`, a JSON array of profiles as create takes them, each with an account that holds its email and exactly one of passwordHash, a hash that Emporix checks as its own, or legacyAuth, the hash of another system and its algorithm, which Emporix replaces with its own as the customer signs in. Customers with legacyAuth need a password migration retention: [`epx customers password-migration update`](/commands/customers#epx-customers-password-migration-update) sets it. Emporix ignores a customerNumber that a profile gives (no error).
 
-Emporix takes up to 200 items in one request (epx refuses more), carries out each on
-its own and answers with the result of each: when one failed, epx prints the response,
-lists the items that failed on standard error (one that failed with 500, 502, 503 or 504
-may have been carried out all the same) and exits with the code that their failures
-share (for example 5 for a 409 Conflict, 4 for a 404), else 1.
+Emporix takes up to 200 items in one request (epx refuses more), carries out each on its own and answers with the result of each: when one failed, epx prints the response, lists the items that failed on standard error (one that failed with 500, 502, 503 or 504 may have been carried out all the same) and exits with the code that their failures share (for example 5 for a 409 Conflict, 4 for a 404), else 1.
 
-Changes data: on a terminal, epx asks before it sends POST. `--yes` sends without
-asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
-instead of sending it.
+Changes data: on a terminal, epx asks before it sends POST. `--yes` sends without asking (required without a terminal, or with `--file` -); `--dry-run` prints the request instead of sending it.
 
 Requires the customer.import\_manage scope.
 
@@ -435,12 +364,7 @@ Also takes the [global flags](/commands#global-flags).
 
 List customers.
 
-Reads customer profiles, personal data included. NUMBER is the customer number that get
-takes, EMAIL the contact email (that of the account, with which the customer signs in,
-may differ), BUSINESS MODEL is B2B (assigned to a company) or B2C, and ON HOLD marks a
-suspended profile. B2B data and the default address are only in `-o json`; Emporix leaves
-out a profile's addresses, accounts and mixins unless asked to expand them, which epx
-does not: [`epx customers addresses list`](/commands/customers#epx-customers-addresses-list) lists the addresses.
+Reads customer profiles, personal data included. NUMBER is the customer number that get takes, EMAIL the contact email (that of the account, with which the customer signs in, may differ), BUSINESS MODEL is B2B (assigned to a company) or B2C, and ON HOLD marks a suspended profile. B2B data and the default address are only in `-o json`; Emporix leaves out a profile's addresses, accounts and mixins unless asked to expand them, which epx does not: [`epx customers addresses list`](/commands/customers#epx-customers-addresses-list) lists the addresses.
 
 Requires the customer.customer\_read scope.
 
@@ -469,11 +393,9 @@ Also takes the [global flags](/commands#global-flags).
 
 Read and set until when imported customers' passwords are migrated.
 
-Reads, sets and removes the password migration retention of customer imports, until when
-customers imported with a password hash from another system get an Emporix one.
+Reads, sets and removes the password migration retention of customer imports, until when customers imported with a password hash from another system get an Emporix one.
 
-Its reads require the customer.import\_read scope.
-Its writes require the customer.import\_manage scope.
+Its reads require the customer.import\_read scope. Its writes require the customer.import\_manage scope.
 
 **Command:** `epx customers password-migration [flags]`, `epx customers password-migration [command]`
 
@@ -492,15 +414,9 @@ Its writes require the customer.import\_manage scope.
 
 Remove the password migration retention.
 
-Removes the password migration retention. Emporix refuses it (400 Bad Request, exit 1)
-while a customer still has a legacy password hash to migrate: move `--ends` of update
-earlier instead to end the migration sooner. update sets the whole retention, so give
-`--reminder` and `--emails` again where it should keep them.
+Removes the password migration retention. Emporix refuses it (400 Bad Request, exit 1) while a customer still has a legacy password hash to migrate: move `--ends` of update earlier instead to end the migration sooner. update sets the whole retention, so give `--reminder` and `--emails` again where it should keep them.
 
-Deletes the password migration retention of the tenant with one request, which cannot be undone.
-On a terminal, epx sends DELETE only once you type the tenant at its prompt.
-`--yes` sends without asking (required without a terminal);
-`--dry-run` prints the request instead of sending it.
+Deletes the password migration retention of the tenant with one request, which cannot be undone. On a terminal, epx sends DELETE only once you type the tenant at its prompt. `--yes` sends without asking (required without a terminal); `--dry-run` prints the request instead of sending it.
 
 Requires the customer.import\_manage scope.
 
@@ -521,11 +437,7 @@ Also takes the [global flags](/commands#global-flags).
 
 Show until when imported customers' passwords are migrated.
 
-Reads the password migration retention of customer imports: a customer imported with a
-password hash from another system gets an Emporix one on signing in until ENDS; after
-that, the customers not yet migrated must reset their password. REMINDER is when Emporix
-asks them by email to sign in once, and EMAILS whether customers get these reminder and
-reset emails. A tenant without this setting is not found (exit 4).
+Reads the password migration retention of customer imports: a customer imported with a password hash from another system gets an Emporix one on signing in until ENDS; after that, the customers not yet migrated must reset their password. REMINDER is when Emporix asks them by email to sign in once, and EMAILS whether customers get these reminder and reset emails. A tenant without this setting is not found (exit 4).
 
 Requires the customer.import\_read scope.
 
@@ -546,18 +458,9 @@ Also takes the [global flags](/commands#global-flags).
 
 Set until when imported customers' passwords are migrated.
 
-Sets the whole password migration retention, or creates it where the tenant has none
-(an upsert), from its flags or the JSON object of `--file`: until when customers imported
-with legacyAuth get an Emporix password on signing in (`--ends`), when Emporix asks those
-not yet migrated by email to sign in once (`--reminder`; without it, 7 days before `--ends`,
-or tomorrow if that has passed, also where the retention it replaces had another date)
-and whether customers get these reminder and reset emails (`--emails`: without it, epx
-sends emailNotificationsEnabled=false; a `--file` without it gets Emporix's default, true).
-Emporix answers with the retention.
+Sets the whole password migration retention, or creates it where the tenant has none (an upsert), from its flags or the JSON object of `--file`: until when customers imported with legacyAuth get an Emporix password on signing in (`--ends`), when Emporix asks those not yet migrated by email to sign in once (`--reminder`; without it, 7 days before `--ends`, or tomorrow if that has passed, also where the retention it replaces had another date) and whether customers get these reminder and reset emails (`--emails`: without it, epx sends emailNotificationsEnabled=false; a `--file` without it gets Emporix's default, true). Emporix answers with the retention.
 
-Changes data: on a terminal, epx asks before it sends POST. `--yes` sends without
-asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
-instead of sending it.
+Changes data: on a terminal, epx asks before it sends POST. `--yes` sends without asking (required without a terminal, or with `--file` -); `--dry-run` prints the request instead of sending it.
 
 Requires the customer.import\_manage scope.
 
@@ -593,18 +496,9 @@ epx customers password-migration update --ends 2027-01-31 --yes
 
 Change a customer.
 
-Changes the members of the customer profile NUMBER that `--file` gives, a JSON object such
-as `{"active": false}`; Emporix keeps the others.
-NUMBER is the NUMBER that [`epx customers list`](/commands/customers#epx-customers-list) shows.
-Emporix ignores a customerNumber that a profile gives (no error).
-Send its metadata.version as read to change it only if nobody changed it since:
-Emporix answers 409 Conflict (exit 5) otherwise.
-On an existing profile, a contactEmail changes its contact email only, never the email
-with which the customer signs in (that of its account).
+Changes the members of the customer profile NUMBER that `--file` gives, a JSON object such as `{"active": false}`; Emporix keeps the others. NUMBER is the NUMBER that [`epx customers list`](/commands/customers#epx-customers-list) shows. Emporix ignores a customerNumber that a profile gives (no error). Send its metadata.version as read to change it only if nobody changed it since: Emporix answers 409 Conflict (exit 5) otherwise. On an existing profile, a contactEmail changes its contact email only, never the email with which the customer signs in (that of its account).
 
-Changes data: on a terminal, epx asks before it sends PATCH. `--yes` sends without
-asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
-instead of sending it.
+Changes data: on a terminal, epx asks before it sends PATCH. `--yes` sends without asking (required without a terminal, or with `--file` -); `--dry-run` prints the request instead of sending it.
 
 Requires the customer.customer\_manage scope.
 
@@ -627,12 +521,9 @@ Also takes the [global flags](/commands#global-flags).
 
 Search customers.
 
-Reads the customer profiles, personal data included, that an Emporix q filter finds
-(`--query`; without it, every profile).
-It reads and shows them as [`epx customers list`](/commands/customers#epx-customers-list) does.
+Reads the customer profiles, personal data included, that an Emporix q filter finds (`--query`; without it, every profile). It reads and shows them as [`epx customers list`](/commands/customers#epx-customers-list) does.
 
-Changes nothing: Emporix serves this read as POST with a JSON body, which the
-flags make or `--body` gives whole.
+Changes nothing: Emporix serves this read as POST with a JSON body, which the flags make or `--body` gives whole.
 
 Requires the customer.customer\_read scope.
 
@@ -663,22 +554,9 @@ Also takes the [global flags](/commands#global-flags).
 
 Upsert a customer.
 
-Changes the members of the customer profile NUMBER that `--file` gives, a JSON object as
-[`epx customers get NUMBER -o json`](/commands/customers#epx-customers-get) prints it, keeping those it leaves out, or creates the
-profile with that number where none exists (an upsert), as create does: with the email of
-an existing account, that is a conflict (exit 5).
-NUMBER is the NUMBER that [`epx customers list`](/commands/customers#epx-customers-list) shows.
-Emporix ignores a customerNumber that a profile gives (no error).
-Send its metadata.version as read to change it only if nobody changed it since:
-Emporix answers 409 Conflict (exit 5) otherwise.
-On an existing profile, a contactEmail changes its contact email only, never the email
-with which the customer signs in (that of its account).
-Emporix emails a new customer a link to set a password only with `--password-reset-email`
-(without it, epx sends sendPasswordResetNotifications=false, where Emporix's default is true).
+Changes the members of the customer profile NUMBER that `--file` gives, a JSON object as [`epx customers get NUMBER -o json`](/commands/customers#epx-customers-get) prints it, keeping those it leaves out, or creates the profile with that number where none exists (an upsert), as create does: with the email of an existing account, that is a conflict (exit 5). NUMBER is the NUMBER that [`epx customers list`](/commands/customers#epx-customers-list) shows. Emporix ignores a customerNumber that a profile gives (no error). Send its metadata.version as read to change it only if nobody changed it since: Emporix answers 409 Conflict (exit 5) otherwise. On an existing profile, a contactEmail changes its contact email only, never the email with which the customer signs in (that of its account). Emporix emails a new customer a link to set a password only with `--password-reset-email` (without it, epx sends sendPasswordResetNotifications=false, where Emporix's default is true).
 
-Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without
-asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
-instead of sending it.
+Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without asking (required without a terminal, or with `--file` -); `--dry-run` prints the request instead of sending it.
 
 Requires the customer.customer\_manage scope.
 

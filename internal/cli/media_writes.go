@@ -20,18 +20,18 @@ const mediaManage = "media.asset_manage"
 // upload straight to storage.
 func mediaWrites(a *app, assets resource[mediaAsset]) []*cobra.Command {
 	scopes := []string{mediaManage}
-	unknown := "\nAn unknown ID is not found (exit 4)."
+	unknown := "An unknown ID is not found (exit 4)."
 	return []*cobra.Command{
 		(&write{
 			use: createUse, short: "Create a media asset: a link, or a file to upload", method: http.MethodPost,
-			long: "Creates a media asset from the JSON in --file and prints its id. A LINK asset points to a\n" +
-				"file elsewhere, e.g. {\"type\": \"LINK\", \"access\": \"PUBLIC\", \"url\": \"https://example.com/a.pdf\"}.\n" +
-				"A BLOB asset is a file that Emporix stores: --" + uploadFlag + " PATH sends the file in a\n" +
-				"multipart/form-data form, with the JSON of --file as its body field, e.g.\n" +
-				`{"type": "BLOB", "access": "PRIVATE", "details": {"filename": "a", "mimeType": "application/pdf"}}.` + "\n" +
-				"Emporix takes a file of " + uploadLimitHelp + "; a large file may need a longer\n" +
-				"--timeout, e.g. --timeout 5m, as it bounds the whole request.\n" + blobNeedsFileHelp + "\n" +
-				"refIds assigns the asset to items, e.g. [{\"type\": \"PRODUCT\", \"id\": \"100200\"}]; an asset of a\n" +
+			long: "Creates a media asset from the JSON in --file and prints its id. A LINK asset points to a " +
+				"file elsewhere, e.g. {\"type\": \"LINK\", \"access\": \"PUBLIC\", \"url\": \"https://example.com/a.pdf\"}. " +
+				"A BLOB asset is a file that Emporix stores: --" + uploadFlag + " PATH sends the file in a " +
+				"multipart/form-data form, with the JSON of --file as its body field, e.g. " +
+				`{"type": "BLOB", "access": "PRIVATE", "details": {"filename": "a", "mimeType": "application/pdf"}}. ` +
+				"Emporix takes a file of " + uploadLimitHelp + "; a large file may need a longer " +
+				"--timeout, e.g. --timeout 5m, as it bounds the whole request. " + blobNeedsFileHelp + " " +
+				"refIds assigns the asset to items, e.g. [{\"type\": \"PRODUCT\", \"id\": \"100200\"}]; an asset of a " +
 				"PRODUCT or CATEGORY must be PUBLIC. An id that exists already is a conflict (exit 5).",
 			example: "  epx media create --file link.json --dry-run\n" +
 				"  epx media create --upload manual.pdf --file manual.json",
@@ -39,35 +39,35 @@ func mediaWrites(a *app, assets resource[mediaAsset]) []*cobra.Command {
 		}).command(a),
 		(&write{
 			use: assets.itemUse("update"), short: "Replace a media asset, or the file of one", method: http.MethodPut,
-			long: "Replaces the media asset ID with the JSON in --file; its type and access cannot change.\n" +
+			long: "Replaces the media asset ID with the JSON in --file; its type and access cannot change. " +
 				"The JSON of a LINK asset gives its url; a BLOB asset is replaced with its file: --" + uploadFlag +
-				" PATH\nsends the new file in a multipart/form-data form, with the JSON as its body field\n" +
-				"(" + uploadLimitHelp + "; a large file may need a longer\n" +
-				"--timeout, e.g. --timeout 5m). `epx media patch` changes a BLOB asset without sending its\n" +
-				"file again.\n" + blobNeedsFileHelp + unknown,
+				" PATH sends the new file in a multipart/form-data form, with the JSON as its body field " +
+				"(" + uploadLimitHelp + "; a large file may need a longer " +
+				"--timeout, e.g. --timeout 5m). `epx media patch` changes a BLOB asset without sending its " +
+				"file again. " + blobNeedsFileHelp + " " + unknown,
 			req: request{path: assets.itemPath()}, scopes: scopes, body: assetForm(), ids: assets.itemIDs(),
 		}).command(a),
 		(&write{
 			use: assets.itemUse("patch"), short: "Change members of a media asset", method: http.MethodPatch,
-			long: "Changes the media asset ID with the JSON Patch (RFC 6902) in --file, an array of operations\n" +
-				"such as [{\"op\": \"add\", \"path\": \"/refIds/-\", \"value\": {\"type\": \"PRODUCT\", \"id\": \"100200\"}}],\n" +
-				"also of a BLOB asset, whose file it keeps; its type and access cannot change." + unknown,
+			long: "Changes the media asset ID with the JSON Patch (RFC 6902) in --file, an array of operations " +
+				"such as [{\"op\": \"add\", \"path\": \"/refIds/-\", \"value\": {\"type\": \"PRODUCT\", \"id\": \"100200\"}}], " +
+				"also of a BLOB asset, whose file it keeps; its type and access cannot change. " + unknown,
 			req: request{path: assets.itemPath()}, scopes: scopes, body: operationsFile(), ids: assets.itemIDs(),
 		}).command(a),
 		(&write{
 			use: assets.itemUse("delete"), short: "Delete a media asset", method: http.MethodDelete,
-			long: "Deletes the media asset ID, and the file of a BLOB asset. An unknown ID is no error: Emporix\n" +
+			long: "Deletes the media asset ID, and the file of a BLOB asset. An unknown ID is no error: Emporix " +
 				"answers as for a deleted asset.",
 			req: request{path: assets.itemPath()}, scopes: scopes, body: noBody{}, ids: assets.itemIDs(),
 		}).command(a),
 		(&write{
 			use: "start-upload", short: "Start an upload of a file straight to storage", method: http.MethodPost,
-			long: "Starts an upload session: creates a PENDING BLOB asset from the JSON in --file, as create\n" +
-				"takes it (\"uploadType\": \"form\" asks for a form instead of a PUT for a PRIVATE asset), and\n" +
-				"prints where to send its file: the method, URL and headers or form fields of a request to\n" +
-				"the storage (GCS for a PRIVATE asset, CLOUDINARY for a PUBLIC one), valid for 15 minutes\n" +
-				"or an hour, so treat it as a secret. epx does not send the file there; once the storage\n" +
-				"has it, the asset is READY. Emporix enables direct uploads per tenant; elsewhere it answers\n" +
+			long: "Starts an upload session: creates a PENDING BLOB asset from the JSON in --file, as create " +
+				"takes it (\"uploadType\": \"form\" asks for a form instead of a PUT for a PRIVATE asset), and " +
+				"prints where to send its file: the method, URL and headers or form fields of a request to " +
+				"the storage (GCS for a PRIVATE asset, CLOUDINARY for a PUBLIC one), valid for 15 minutes " +
+				"or an hour, so treat it as a secret. epx does not send the file there; once the storage " +
+				"has it, the asset is READY. Emporix enables direct uploads per tenant; elsewhere it answers " +
 				forbiddenRefusal + " and creates no asset.",
 			req: request{path: assets.path + "/upload-session"}, scopes: scopes, body: &payload{},
 			answers: emporix.Answers{ForbiddenIsRefusal: true},
@@ -78,7 +78,7 @@ func mediaWrites(a *app, assets resource[mediaAsset]) []*cobra.Command {
 // blobNeedsFileHelp says in help that the JSON of a BLOB asset is not sent
 // without a file to upload (blobNeedsFile).
 const blobNeedsFileHelp = "Without --" + uploadFlag + ", the JSON of a BLOB asset is refused before anything " +
-	"is sent, as Emporix\ntakes one only with its file."
+	"is sent, as Emporix takes one only with its file."
 
 // assetForm is the body of a write of a media asset: the JSON of --file,
 // sent alone for a LINK asset or, with --upload, as the body field of a form

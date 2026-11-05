@@ -30,10 +30,10 @@ func newAPIGetCommand(a *app) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "get PATH",
 		Short: "GET an API path and print the JSON response",
-		Long: "Sends GET to PATH on the configured API host and prints the response body as JSON\n" +
-			"(YAML with -o yaml) with sorted keys and every value as sent.\n" +
-			"{tenant} in PATH is replaced with the tenant; Accept-Language: * requests every translation.\n" +
-			"Query values given with -p replace inline ones. Request every scope the endpoint needs\n" +
+		Long: "Sends GET to PATH on the configured API host and prints the response body as JSON " +
+			"(YAML with -o yaml) with sorted keys and every value as sent. " +
+			"{tenant} in PATH is replaced with the tenant; Accept-Language: * requests every translation. " +
+			"Query values given with -p replace inline ones. Request every scope the endpoint needs " +
 			"with --scope: Emporix grants only requested scopes and may silently omit data otherwise.",
 		Example: "  epx api get /site/{tenant}/sites\n" +
 			"  epx api get /product/{tenant}/products -p pageSize=5 --scope product.product_read_unpublished",
@@ -64,10 +64,10 @@ func newAPIWriteCommand(a *app, method, example string) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   use + " PATH",
 		Short: "Send " + method + " to an API path and print the JSON response",
-		Long: "Sends " + method + " to PATH on the configured API host, with the JSON body that --file gives\n" +
-			"(none without it), and prints the response body as JSON (YAML with -o yaml) with sorted\n" +
-			"keys and every value as sent (nothing for an empty one). {tenant} in PATH is replaced with\n" +
-			"the tenant; query values given with -p replace inline ones. It sends no other header, such\n" +
+		Long: "Sends " + method + " to PATH on the configured API host, with the JSON body that --file gives " +
+			"(none without it), and prints the response body as JSON (YAML with -o yaml) with sorted " +
+			"keys and every value as sent (nothing for an empty one). {tenant} in PATH is replaced with " +
+			"the tenant; query values given with -p replace inline ones. It sends no other header, such " +
 			"as the Content-Language that the Unit Service requires to create or update a unit.",
 		Example: "  epx api " + use + " " + example,
 		Args:    cobra.ExactArgs(1),
@@ -77,7 +77,7 @@ func newAPIWriteCommand(a *app, method, example string) *cobra.Command {
 	s := &sender{a: a, method: method, body: &payload{optional: true},
 		confirm: confirmationFor(method, "PATH", deletion{})}
 	s.bind(cmd)
-	cmd.Long += "\n\nRequests only the scopes given with --scope besides the tenant: name every write scope\n" +
+	cmd.Long += "\n\nRequests only the scopes given with --scope besides the tenant: name every write scope " +
 		"that the endpoint needs, as Emporix grants only requested scopes."
 	cmd.RunE = func(c *cobra.Command, args []string) error {
 		return s.send(c, *scopes, &emporix.Write{Path: args[0], Query: url.Values(query)}, nil, subject{word: args[0]})

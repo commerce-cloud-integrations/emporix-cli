@@ -31,14 +31,9 @@ const exampleType = "DOCUMENT"
 // unscoped is what a command whose scopes name a custom entity type gives for
 // a type that does not exist: Emporix grants no scope for it, which epx
 // reports before it sends anything; nor for a new type, whose scopes Emporix
-// grants only minutes after it created it (2 to 3 in a test). Its parts,
-// unscopedLead and unscopedRest, serve typeSentence, which puts them on two
-// lines, until help text is reflowed in one place.
-const (
-	unscopedLead               = "has no scope that"
-	unscopedRest               = "Emporix grants (exit code 3), and a type created in the last minutes has none yet"
-	unscoped     unknownParent = unscopedLead + " " + unscopedRest
-)
+// grants only minutes after it created it (2 to 3 in a test).
+const unscoped unknownParent = "has no scope that Emporix grants (exit code 3), and a type created in the last " +
+	"minutes has none yet"
 
 // typeIDPattern matches what can be the ID of a custom entity type, which
 // the Schema Service documents as uppercase letters, digits and underscores,
@@ -144,13 +139,13 @@ func (r typeRule) fill(args, requested []string) []string {
 	return r.builtIn.fill(requested, args[0])
 }
 
-// helpEnding returns what ends the help of a command whose type argument
-// takes what r says: the note on the scopes that r's built-in types request
-// in place of r's typed scopes, which a run fills in alike (fill), if any
-// (builtInTypes.inPlaceOf), then, after a blank line, sentence, the
+// helpEnding returns help, the help of a command whose type argument takes
+// what r says, ended by the note on the scopes that r's built-in types
+// request in place of r's typed scopes, which a run fills in alike (fill),
+// if any (builtInTypes.inPlaceOf), then, after a blank line, by sentence, the
 // command's scope sentence (scopeSentence, writeScopeSentence).
-func (r typeRule) helpEnding(sentence string) string {
-	return r.builtIn.inPlaceOf(r.typed) + "\n\n" + sentence
+func (r typeRule) helpEnding(help, sentence string) string {
+	return joinSentences(help, r.builtIn.inPlaceOf(r.typed)) + "\n\n" + sentence
 }
 
 // refuseTypeScopes refuses scopes that use, a command, requests as declared,
@@ -187,10 +182,9 @@ func unknownFor(scopes []string, otherwise unknownParent) unknownParent {
 
 // typeSentence says that TYPE, the first argument of a command whose scopes
 // name a custom entity type, is one of builtIn or the ID of a custom entity
-// type (builtInTypes.clause), and what an unknown one gives (unscoped, its
-// parts on two lines).
+// type (builtInTypes.clause), and what an unknown one gives (unscoped).
 func typeSentence(builtIn builtInTypes) string {
-	return builtIn.clause("TYPE") + "; an unknown one " + unscopedLead + "\n" + unscopedRest + "."
+	return builtIn.clause("TYPE") + "; an unknown one " + string(unscoped) + "."
 }
 
 // typedScopes returns those of scopes that name a custom entity type
@@ -202,7 +196,7 @@ func typedScopes(scopes []string) []string {
 }
 
 // typeNote returns what follows a scope sentence naming scopes where they
-// name a custom entity type (placeholderType): a new line saying what it
+// name a custom entity type (placeholderType): a sentence saying what it
 // stands for, with those scopes of an example type; else nothing. A command
 // whose built-in types request scopes of their own in their place says so
 // before its scope sentence (builtInTypes.inPlaceOf).
@@ -211,6 +205,6 @@ func typeNote(scopes []string) string {
 	if len(typed) == 0 {
 		return ""
 	}
-	return fmt.Sprintf("\n%s is the custom entity type in lower case (%s for %s).", placeholderType,
+	return fmt.Sprintf("%s is the custom entity type in lower case (%s for %s).", placeholderType,
 		strings.Join(withType(typed, exampleType), ", "), exampleType)
 }

@@ -70,5 +70,5 @@ func (p *paramScopes) note() string {
 	if len(p.scopes) == 0 {
 		return ""
 	}
-	return "\n\nWhere --" + p.when(p.flag.flag+" is") + ", epx also requests\n" + theScopes(p.scopes) + "."
+	return "Where --" + p.when(p.flag.flag+" is") + ", epx also requests " + theScopes(p.scopes) + "."
 }

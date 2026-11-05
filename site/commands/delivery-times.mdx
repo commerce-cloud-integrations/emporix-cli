@@ -6,12 +6,9 @@ description: "Read and change delivery times and their time slots; read the deli
 
 ## epx delivery-times
 
-Reads and changes delivery times, the days on which a site delivers to a zone, and their
-time slots; reads the delivery windows open to a cart, checks and counts the orders of a
-delivery window and names its delivery cycle.
+Reads and changes delivery times, the days on which a site delivers to a zone, and their time slots; reads the delivery windows open to a cart, checks and counts the orders of a delivery window and names its delivery cycle.
 
-Its reads require different OAuth scopes; the help of each names them.
-Its writes require the shipping.shipping\_manage scope.
+Its reads require different OAuth scopes; the help of each names them. Its writes require the shipping.shipping\_manage scope.
 
 **Command:** `epx delivery-times [flags]`, `epx delivery-times [command]`
 
@@ -48,18 +45,11 @@ Its writes require the shipping.shipping\_manage scope.
 
 Create delivery times in bulk.
 
-Creates the delivery times in `--file`, a JSON array of delivery times, each as create
-takes it.
+Creates the delivery times in `--file`, a JSON array of delivery times, each as create takes it.
 
-Emporix takes up to 50 items in one request (epx refuses more), carries out each on
-its own and answers with the result of each: when one failed, epx prints the response,
-lists the items that failed on standard error (one that failed with 500, 502, 503 or 504
-may have been carried out all the same) and exits with the code that their failures
-share (for example 5 for a 409 Conflict, 4 for a 404), else 1.
+Emporix takes up to 50 items in one request (epx refuses more), carries out each on its own and answers with the result of each: when one failed, epx prints the response, lists the items that failed on standard error (one that failed with 500, 502, 503 or 504 may have been carried out all the same) and exits with the code that their failures share (for example 5 for a 409 Conflict, 4 for a 404), else 1.
 
-Changes data: on a terminal, epx asks before it sends POST. `--yes` sends without
-asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
-instead of sending it.
+Changes data: on a terminal, epx asks before it sends POST. `--yes` sends without asking (required without a terminal, or with `--file` -); `--dry-run` prints the request instead of sending it.
 
 Requires the shipping.shipping\_manage scope.
 
@@ -84,17 +74,9 @@ Also takes the [global flags](/commands#global-flags).
 
 Create a delivery time.
 
-Creates a delivery time from the JSON in `--file`: its siteCode and zoneId (or isForAllZones,
-for a day without delivery on every zone of the site), its day (a weekday, singleDate or
-datePeriod), isDeliveryDay, timeZoneId and deliveryDayShift, the slots of a delivery day
-and optionally the delivery time's id and name, as [`epx delivery-times get ID -o json`](/commands/delivery-times#epx-delivery-times-get)
-prints one; a slot with a cutOffDayShift needs a delivery time without deliveryDayShift.
-Emporix answers with its id, and refuses a delivery time that overlaps another of its
-zone, or is not valid otherwise, with 400 Bad Request (exit 1).
+Creates a delivery time from the JSON in `--file`: its siteCode and zoneId (or isForAllZones, for a day without delivery on every zone of the site), its day (a weekday, singleDate or datePeriod), isDeliveryDay, timeZoneId and deliveryDayShift, the slots of a delivery day and optionally the delivery time's id and name, as [`epx delivery-times get ID -o json`](/commands/delivery-times#epx-delivery-times-get) prints one; a slot with a cutOffDayShift needs a delivery time without deliveryDayShift. Emporix answers with its id, and refuses a delivery time that overlaps another of its zone, or is not valid otherwise, with 400 Bad Request (exit 1).
 
-Changes data: on a terminal, epx asks before it sends POST. `--yes` sends without
-asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
-instead of sending it.
+Changes data: on a terminal, epx asks before it sends POST. `--yes` sends without asking (required without a terminal, or with `--file` -); `--dry-run` prints the request instead of sending it.
 
 Requires the shipping.shipping\_manage scope.
 
@@ -119,13 +101,9 @@ Also takes the [global flags](/commands#global-flags).
 
 Delete a delivery time.
 
-Deletes the delivery time ID with its time slots.
-Emporix answers an unknown ID as one that it deleted (204 No Content).
+Deletes the delivery time ID with its time slots. Emporix answers an unknown ID as one that it deleted (204 No Content).
 
-Deletes data, which cannot be undone.
-On a terminal, epx sends DELETE only once you type ID at its prompt.
-`--yes` sends without asking (required without a terminal);
-`--dry-run` prints the request instead of sending it.
+Deletes data, which cannot be undone. On a terminal, epx sends DELETE only once you type ID at its prompt. `--yes` sends without asking (required without a terminal); `--dry-run` prints the request instead of sending it.
 
 Requires the shipping.shipping\_manage scope.
 
@@ -146,17 +124,9 @@ Also takes the [global flags](/commands#global-flags).
 
 Name the delivery cycle of a delivery window.
 
-Prints the name of the delivery cycle of a delivery window, as Emporix names it in the
-delivery windows of a cart and in orders (deliveryCycle in
-[`epx delivery-times windows CART_ID -o json`](/commands/delivery-times#epx-delivery-times-windows)): the delivery date, the hour (UTC) of the
-slot's cut-off time and the deliveryCycleName of its cutOffTime, such as 2026-06-20-6morning.
-The delivery window is the delivery time `--delivery-time` on `--date`, an ISO 8601
-date and time such as 2026-11-02T12:00:00.000Z, in its `--slot`: [`epx delivery-times list`](/commands/delivery-times#epx-delivery-times-list)
-and [`epx delivery-times slots list`](/commands/delivery-times#epx-delivery-times-slots-list) show their IDs.
-Emporix answers an unknown delivery time with 403 Forbidden (exit 3), not as not found.
+Prints the name of the delivery cycle of a delivery window, as Emporix names it in the delivery windows of a cart and in orders (deliveryCycle in [`epx delivery-times windows CART_ID -o json`](/commands/delivery-times#epx-delivery-times-windows)): the delivery date, the hour (UTC) of the slot's cut-off time and the deliveryCycleName of its cutOffTime, such as 2026-06-20-6morning. The delivery window is the delivery time `--delivery-time` on `--date`, an ISO 8601 date and time such as 2026-11-02T12:00:00.000Z, in its `--slot`: [`epx delivery-times list`](/commands/delivery-times#epx-delivery-times-list) and [`epx delivery-times slots list`](/commands/delivery-times#epx-delivery-times-slots-list) show their IDs. Emporix answers an unknown delivery time with 403 Forbidden (exit 3), not as not found.
 
-Changes nothing: Emporix serves this read as POST with a JSON body, which the
-flags make or `--body` gives whole.
+Changes nothing: Emporix serves this read as POST with a JSON body, which the flags make or `--body` gives whole.
 
 No OAuth scope is needed.
 
@@ -185,12 +155,7 @@ Also takes the [global flags](/commands#global-flags).
 
 Show one delivery time.
 
-Reads delivery times, the days on which a site delivers to a zone. ZONE is a zone id
-([`epx shipping zones list --site S`](/commands/shipping#epx-shipping-zones-list)), or `"all zones"` for a day without delivery on every
-zone; DAY is a weekday, a date or a date period (from/to); DELIVERS is false for a day
-without delivery; DAY SHIFT is how many days the delivery follows an order placed before
-the cut-off, when the delivery time sets it (a weekday's slots may set their own); SLOTS
-counts the time slots, which [`epx delivery-times slots list DELIVERY_TIME_ID`](/commands/delivery-times#epx-delivery-times-slots-list) lists.
+Reads delivery times, the days on which a site delivers to a zone. ZONE is a zone id ([`epx shipping zones list --site S`](/commands/shipping#epx-shipping-zones-list)), or `"all zones"` for a day without delivery on every zone; DAY is a weekday, a date or a date period (from/to); DELIVERS is false for a day without delivery; DAY SHIFT is how many days the delivery follows an order placed before the cut-off, when the delivery time sets it (a weekday's slots may set their own); SLOTS counts the time slots, which [`epx delivery-times slots list DELIVERY_TIME_ID`](/commands/delivery-times#epx-delivery-times-slots-list) lists.
 
 Requires the shipping.shipping\_read scope.
 
@@ -211,18 +176,9 @@ Also takes the [global flags](/commands#global-flags).
 
 Count one more order in a delivery window.
 
-Counts one more order in a delivery window that has capacity left.
-The delivery window is the delivery time `--delivery-time` on `--date`, an ISO 8601
-date and time such as 2026-11-02T12:00:00.000Z, in its `--slot`: [`epx delivery-times list`](/commands/delivery-times#epx-delivery-times-list)
-and [`epx delivery-times slots list`](/commands/delivery-times#epx-delivery-times-slots-list) show their IDs.
-The Checkout Service counts each order that it places with a delivery window; only a
-checkout of your own needs this. Emporix answers true once it counted the order, and a
-window that is full or not offered that day, or a date in the past or in another format,
-with 400 Bad Request (exit 1). The body may also come whole from `--file`.
+Counts one more order in a delivery window that has capacity left. The delivery window is the delivery time `--delivery-time` on `--date`, an ISO 8601 date and time such as 2026-11-02T12:00:00.000Z, in its `--slot`: [`epx delivery-times list`](/commands/delivery-times#epx-delivery-times-list) and [`epx delivery-times slots list`](/commands/delivery-times#epx-delivery-times-slots-list) show their IDs. The Checkout Service counts each order that it places with a delivery window; only a checkout of your own needs this. Emporix answers true once it counted the order, and a window that is full or not offered that day, or a date in the past or in another format, with 400 Bad Request (exit 1). The body may also come whole from `--file`.
 
-Changes data: on a terminal, epx asks before it sends POST. `--yes` sends without
-asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
-instead of sending it.
+Changes data: on a terminal, epx asks before it sends POST. `--yes` sends without asking (required without a terminal, or with `--file` -); `--dry-run` prints the request instead of sending it.
 
 Requires the shipping.shipping\_manage scope.
 
@@ -251,12 +207,7 @@ Also takes the [global flags](/commands#global-flags).
 
 List delivery times.
 
-Reads delivery times, the days on which a site delivers to a zone. ZONE is a zone id
-([`epx shipping zones list --site S`](/commands/shipping#epx-shipping-zones-list)), or `"all zones"` for a day without delivery on every
-zone; DAY is a weekday, a date or a date period (from/to); DELIVERS is false for a day
-without delivery; DAY SHIFT is how many days the delivery follows an order placed before
-the cut-off, when the delivery time sets it (a weekday's slots may set their own); SLOTS
-counts the time slots, which [`epx delivery-times slots list DELIVERY_TIME_ID`](/commands/delivery-times#epx-delivery-times-slots-list) lists.
+Reads delivery times, the days on which a site delivers to a zone. ZONE is a zone id ([`epx shipping zones list --site S`](/commands/shipping#epx-shipping-zones-list)), or `"all zones"` for a day without delivery on every zone; DAY is a weekday, a date or a date period (from/to); DELIVERS is false for a day without delivery; DAY SHIFT is how many days the delivery follows an order placed before the cut-off, when the delivery time sets it (a weekday's slots may set their own); SLOTS counts the time slots, which [`epx delivery-times slots list DELIVERY_TIME_ID`](/commands/delivery-times#epx-delivery-times-slots-list) lists.
 
 Requires the shipping.shipping\_read scope.
 
@@ -281,14 +232,9 @@ Also takes the [global flags](/commands#global-flags).
 
 Change a delivery time.
 
-Changes the delivery time ID with the JSON Patch (RFC 6902) in
-`--file`: an array of operations whose op is add, remove or replace, such as
-`[{"op": "replace", "path": "/name", "value": "Mondays"}]`.
-An unknown ID is not found (exit 4).
+Changes the delivery time ID with the JSON Patch (RFC 6902) in `--file`: an array of operations whose op is add, remove or replace, such as `[{"op": "replace", "path": "/name", "value": "Mondays"}]`. An unknown ID is not found (exit 4).
 
-Changes data: on a terminal, epx asks before it sends PATCH. `--yes` sends without
-asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
-instead of sending it.
+Changes data: on a terminal, epx asks before it sends PATCH. `--yes` sends without asking (required without a terminal, or with `--file` -); `--dry-run` prints the request instead of sending it.
 
 Requires the shipping.shipping\_manage scope.
 
@@ -315,8 +261,7 @@ Read and change the time slots of a delivery time.
 
 Reads and changes the time slots of a delivery time.
 
-Its reads require the shipping.shipping\_read scope.
-Its writes require the shipping.shipping\_manage scope.
+Its reads require the shipping.shipping\_read scope. Its writes require the shipping.shipping\_manage scope.
 
 **Command:** `epx delivery-times slots [flags]`, `epx delivery-times slots [command]`
 
@@ -343,19 +288,9 @@ Its writes require the shipping.shipping\_manage scope.
 
 Create a time slot of a delivery time.
 
-Creates a time slot of a delivery day from the JSON in `--file`: its shippingMethod (a method
-of the delivery time's zone), deliveryTimeRange (timeFrom and timeTo, local times such as
-08:00), cutOffTime (its time, an ISO 8601 timestamp whose time of day counts, and for a
-weekday its cutOffDayShift, which the delivery time must not combine with a
-deliveryDayShift), capacity (the orders it takes) and optionally its id, as
-[`epx delivery-times slots get DELIVERY_TIME_ID ID -o json`](/commands/delivery-times#epx-delivery-times-slots-get) prints one. Emporix answers
-with its id, and a slot id that exists already with 400 Bad Request (exit 1), not as a
-conflict.
-DELIVERY\_TIME\_ID is the ID that [`epx delivery-times list`](/commands/delivery-times#epx-delivery-times-list) shows; an unknown one is not found.
+Creates a time slot of a delivery day from the JSON in `--file`: its shippingMethod (a method of the delivery time's zone), deliveryTimeRange (timeFrom and timeTo, local times such as 08:00), cutOffTime (its time, an ISO 8601 timestamp whose time of day counts, and for a weekday its cutOffDayShift, which the delivery time must not combine with a deliveryDayShift), capacity (the orders it takes) and optionally its id, as [`epx delivery-times slots get DELIVERY_TIME_ID ID -o json`](/commands/delivery-times#epx-delivery-times-slots-get) prints one. Emporix answers with its id, and a slot id that exists already with 400 Bad Request (exit 1), not as a conflict. DELIVERY\_TIME\_ID is the ID that [`epx delivery-times list`](/commands/delivery-times#epx-delivery-times-list) shows; an unknown one is not found.
 
-Changes data: on a terminal, epx asks before it sends POST. `--yes` sends without
-asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
-instead of sending it.
+Changes data: on a terminal, epx asks before it sends POST. `--yes` sends without asking (required without a terminal, or with `--file` -); `--dry-run` prints the request instead of sending it.
 
 Requires the shipping.shipping\_manage scope.
 
@@ -380,14 +315,9 @@ Also takes the [global flags](/commands#global-flags).
 
 Delete a time slot of a delivery time.
 
-Deletes the time slot ID of a delivery time.
-DELIVERY\_TIME\_ID is the ID that [`epx delivery-times list`](/commands/delivery-times#epx-delivery-times-list) shows; an unknown one is not found.
-ID is the ID that [`epx delivery-times slots list DELIVERY_TIME_ID`](/commands/delivery-times#epx-delivery-times-slots-list) shows; an unknown one is answered as one that Emporix deleted (204 No Content).
+Deletes the time slot ID of a delivery time. DELIVERY\_TIME\_ID is the ID that [`epx delivery-times list`](/commands/delivery-times#epx-delivery-times-list) shows; an unknown one is not found. ID is the ID that [`epx delivery-times slots list DELIVERY_TIME_ID`](/commands/delivery-times#epx-delivery-times-slots-list) shows; an unknown one is answered as one that Emporix deleted (204 No Content).
 
-Deletes data, which cannot be undone.
-On a terminal, epx sends DELETE only once you type ID at its prompt.
-`--yes` sends without asking (required without a terminal);
-`--dry-run` prints the request instead of sending it.
+Deletes data, which cannot be undone. On a terminal, epx sends DELETE only once you type ID at its prompt. `--yes` sends without asking (required without a terminal); `--dry-run` prints the request instead of sending it.
 
 Requires the shipping.shipping\_manage scope.
 
@@ -408,13 +338,9 @@ Also takes the [global flags](/commands#global-flags).
 
 Delete every time slot of a delivery time.
 
-Deletes every time slot of a delivery time.
-DELIVERY\_TIME\_ID is the ID that [`epx delivery-times list`](/commands/delivery-times#epx-delivery-times-list) shows; an unknown one is not found.
+Deletes every time slot of a delivery time. DELIVERY\_TIME\_ID is the ID that [`epx delivery-times list`](/commands/delivery-times#epx-delivery-times-list) shows; an unknown one is not found.
 
-Deletes every time slot of the delivery time with one request, which cannot be undone.
-On a terminal, epx sends DELETE only once you type DELIVERY\_TIME\_ID at its prompt.
-`--yes` sends without asking (required without a terminal);
-`--dry-run` prints the request instead of sending it.
+Deletes every time slot of the delivery time with one request, which cannot be undone. On a terminal, epx sends DELETE only once you type DELIVERY\_TIME\_ID at its prompt. `--yes` sends without asking (required without a terminal); `--dry-run` prints the request instead of sending it.
 
 Requires the shipping.shipping\_manage scope.
 
@@ -435,14 +361,7 @@ Also takes the [global flags](/commands#global-flags).
 
 Show one time slot of a delivery time.
 
-Reads one time slot of a delivery time.
-DELIVERY\_TIME\_ID is the ID that [`epx delivery-times list`](/commands/delivery-times#epx-delivery-times-list) shows; an unknown one is not found.
-ID is the ID that [`epx delivery-times slots list DELIVERY_TIME_ID`](/commands/delivery-times#epx-delivery-times-slots-list) shows; an unknown one is not found.
-METHOD is the shipping method of the slot ([`epx shipping zones methods list`](/commands/shipping#epx-shipping-zones-methods-list)), FROM and TO
-its delivery window in the delivery time's TIME ZONE, CUT-OFF the latest time of day to
-order for the slot (sent as an ISO 8601 timestamp whose date Emporix ignores), CUT-OFF DAYS
-how many days the delivery follows such an order (weekday delivery times only; otherwise
-see DAY SHIFT in [`epx delivery-times list`](/commands/delivery-times#epx-delivery-times-list)), and CAPACITY how many orders the slot takes.
+Reads one time slot of a delivery time. DELIVERY\_TIME\_ID is the ID that [`epx delivery-times list`](/commands/delivery-times#epx-delivery-times-list) shows; an unknown one is not found. ID is the ID that [`epx delivery-times slots list DELIVERY_TIME_ID`](/commands/delivery-times#epx-delivery-times-slots-list) shows; an unknown one is not found. METHOD is the shipping method of the slot ([`epx shipping zones methods list`](/commands/shipping#epx-shipping-zones-methods-list)), FROM and TO its delivery window in the delivery time's TIME ZONE, CUT-OFF the latest time of day to order for the slot (sent as an ISO 8601 timestamp whose date Emporix ignores), CUT-OFF DAYS how many days the delivery follows such an order (weekday delivery times only; otherwise see DAY SHIFT in [`epx delivery-times list`](/commands/delivery-times#epx-delivery-times-list)), and CAPACITY how many orders the slot takes.
 
 Requires the shipping.shipping\_read scope.
 
@@ -463,13 +382,7 @@ Also takes the [global flags](/commands#global-flags).
 
 List the time slots of a delivery time.
 
-Reads the time slots of a delivery time.
-DELIVERY\_TIME\_ID is the ID that [`epx delivery-times list`](/commands/delivery-times#epx-delivery-times-list) shows; an unknown one is not found.
-METHOD is the shipping method of the slot ([`epx shipping zones methods list`](/commands/shipping#epx-shipping-zones-methods-list)), FROM and TO
-its delivery window in the delivery time's TIME ZONE, CUT-OFF the latest time of day to
-order for the slot (sent as an ISO 8601 timestamp whose date Emporix ignores), CUT-OFF DAYS
-how many days the delivery follows such an order (weekday delivery times only; otherwise
-see DAY SHIFT in [`epx delivery-times list`](/commands/delivery-times#epx-delivery-times-list)), and CAPACITY how many orders the slot takes.
+Reads the time slots of a delivery time. DELIVERY\_TIME\_ID is the ID that [`epx delivery-times list`](/commands/delivery-times#epx-delivery-times-list) shows; an unknown one is not found. METHOD is the shipping method of the slot ([`epx shipping zones methods list`](/commands/shipping#epx-shipping-zones-methods-list)), FROM and TO its delivery window in the delivery time's TIME ZONE, CUT-OFF the latest time of day to order for the slot (sent as an ISO 8601 timestamp whose date Emporix ignores), CUT-OFF DAYS how many days the delivery follows such an order (weekday delivery times only; otherwise see DAY SHIFT in [`epx delivery-times list`](/commands/delivery-times#epx-delivery-times-list)), and CAPACITY how many orders the slot takes.
 
 Requires the shipping.shipping\_read scope.
 
@@ -494,15 +407,9 @@ Also takes the [global flags](/commands#global-flags).
 
 Change a time slot of a delivery time.
 
-Changes the time slot ID of a delivery time with the JSON Patch (RFC 6902) in
-`--file`: an array of operations whose op is add, remove or replace, such as
-`[{"op": "replace", "path": "/capacity", "value": 50}]`.
-DELIVERY\_TIME\_ID is the ID that [`epx delivery-times list`](/commands/delivery-times#epx-delivery-times-list) shows; an unknown one is not found.
-ID is the ID that [`epx delivery-times slots list DELIVERY_TIME_ID`](/commands/delivery-times#epx-delivery-times-slots-list) shows; an unknown one is not found.
+Changes the time slot ID of a delivery time with the JSON Patch (RFC 6902) in `--file`: an array of operations whose op is add, remove or replace, such as `[{"op": "replace", "path": "/capacity", "value": 50}]`. DELIVERY\_TIME\_ID is the ID that [`epx delivery-times list`](/commands/delivery-times#epx-delivery-times-list) shows; an unknown one is not found. ID is the ID that [`epx delivery-times slots list DELIVERY_TIME_ID`](/commands/delivery-times#epx-delivery-times-slots-list) shows; an unknown one is not found.
 
-Changes data: on a terminal, epx asks before it sends PATCH. `--yes` sends without
-asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
-instead of sending it.
+Changes data: on a terminal, epx asks before it sends PATCH. `--yes` sends without asking (required without a terminal, or with `--file` -); `--dry-run` prints the request instead of sending it.
 
 Requires the shipping.shipping\_manage scope.
 
@@ -527,13 +434,9 @@ Also takes the [global flags](/commands#global-flags).
 
 Replace a time slot of a delivery time.
 
-Replaces the time slot ID of a delivery time with the one in `--file`, as create takes it.
-DELIVERY\_TIME\_ID is the ID that [`epx delivery-times list`](/commands/delivery-times#epx-delivery-times-list) shows; an unknown one is not found.
-ID is the ID that [`epx delivery-times slots list DELIVERY_TIME_ID`](/commands/delivery-times#epx-delivery-times-slots-list) shows; an unknown one is not found.
+Replaces the time slot ID of a delivery time with the one in `--file`, as create takes it. DELIVERY\_TIME\_ID is the ID that [`epx delivery-times list`](/commands/delivery-times#epx-delivery-times-list) shows; an unknown one is not found. ID is the ID that [`epx delivery-times slots list DELIVERY_TIME_ID`](/commands/delivery-times#epx-delivery-times-slots-list) shows; an unknown one is not found.
 
-Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without
-asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
-instead of sending it.
+Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without asking (required without a terminal, or with `--file` -); `--dry-run` prints the request instead of sending it.
 
 Requires the shipping.shipping\_manage scope.
 
@@ -558,14 +461,9 @@ Also takes the [global flags](/commands#global-flags).
 
 Replace a delivery time.
 
-Replaces the delivery time ID with the one in `--file`, as create takes it. With
-metadata.version in the body, as [`epx delivery-times get ID -o json`](/commands/delivery-times#epx-delivery-times-get) prints it, Emporix
-refuses the write as a conflict (exit 5) when the delivery time changed since it was read;
-without it, Emporix replaces it whatever its version. An unknown ID is not found (exit 4).
+Replaces the delivery time ID with the one in `--file`, as create takes it. With metadata.version in the body, as [`epx delivery-times get ID -o json`](/commands/delivery-times#epx-delivery-times-get) prints it, Emporix refuses the write as a conflict (exit 5) when the delivery time changed since it was read; without it, Emporix replaces it whatever its version. An unknown ID is not found (exit 4).
 
-Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without
-asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
-instead of sending it.
+Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without asking (required without a terminal, or with `--file` -); `--dry-run` prints the request instead of sending it.
 
 Requires the shipping.shipping\_manage scope.
 
@@ -590,16 +488,9 @@ Also takes the [global flags](/commands#global-flags).
 
 Check whether a delivery window can take an order.
 
-Checks whether a delivery window can take an order.
-The delivery window is the delivery time `--delivery-time` on `--date`, an ISO 8601
-date and time such as 2026-11-02T12:00:00.000Z, in its `--slot`: [`epx delivery-times list`](/commands/delivery-times#epx-delivery-times-list)
-and [`epx delivery-times slots list`](/commands/delivery-times#epx-delivery-times-slots-list) show their IDs.
-VALID is true when it can; Emporix answers a date in the past or in another format, or a
-window that is full or not offered that day, with 400 Bad Request (exit 1), and an unknown
-delivery time as not found (exit 4).
+Checks whether a delivery window can take an order. The delivery window is the delivery time `--delivery-time` on `--date`, an ISO 8601 date and time such as 2026-11-02T12:00:00.000Z, in its `--slot`: [`epx delivery-times list`](/commands/delivery-times#epx-delivery-times-list) and [`epx delivery-times slots list`](/commands/delivery-times#epx-delivery-times-slots-list) show their IDs. VALID is true when it can; Emporix answers a date in the past or in another format, or a window that is full or not offered that day, with 400 Bad Request (exit 1), and an unknown delivery time as not found (exit 4).
 
-Changes nothing: Emporix serves this read as POST with a JSON body, which the
-flags make or `--body` gives whole.
+Changes nothing: Emporix serves this read as POST with a JSON body, which the flags make or `--body` gives whole.
 
 No OAuth scope is needed.
 
@@ -628,15 +519,7 @@ Also takes the [global flags](/commands#global-flags).
 
 List the delivery windows open to a cart.
 
-Reads the delivery windows in which a cart can be delivered to the country and postal code
-set on the cart. DATE is the delivery day, FROM and TO the delivery time range on it,
-METHOD the shipping method, ZONE the shipping zone, CUT-OFF the latest time to order for
-the window, SLOT the time slot of its delivery time, which
-[`epx delivery-times slots list DELIVERY_TIME_ID`](/commands/delivery-times#epx-delivery-times-slots-list) lists, and ID the id of that delivery
-time ([`epx delivery-times get ID`](/commands/delivery-times#epx-delivery-times-get)); the delivery cycle is only in `-o json`.
-For another postal code than the cart's, run
-[`epx api get /shipping/{tenant}/actualDeliveryWindows/CART_ID -p postalCode=CODE`](/commands/api#epx-api-get).
-CART\_ID is the id of a cart; an unknown one is not found (exit 4).
+Reads the delivery windows in which a cart can be delivered to the country and postal code set on the cart. DATE is the delivery day, FROM and TO the delivery time range on it, METHOD the shipping method, ZONE the shipping zone, CUT-OFF the latest time to order for the window, SLOT the time slot of its delivery time, which [`epx delivery-times slots list DELIVERY_TIME_ID`](/commands/delivery-times#epx-delivery-times-slots-list) lists, and ID the id of that delivery time ([`epx delivery-times get ID`](/commands/delivery-times#epx-delivery-times-get)); the delivery cycle is only in `-o json`. For another postal code than the cart's, run [`epx api get /shipping/{tenant}/actualDeliveryWindows/CART_ID -p postalCode=CODE`](/commands/api#epx-api-get). CART\_ID is the id of a cart; an unknown one is not found (exit 4).
 
 No OAuth scope is needed.
 

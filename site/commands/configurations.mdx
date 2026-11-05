@@ -6,17 +6,9 @@ description: "Read and change tenant configurations."
 
 ## epx configurations
 
-Reads tenant configurations (settings such as project\_lang).
-Tables show values as sent, secured ones included, and cut long ones (`-o json` prints
-them whole).
-A setting that was never set is not found (exit 4): Emporix then applies its default.
-[`epx configurations global`](/commands/configurations#epx-configurations-global), `clients`, `for-client` and `client-setting` read global
-settings and those of clients. [`epx configurations create`](/commands/configurations#epx-configurations-create), `update` and `delete`
-change settings, and `client-create`, `client-update` and `client-delete` those
-of a client.
+Reads tenant configurations (settings such as project\_lang). Tables show values as sent, secured ones included, and cut long ones (`-o json` prints them whole). A setting that was never set is not found (exit 4): Emporix then applies its default. [`epx configurations global`](/commands/configurations#epx-configurations-global), `clients`, `for-client` and `client-setting` read global settings and those of clients. [`epx configurations create`](/commands/configurations#epx-configurations-create), `update` and `delete` change settings, and `client-create`, `client-update` and `client-delete` those of a client.
 
-Its reads require different OAuth scopes; the help of each names them.
-Its writes require the configuration.configuration\_manage scope.
+Its reads require different OAuth scopes; the help of each names them. Its writes require the configuration.configuration\_manage scope.
 
 **Command:** `epx configurations [flags]`, `epx configurations [command]`
 
@@ -53,14 +45,9 @@ Its writes require the configuration.configuration\_manage scope.
 
 Create configurations of a client.
 
-Creates configurations of the client CLIENT from the JSON array of settings that `--file` gives,
-each with its key and value (and optionally secured, description, readOnly, restricted and
-schemaUrl), and prints the settings created. Emporix answers 409 Conflict (exit 5) when one of
-the keys exists already (the other keys of the request may be created then): change it with [`epx configurations client-update`](/commands/configurations#epx-configurations-client-update).
+Creates configurations of the client CLIENT from the JSON array of settings that `--file` gives, each with its key and value (and optionally secured, description, readOnly, restricted and schemaUrl), and prints the settings created. Emporix answers 409 Conflict (exit 5) when one of the keys exists already (the other keys of the request may be created then): change it with [`epx configurations client-update`](/commands/configurations#epx-configurations-client-update).
 
-Changes data: on a terminal, epx asks before it sends POST. `--yes` sends without
-asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
-instead of sending it.
+Changes data: on a terminal, epx asks before it sends POST. `--yes` sends without asking (required without a terminal, or with `--file` -); `--dry-run` prints the request instead of sending it.
 
 Requires the configuration.configuration\_manage scope.
 
@@ -83,14 +70,9 @@ Also takes the [global flags](/commands#global-flags).
 
 Delete a configuration of a client.
 
-Deletes the configuration KEY of the client CLIENT, as
-[`epx configurations client-setting CLIENT KEY`](/commands/configurations#epx-configurations-client-setting) shows it; Emporix then applies its
-default, if it has one. A key that is not set is not found (exit 4).
+Deletes the configuration KEY of the client CLIENT, as [`epx configurations client-setting CLIENT KEY`](/commands/configurations#epx-configurations-client-setting) shows it; Emporix then applies its default, if it has one. A key that is not set is not found (exit 4).
 
-Deletes data, which cannot be undone.
-On a terminal, epx sends DELETE only once you type KEY at its prompt.
-`--yes` sends without asking (required without a terminal);
-`--dry-run` prints the request instead of sending it.
+Deletes data, which cannot be undone. On a terminal, epx sends DELETE only once you type KEY at its prompt. `--yes` sends without asking (required without a terminal); `--dry-run` prints the request instead of sending it.
 
 Requires the configuration.configuration\_manage scope.
 
@@ -111,11 +93,7 @@ Also takes the [global flags](/commands#global-flags).
 
 Show one configuration of a client.
 
-Reads one setting of a client.
-Tables show values as sent, secured ones included, and cut long ones (`-o json` prints
-them whole).
-CLIENT is a name that [`epx configurations clients`](/commands/configurations#epx-configurations-clients) shows and KEY a key that
-[`epx configurations for-client CLIENT`](/commands/configurations#epx-configurations-for-client) shows; an unknown one is not found (exit 4).
+Reads one setting of a client. Tables show values as sent, secured ones included, and cut long ones (`-o json` prints them whole). CLIENT is a name that [`epx configurations clients`](/commands/configurations#epx-configurations-clients) shows and KEY a key that [`epx configurations for-client CLIENT`](/commands/configurations#epx-configurations-for-client) shows; an unknown one is not found (exit 4).
 
 Requires the configuration.configuration\_view scope.
 
@@ -136,15 +114,9 @@ Also takes the [global flags](/commands#global-flags).
 
 Replace a configuration of a client.
 
-Replaces the configuration KEY of the client CLIENT with the setting that `--file` gives, a JSON
-object with the key KEY (Emporix refuses another) and its value, and prints the setting. Give
-every member to keep, such as secured, description and version, as
-[`epx configurations client-setting CLIENT KEY -o json`](/commands/configurations#epx-configurations-client-setting) shows them. Emporix refuses a key that was never set (404 Not Found,
-exit 4): create it with [`epx configurations client-create`](/commands/configurations#epx-configurations-client-create).
+Replaces the configuration KEY of the client CLIENT with the setting that `--file` gives, a JSON object with the key KEY (Emporix refuses another) and its value, and prints the setting. Give every member to keep, such as secured, description and version, as [`epx configurations client-setting CLIENT KEY -o json`](/commands/configurations#epx-configurations-client-setting) shows them. Emporix refuses a key that was never set (404 Not Found, exit 4): create it with [`epx configurations client-create`](/commands/configurations#epx-configurations-client-create).
 
-Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without
-asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
-instead of sending it.
+Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without asking (required without a terminal, or with `--file` -); `--dry-run` prints the request instead of sending it.
 
 Requires the configuration.configuration\_manage scope.
 
@@ -192,14 +164,9 @@ Also takes the [global flags](/commands#global-flags).
 
 Create tenant configurations.
 
-Creates tenant configurations from the JSON array of settings that `--file` gives,
-each with its key and value (and optionally secured, description, readOnly, restricted and
-schemaUrl), and prints the settings created. Emporix answers 409 Conflict (exit 5) when one of
-the keys exists already (the other keys of the request may be created then): change it with [`epx configurations update`](/commands/configurations#epx-configurations-update).
+Creates tenant configurations from the JSON array of settings that `--file` gives, each with its key and value (and optionally secured, description, readOnly, restricted and schemaUrl), and prints the settings created. Emporix answers 409 Conflict (exit 5) when one of the keys exists already (the other keys of the request may be created then): change it with [`epx configurations update`](/commands/configurations#epx-configurations-update).
 
-Changes data: on a terminal, epx asks before it sends POST. `--yes` sends without
-asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
-instead of sending it.
+Changes data: on a terminal, epx asks before it sends POST. `--yes` sends without asking (required without a terminal, or with `--file` -); `--dry-run` prints the request instead of sending it.
 
 Requires the configuration.configuration\_manage scope.
 
@@ -222,14 +189,9 @@ Also takes the [global flags](/commands#global-flags).
 
 Delete a tenant configuration.
 
-Deletes the tenant configuration KEY, as
-[`epx configurations get KEY`](/commands/configurations#epx-configurations-get) shows it; Emporix then applies its
-default, if it has one. A key that is not set is not found (exit 4).
+Deletes the tenant configuration KEY, as [`epx configurations get KEY`](/commands/configurations#epx-configurations-get) shows it; Emporix then applies its default, if it has one. A key that is not set is not found (exit 4).
 
-Deletes data, which cannot be undone.
-On a terminal, epx sends DELETE only once you type KEY at its prompt.
-`--yes` sends without asking (required without a terminal);
-`--dry-run` prints the request instead of sending it.
+Deletes data, which cannot be undone. On a terminal, epx sends DELETE only once you type KEY at its prompt. `--yes` sends without asking (required without a terminal); `--dry-run` prints the request instead of sending it.
 
 Requires the configuration.configuration\_manage scope.
 
@@ -250,10 +212,7 @@ Also takes the [global flags](/commands#global-flags).
 
 List the configurations of a client.
 
-Reads the settings of a client.
-Tables show values as sent, secured ones included, and cut long ones (`-o json` prints
-them whole).
-CLIENT is a name that [`epx configurations clients`](/commands/configurations#epx-configurations-clients) shows; an unknown one lists nothing.
+Reads the settings of a client. Tables show values as sent, secured ones included, and cut long ones (`-o json` prints them whole). CLIENT is a name that [`epx configurations clients`](/commands/configurations#epx-configurations-clients) shows; an unknown one lists nothing.
 
 Requires the configuration.configuration\_view scope.
 
@@ -278,14 +237,7 @@ Also takes the [global flags](/commands#global-flags).
 
 Show one configuration.
 
-Reads tenant configurations (settings such as project\_lang).
-Tables show values as sent, secured ones included, and cut long ones (`-o json` prints
-them whole).
-A setting that was never set is not found (exit 4): Emporix then applies its default.
-[`epx configurations global`](/commands/configurations#epx-configurations-global), `clients`, `for-client` and `client-setting` read global
-settings and those of clients. [`epx configurations create`](/commands/configurations#epx-configurations-create), `update` and `delete`
-change settings, and `client-create`, `client-update` and `client-delete` those
-of a client.
+Reads tenant configurations (settings such as project\_lang). Tables show values as sent, secured ones included, and cut long ones (`-o json` prints them whole). A setting that was never set is not found (exit 4): Emporix then applies its default. [`epx configurations global`](/commands/configurations#epx-configurations-global), `clients`, `for-client` and `client-setting` read global settings and those of clients. [`epx configurations create`](/commands/configurations#epx-configurations-create), `update` and `delete` change settings, and `client-create`, `client-update` and `client-delete` those of a client.
 
 Requires the configuration.configuration\_view scope.
 
@@ -306,9 +258,7 @@ Also takes the [global flags](/commands#global-flags).
 
 List global configurations.
 
-Reads global configurations, which hold for every tenant.
-Tables show values as sent, secured ones included, and cut long ones (`-o json` prints
-them whole).
+Reads global configurations, which hold for every tenant. Tables show values as sent, secured ones included, and cut long ones (`-o json` prints them whole).
 
 No OAuth scope is needed.
 
@@ -333,14 +283,7 @@ Also takes the [global flags](/commands#global-flags).
 
 List configurations.
 
-Reads tenant configurations (settings such as project\_lang).
-Tables show values as sent, secured ones included, and cut long ones (`-o json` prints
-them whole).
-A setting that was never set is not found (exit 4): Emporix then applies its default.
-[`epx configurations global`](/commands/configurations#epx-configurations-global), `clients`, `for-client` and `client-setting` read global
-settings and those of clients. [`epx configurations create`](/commands/configurations#epx-configurations-create), `update` and `delete`
-change settings, and `client-create`, `client-update` and `client-delete` those
-of a client.
+Reads tenant configurations (settings such as project\_lang). Tables show values as sent, secured ones included, and cut long ones (`-o json` prints them whole). A setting that was never set is not found (exit 4): Emporix then applies its default. [`epx configurations global`](/commands/configurations#epx-configurations-global), `clients`, `for-client` and `client-setting` read global settings and those of clients. [`epx configurations create`](/commands/configurations#epx-configurations-create), `update` and `delete` change settings, and `client-create`, `client-update` and `client-delete` those of a client.
 
 Requires the configuration.configuration\_view scope.
 
@@ -365,15 +308,9 @@ Also takes the [global flags](/commands#global-flags).
 
 Replace a tenant configuration.
 
-Replaces the tenant configuration KEY with the setting that `--file` gives, a JSON
-object with the key KEY (Emporix refuses another) and its value, and prints the setting. Give
-every member to keep, such as secured, description and version, as
-[`epx configurations get KEY -o json`](/commands/configurations#epx-configurations-get) shows them. Emporix refuses a key that was never set (404 Not Found,
-exit 4): create it with [`epx configurations create`](/commands/configurations#epx-configurations-create).
+Replaces the tenant configuration KEY with the setting that `--file` gives, a JSON object with the key KEY (Emporix refuses another) and its value, and prints the setting. Give every member to keep, such as secured, description and version, as [`epx configurations get KEY -o json`](/commands/configurations#epx-configurations-get) shows them. Emporix refuses a key that was never set (404 Not Found, exit 4): create it with [`epx configurations create`](/commands/configurations#epx-configurations-create).
 
-Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without
-asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
-instead of sending it.
+Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without asking (required without a terminal, or with `--file` -); `--dry-run` prints the request instead of sending it.
 
 Requires the configuration.configuration\_manage scope.
 

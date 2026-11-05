@@ -57,8 +57,8 @@ func TestDeletesSayWhatConfirmsThem(t *testing.T) {
 		if !strings.Contains(cmd.Long, want) {
 			t.Errorf("%s: help %q; want %q", cmd.CommandPath(), cmd.Long, want)
 		}
-		if want := "\nOn a terminal, epx sends DELETE only once you type " + word + " at its prompt.\n"; !strings.Contains(
-			cmd.Long, want) {
+		want = " On a terminal, epx sends DELETE only once you type " + word + " at its prompt. --" + yesFlag
+		if !strings.Contains(cmd.Long, want) {
 			t.Errorf("%s: help %q; want %q", cmd.CommandPath(), cmd.Long, want)
 		}
 	}
@@ -79,21 +79,21 @@ func TestDeletesOfManySaySo(t *testing.T) {
 			want: "Deletes the assignments of every product to the category with one request, which cannot be undone."},
 		{args: []string{"categories", "assignments", "delete-product-everywhere"},
 			want: "Deletes the assignments of the product to every category with one request, which cannot be undone."},
-		{args: []string{"categories", "delete"}, want: "Deletes data, which cannot be undone.\n" +
+		{args: []string{"categories", "delete"}, want: "Deletes data, which cannot be undone. " +
 			"With --with-subcategories, it deletes the category and every category below it with one request."},
-		{args: []string{"products", "delete"}, want: "Deletes data, which cannot be undone.\n" +
+		{args: []string{"products", "delete"}, want: "Deletes data, which cannot be undone. " +
 			"With --force, it deletes the product and every variant below it with one request."},
 		{args: []string{"iam", "groups", "users", "delete-all"},
 			want: "Deletes the membership of every user of the group with one request, which cannot be undone."},
 		{args: []string{"iam", "users", "groups", "delete-all"},
 			want: "Deletes the user's membership of every group with one request, which cannot be undone."},
-		{args: []string{"iam", "groups", "delete"}, want: "Deletes data, which cannot be undone.\n" +
+		{args: []string{"iam", "groups", "delete"}, want: "Deletes data, which cannot be undone. " +
 			"With --force-delete, it deletes the group and the membership of every user of it with one request."},
 		{args: []string{"price-lists", "prices", "bulk-delete"},
 			want: "Deletes the prices of a price list that --file names with one request, which cannot be undone."},
 		{args: []string{"price-lists", "delete"},
 			want: "Deletes the price list and every price in it with one request, which cannot be undone."},
-		{args: []string{"price-models", "delete"}, want: "Deletes data, which cannot be undone.\n" +
+		{args: []string{"price-models", "delete"}, want: "Deletes data, which cannot be undone. " +
 			"With --force, it deletes the price model and every price that uses it with one request."},
 		{args: []string{"fees", "assignments", "delete"},
 			want: "Deletes every fee of the item YRN with one request, which cannot be undone."},
@@ -101,7 +101,7 @@ func TestDeletesOfManySaySo(t *testing.T) {
 			want: "Deletes every fee of the product PRODUCT_ID with one request, which cannot be undone."},
 		{args: []string{"units", "update"}, want: "Changes data: on a terminal, epx asks before it sends PUT."},
 	} {
-		if _, help, _ := runCLI(t, nil, append(tt.args, "--help")...); !strings.Contains(help, "\n\n"+tt.want) {
+		if _, help, _ := runCLI(t, nil, append(tt.args, "--help")...); !containsFlat(help, "\n\n"+tt.want) {
 			t.Errorf("%q: help %q; want %q", tt.args, help, tt.want)
 		}
 	}

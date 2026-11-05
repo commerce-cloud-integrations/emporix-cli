@@ -198,7 +198,7 @@ func TestPaymentOperationsSayTheyMoveMoney(t *testing.T) {
 	for _, op := range []string{"authorize", "capture", "refund", "cancel"} {
 		_, help, _ := runCLI(t, nil, "payment-transactions", op, "--help")
 		if moves := "\nThis moves money: the confirmation names the transaction in the URL that it shows."; op !=
-			"authorize" && !strings.Contains(help, moves) || !strings.Contains(help, "\n\n"+outcomeHelp+"\n\n") {
+			"authorize" && !containsFlat(help, moves) || !containsFlat(help, "\n\n"+outcomeHelp+"\n\n") {
 			t.Errorf("%s help %q; want it to say that it moves money and how its outcome sets the exit code", op, help)
 		}
 	}

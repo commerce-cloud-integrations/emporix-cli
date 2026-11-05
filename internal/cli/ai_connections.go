@@ -52,17 +52,17 @@ type aiMCPServer struct {
 // searchToolNeedsReindex says when a search tool, which finds what a reindex job of
 // its type indexed, first finds anything.
 const searchToolNeedsReindex = "The first search tool of an entity type (customer or legal-entity) finds nothing " +
-	"until a reindex\njob of that type (`epx indexing reindex-jobs create --entity-type CUSTOMER` or\n" +
+	"until a reindex job of that type (`epx indexing reindex-jobs create --entity-type CUSTOMER` or " +
 	"LEGAL-ENTITY), started after the tool is saved, ends."
 
 // newAIToolsCommand reads and writes the native tools of agents.
 func newAIToolsCommand(a *app) *cobra.Command {
 	r := agentic(resource[aiTool]{
 		use: "tools", noun: "agent tools",
-		long: "Reads the native tools that agents can use: TYPE is slack, teams, rag_custom (retrieval-\n" +
-			"augmented generation over the tenant's own vector database), rag_emporix (over Emporix\n" +
-			"data) or search (customers or legal entities, found without embeddings in a search index\n" +
-			"that Emporix keeps); their configuration is only in -o json.\n" + searchToolNeedsReindex,
+		long: "Reads the native tools that agents can use: TYPE is slack, teams, rag_custom " +
+			"(retrieval-augmented generation over the tenant's own vector database), rag_emporix (over Emporix " +
+			"data) or search (customers or legal entities, found without embeddings in a search index " +
+			"that Emporix keeps); their configuration is only in -o json. " + searchToolNeedsReindex,
 		view: view[aiTool]{
 			singular: "tool",
 			header:   []string{columnID, columnType, columnEnabled, columnName},
@@ -73,8 +73,8 @@ func newAIToolsCommand(a *app) *cobra.Command {
 	})
 	return aiManagedGroup(a, r, aiItemWrites{
 		one: "an agent tool",
-		members: "The JSON holds its type (slack, teams, rag_custom, rag_emporix or search), name and config,\n" +
-			"and whether it is enabled.\n" + searchToolNeedsReindex + "\n",
+		members: "The JSON holds its type (slack, teams, rag_custom, rag_emporix or search), name and config, " +
+			"and whether it is enabled. " + searchToolNeedsReindex,
 		disable: usedByAgents, remove: removeFromAgents,
 	})
 }
@@ -84,8 +84,8 @@ func newAIToolsCommand(a *app) *cobra.Command {
 func newAITokensCommand(a *app) *cobra.Command {
 	r := agentic(resource[aiToken]{
 		use: "tokens", noun: "AI tokens",
-		long: "Reads the tokens that hold the API keys and secrets of LLMs, tools, OAuth configurations and\n" +
-			"MCP servers, by name: the table shows no value, and the API reference documents none in a\n" +
+		long: "Reads the tokens that hold the API keys and secrets of LLMs, tools, OAuth configurations and " +
+			"MCP servers, by name: the table shows no value, and the API reference documents none in a " +
 			"response; -o json prints the response as Emporix sends it.",
 		view: view[aiToken]{
 			singular: "token",
@@ -97,8 +97,8 @@ func newAITokensCommand(a *app) *cobra.Command {
 	})
 	return aiManagedGroup(a, r, aiItemWrites{
 		one: "an AI token",
-		members: "The JSON holds its name and value, the API key or secret, which cannot change once the\n" +
-			"token is created. A dry run prints the body, value included.\n",
+		members: "The JSON holds its name and value, the API key or secret, which cannot change once the " +
+			"token is created. A dry run prints the body, value included.",
 		remove: "delete it even where agents or MCP servers use it",
 	})
 }
@@ -108,9 +108,9 @@ func newAITokensCommand(a *app) *cobra.Command {
 func newAIOAuthsCommand(a *app) *cobra.Command {
 	r := agentic(resource[aiOAuth]{
 		use: "oauths", noun: "OAuth configurations",
-		long: "Reads OAuth configurations (a preview at Emporix): the OAuth 2.0 client credentials with which\n" +
-			"agents get a token for a self-hosted LLM from TOKEN URL. SECRET TOKEN is the ID of the token\n" +
-			"(`epx ai tokens list`) that holds the client's secret; the scope is only in -o json, which\n" +
+		long: "Reads OAuth configurations (a preview at Emporix): the OAuth 2.0 client credentials with which " +
+			"agents get a token for a self-hosted LLM from TOKEN URL. SECRET TOKEN is the ID of the token " +
+			"(`epx ai tokens list`) that holds the client's secret; the scope is only in -o json, which " +
 			"prints the response as Emporix sends it.",
 		view: view[aiOAuth]{
 			singular: "OAuth configuration",
@@ -122,9 +122,9 @@ func newAIOAuthsCommand(a *app) *cobra.Command {
 	})
 	return aiManagedGroup(a, r, aiItemWrites{
 		one: "an OAuth configuration",
-		members: "The JSON holds its url (the token URL), clientId and grantType (client_credentials, the\n" +
-			"only one), and its scope, clientSecretToken (the token that holds the secret) and whether it\n" +
-			"is enabled.\n",
+		members: "The JSON holds its url (the token URL), clientId and grantType (client_credentials, the " +
+			"only one), and its scope, clientSecretToken (the token that holds the secret) and whether it " +
+			"is enabled.",
 		disable: usedByAgents, remove: removeFromAgents,
 	})
 }
@@ -133,8 +133,8 @@ func newAIOAuthsCommand(a *app) *cobra.Command {
 func newAIMCPServersCommand(a *app) *cobra.Command {
 	r := agentic(resource[aiMCPServer]{
 		use: "mcp-servers", noun: "MCP servers",
-		long: "Reads the tenant's MCP servers, whose tools agents can use: TYPE is custom (a server at URL)\n" +
-			"or dynamic (a preview at Emporix: tools that the server's configuration defines, only in\n" +
+		long: "Reads the tenant's MCP servers, whose tools agents can use: TYPE is custom (a server at URL) " +
+			"or dynamic (a preview at Emporix: tools that the server's configuration defines, only in " +
 			"-o json), TRANSPORT streamable_http or sse.",
 		view: view[aiMCPServer]{
 			singular: "MCP server",
@@ -146,8 +146,8 @@ func newAIMCPServersCommand(a *app) *cobra.Command {
 	})
 	return aiManagedGroup(a, r, aiItemWrites{
 		one: "an MCP server",
-		members: "The JSON holds its type (custom: config with the server's url; dynamic: its tools), name\n" +
-			"and transport, and whether it is enabled.\n",
+		members: "The JSON holds its type (custom: config with the server's url; dynamic: its tools), name " +
+			"and transport, and whether it is enabled.",
 		disable: usedByAgents, remove: removeFromAgents,
 	})
 }

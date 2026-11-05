@@ -6,12 +6,9 @@ description: "Read, create, change and delete labels."
 
 ## epx labels
 
-Reads labels, the badges shown on products. OVERLAY is the label's overlay flag and
-POSITION its overlay position, as sent; MEDIA is the id of its image (image URLs are only
-in `-o json`), and DESCRIPTION is often HTML.
+Reads labels, the badges shown on products. OVERLAY is the label's overlay flag and POSITION its overlay position, as sent; MEDIA is the id of its image (image URLs are only in `-o json`), and DESCRIPTION is often HTML.
 
-Its reads need no OAuth scope.
-Its writes require different OAuth scopes; the help of each names them.
+Its reads need no OAuth scope. Its writes require different OAuth scopes; the help of each names them.
 
 **Command:** `epx labels [flags]`, `epx labels [command]`
 
@@ -36,14 +33,9 @@ Its writes require different OAuth scopes; the help of each names them.
 
 Create a label.
 
-Creates a label from the JSON in `--file`, such as
-`{"name": "Free shipping", "description": "<p>Ships free</p>", "overlay": {"isTrue": true, "position": 1}}`,
-and prints the label that Emporix answers with. Emporix generates its id unless the JSON names one;
-an id that exists already is a conflict.
+Creates a label from the JSON in `--file`, such as `{"name": "Free shipping", "description": "<p>Ships free</p>", "overlay": {"isTrue": true, "position": 1}}`, and prints the label that Emporix answers with. Emporix generates its id unless the JSON names one; an id that exists already is a conflict.
 
-Changes data: on a terminal, epx asks before it sends POST. `--yes` sends without
-asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
-instead of sending it.
+Changes data: on a terminal, epx asks before it sends POST. `--yes` sends without asking (required without a terminal, or with `--file` -); `--dry-run` prints the request instead of sending it.
 
 Requires the label.label\_manage scope.
 
@@ -68,10 +60,7 @@ Delete a label.
 
 Deletes the label ID.
 
-Deletes data, which cannot be undone.
-On a terminal, epx sends DELETE only once you type ID at its prompt.
-`--yes` sends without asking (required without a terminal);
-`--dry-run` prints the request instead of sending it.
+Deletes data, which cannot be undone. On a terminal, epx sends DELETE only once you type ID at its prompt. `--yes` sends without asking (required without a terminal); `--dry-run` prints the request instead of sending it.
 
 Requires the label.label\_delete scope.
 
@@ -92,9 +81,7 @@ Also takes the [global flags](/commands#global-flags).
 
 Show one label.
 
-Reads labels, the badges shown on products. OVERLAY is the label's overlay flag and
-POSITION its overlay position, as sent; MEDIA is the id of its image (image URLs are only
-in `-o json`), and DESCRIPTION is often HTML.
+Reads labels, the badges shown on products. OVERLAY is the label's overlay flag and POSITION its overlay position, as sent; MEDIA is the id of its image (image URLs are only in `-o json`), and DESCRIPTION is often HTML.
 
 No OAuth scope is needed.
 
@@ -117,9 +104,7 @@ Also takes the [global flags](/commands#global-flags).
 
 List labels.
 
-Reads labels, the badges shown on products. OVERLAY is the label's overlay flag and
-POSITION its overlay position, as sent; MEDIA is the id of its image (image URLs are only
-in `-o json`), and DESCRIPTION is often HTML.
+Reads labels, the badges shown on products. OVERLAY is the label's overlay flag and POSITION its overlay position, as sent; MEDIA is the id of its image (image URLs are only in `-o json`), and DESCRIPTION is often HTML.
 
 No OAuth scope is needed.
 
@@ -150,13 +135,9 @@ Also takes the [global flags](/commands#global-flags).
 
 Change members of a label.
 
-Changes the members of the label ID that the JSON in `--file` names, which may be only
-overlay; the others, such as name and description, keep their values. Unlike update,
-Emporix does not check a metadata.version in it. An unknown ID is not found. It prints the label that Emporix answers with.
+Changes the members of the label ID that the JSON in `--file` names, which may be only overlay; the others, such as name and description, keep their values. Unlike update, Emporix does not check a metadata.version in it. An unknown ID is not found. It prints the label that Emporix answers with.
 
-Changes data: on a terminal, epx asks before it sends PATCH. `--yes` sends without
-asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
-instead of sending it.
+Changes data: on a terminal, epx asks before it sends PATCH. `--yes` sends without asking (required without a terminal, or with `--file` -); `--dry-run` prints the request instead of sending it.
 
 Requires the label.label\_manage scope.
 
@@ -179,12 +160,9 @@ Also takes the [global flags](/commands#global-flags).
 
 Replace a label.
 
-Replaces the label ID with the JSON in `--file`, which must name its name and description.
-An unknown ID is not found. It prints the label that Emporix answers with.
+Replaces the label ID with the JSON in `--file`, which must name its name and description. An unknown ID is not found. It prints the label that Emporix answers with.
 
-Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without
-asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
-instead of sending it.
+Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without asking (required without a terminal, or with `--file` -); `--dry-run` prints the request instead of sending it.
 
 Requires the label.label\_manage scope.
 

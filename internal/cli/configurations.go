@@ -53,7 +53,7 @@ const configurationClient = "CLIENT"
 // (newConfigurationWrites). The service returns each list whole (live, it
 // ignores pageNumber and pageSize), so each is read with one request.
 func newConfigurationsCommand(a *app) *cobra.Command {
-	const values = "Tables show values as sent, secured ones included, and cut long ones (-o json prints\n" +
+	const values = "Tables show values as sent, secured ones included, and cut long ones (-o json prints " +
 		"them whole)."
 	whole := listing{read: (*emporix.Client).GetUnpaged}
 	global := reader[configuration]{view: configurationView("global configuration")}
@@ -72,7 +72,7 @@ func newConfigurationsCommand(a *app) *cobra.Command {
 		global.command(a, &command{
 			use:   "global",
 			short: "List global configurations",
-			long:  "Reads global configurations, which hold for every tenant.\n" + values,
+			long:  "Reads global configurations, which hold for every tenant. " + values,
 			req:   request{path: "/configuration/{tenant}/global-configurations"},
 			fetch: whole,
 		}),
@@ -86,7 +86,7 @@ func newConfigurationsCommand(a *app) *cobra.Command {
 		clientSettings.command(a, &command{
 			use:   "for-client CLIENT",
 			short: "List the configurations of a client",
-			long: "Reads the settings of a client.\n" + values + "\n" +
+			long: "Reads the settings of a client. " + values + " " +
 				"CLIENT is a name that `epx configurations clients` shows; an unknown one lists nothing.",
 			req:   settingList,
 			fetch: whole,
@@ -95,8 +95,8 @@ func newConfigurationsCommand(a *app) *cobra.Command {
 		clientSettings.command(a, &command{
 			use:   "client-setting CLIENT KEY",
 			short: "Show one configuration of a client",
-			long: "Reads one setting of a client.\n" + values + "\n" +
-				"CLIENT is a name that `epx configurations clients` shows and KEY a key that\n" +
+			long: "Reads one setting of a client. " + values + " " +
+				"CLIENT is a name that `epx configurations clients` shows and KEY a key that " +
 				"`epx configurations for-client CLIENT` shows; an unknown one is not found (exit 4).",
 			req:   request{path: clientConfigurationsPath + "/" + placeholderID},
 			fetch: single{items: oneItem},
@@ -106,11 +106,11 @@ func newConfigurationsCommand(a *app) *cobra.Command {
 	tenant := resource[configuration]{
 		use:   configurationsUse,
 		short: "Read and change tenant configurations",
-		long: "Reads tenant configurations (settings such as project_lang).\n" + values + "\n" +
-			"A setting that was never set is not found (exit 4): Emporix then applies its default.\n" +
-			"`epx configurations global`, `clients`, `for-client` and `client-setting` read global\n" +
-			"settings and those of clients. `epx configurations create`, `update` and `delete`\n" +
-			"change settings, and `client-create`, `client-update` and `client-delete` those\n" +
+		long: "Reads tenant configurations (settings such as project_lang). " + values + " " +
+			"A setting that was never set is not found (exit 4): Emporix then applies its default. " +
+			"`epx configurations global`, `clients`, `for-client` and `client-setting` read global " +
+			"settings and those of clients. `epx configurations create`, `update` and `delete` " +
+			"change settings, and `client-create`, `client-update` and `client-delete` those " +
 			"of a client.",
 		path:   tenantConfigurationsPath,
 		scopes: []string{configurationScope},

@@ -126,7 +126,7 @@ func TestChildScopes(t *testing.T) {
 			t.Errorf("%s: exit %d, stdout %q, error %q, token scopes %q; want %q",
 				tt.use, code, stdout, errText, fake.tokenScopes, tt.token)
 		}
-		if _, help, _ := runThings(t, fake, tt.use, "--help"); !strings.Contains(help, tt.help) {
+		if _, help, _ := runThings(t, fake, tt.use, "--help"); !containsFlat(help, tt.help) {
 			t.Errorf("%s: help %q; want %q", tt.use, help, tt.help)
 		}
 	}
@@ -220,7 +220,7 @@ func TestResourceUsageErrorsSendNothing(t *testing.T) {
 
 // TestGroupScopeSentence checks that a group's help states the scopes of the
 // commands below it, at any depth: those of one kind, reads or writes, as one
-// of them states them when they agree; otherwise a line per kind that names
+// of them states them when they agree; otherwise a sentence per kind that names
 // them when they agree and says that they differ otherwise, followed for
 // reads by the opt-in sentence when one of them is write-capable.
 func TestGroupScopeSentence(t *testing.T) {
@@ -251,22 +251,22 @@ func TestGroupScopeSentence(t *testing.T) {
 			"Long.\n\nRequires the s.read, t.read scopes."},
 		{newGroup("g", "", "Long.", &cobra.Command{Use: "plain"}), "Long."},
 		{newGroup("g", "", "Long.", read("a", "s.manage"), newGroup("h", "", "", read("b", "s.manage"))),
-			"Long.\n\nRequires the s.manage scope.\n" + optInSentence},
+			"Long.\n\nRequires the s.manage scope. " + optInSentence},
 		{newGroup("g", "", "Long.", read("a", "s.read"), newGroup("h", "", "", read("b", "s.manage"))),
-			"Long.\n\n" + differ + "\n" + optInSentence},
+			"Long.\n\n" + differ + " " + optInSentence},
 		{newGroup("g", "", "Long.", read("a"), change("c", "s.manage")),
-			"Long.\n\nIts reads need no OAuth scope.\nIts writes require the s.manage scope."},
+			"Long.\n\nIts reads need no OAuth scope. Its writes require the s.manage scope."},
 		{newGroup("g", "", "Long.", read("a", "s.read"), change("c", "s.manage"),
 			newGroup("h", "", "", change("d", "t.manage", "s.manage"))),
-			"Long.\n\nIts reads require the s.read scope.\n" + writesDiffer},
+			"Long.\n\nIts reads require the s.read scope. " + writesDiffer},
 		{newGroup("g", "", "Long.", read("a", "s.manage"), read("b"), change("c", "t.manage", "s.read")),
-			"Long.\n\n" + differ + "\n" + optInSentence + "\nIts writes require the s.read, t.manage scopes."},
+			"Long.\n\n" + differ + " " + optInSentence + " Its writes require the s.read, t.manage scopes."},
 		{newGroup("g", "", "Long.", newGroup("h", "", "", change("c", "s.manage")), change("d", "s.manage")),
 			"Long.\n\nRequires the s.manage scope."},
 		{newGroup("g", "", "Long.", change("c", "s.manage", "t.read"), newGroup("h", "", "", change("d", "s.manage"))),
 			"Long.\n\n" + writesDiffer},
 		{newGroup("g", "", "Long.", read("a"), change("b", "s.manage", "t.manage"), change("c", "t.manage", "s.manage")),
-			"Long.\n\nIts reads need no OAuth scope.\nIts writes require the s.manage, t.manage scopes."},
+			"Long.\n\nIts reads need no OAuth scope. Its writes require the s.manage, t.manage scopes."},
 	} {
 		if tt.group.Long != tt.want {
 			t.Errorf("group help %q, want %q", tt.group.Long, tt.want)
@@ -322,8 +322,8 @@ func TestScopeSentence(t *testing.T) {
 		{want: "No OAuth scope is needed."},
 		{scopes: []string{"a.read"}, want: "Requires the a.read scope."},
 		{scopes: []string{"a.read", "b.read"}, want: "Requires the a.read, b.read scopes."},
-		{scopes: []string{"a.manage"}, want: "Requires the a.manage scope.\n" + optInSentence},
-		{scopes: []string{"a.read", "b.manage"}, want: "Requires the a.read, b.manage scopes.\n" + optInSentence},
+		{scopes: []string{"a.manage"}, want: "Requires the a.manage scope. " + optInSentence},
+		{scopes: []string{"a.read", "b.manage"}, want: "Requires the a.read, b.manage scopes. " + optInSentence},
 	} {
 		if got := scopeSentence(tt.scopes); got != tt.want {
 			t.Errorf("scopeSentence(%q) = %q, want %q", tt.scopes, got, tt.want)

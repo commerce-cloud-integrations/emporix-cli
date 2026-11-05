@@ -34,20 +34,20 @@ const (
 // service returns them whole (live, it ignores pageNumber and pageSize and
 // sends no total), so each list is read with one request.
 func newSequentialIDsCommand(a *app) *cobra.Command {
-	const columns = "TYPE is what a schema numbers, PREFIX and SUFFIX the text around the number\n" +
-		"(placeholders such as __year__ are filled in when an ID is issued), DIGITS the number's\n" +
-		"length, COUNTER the schema's current counter (it starts at the schema's start value) and\n" +
+	const columns = "TYPE is what a schema numbers, PREFIX and SUFFIX the text around the number " +
+		"(placeholders such as __year__ are filled in when an ID is issued), DIGITS the number's " +
+		"length, COUNTER the schema's current counter (it starts at the schema's start value) and " +
 		"MAX the highest number it can reach."
 	whole := (*emporix.Client).GetUnpaged
 	schemas := resource[sequenceSchema]{
 		use:   "sequential-ids",
 		noun:  "sequential ID schemas",
 		short: "Read, create, activate and delete sequential ID schemas; issue IDs",
-		about: "Reads, creates, activates and deletes the schemas that number orders, invoices, quotes,\n" +
+		about: "Reads, creates, activates and deletes the schemas that number orders, invoices, quotes, " +
 			"customers and similar records, and issues IDs from them.",
-		long: "Reads the schemas that number orders, invoices, quotes, customers and similar records:\n" +
-			columns + "\nThe service returns the schemas whole, so they are read with one request. An unknown\n" +
-			"ID is not found (exit 4); Emporix answers an ID that is not 24 hexadecimal digits with an\n" +
+		long: "Reads the schemas that number orders, invoices, quotes, customers and similar records: " +
+			columns + " The service returns the schemas whole, so they are read with one request. An unknown " +
+			"ID is not found (exit 4); Emporix answers an ID that is not 24 hexadecimal digits with an " +
 			"internal error (500 Internal Server Error, exit 1).",
 		path:   "/sequential-id/{tenant}/schemas",
 		scopes: []string{sequenceViewScope},
@@ -68,9 +68,9 @@ func newSequentialIDsCommand(a *app) *cobra.Command {
 	forType := schemas.reader().command(a, &command{
 		use:   "for-type TYPE",
 		short: "List the sequential ID schemas of a type",
-		long: "Reads the schemas of one TYPE, such as orderNoSequence, invoiceNoSequence or\n" +
-			"customerNoSequence (`epx sequential-ids list` shows the tenant's types); an unknown type\n" +
-			"lists nothing.\n" + columns,
+		long: "Reads the schemas of one TYPE, such as orderNoSequence, invoiceNoSequence or " +
+			"customerNoSequence (`epx sequential-ids list` shows the tenant's types); an unknown type " +
+			"lists nothing. " + columns,
 		req:   request{path: schemas.path + "/types/" + placeholderID},
 		fetch: listing{read: whole},
 		ids:   argumentIDs{columnType: schemas.idsIn(columnType)},

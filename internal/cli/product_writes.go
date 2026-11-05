@@ -52,12 +52,12 @@ func productQuery() (queryFlags, []paramFlag) {
 }
 
 // productConflict says when Emporix refuses a write of a product as a conflict.
-const productConflict = "Emporix refuses it as a conflict (exit 5) when another product has its code or, given\n" +
+const productConflict = "Emporix refuses it as a conflict (exit 5) when another product has its code or, given " +
 	"metadata.version, when the product changed since that version."
 
 // productBulkAnswer says how Emporix answers a bulk write of products.
 const productBulkAnswer = "Emporix answers each product with its index, id, code (the HTTP status of the " +
-	"product, e.g.\n201) and status (e.g. CREATED), and a message where it failed."
+	"product, e.g. 201) and status (e.g. CREATED), and a message where it failed."
 
 // productWrites returns the writes of products: create, update ID, patch ID,
 // bulk-create, bulk-update, import and recalculate.
@@ -66,24 +66,24 @@ func productWrites(a *app, products resource[product]) []*cobra.Command {
 	most := strconv.Itoa(maxProductsPerRequest)
 	declared := &bulkWrites{
 		path: products.path, nouns: products.nouns(), scopes: scopes, maxItems: maxProductsPerRequest,
-		create: "Creates the products in --file, a JSON array of products, each as create takes it.\n" +
+		create: "Creates the products in --file, a JSON array of products, each as create takes it. " +
 			productBulkAnswer,
-		update: "Upserts the products in --file, a JSON array of products, each complete and with its id, as\n" +
-			"update takes it. import sends more than " + most + " in batches.\n" + productBulkAnswer,
+		update: "Upserts the products in --file, a JSON array of products, each complete and with its id, as " +
+			"update takes it. import sends more than " + most + " in batches. " + productBulkAnswer,
 	}
 	bulk := declared.writes()
 	batches := bulk[1]
 	batches.use, batches.short = importUse, "Upsert the products of a file in batches"
-	batches.long = "Upserts the products in --file, a JSON array of any number of products, each complete and\n" +
-		"with its id as update takes it, as bulk-update does up to " + most + ". To resume an import that\n" +
-		"stopped, send the products from the item that its error names: a product sent again is\n" +
-		"upserted again, but one whose metadata.version the import changed is a conflict.\n" + productBulkAnswer
+	batches.long = "Upserts the products in --file, a JSON array of any number of products, each complete and " +
+		"with its id as update takes it, as bulk-update does up to " + most + ". To resume an import that " +
+		"stopped, send the products from the item that its error names: a product sent again is " +
+		"upserted again, but one whose metadata.version the import changed is a conflict. " + productBulkAnswer
 	batches.body = &payload{maxItems: maxProductsPerRequest, batched: true}
 	writes := append([]write{{
 		use: createUse, short: "Create a product", method: http.MethodPost, req: request{path: products.path},
 		body: &payload{},
-		long: "Creates the product in the JSON object of --file, as the Product Service takes it (without an\n" +
-			"id, Emporix makes one), and prints its id. Emporix refuses it as a conflict (exit 5) when a\n" +
+		long: "Creates the product in the JSON object of --file, as the Product Service takes it (without an " +
+			"id, Emporix makes one), and prints its id. Emporix refuses it as a conflict (exit 5) when a " +
 			"product has its id or code.",
 	}, {
 		use: products.itemUse("update"), short: "Upsert a product", method: http.MethodPut,
@@ -91,14 +91,14 @@ func productWrites(a *app, products resource[product]) []*cobra.Command {
 		reserved: declared.reserved(http.MethodPut, products.itemPath()),
 		ids:      products.itemIDs(),
 		body:     &payload{},
-		long: "Replaces product ID with the JSON object of --file, the complete product: an upsert, as\n" +
-			"Emporix creates the product where none has the ID (and answers with its id and yrn). Mixins\n" +
-			"left out are removed.\n" + productConflict,
+		long: "Replaces product ID with the JSON object of --file, the complete product: an upsert, as " +
+			"Emporix creates the product where none has the ID (and answers with its id and yrn). Mixins " +
+			"left out are removed. " + productConflict,
 	}, {
 		use: products.itemUse("patch"), short: "Change members of a product", method: http.MethodPatch,
 		req: request{path: products.itemPath()}, body: &payload{}, ids: products.itemIDs(),
-		long: "Changes the members of product ID that the JSON object of --file names; the others stay,\n" +
-			"and mixins are merged member by member (update removes a mixin).\n" + productConflict,
+		long: "Changes the members of product ID that the JSON object of --file names; the others stay, " +
+			"and mixins are merged member by member (update removes a mixin). " + productConflict,
 	}}, append(bulk, batches)...)
 	params, switches := productQuery()
 	for i := range writes {
@@ -109,13 +109,13 @@ func productWrites(a *app, products resource[product]) []*cobra.Command {
 	return append(writeCommands(a, writes), (&write{
 		use: recalculate, short: "Recalculate the variant trees of dynamic variant products",
 		method: http.MethodPost, req: request{path: products.path + "/recalculate"}, scopes: scopes,
-		long: "Starts the recalculation of the variant trees of DYNAMIC_VARIANT products once their products\n" +
-			"are written in bulk (a write of one product updates its tree at once). Emporix finds the root\n" +
-			"product of each ID, at any level, and starts one job per root, which\n" +
-			"`epx products recalculation-jobs list` shows (jobs). An ID that is unknown, is not of a\n" +
-			"DYNAMIC_VARIANT product, or whose root has a job pending or processing is skipped\n" +
-			"(skippedProductIds, left out when none is); where every ID is, the answer has no jobs.\n" +
-			"Takes up to 1000 IDs, given with --product or in the JSON object of --file\n" +
+		long: "Starts the recalculation of the variant trees of DYNAMIC_VARIANT products once their products " +
+			"are written in bulk (a write of one product updates its tree at once). Emporix finds the root " +
+			"product of each ID, at any level, and starts one job per root, which " +
+			"`epx products recalculation-jobs list` shows (jobs). An ID that is unknown, is not of a " +
+			"DYNAMIC_VARIANT product, or whose root has a job pending or processing is skipped " +
+			"(skippedProductIds, left out when none is); where every ID is, the answer has no jobs. " +
+			"Takes up to 1000 IDs, given with --product or in the JSON object of --file " +
 			"({\"productIds\": [...]}).",
 		body: &payload{typed: objectBody{
 			listField("productIds", "product", "`ID` of a product to recalculate (repeatable)").require(),
@@ -135,9 +135,9 @@ func productTemplateWrites(a *app, templates resource[productTemplate]) []*cobra
 		use: templates.itemUse("update"), short: "Replace a product template", method: http.MethodPut,
 		req: request{path: templates.itemPath()}, scopes: scopes, body: &payload{}, language: stringsOrMaps,
 		ids: templates.itemIDs(),
-		long: "Replaces product template ID with the JSON object of --file, which names its\n" +
-			"metadata.version: Emporix refuses it as a conflict (exit 5) when the template changed since.\n" +
-			"Every update makes a new version of the template; the products based on an earlier version keep\n" +
+		long: "Replaces product template ID with the JSON object of --file, which names its " +
+			"metadata.version: Emporix refuses it as a conflict (exit 5) when the template changed since. " +
+			"Every update makes a new version of the template; the products based on an earlier version keep " +
 			"it until they are updated to the new one. An unknown ID is not found (exit 4).",
 	}})
 }

@@ -24,8 +24,8 @@ func newAuthStatusCommand(a *app) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "status",
 		Short: "Request a token and show the tenant and scopes it grants",
-		Long: "Requests a service token for the tenant plus the given scopes and shows what was granted.\n" +
-			"Emporix grants only requested scopes, so pass --scope to check specific permissions;\n" +
+		Long: "Requests a service token for the tenant plus the given scopes and shows what was granted. " +
+			"Emporix grants only requested scopes, so pass --scope to check specific permissions; " +
 			"a missing scope fails with exit code 3. The token itself is never printed.",
 		Example: "  epx auth status --scope product.product_read_unpublished --scope indexing.search_view",
 	}

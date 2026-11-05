@@ -117,18 +117,18 @@ func (p *payload) bind(cmd *cobra.Command) string {
 	switch {
 	case p.maxItems > 0 && p.whole:
 		cmd.Long += "\n\nEmporix takes up to " + strconv.Itoa(p.maxItems) + " items in one request (epx refuses " +
-			"more) and answers for\nall of them at once, not item by item."
+			"more) and answers for all of them at once, not item by item."
 	case p.maxItems > 0:
-		cmd.Long += "\n\n" + p.itemsSentence() + "\nits own and answers with the result of each: when one failed, epx " +
-			"prints the response,\nlists the items that failed on standard error (one that failed with 500, 502, 503 " +
-			"or 504\nmay have been carried out all the same) and " + bulkExitSentence
+		cmd.Long += "\n\n" + p.itemsSentence() + " its own and answers with the result of each: when one failed, epx " +
+			"prints the response, lists the items that failed on standard error (one that failed with 500, 502, 503 " +
+			"or 504 may have been carried out all the same) and " + bulkExitSentence
 	}
 	return "--" + fileFlag + " -"
 }
 
 // bulkExitSentence says which exit code a bulk write or a chain gives when
 // items failed: the code that their failures share.
-const bulkExitSentence = "exits with the code that their failures\nshare (for example 5 for a 409 Conflict, 4 for " +
+const bulkExitSentence = "exits with the code that their failures share (for example 5 for a 409 Conflict, 4 for " +
 	"a 404), else 1."
 
 // bulkItemsDefault is the most items that Emporix takes in one bulk request
@@ -142,7 +142,7 @@ const bulkItemsDefault = 200
 func (p *payload) itemsSentence() string {
 	most := strconv.Itoa(p.maxItems)
 	if p.batched {
-		return "epx sends the items in requests of up to " + most + ", in order, confirmed once, and stops at a\n" +
+		return "epx sends the items in requests of up to " + most + ", in order, confirmed once, and stops at a " +
 			"request that fails as a whole, sending none after it. Emporix carries out each on"
 	}
 	return "Emporix takes up to " + most + " items in one request (epx refuses more), carries out each on"

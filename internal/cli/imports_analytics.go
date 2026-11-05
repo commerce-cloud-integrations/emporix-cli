@@ -61,12 +61,12 @@ func importAnalyticsReads(a *app) []*cobra.Command {
 		importReader(importStatisticsView()).command(a, &command{
 			use:   "statistics",
 			short: "Show the import statistics of the last 30 days",
-			long: "Reads the import statistics of the last 30 days for the whole tenant: RUNS counts the runs\n" +
-				"started, SUCCEEDED, PARTIAL, FAILED and CANCELLED how they ended, ACTIVE those queued or\n" +
-				"running now, and RECORDS READ and RECORDS FAILED the records. -o json adds the rates, a daily\n" +
-				"series, each stream's health, the failing streams, an error breakdown and the streams added\n" +
-				"or removed. Another window or scope, e.g. one configuration (`epx imports job-groups` lists\n" +
-				"sets of them): `epx api get /importtool/{tenant}/stats -p configId=ID\n" +
+			long: "Reads the import statistics of the last 30 days for the whole tenant: RUNS counts the runs " +
+				"started, SUCCEEDED, PARTIAL, FAILED and CANCELLED how they ended, ACTIVE those queued or " +
+				"running now, and RECORDS READ and RECORDS FAILED the records. -o json adds the rates, a daily " +
+				"series, each stream's health, the failing streams, an error breakdown and the streams added " +
+				"or removed. Another window or scope, e.g. one configuration (`epx imports job-groups` lists " +
+				"sets of them): `epx api get /importtool/{tenant}/stats -p configId=ID " +
 				"-p from=2026-09-01T00:00:00Z -p granularity=WEEK --scope " + importScope + "`.",
 			req:   request{path: "/importtool/{tenant}/stats"},
 			fetch: single{items: oneObject},
@@ -80,8 +80,8 @@ func importAnalyticsReads(a *app) []*cobra.Command {
 		}).command(a, &command{
 			use:   "job-groups",
 			short: "List the job groups that scope the import statistics",
-			long: "Reads the tenant's job groups, named sets of import configurations that the import\n" +
-				"statistics can be scoped to: CONFIGURATIONS counts them (-o json lists their IDs). The\n" +
+			long: "Reads the tenant's job groups, named sets of import configurations that the import " +
+				"statistics can be scoped to: CONFIGURATIONS counts them (-o json lists their IDs). The " +
 				"service returns them whole, so they are read with one request.",
 			req:   request{path: "/importtool/{tenant}/dashboard/job-groups"},
 			fetch: listing{read: (*emporix.Client).GetUnpaged},
@@ -89,10 +89,10 @@ func importAnalyticsReads(a *app) []*cobra.Command {
 		importReader(healthLevelView()).command(a, &command{
 			use:   "health-thresholds",
 			short: "Show the thresholds that rate the health of import streams",
-			long: "Reads the thresholds that rate an import stream GREEN, AMBER or RED in the statistics: the\n" +
-				"tenant's, and the built-in defaults that each one it leaves empty falls back to. A stream is\n" +
-				"AMBER or RED once this share of its records failed (FAILURE RATIO, 0 to 1) or its newest data\n" +
-				"is this many hours old (STALE HOURS), and RED after a failed run when FAILED RUN RED is true.\n" +
+			long: "Reads the thresholds that rate an import stream GREEN, AMBER or RED in the statistics: the " +
+				"tenant's, and the built-in defaults that each one it leaves empty falls back to. A stream is " +
+				"AMBER or RED once this share of its records failed (FAILURE RATIO, 0 to 1) or its newest data " +
+				"is this many hours old (STALE HOURS), and RED after a failed run when FAILED RUN RED is true. " +
 				"A configuration or stream may set its own (in their -o json).",
 			req:   request{path: "/importtool/{tenant}/settings/health-thresholds"},
 			fetch: single{items: healthLevels},
@@ -100,9 +100,9 @@ func importAnalyticsReads(a *app) []*cobra.Command {
 		importReader(importLicenseView()).command(a, &command{
 			use:   "license",
 			short: "Show the tenant's import limits",
-			long: "Reads the tenant's import limits: a run writes at most MAX RECORDS PER TYPE records per\n" +
-				"target type (it skips the rest and ends PARTIAL), at most MAX CONCURRENT RUNS runs execute at\n" +
-				"once (others wait, QUEUED), and BATCH SIZE records are written per request, by WORKERS\n" +
+			long: "Reads the tenant's import limits: a run writes at most MAX RECORDS PER TYPE records per " +
+				"target type (it skips the rest and ends PARTIAL), at most MAX CONCURRENT RUNS runs execute at " +
+				"once (others wait, QUEUED), and BATCH SIZE records are written per request, by WORKERS " +
 				"writers in parallel. Emporix support raises a limit on request.",
 			req:   request{path: "/importtool/{tenant}/license"},
 			fetch: single{items: oneObject},

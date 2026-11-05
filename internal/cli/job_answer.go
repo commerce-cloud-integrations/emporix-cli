@@ -171,15 +171,15 @@ func (n jobIDs) printed(last []*jobRead, body json.RawMessage) json.RawMessage {
 // help implements jobAnswer.
 func (n jobIDs) help(done string) string {
 	if !n.list {
-		return "\n\nAs Emporix answers with the id of the job alone, --wait reads the job by that id first.\n" +
-			"Where Emporix answers with none, having started no job, --wait prints the response and says\n" +
+		return "As Emporix answers with the id of the job alone, --wait reads the job by that id first. " +
+			"Where Emporix answers with none, having started no job, --wait prints the response and says " +
 			"so (exit 0); where no read of the job succeeds, it prints the response."
 	}
 	of := strings.Join(n.of, "/")
-	return "\n\nAs Emporix answers with the id of each job alone, in a result per item that names its\n" +
-		of + ", --wait reads each job by its id first and follows the jobs in turn, all within\n" +
-		"--wait-timeout, naming each by that " + of + ". It prints the jobs as last read in place of\n" +
-		"the results, as a JSON array in their order, leaving out each job never read (standard\n" +
-		"error says why), and exits 0 only if each ended " + done + "; where jobs failed with different\n" +
+	return "As Emporix answers with the id of each job alone, in a result per item that names its " +
+		of + ", --wait reads each job by its id first and follows the jobs in turn, all within " +
+		"--wait-timeout, naming each by that " + of + ". It prints the jobs as last read in place of " +
+		"the results, as a JSON array in their order, leaving out each job never read (standard " +
+		"error says why), and exits 0 only if each ended " + done + "; where jobs failed with different " +
 		"exit codes, 1. Where Emporix started no job, it prints [] and says so (exit 0)."
 }

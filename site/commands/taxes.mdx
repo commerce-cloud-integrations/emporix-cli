@@ -6,11 +6,9 @@ description: "Read and change tax configurations, and calculate net and gross pr
 
 ## epx taxes
 
-Reads tax configurations, one per location. CLASSES lists each tax class with its rate
-in percent (`-o json` adds their names). [`epx taxes calculate`](/commands/taxes#epx-taxes-calculate) applies them to a price.
+Reads tax configurations, one per location. CLASSES lists each tax class with its rate in percent (`-o json` adds their names). [`epx taxes calculate`](/commands/taxes#epx-taxes-calculate) applies them to a price.
 
-Its reads require different OAuth scopes; the help of each names them.
-Its writes require the tax.tax\_manage scope.
+Its reads require different OAuth scopes; the help of each names them. Its writes require the tax.tax\_manage scope.
 
 **Command:** `epx taxes [flags]`, `epx taxes [command]`
 
@@ -35,15 +33,9 @@ Its writes require the tax.tax\_manage scope.
 
 Calculate the net and gross value of a price.
 
-Calculates the net and gross value of a price with the tax configurations that
-[`epx taxes list`](/commands/taxes#epx-taxes-list) shows: a net `--price` gets the rate of `--tax-class` in `--country`; with
-`--gross`, a gross price is reduced by that rate, or, with `--source-country` and
-`--source-tax-class`, by theirs before the rate of `--country` is added. SOURCE RATE and
-TARGET RATE are the rates applied, in percent. A country without a tax configuration is
-not found (exit 4).
+Calculates the net and gross value of a price with the tax configurations that [`epx taxes list`](/commands/taxes#epx-taxes-list) shows: a net `--price` gets the rate of `--tax-class` in `--country`; with `--gross`, a gross price is reduced by that rate, or, with `--source-country` and `--source-tax-class`, by theirs before the rate of `--country` is added. SOURCE RATE and TARGET RATE are the rates applied, in percent. A country without a tax configuration is not found (exit 4).
 
-Changes nothing: Emporix serves this read as PUT with a JSON body, which the
-flags make or `--body` gives whole.
+Changes nothing: Emporix serves this read as PUT with a JSON body, which the flags make or `--body` gives whole.
 
 No OAuth scope is needed.
 
@@ -78,18 +70,11 @@ Also takes the [global flags](/commands#global-flags).
 
 Create a tax configuration.
 
-Creates the tax configuration of a country from the JSON in `--file`: location.countryCode
-and taxClasses, each with its code, name, order, rate in percent and, for one, isDefault,
-e.g. `{"location": {"countryCode": "NL"}, "taxClasses": [{"code": "STANDARD", "name": {"en": "Standard"}, "order": 0, "rate": 21, "isDefault": true}]}`. A country that has one
-already is a conflict (exit 5).
+Creates the tax configuration of a country from the JSON in `--file`: location.countryCode and taxClasses, each with its code, name, order, rate in percent and, for one, isDefault, e.g. `{"location": {"countryCode": "NL"}, "taxClasses": [{"code": "STANDARD", "name": {"en": "Standard"}, "order": 0, "rate": 21, "isDefault": true}]}`. A country that has one already is a conflict (exit 5).
 
-Localized text in the body, such as a name, is a map of translations, e.g.
-`{"en": "gram", "de": "Gramm"}`, as `-o json` of a read prints it, or with `--content-language`
-LANGUAGE a string in that language, e.g. `"gram"` with `--content-language` en.
+Localized text in the body, such as a name, is a map of translations, e.g. `{"en": "gram", "de": "Gramm"}`, as `-o json` of a read prints it, or with `--content-language` LANGUAGE a string in that language, e.g. `"gram"` with `--content-language` en.
 
-Changes data: on a terminal, epx asks before it sends POST. `--yes` sends without
-asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
-instead of sending it.
+Changes data: on a terminal, epx asks before it sends POST. `--yes` sends without asking (required without a terminal, or with `--file` -); `--dry-run` prints the request instead of sending it.
 
 Requires the tax.tax\_manage scope.
 
@@ -116,10 +101,7 @@ Delete a tax configuration.
 
 Deletes the tax configuration of LOCATION; it sends no body.
 
-Deletes data, which cannot be undone.
-On a terminal, epx sends DELETE only once you type LOCATION at its prompt.
-`--yes` sends without asking (required without a terminal);
-`--dry-run` prints the request instead of sending it.
+Deletes data, which cannot be undone. On a terminal, epx sends DELETE only once you type LOCATION at its prompt. `--yes` sends without asking (required without a terminal); `--dry-run` prints the request instead of sending it.
 
 Requires the tax.tax\_manage scope.
 
@@ -140,8 +122,7 @@ Also takes the [global flags](/commands#global-flags).
 
 Show one tax configuration.
 
-Reads tax configurations, one per location. CLASSES lists each tax class with its rate
-in percent (`-o json` adds their names). [`epx taxes calculate`](/commands/taxes#epx-taxes-calculate) applies them to a price.
+Reads tax configurations, one per location. CLASSES lists each tax class with its rate in percent (`-o json` adds their names). [`epx taxes calculate`](/commands/taxes#epx-taxes-calculate) applies them to a price.
 
 Requires the tax.tax\_read scope.
 
@@ -162,8 +143,7 @@ Also takes the [global flags](/commands#global-flags).
 
 List taxes.
 
-Reads tax configurations, one per location. CLASSES lists each tax class with its rate
-in percent (`-o json` adds their names). [`epx taxes calculate`](/commands/taxes#epx-taxes-calculate) applies them to a price.
+Reads tax configurations, one per location. CLASSES lists each tax class with its rate in percent (`-o json` adds their names). [`epx taxes calculate`](/commands/taxes#epx-taxes-calculate) applies them to a price.
 
 Requires the tax.tax\_read scope.
 
@@ -190,18 +170,11 @@ Also takes the [global flags](/commands#global-flags).
 
 Replace a tax configuration.
 
-Replaces the tax configuration of LOCATION with the JSON in `--file`, shaped as
-[`epx taxes get LOCATION -o json`](/commands/taxes#epx-taxes-get) prints it, with its metadata.version as read: a stale
-version and an unknown LOCATION are both not found (exit 4): Emporix answers 404 to both. The
-country code cannot change.
+Replaces the tax configuration of LOCATION with the JSON in `--file`, shaped as [`epx taxes get LOCATION -o json`](/commands/taxes#epx-taxes-get) prints it, with its metadata.version as read: a stale version and an unknown LOCATION are both not found (exit 4): Emporix answers 404 to both. The country code cannot change.
 
-Localized text in the body, such as a name, is a map of translations, e.g.
-`{"en": "gram", "de": "Gramm"}`, as `-o json` of a read prints it, or with `--content-language`
-LANGUAGE a string in that language, e.g. `"gram"` with `--content-language` en.
+Localized text in the body, such as a name, is a map of translations, e.g. `{"en": "gram", "de": "Gramm"}`, as `-o json` of a read prints it, or with `--content-language` LANGUAGE a string in that language, e.g. `"gram"` with `--content-language` en.
 
-Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without
-asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
-instead of sending it.
+Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without asking (required without a terminal, or with `--file` -); `--dry-run` prints the request instead of sending it.
 
 Requires the tax.tax\_manage scope.
 

@@ -30,8 +30,8 @@ func newLabelsCommand(a *app) *cobra.Command {
 	labels := resource[label]{
 		use:   "labels",
 		short: "Read, create, change and delete labels",
-		long: "Reads labels, the badges shown on products. OVERLAY is the label's overlay flag and\n" +
-			"POSITION its overlay position, as sent; MEDIA is the id of its image (image URLs are only\n" +
+		long: "Reads labels, the badges shown on products. OVERLAY is the label's overlay flag and " +
+			"POSITION its overlay position, as sent; MEDIA is the id of its image (image URLs are only " +
 			"in -o json), and DESCRIPTION is often HTML.",
 		path:    "/label/labels",
 		filters: listFilters{kinds: filterable},
@@ -48,27 +48,27 @@ func newLabelsCommand(a *app) *cobra.Command {
 		},
 	}
 	manage := []string{"label.label_manage"}
-	const answer = " It prints the label that Emporix answers with."
+	const answer = "It prints the label that Emporix answers with."
 	return newResourceCommand(a, labels,
 		(&write{
 			use: createUse, short: "Create a label", method: http.MethodPost,
-			long: "Creates a label from the JSON in --file, such as\n" +
+			long: "Creates a label from the JSON in --file, such as " +
 				`{"name": "Free shipping", "description": "<p>Ships free</p>", "overlay": {"isTrue": true, ` +
-				`"position": 1}},` + "\nand prints the label that Emporix answers with. Emporix generates its id " +
-				"unless the JSON names one;\nan id that exists already is a conflict.",
+				`"position": 1}},` + " and prints the label that Emporix answers with. Emporix generates its id " +
+				"unless the JSON names one; an id that exists already is a conflict.",
 			req: request{path: labels.path}, scopes: manage, body: &payload{},
 		}).command(a),
 		(&write{
 			use: labels.itemUse("update"), short: "Replace a label", method: http.MethodPut,
-			long: "Replaces the label ID with the JSON in --file, which must name its name and description.\n" +
-				"An unknown ID is not found." + answer,
+			long: "Replaces the label ID with the JSON in --file, which must name its name and description. " +
+				"An unknown ID is not found. " + answer,
 			req: request{path: labels.itemPath()}, scopes: manage, body: &payload{}, ids: labels.itemIDs(),
 		}).command(a),
 		(&write{
 			use: labels.itemUse("patch"), short: "Change members of a label", method: http.MethodPatch,
-			long: "Changes the members of the label ID that the JSON in --file names, which may be only\n" +
-				"overlay; the others, such as name and description, keep their values. Unlike update,\n" +
-				"Emporix does not check a metadata.version in it. An unknown ID is not found." + answer,
+			long: "Changes the members of the label ID that the JSON in --file names, which may be only " +
+				"overlay; the others, such as name and description, keep their values. Unlike update, " +
+				"Emporix does not check a metadata.version in it. An unknown ID is not found. " + answer,
 			req: request{path: labels.itemPath()}, scopes: manage, body: &payload{}, ids: labels.itemIDs(),
 		}).command(a),
 		itemDelete(labels, "Delete a label", "Deletes the label ID.", []string{"label.label_delete"}).command(a),

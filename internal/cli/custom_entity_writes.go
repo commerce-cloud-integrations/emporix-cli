@@ -19,37 +19,37 @@ func customEntityWrites(a *app, entities resource[customEntity]) []*cobra.Comman
 	return []*cobra.Command{
 		(&write{
 			use: createUse, short: "Create a custom entity type", method: http.MethodPost,
-			long: "Creates the custom entity type in --file, a JSON object with its id and name, such as\n" +
+			long: "Creates the custom entity type in --file, a JSON object with its id and name, such as " +
 				`{"id": "CUSTOM_DOCUMENT", "name": {"en": "Document"}}, and prints the id that Emporix answers` +
-				"\nwith; one that exists already is a conflict. The id has capital letters, digits and\n" +
-				"underscores, the first a letter. Emporix also creates the scopes that read and manage the\n" +
-				"instances of the type, such as custom.custom_document_manage, which it grants only minutes\n" +
-				"later: until then, the instance commands of the type exit with code 3.\n" +
+				" with; one that exists already is a conflict. The id has capital letters, digits and " +
+				"underscores, the first a letter. Emporix also creates the scopes that read and manage the " +
+				"instances of the type, such as custom.custom_document_manage, which it grants only minutes " +
+				"later: until then, the instance commands of the type exit with code 3. " +
 				"Built-in types, such as AVAILABILITY and LOCATION, cannot be created.",
 			req: request{path: entities.path}, scopes: manage, body: &payload{}, language: mapsOnly,
 		}).command(a),
 		(&write{
 			use: entities.itemUse("update"), short: "Upsert a custom entity type", method: http.MethodPut,
-			long: "Replaces the name of the custom entity type ID with the one in --file, a JSON object such\n" +
+			long: "Replaces the name of the custom entity type ID with the one in --file, a JSON object such " +
 				`as {"name": {"en": "Document"}, "metadata": {"version": 1}}, or creates the type where none` +
-				"\nexists (an upsert). With metadata.version, as `epx custom-entities get ID -o json` prints\n" +
+				" exists (an upsert). With metadata.version, as `epx custom-entities get ID -o json` prints " +
 				"it, Emporix replaces only that version: an older one is a conflict.",
 			req: request{path: entities.itemPath()}, scopes: manage, body: &payload{}, language: mapsOnly,
 			ids: entities.itemIDs(),
 		}).command(a),
 		(&write{
 			use: entities.itemUse("delete"), short: "Delete a custom entity type", method: http.MethodDelete,
-			long: "Deletes the custom entity type ID. Emporix refuses to delete a type that schemas or\n" +
-				"instances use (400 Bad Request), and answers an unknown ID as deleted, not as not found.\n" +
-				"The scopes that Emporix created with the type remain granted: the instances of a deleted\n" +
+			long: "Deletes the custom entity type ID. Emporix refuses to delete a type that schemas or " +
+				"instances use (400 Bad Request), and answers an unknown ID as deleted, not as not found. " +
+				"The scopes that Emporix created with the type remain granted: the instances of a deleted " +
 				"type then read as an empty list.",
 			req: request{path: entities.itemPath()}, scopes: manage, body: noBody{}, ids: entities.itemIDs(),
 		}).command(a),
 		(&write{
 			use: importUse, short: "Import custom entity types with their schemas", method: http.MethodPost,
-			long: "Imports the custom entity types and their schemas of the export package in --file, as\n" +
-				"`epx custom-entities export -o json` prints it, e.g. on another tenant. A type or schema\n" +
-				"that exists already is created again, its id followed by _COPY, such as\n" +
+			long: "Imports the custom entity types and their schemas of the export package in --file, as " +
+				"`epx custom-entities export -o json` prints it, e.g. on another tenant. A type or schema " +
+				"that exists already is created again, its id followed by _COPY, such as " +
 				"CUSTOM_DOCUMENT_COPY, and the references of its schemas then name the copy.",
 			req: request{path: entities.path + "/import"}, scopes: manage, body: &payload{},
 		}).command(a),
@@ -74,11 +74,11 @@ const maxBulkDeleteInstances = 1000
 // manage scope of the type, and its read scope too where Emporix checks the
 // references of the instances (declareReferenceCheck).
 func customInstanceWrites(a *app, typesOf resource[customEntity], instances child[customInstance]) []*cobra.Command {
-	typeSource, get := "\n"+typesOf.argumentSource(), childItemTarget(typesOf, instances, getUse, nil)
+	typeSource, get := typesOf.argumentSource(), childItemTarget(typesOf, instances, getUse, nil)
 	w := &instanceWrites{
 		path: instances.below(typesOf.path), typeArg: typesOf.argument(), id: instances.header[0],
 		manage: []string{customTypeManageScope}, ofType: typeSource + ".",
-		ofItem: typeSource + ", and " + instances.header[0] + " the one that\n`epx " +
+		ofItem: typeSource + ", and " + instances.header[0] + " the one that `epx " +
 			childListLine(typesOf, instances) + "` shows.",
 		typeIDs: argumentIDs{typesOf.argument(): typesOf.ids()},
 		itemIDs: childItemIDs(typesOf, instances, &get),
@@ -110,32 +110,32 @@ func (in *instanceWrites) one() []write {
 	writes := []write{
 		{
 			use: createUse + " " + in.typeArg, short: "Create an instance of a custom entity type", method: http.MethodPost,
-			long: "Creates an instance of the custom entity type " + in.typeArg + " from the JSON object in\n" +
-				`--file, such as {"id": "123", "name": {"en": "Report"}, "mixins": {…}}, and prints the id` + "\n" +
-				"that Emporix answers with; it makes one unless the object names it, and an id that exists\n" +
+			long: "Creates an instance of the custom entity type " + in.typeArg + " from the JSON object in " +
+				`--file, such as {"id": "123", "name": {"en": "Report"}, "mixins": {…}}, and prints the id ` +
+				"that Emporix answers with; it makes one unless the object names it, and an id that exists " +
 				`already is a conflict. An owner, such as {"type": "EMPLOYEE", "userId": "…"}, cannot change` +
-				"\nonce set. The attributes of a schema go under its id, which metadata.mixins maps to its\n" +
+				" once set. The attributes of a schema go under its id, which metadata.mixins maps to its " +
 				`URL: {"mixins": {"SCHEMA_ID": {…}}, "metadata": {"mixins": {"SCHEMA_ID": "URL"}}}, the URL` +
-				"\nbeing the metadata.url that `epx schemas get SCHEMA_ID -o json` prints. A localized\n" +
-				`attribute, unlike the name, is a list of translations, such as` + "\n" +
-				`[{"language": "en", "value": "Report"}].` + in.ofType,
+				" being the metadata.url that `epx schemas get SCHEMA_ID -o json` prints. A localized " +
+				`attribute, unlike the name, is a list of translations, such as ` +
+				`[{"language": "en", "value": "Report"}]. ` + in.ofType,
 			req: request{path: in.path}, scopes: in.manage, body: &payload{}, language: mapsOnly, ids: in.typeIDs,
 		},
 		{
 			use: itemUse("update"), short: "Upsert an instance of a custom entity type", method: http.MethodPut,
-			long: "Replaces the instance ID of the custom entity type " + in.typeArg + " with the JSON object in\n" +
-				"--file, as create takes it without the id, or creates it with that id where none exists\n" +
-				"(an upsert). With metadata.version, as `epx custom-entities instances get " + in.typeArg + " ID\n" +
-				"-o json` prints it, Emporix replaces only that version: an older one is a conflict." + in.ofItem,
+			long: "Replaces the instance ID of the custom entity type " + in.typeArg + " with the JSON object in " +
+				"--file, as create takes it without the id, or creates it with that id where none exists " +
+				"(an upsert). With metadata.version, as `epx custom-entities instances get " + in.typeArg + " ID " +
+				"-o json` prints it, Emporix replaces only that version: an older one is a conflict. " + in.ofItem,
 			req: item, scopes: in.manage, body: &payload{}, language: mapsOnly,
 			reserved: map[string]string{bulkSegment: bulkUpdateUse}, ids: in.itemIDs,
 		},
 		{
 			use: itemUse("patch"), short: "Change an instance of a custom entity type", method: http.MethodPatch,
-			long: "Changes the instance ID of the custom entity type " + in.typeArg + " with the JSON array of\n" +
-				"JSON Patch (RFC 6902) operations in --file, such as\n" +
+			long: "Changes the instance ID of the custom entity type " + in.typeArg + " with the JSON array of " +
+				"JSON Patch (RFC 6902) operations in --file, such as " +
 				`[{"op": "replace", "path": "/name", "value": {"en": "Report"}}]; an add whose path ends in` +
-				"\n/- appends to an array. An unknown ID is not found." + in.ofItem,
+				" /- appends to an array. An unknown ID is not found. " + in.ofItem,
 			req: item, scopes: in.manage, body: operationsFile(), language: mapsOnly,
 			reserved: map[string]string{bulkSegment: bulkPatchUse}, ids: in.itemIDs,
 		},
@@ -145,8 +145,8 @@ func (in *instanceWrites) one() []write {
 	}
 	return append(writes, write{
 		use: itemUse("delete"), short: "Delete an instance of a custom entity type", method: http.MethodDelete,
-		long: "Deletes the instance ID of the custom entity type " + in.typeArg + "; Emporix answers an\n" +
-			"unknown ID as deleted, not as not found." + in.ofItem,
+		long: "Deletes the instance ID of the custom entity type " + in.typeArg + "; Emporix answers an " +
+			"unknown ID as deleted, not as not found. " + in.ofItem,
 		req: item, scopes: in.manage, body: noBody{}, reserved: map[string]string{bulkSegment: bulkDeleteUse},
 		ids: in.itemIDs,
 	})
@@ -163,17 +163,17 @@ func (in *instanceWrites) bulk() []write {
 	writes := (&bulkWrites{
 		path: in.path, args: in.typeArg, nouns: "instances of a custom entity type", scopes: in.manage,
 		maxItems: maxBulkInstances, language: mapsOnly,
-		create: "Creates instances of the custom entity type " + in.typeArg + " from --file, a JSON array of\n" +
-			"instances, each as create takes it." + in.ofType,
-		update: "Replaces the instances of the custom entity type " + in.typeArg + " in --file, a JSON array of\n" +
-			"instances, each with its id and as update takes it, or creates those that do not exist\n" +
-			"(an upsert)." + in.ofType,
-		patch: "Changes instances of the custom entity type " + in.typeArg + " as --file says: a JSON array\n" +
-			"with the id of each instance and the JSON Patch operations that change it, as patch takes\n" +
-			`them, such as` + "\n" + `[{"id": "123", "data": [{"op": "replace", "path": "/name/en", "value": "Report"}]}].` +
+		create: "Creates instances of the custom entity type " + in.typeArg + " from --file, a JSON array of " +
+			"instances, each as create takes it. " + in.ofType,
+		update: "Replaces the instances of the custom entity type " + in.typeArg + " in --file, a JSON array of " +
+			"instances, each with its id and as update takes it, or creates those that do not exist " +
+			"(an upsert). " + in.ofType,
+		patch: "Changes instances of the custom entity type " + in.typeArg + " as --file says: a JSON array " +
+			"with the id of each instance and the JSON Patch operations that change it, as patch takes " +
+			`them, such as ` + `[{"id": "123", "data": [{"op": "replace", "path": "/name/en", "value": "Report"}]}]. ` +
 			in.ofType,
-		delete: "Deletes the instances of the custom entity type " + in.typeArg + " whose ids --file lists, a\n" +
-			`JSON array of strings, such as ["123", "124"]; Emporix answers an unknown id as deleted.` + in.ofType,
+		delete: "Deletes the instances of the custom entity type " + in.typeArg + " whose ids --file lists, a " +
+			`JSON array of strings, such as ["123", "124"]; Emporix answers an unknown id as deleted. ` + in.ofType,
 	}).writes()
 	create, update, patch, remove := &writes[0], &writes[1], &writes[2], &writes[3]
 	for _, w := range []*write{create, update, patch} {
@@ -214,17 +214,17 @@ func (in *instanceWrites) declareReferenceCheck(w *write, byDefault bool) {
 		neededValue: queryTrue, byDefault: byDefault, scopes: []string{customTypeReadScope},
 	}
 	if byDefault {
-		w.long += "\n\nEmporix checks the items that the references of the instance name (unless\n" +
-			"--validate-references false) with epx's token, which reads the instances of " + in.typeArg + "\n" +
-			"alone: a reference to an instance of another custom entity type is then expected to fail\n" +
-			"with 400 Bad Request, as one to the type fails without that scope, and one to another kind\n" +
+		w.long += "\n\nEmporix checks the items that the references of the instance name (unless " +
+			"--validate-references false) with epx's token, which reads the instances of " + in.typeArg + " " +
+			"alone: a reference to an instance of another custom entity type is then expected to fail " +
+			"with 400 Bad Request, as one to the type fails without that scope, and one to another kind " +
 			"of item, such as a product, may fail too."
 		return
 	}
-	w.long += "\n\nWith --validate-references true, Emporix checks the items that the references of each\n" +
-		"instance name with epx's token, which reads the instances of " + in.typeArg + " alone: an\n" +
-		"instance with a reference to an item that does not exist fails with 500 Internal Server\n" +
-		"Error (nothing is created), as one with a reference to an instance of\n" +
-		"another custom entity type is expected to, and one with a reference to another kind of\n" +
+	w.long += "\n\nWith --validate-references true, Emporix checks the items that the references of each " +
+		"instance name with epx's token, which reads the instances of " + in.typeArg + " alone: an " +
+		"instance with a reference to an item that does not exist fails with 500 Internal Server " +
+		"Error (nothing is created), as one with a reference to an instance of " +
+		"another custom entity type is expected to, and one with a reference to another kind of " +
 		"item, such as a product, may."
 }

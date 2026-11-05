@@ -72,11 +72,11 @@ func newQuotesCommand(a *app) *cobra.Command {
 	quotes := resource[quote]{
 		use:   "quotes",
 		short: "Read, create and change quotes, their PDF, history and reasons",
-		long: "Reads quotes, personal data included. STATUS is CREATING, AWAITING, OPEN, IN_PROGRESS,\n" +
-			"ACCEPTED, DECLINED, DECLINED_BY_MERCHANT or EXPIRED, CUSTOMER the customer it is for (email,\n" +
-			"name or customer id), and TOTAL the gross total in the quote's currency. Items, prices,\n" +
-			"addresses and comments are only in -o json.\n" +
-			"`epx quotes reasons` lists the reasons for changing or declining a quote.\n" +
+		long: "Reads quotes, personal data included. STATUS is CREATING, AWAITING, OPEN, IN_PROGRESS, " +
+			"ACCEPTED, DECLINED, DECLINED_BY_MERCHANT or EXPIRED, CUSTOMER the customer it is for (email, " +
+			"name or customer id), and TOTAL the gross total in the quote's currency. Items, prices, " +
+			"addresses and comments are only in -o json. " +
+			"`epx quotes reasons` lists the reasons for changing or declining a quote. " +
 			"`epx quotes create`, `patch` and `delete` change quotes; `pdf` saves a quote's PDF.",
 		path:    "/quote/{tenant}/quotes",
 		scopes:  []string{quoteScope},
@@ -92,8 +92,8 @@ func newQuotesCommand(a *app) *cobra.Command {
 	history := childCommand(a, quotes, child[quoteChange]{
 		use:   "history",
 		short: "List the changes of a quote",
-		long: "Reads the history of a quote, personal data included: when (MODIFIED), by whom (BY: user\n" +
-			"type and name) and what changed (CHANGE: the operation and the changed part). Old and new\n" +
+		long: "Reads the history of a quote, personal data included: when (MODIFIED), by whom (BY: user " +
+			"type and name) and what changed (CHANGE: the operation and the changed part). Old and new " +
 			"values are only in -o json. Emporix sends the whole history in one response.",
 		fetch: listing{read: (*emporix.Client).GetUnpaged}, // live: pageSize and pageNumber are ignored
 		view: view[quoteChange]{
@@ -114,9 +114,9 @@ func newQuotesCommand(a *app) *cobra.Command {
 func newQuotePDFCommand(a *app, quotes resource[quote]) *cobra.Command {
 	return quotes.reader().fileCommand(a, &fileRead{command: command{
 		use: "pdf " + quotes.argument(), short: "Save the PDF of a quote",
-		long: "Reads the PDF of the quote " + quotes.argument() + "; an unknown quote is not found (exit 4).\n" +
-			quotes.argumentSource() + ".\nIn a --language for which a product has no name, the PDF shows the template " +
-			"variable\n$quoteitem.productName in its place; a language that the tenant does not configure is\n" +
+		long: "Reads the PDF of the quote " + quotes.argument() + "; an unknown quote is not found (exit 4). " +
+			quotes.argumentSource() + ". In a --language for which a product has no name, the PDF shows the template " +
+			"variable $quoteitem.productName in its place; a language that the tenant does not configure is " +
 			"answered in English, not refused.",
 		req: request{path: quotes.itemPath() + "/pdf"}, ids: argumentIDs{quotes.argument(): quotes.ids()},
 	}, example: "  epx quotes pdf Q1001 --out Q1001.pdf --language de\n  epx quotes pdf Q1001 --out - | lpr",
@@ -131,8 +131,8 @@ func newQuoteReasonsCommand(a *app) *cobra.Command {
 		noun:  "quote reasons",
 		under: "quotes",
 		short: "Read, create, change and delete quote reasons",
-		long: "Reads the reasons a customer or employee can give when asking for changes to a quote\n" +
-			"(TYPE CHANGE) or declining it (DECLINE), and their MESSAGE.\n" +
+		long: "Reads the reasons a customer or employee can give when asking for changes to a quote " +
+			"(TYPE CHANGE) or declining it (DECLINE), and their MESSAGE. " +
 			"`epx quotes reasons create`, `update` and `delete` change them.",
 		path:    "/quote/{tenant}/quote-reasons",
 		scopes:  []string{quoteScope},

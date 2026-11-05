@@ -43,9 +43,9 @@ func newSchemaParseCommand(a *app) *cobra.Command {
 	}.command(a, &command{
 		use:   "parse",
 		short: "Parse a JSON schema file into a schema",
-		long: "Parses the JSON schema file of --json-schema into the schema that Emporix makes of it, and\n" +
-			"stores nothing: the table lists its attributes; -o json prints the schema, which\n" +
-			"`epx schemas create` takes once its missing members, such as its name and types, are added,\n" +
+		long: "Parses the JSON schema file of --json-schema into the schema that Emporix makes of it, and " +
+			"stores nothing: the table lists its attributes; -o json prints the schema, which " +
+			"`epx schemas create` takes once its missing members, such as its name and types, are added, " +
 			"or, with --id, `epx schemas update ID`.",
 		req: request{path: "/schema/{tenant}/schemas/file"},
 		fetch: bodyRead{method: http.MethodPost, fetch: single{items: schemaAttributes}, body: form{

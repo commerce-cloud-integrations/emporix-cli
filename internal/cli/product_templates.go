@@ -22,9 +22,9 @@ func newProductTemplatesCommand(a *app) *cobra.Command {
 	templates := resource[productTemplate]{
 		use:   "product-templates",
 		short: "Read, create, update and delete product templates",
-		about: "Reads and changes product templates, the attribute sets shared by products based on them:\n" +
+		about: "Reads and changes product templates, the attribute sets shared by products based on them: " +
 			"create makes one, update replaces one, each from --file; delete deletes one.",
-		long: "Reads product templates, the attribute sets shared by products based on them.\n" +
+		long: "Reads product templates, the attribute sets shared by products based on them. " +
 			"ATTRIBUTES counts the template's attributes (-o json prints their definitions).",
 		path:    "/product/{tenant}/product-templates",
 		filters: listFilters{kinds: filterable},
@@ -39,8 +39,8 @@ func newProductTemplatesCommand(a *app) *cobra.Command {
 		},
 	}
 	writes := append(productTemplateWrites(a, templates), itemDelete(templates, "Delete a product template",
-		"Deletes the product template ID. Emporix deletes only a template that no product and no\n"+
-			"parent variant is based on: it refuses one in use with 400 Bad Request (exit 1). An unknown\n"+
+		"Deletes the product template ID. Emporix deletes only a template that no product and no "+
+			"parent variant is based on: it refuses one in use with 400 Bad Request (exit 1). An unknown "+
 			"ID is no error: Emporix answers as for a deleted template.",
 		[]string{"product.product_template_manage"}).command(a))
 	return newResourceCommand(a, templates, writes...)

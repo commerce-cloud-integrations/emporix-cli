@@ -152,37 +152,37 @@ func TestCustomerGroupsStateTheirScopes(t *testing.T) {
 		args []string
 		want string
 	}{
-		{args: []string{"customers"}, want: "Its reads require different OAuth scopes; the help of each names them.\n" +
+		{args: []string{"customers"}, want: "Its reads require different OAuth scopes; the help of each names them. " +
 			"Its writes require different OAuth scopes; the help of each names them.\n\nUsage:"},
-		{args: []string{"customers", "addresses"}, want: "Its reads require the customer.customer_read scope.\n" +
+		{args: []string{"customers", "addresses"}, want: "Its reads require the customer.customer_read scope. " +
 			"Its writes require the customer.customer_manage scope.\n\nUsage:"},
-		{args: []string{"customers", "password-migration"}, want: "Its reads require the customer.import_read scope.\n" +
+		{args: []string{"customers", "password-migration"}, want: "Its reads require the customer.import_read scope. " +
 			"Its writes require the customer.import_manage scope.\n\nUsage:"},
 		{args: []string{"customers", "create"}, want: "a link to set a password only with --password-reset-email"},
-		{args: []string{"customers", "update"}, want: "keeping those it leaves out, or creates the\n" +
-			"profile with that number where none exists (an upsert), as create does: with the email of\n" +
+		{args: []string{"customers", "update"}, want: "keeping those it leaves out, or creates the " +
+			"profile with that number where none exists (an upsert), as create does: with the email of " +
 			"an existing account, that is a conflict (exit 5)."},
-		{args: []string{"customers", "update"}, want: "Emporix answers 409 Conflict (exit 5) otherwise.\n" +
+		{args: []string{"customers", "update"}, want: "Emporix answers 409 Conflict (exit 5) otherwise. " +
 			"On an existing profile, a contactEmail changes its contact email only"},
-		{args: []string{"customers", "patch"}, want: "never the email\nwith which the customer signs in"},
-		{args: []string{"customers", "delete"}, want: "Emporix answers 202 Accepted, and\nthe profile is not found"},
+		{args: []string{"customers", "patch"}, want: "never the email with which the customer signs in"},
+		{args: []string{"customers", "delete"}, want: "Emporix answers 202 Accepted, and the profile is not found"},
 		{args: []string{"customers", "addresses", "update"}, want: "keeping those it leaves out, such as its tags"},
 		{args: []string{"customers", "password-migration", "update"}, want: "(--reminder; without it, 7 days before " +
-			"--ends,\nor tomorrow if that has passed, also where the retention it replaces had another date)"},
+			"--ends, or tomorrow if that has passed, also where the retention it replaces had another date)"},
 		{args: []string{"customers", "password-migration", "update"}, want: "sends emailNotificationsEnabled=false; " +
 			"a --file without it gets Emporix's default, true)."},
-		{args: []string{"customers", "password-migration", "delete"}, want: "update sets the whole retention, so give\n" +
+		{args: []string{"customers", "password-migration", "delete"}, want: "update sets the whole retention, so give " +
 			"--reminder and --emails again"},
 		{args: []string{"customers", "addresses", "get"}, want: "ID is the ID that `epx customers addresses list " +
 			"CUSTOMER_NUMBER` shows"},
 	} {
 		code, help, stderr := runCLI(t, nil, append(tt.args, "--help")...)
-		if code != ExitOK || !strings.Contains(help, tt.want) {
+		if code != ExitOK || !containsFlat(help, tt.want) {
 			t.Errorf("%q: exit %d, stderr %q, help %q; want %q", tt.args, code, stderr, help, tt.want)
 		}
 	}
 	for _, verb := range []string{"create", "update", "patch", "import"} {
-		if _, help, _ := runCLI(t, nil, "customers", verb, "--help"); !strings.Contains(help,
+		if _, help, _ := runCLI(t, nil, "customers", verb, "--help"); !containsFlat(help,
 			"Emporix ignores a customerNumber that a profile gives (no error).") {
 			t.Errorf("customers %s: help %q; want that Emporix ignores a customerNumber", verb, help)
 		}

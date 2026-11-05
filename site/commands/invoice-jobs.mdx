@@ -8,8 +8,7 @@ description: "Create and read invoice jobs."
 
 Creates and reads the jobs that generate the invoices of orders.
 
-Its reads require the invoice.invoice\_view scope.
-Its writes require the invoice.invoice\_manage scope.
+Its reads require the invoice.invoice\_view scope. Its writes require the invoice.invoice\_manage scope.
 
 **Command:** `epx invoice-jobs [flags]`, `epx invoice-jobs [command]`
 
@@ -26,19 +25,9 @@ Its writes require the invoice.invoice\_manage scope.
 
 Start an invoice job.
 
-Starts a job that generates the invoices of orders: of those that `--order` names
-(`--type` MANUAL, which requires one at least), or of those ready for an invoice that the
-tenant's invoice configuration selects (`--type` AUTOMATIC, which takes no `--order`).
-Without an invoice configuration of the tenant's own, an order is ready for an invoice when
-its mixins.generalAttributes.extendedOrderStatus is 70, 75 or 76 ([`epx orders create`](/commands/orders#epx-orders-create)
-stores 10; [`epx orders patch`](/commands/orders#epx-orders-patch) changes it); the job's entry of an order with 10 fails as not
-ready. Invoicing a ready order calls the tenant's Pick-Pack service: where that service is
-not reachable, the entry fails at the VALIDATION step.
-Emporix answers with the job's id (jobId), which [`epx invoice-jobs get ID`](/commands/invoice-jobs#epx-invoice-jobs-get) reads.
+Starts a job that generates the invoices of orders: of those that `--order` names (`--type` MANUAL, which requires one at least), or of those ready for an invoice that the tenant's invoice configuration selects (`--type` AUTOMATIC, which takes no `--order`). Without an invoice configuration of the tenant's own, an order is ready for an invoice when its mixins.generalAttributes.extendedOrderStatus is 70, 75 or 76 ([`epx orders create`](/commands/orders#epx-orders-create) stores 10; [`epx orders patch`](/commands/orders#epx-orders-patch) changes it); the job's entry of an order with 10 fails as not ready. Invoicing a ready order calls the tenant's Pick-Pack service: where that service is not reachable, the entry fails at the VALIDATION step. Emporix answers with the job's id (jobId), which [`epx invoice-jobs get ID`](/commands/invoice-jobs#epx-invoice-jobs-get) reads.
 
-Changes data: on a terminal, epx asks before it sends POST. `--yes` sends without
-asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
-instead of sending it.
+Changes data: on a terminal, epx asks before it sends POST. `--yes` sends without asking (required without a terminal, or with `--file` -); `--dry-run` prints the request instead of sending it.
 
 Requires the invoice.invoice\_manage scope.
 
@@ -72,14 +61,7 @@ epx invoice-jobs create --type AUTOMATIC --yes
 
 Show the status of an invoice job.
 
-Reads an invoice job: STATUS is IN\_PROGRESS or DONE and TYPE MANUAL (orders chosen when
-the job was created) or AUTOMATIC (orders that the tenant's configuration selects). ORDERS
-counts the orders the job processed, of which INVOICED got an invoice, FAILED did not and
-PENDING wait for one. Each order's entry in invoices (orderId and status; errorStep and
-message for a failure, e.g. an order not ready for invoicing; for a success, the reference
-documents the invoice number and download link) is only in `-o json`.
-ID is the job id that creating the job returned. Emporix answers an unknown job with
-500 Internal Server Error (the reference documents 404), so get fails with exit code 1.
+Reads an invoice job: STATUS is IN\_PROGRESS or DONE and TYPE MANUAL (orders chosen when the job was created) or AUTOMATIC (orders that the tenant's configuration selects). ORDERS counts the orders the job processed, of which INVOICED got an invoice, FAILED did not and PENDING wait for one. Each order's entry in invoices (orderId and status; errorStep and message for a failure, e.g. an order not ready for invoicing; for a success, the reference documents the invoice number and download link) is only in `-o json`. ID is the job id that creating the job returned. Emporix answers an unknown job with 500 Internal Server Error (the reference documents 404), so get fails with exit code 1.
 
 Requires the invoice.invoice\_view scope.
 

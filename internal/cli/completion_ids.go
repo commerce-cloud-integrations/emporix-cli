@@ -30,13 +30,13 @@ const completionSize = 100
 // completionHelp follows the help of `epx completion`: how to opt in to
 // completion that reads the API.
 func completionHelp() string {
-	return "With " + envCompleteIDs + "=1 in the environment, the arguments that name items (such as ID of\n" +
+	return "With " + envCompleteIDs + "=1 in the environment, the arguments that name items (such as ID of " +
 		"`epx products get ID`) and --site complete too, with up to " + strconv.Itoa(completionSize) +
-		" of the IDs and site codes that\n" +
-		"the first page of their list shows (the whole list where Emporix sends it in one response),\n" +
+		" of the IDs and site codes that " +
+		"the first page of their list shows (the whole list where Emporix sends it in one response), " +
 		"read with the API key in effect and the scopes of that list within " +
-		defaultCompletionTimeout.String() + ".\n" +
-		"Without it, completion never calls the API; when the API cannot be read, it offers no IDs\n" +
+		defaultCompletionTimeout.String() + ". " +
+		"Without it, completion never calls the API; when the API cannot be read, it offers no IDs " +
 		"and prints nothing."
 }
 

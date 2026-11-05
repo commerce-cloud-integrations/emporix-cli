@@ -8,8 +8,7 @@ description: "Read, create, change and delete currencies."
 
 Reads the tenant's currencies.
 
-Its reads need no OAuth scope.
-Its writes require the currency.currency\_manage scope.
+Its reads need no OAuth scope. Its writes require the currency.currency\_manage scope.
 
 **Command:** `epx currencies [flags]`, `epx currencies [command]`
 
@@ -32,18 +31,11 @@ Its writes require the currency.currency\_manage scope.
 
 Create a currency.
 
-Creates a currency from the JSON in `--file`: its code (ISO 4217) and name, e.g.
-`{"code": "CHF", "name": {"en": "Swiss franc", "de": "Schweizer Franken"}}`, in languages
-that the tenant has. Emporix answers with the code; a code that exists already is a
-conflict (exit 5).
+Creates a currency from the JSON in `--file`: its code (ISO 4217) and name, e.g. `{"code": "CHF", "name": {"en": "Swiss franc", "de": "Schweizer Franken"}}`, in languages that the tenant has. Emporix answers with the code; a code that exists already is a conflict (exit 5).
 
-Localized text in the body, such as a name, is a map of translations, e.g.
-`{"en": "gram", "de": "Gramm"}`, as `-o json` of a read prints it, or with `--content-language`
-LANGUAGE a string in that language, e.g. `"gram"` with `--content-language` en.
+Localized text in the body, such as a name, is a map of translations, e.g. `{"en": "gram", "de": "Gramm"}`, as `-o json` of a read prints it, or with `--content-language` LANGUAGE a string in that language, e.g. `"gram"` with `--content-language` en.
 
-Changes data: on a terminal, epx asks before it sends POST. `--yes` sends without
-asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
-instead of sending it.
+Changes data: on a terminal, epx asks before it sends POST. `--yes` sends without asking (required without a terminal, or with `--file` -); `--dry-run` prints the request instead of sending it.
 
 Requires the currency.currency\_manage scope.
 
@@ -68,16 +60,9 @@ Also takes the [global flags](/commands#global-flags).
 
 Delete a currency.
 
-Deletes the currency CODE; it sends no body. The reference says Emporix also deletes the
-prices in the currency, asynchronously (not checked here). The exchange rates stay, and a site
-that lists the currency keeps listing it. It sends no forceDelete, which the reference documents
-(default false) without saying what it changes.
-Emporix answers an unknown CODE as one that it deleted (204 No Content).
+Deletes the currency CODE; it sends no body. The reference says Emporix also deletes the prices in the currency, asynchronously (not checked here). The exchange rates stay, and a site that lists the currency keeps listing it. It sends no forceDelete, which the reference documents (default false) without saying what it changes. Emporix answers an unknown CODE as one that it deleted (204 No Content).
 
-Deletes data, which cannot be undone.
-On a terminal, epx sends DELETE only once you type CODE at its prompt.
-`--yes` sends without asking (required without a terminal);
-`--dry-run` prints the request instead of sending it.
+Deletes data, which cannot be undone. On a terminal, epx sends DELETE only once you type CODE at its prompt. `--yes` sends without asking (required without a terminal); `--dry-run` prints the request instead of sending it.
 
 Requires the currency.currency\_manage scope.
 
@@ -150,18 +135,11 @@ Also takes the [global flags](/commands#global-flags).
 
 Rename a currency.
 
-Replaces the name of the currency CODE with the one in the JSON of `--file`, which also
-needs the currency's metadata.version as read ([`epx currencies get CODE -o json`](/commands/currencies#epx-currencies-get)), e.g.
-`{"name": {"en": "Swiss franc"}, "metadata": {"version": 1}}`; the code cannot change. A
-stale version and an unknown CODE are both not found (exit 4): Emporix answers 404 to both.
+Replaces the name of the currency CODE with the one in the JSON of `--file`, which also needs the currency's metadata.version as read ([`epx currencies get CODE -o json`](/commands/currencies#epx-currencies-get)), e.g. `{"name": {"en": "Swiss franc"}, "metadata": {"version": 1}}`; the code cannot change. A stale version and an unknown CODE are both not found (exit 4): Emporix answers 404 to both.
 
-Localized text in the body, such as a name, is a map of translations, e.g.
-`{"en": "gram", "de": "Gramm"}`, as `-o json` of a read prints it, or with `--content-language`
-LANGUAGE a string in that language, e.g. `"gram"` with `--content-language` en.
+Localized text in the body, such as a name, is a map of translations, e.g. `{"en": "gram", "de": "Gramm"}`, as `-o json` of a read prints it, or with `--content-language` LANGUAGE a string in that language, e.g. `"gram"` with `--content-language` en.
 
-Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without
-asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
-instead of sending it.
+Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without asking (required without a terminal, or with `--file` -); `--dry-run` prints the request instead of sending it.
 
 Requires the currency.currency\_manage scope.
 

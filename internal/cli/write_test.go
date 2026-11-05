@@ -188,11 +188,11 @@ func TestWriteHelp(t *testing.T) {
 	for _, want := range []string{
 		"Content-Language that the Unit Service requires to create or update a unit.\n\nChanges data: on a " +
 			"terminal, epx asks before it sends POST.",
-		"asking (required without a terminal, or with --file -); --dry-run prints the request\n" +
+		"asking (required without a terminal, or with --file -); --dry-run prints the request " +
 			"instead of sending it.\n\nRequests only the scopes given with --scope",
 		"epx api post /brand/brands --scope brand.brand_manage --file brand.json", "--file PATH", "--dry-run", "--yes",
 	} {
-		if !strings.Contains(help, want) {
+		if !containsFlat(help, want) {
 			t.Errorf("help %q; want %q", help, want)
 		}
 	}

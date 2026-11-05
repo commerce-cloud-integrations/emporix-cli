@@ -61,27 +61,27 @@ func currencyWrites(a *app, currencies resource[codeName]) []*cobra.Command {
 	return []*cobra.Command{
 		(&write{
 			use: createUse, short: "Create a currency", method: http.MethodPost,
-			long: "Creates a currency from the JSON in --file: its code (ISO 4217) and name, e.g.\n" +
-				`{"code": "CHF", "name": {"en": "Swiss franc", "de": "Schweizer Franken"}}, in languages` + "\n" +
-				"that the tenant has. Emporix answers with the code; a code that exists already is a\n" +
+			long: "Creates a currency from the JSON in --file: its code (ISO 4217) and name, e.g. " +
+				`{"code": "CHF", "name": {"en": "Swiss franc", "de": "Schweizer Franken"}}, in languages ` +
+				"that the tenant has. Emporix answers with the code; a code that exists already is a " +
 				"conflict (exit 5).",
 			req: request{path: currencies.path}, scopes: manage, body: &payload{}, language: stringsOrMaps,
 		}).command(a),
 		(&write{
 			use: currencies.itemUse("update"), short: "Rename a currency", method: http.MethodPut,
-			long: "Replaces the name of the currency CODE with the one in the JSON of --file, which also\n" +
-				"needs the currency's metadata.version as read (`epx currencies get CODE -o json`), e.g.\n" +
-				`{"name": {"en": "Swiss franc"}, "metadata": {"version": 1}}; the code cannot change. A` + "\n" +
+			long: "Replaces the name of the currency CODE with the one in the JSON of --file, which also " +
+				"needs the currency's metadata.version as read (`epx currencies get CODE -o json`), e.g. " +
+				`{"name": {"en": "Swiss franc"}, "metadata": {"version": 1}}; the code cannot change. A ` +
 				"stale version and an unknown CODE are both not found (exit 4): Emporix answers 404 to both.",
 			req: request{path: currencies.itemPath()}, scopes: manage, body: &payload{}, language: stringsOrMaps,
 			ids: currencies.itemIDs(),
 		}).command(a),
 		(&write{
 			use: currencies.itemUse("delete"), short: "Delete a currency", method: http.MethodDelete,
-			long: "Deletes the currency CODE; it sends no body. The reference says Emporix also deletes the\n" +
-				"prices in the currency, asynchronously (not checked here). The exchange rates stay, and a site\n" +
-				"that lists the currency keeps listing it. It sends no forceDelete, which the reference documents\n" +
-				"(default false) without saying what it changes." +
+			long: "Deletes the currency CODE; it sends no body. The reference says Emporix also deletes the " +
+				"prices in the currency, asynchronously (not checked here). The exchange rates stay, and a site " +
+				"that lists the currency keeps listing it. It sends no forceDelete, which the reference documents " +
+				"(default false) without saying what it changes. " +
 				unknownAsDeleted("CODE"),
 			req: request{path: currencies.itemPath()}, scopes: manage, body: noBody{}, ids: currencies.itemIDs(),
 		}).command(a),
@@ -119,8 +119,8 @@ func exchangeRateWrites(a *app, rates resource[exchangeRate]) []*cobra.Command {
 	return []*cobra.Command{
 		(&write{
 			use: createUse, short: "Create an exchange rate", method: http.MethodPost,
-			long: "Creates the exchange rate from the currency --source into --target (both defined in the\n" +
-				"tenant, as `epx currencies list` shows them), or the one in the JSON of --file. Emporix\n" +
+			long: "Creates the exchange rate from the currency --source into --target (both defined in the " +
+				"tenant, as `epx currencies list` shows them), or the one in the JSON of --file. Emporix " +
 				"answers with its code, SOURCE_TARGET; a rate that exists already is a conflict (exit 5).",
 			example: "  epx exchange-rates create --source EUR --target CHF --rate 0.95",
 			req:     request{path: rates.path}, scopes: manage, body: &payload{typed: objectBody{
@@ -131,9 +131,9 @@ func exchangeRateWrites(a *app, rates resource[exchangeRate]) []*cobra.Command {
 		}).command(a),
 		(&write{
 			use: rates.itemUse("update"), short: "Change an exchange rate", method: http.MethodPut,
-			long: "Changes the rate of the exchange rate CODE (its currencies cannot change) to --rate, with\n" +
-				"its metadata.version as read (--version, as `epx exchange-rates get CODE -o json` prints\n" +
-				"it), or to the JSON of --file. A stale version and an unknown CODE are both not found (exit 4):\n" +
+			long: "Changes the rate of the exchange rate CODE (its currencies cannot change) to --rate, with " +
+				"its metadata.version as read (--version, as `epx exchange-rates get CODE -o json` prints " +
+				"it), or to the JSON of --file. A stale version and an unknown CODE are both not found (exit 4): " +
 				"Emporix answers 404 to both.",
 			example: "  epx exchange-rates update EUR_CHF --rate 0.96 --version 2",
 			ids:     rates.itemIDs(),
@@ -144,7 +144,7 @@ func exchangeRateWrites(a *app, rates resource[exchangeRate]) []*cobra.Command {
 		}).command(a),
 		(&write{
 			use: rates.itemUse("delete"), short: "Delete an exchange rate", method: http.MethodDelete,
-			long: "Deletes the exchange rate CODE; it sends no body." + unknownAsDeleted("CODE"),
+			long: "Deletes the exchange rate CODE; it sends no body. " + unknownAsDeleted("CODE"),
 			req:  request{path: rates.itemPath()}, scopes: manage, body: noBody{}, ids: rates.itemIDs(),
 		}).command(a),
 	}

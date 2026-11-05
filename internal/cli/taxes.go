@@ -51,7 +51,7 @@ func newTaxesCommand(a *app) *cobra.Command {
 	taxes := resource[taxConfiguration]{
 		use:   "taxes",
 		short: "Read and change tax configurations, and calculate net and gross prices",
-		long: "Reads tax configurations, one per location. CLASSES lists each tax class with its rate\n" +
+		long: "Reads tax configurations, one per location. CLASSES lists each tax class with its rate " +
 			"in percent (-o json adds their names). `epx taxes calculate` applies them to a price.",
 		path:    "/tax/{tenant}/taxes",
 		filters: listFilters{kinds: sortable},
@@ -82,18 +82,18 @@ func taxWrites(a *app, taxes resource[taxConfiguration]) []*cobra.Command {
 	return []*cobra.Command{
 		(&write{
 			use: createUse, short: "Create a tax configuration", method: http.MethodPost,
-			long: "Creates the tax configuration of a country from the JSON in --file: location.countryCode\n" +
-				"and taxClasses, each with its code, name, order, rate in percent and, for one, isDefault,\n" +
-				`e.g. {"location": {"countryCode": "NL"}, "taxClasses": [{"code": "STANDARD", "name":` + "\n" +
-				`{"en": "Standard"}, "order": 0, "rate": 21, "isDefault": true}]}. A country that has one` + "\n" +
+			long: "Creates the tax configuration of a country from the JSON in --file: location.countryCode " +
+				"and taxClasses, each with its code, name, order, rate in percent and, for one, isDefault, " +
+				`e.g. {"location": {"countryCode": "NL"}, "taxClasses": [{"code": "STANDARD", "name": ` +
+				`{"en": "Standard"}, "order": 0, "rate": 21, "isDefault": true}]}. A country that has one ` +
 				"already is a conflict (exit 5).",
 			req: request{path: taxes.path}, scopes: manage, body: &payload{}, language: stringsOrMaps,
 		}).command(a),
 		(&write{
 			use: taxes.itemUse("update"), short: "Replace a tax configuration", method: http.MethodPut,
-			long: "Replaces the tax configuration of LOCATION with the JSON in --file, shaped as\n" +
-				"`epx taxes get LOCATION -o json` prints it, with its metadata.version as read: a stale\n" +
-				"version and an unknown LOCATION are both not found (exit 4): Emporix answers 404 to both. The\n" +
+			long: "Replaces the tax configuration of LOCATION with the JSON in --file, shaped as " +
+				"`epx taxes get LOCATION -o json` prints it, with its metadata.version as read: a stale " +
+				"version and an unknown LOCATION are both not found (exit 4): Emporix answers 404 to both. The " +
 				"country code cannot change.",
 			req: item, scopes: manage, body: &payload{}, language: stringsOrMaps, ids: taxes.itemIDs(),
 			reserved: map[string]string{taxCalculationSegment: "calculate"},
@@ -140,11 +140,11 @@ func newTaxCalculationCommand(a *app) *cobra.Command {
 	calculate := calculation.command(a, &command{
 		use:   "calculate",
 		short: "Calculate the net and gross value of a price",
-		long: "Calculates the net and gross value of a price with the tax configurations that\n" +
-			"`epx taxes list` shows: a net --price gets the rate of --tax-class in --country; with\n" +
-			"--gross, a gross price is reduced by that rate, or, with --source-country and\n" +
-			"--source-tax-class, by theirs before the rate of --country is added. SOURCE RATE and\n" +
-			"TARGET RATE are the rates applied, in percent. A country without a tax configuration is\n" +
+		long: "Calculates the net and gross value of a price with the tax configurations that " +
+			"`epx taxes list` shows: a net --price gets the rate of --tax-class in --country; with " +
+			"--gross, a gross price is reduced by that rate, or, with --source-country and " +
+			"--source-tax-class, by theirs before the rate of --country is added. SOURCE RATE and " +
+			"TARGET RATE are the rates applied, in percent. A country without a tax configuration is " +
 			"not found (exit 4).",
 		req: request{path: "/tax/{tenant}/taxes/" + taxCalculationSegment},
 		fetch: bodyRead{method: http.MethodPut, body: objectBody{

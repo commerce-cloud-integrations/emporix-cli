@@ -57,8 +57,8 @@ func newAIAnalyticsCommand(a *app) *cobra.Command {
 	totals := reader[logTotals]{view: view[logTotals]{
 		singular: "agent analytics",
 		header:   []string{"LOGS", columnTotal, "WARNING", "ERROR", "ERROR RATE"},
-		legend: "LOGS is requests or sessions, TOTAL how many there were in the last four weeks, WARNING and\n" +
-			"ERROR how many of them had that severity and ERROR RATE their share with errors, as Emporix\n" +
+		legend: "LOGS is requests or sessions, TOTAL how many there were in the last four weeks, WARNING and " +
+			"ERROR how many of them had that severity and ERROR RATE their share with errors, as Emporix " +
 			"computes it. The requests per session and the weekly trends are only in -o json.",
 		row: func(t logTotals, _ language) []string {
 			m := t.Metrics
@@ -86,7 +86,7 @@ func newAIAnalyticsCommand(a *app) *cobra.Command {
 		totals.command(a, &command{
 			use:   "agent AGENT_ID",
 			short: "Show the request and session totals of one agent",
-			long: "Reads the totals of the requests and sessions of one agent: AGENT_ID is the ID that\n" +
+			long: "Reads the totals of the requests and sessions of one agent: AGENT_ID is the ID that " +
 				"`epx ai agents list` shows; an unknown one counts nothing.",
 			req:   request{path: path, query: url.Values{"agentId": {placeholderID}}},
 			fetch: single{items: analyticsItems},
@@ -95,10 +95,10 @@ func newAIAnalyticsCommand(a *app) *cobra.Command {
 		executions.command(a, &command{
 			use:   "executions AGENT_IDS",
 			short: "List how often agents ran per calendar quarter, month or week",
-			long: "Reads how often agents ran (their sessions) per calendar quarter, Emporix's default\n" +
-				"granularity, or per month or week (--granularity): each PERIOD that Emporix reports runs\n" +
-				"from FROM (inclusive) to TO (exclusive), in UTC. AGENT_IDS are the IDs that\n" +
-				"`epx ai agents list` shows, separated by commas without spaces (at most 100); an unknown\n" +
+			long: "Reads how often agents ran (their sessions) per calendar quarter, Emporix's default " +
+				"granularity, or per month or week (--granularity): each PERIOD that Emporix reports runs " +
+				"from FROM (inclusive) to TO (exclusive), in UTC. AGENT_IDS are the IDs that " +
+				"`epx ai agents list` shows, separated by commas without spaces (at most 100); an unknown " +
 				"one ran 0 times.",
 			req: request{path: path + "/executions", query: url.Values{"agentIds": {placeholderID}}},
 			fetch: &paramRead{

@@ -139,10 +139,10 @@ func TestCatalogWriteHelp(t *testing.T) {
 		want []string
 	}{
 		{args: []string{"categories", "update"}, want: []string{
-			"\n\n--publish also requests the category.category_publish scope.\n--unpublish also requests the " +
+			"\n\n--publish also requests the category.category_publish scope. --unpublish also requests the " +
 				"category.category_unpublish scope.\n\nRequires the category.category_manage scope.\n\nUsage:",
 			"needs published: false in the body (requests category.category_unpublish too)",
-			"the body has the members of create's, published included, but\nid, type and ownClassificationMixins.",
+			"the body has the members of create's, published included, but id, type and ownClassificationMixins.",
 		}},
 		{args: []string{"categories", "create"}, want: []string{
 			"\n\n--publish also requests the category.category_publish scope.\n\nRequires the category.category_manage " +
@@ -150,34 +150,34 @@ func TestCatalogWriteHelp(t *testing.T) {
 		}},
 		{args: []string{"catalogs", "patch"}, want: []string{"Emporix requires metadata.version in the body",
 			"with 404 Not Found: epx then exits with 5, a conflict"}},
-		{args: []string{"categories", "patch"}, want: []string{"with 400 Bad Request (exit 1),\nnot as a conflict.",
+		{args: []string{"categories", "patch"}, want: []string{"with 400 Bad Request (exit 1), not as a conflict.",
 			"published in the body publishes or unpublishes the category as sent"}},
 		{args: []string{"categories", "delete"}, want: []string{"move to the category above it",
-			"Emporix refuses to\ndelete a root category with categories below it"}},
+			"Emporix refuses to delete a root category with categories below it"}},
 		{args: []string{"categories", "assignments", "update"}, want: []string{
-			"not its code.\nCATEGORY_ID is the ID that `epx categories list` shows; an unknown one is not found.\n\n",
+			"not its code. CATEGORY_ID is the ID that `epx categories list` shows; an unknown one is not found.\n\n",
 			"Usage:\n  epx categories assignments update CATEGORY_ID PRODUCT_ID [flags]",
 			"send without asking (required without a terminal)\n",
 		}},
 		{args: []string{"categories", "assignments", "bulk-update"}, want: []string{
-			"as in\n{\"ref\": {\"id\": \"100200\"}}.", "Emporix takes up to 200 items in one request",
+			"as in {\"ref\": {\"id\": \"100200\"}}.", "Emporix takes up to 200 items in one request",
 		}},
 		{args: []string{"categories"}, want: []string{"Its reads require the category.category_read_unpublished " +
-			"scope.\nIts writes require different OAuth scopes; the help of each names them.\n\nUsage:",
+			"scope. Its writes require different OAuth scopes; the help of each names them.\n\nUsage:",
 			" Create a category\n"}},
 		{args: []string{"categories", "assignments"}, want: []string{"Its reads require the " +
-			"category.category_read_unpublished scope.\nIts writes require different OAuth scopes"}},
+			"category.category_read_unpublished scope. Its writes require different OAuth scopes"}},
 		{args: []string{"categories", "assignments", "delete-all"}, want: []string{
-			"to the category CATEGORY_ID, published or\nunpublished, as `epx categories assignments list CATEGORY_ID` " +
+			"to the category CATEGORY_ID, published or unpublished, as `epx categories assignments list CATEGORY_ID` " +
 				"lists them.",
 			"Requires the category.category_manage, category.category_read_unpublished scopes.",
 		}},
-		{args: []string{"category-trees"}, want: []string{"\nIts writes require the category.category_manage, " +
+		{args: []string{"category-trees"}, want: []string{" Its writes require the category.category_manage, " +
 			"category.category_read_unpublished scopes.\n\nUsage:"}},
 	} {
 		_, help, _ := runCLI(t, nil, append(tt.args, "--help")...)
 		for _, want := range tt.want {
-			if !strings.Contains(help, want) {
+			if !containsFlat(help, want) {
 				t.Errorf("%q: help %q; want %q", tt.args, help, want)
 			}
 		}

@@ -37,37 +37,37 @@ type versioned struct {
 // whose help is that of versionedCreateHelp, versionedUpsertHelp and
 // versionedDeleteHelp, as v says.
 func (r resource[T]) versionedWrites(a *app, scopes []string, v *versioned) []*cobra.Command {
-	del := r.deleteWrite(scopes, withNote(r.versionedDeleteHelp(cmp.Or(v.unknown, notFound)), v.deleteNote))
+	del := r.deleteWrite(scopes, joinSentences(r.versionedDeleteHelp(cmp.Or(v.unknown, notFound)), v.deleteNote))
 	del.deletes = deletion{many: v.cascade}
 	return []*cobra.Command{
-		r.createWrite(scopes, withNote(r.versionedCreateHelp(v.members), v.createNote)).command(a),
-		r.upsertWrite(scopes, withNote(r.versionedUpsertHelp(v.required), v.updateNote)).command(a),
+		r.createWrite(scopes, joinSentences(r.versionedCreateHelp(v.members), v.createNote)).command(a),
+		r.upsertWrite(scopes, joinSentences(r.versionedUpsertHelp(v.required), v.updateNote)).command(a),
 		del.command(a),
 	}
 }
 
 // versionedCreateHelp returns the help of create of r, whose body holds
-// members, help text of its own lines that ends without a line break.
+// members, sentences of help text.
 func (r resource[T]) versionedCreateHelp(members string) string {
-	return "Creates the " + r.singular + " that the JSON body of --file describes, shaped as\n" + r.getJSON() +
-		" prints one:\n" + members + "\nWithout an id, Emporix makes one, and answers with it; an id that exists " +
-		"already is a\nconflict (exit 5)."
+	return "Creates the " + r.singular + " that the JSON body of --file describes, shaped as " + r.getJSON() +
+		" prints one: " + members + " Without an id, Emporix makes one, and answers with it; an id that exists " +
+		"already is a conflict (exit 5)."
 }
 
 // versionedUpsertHelp returns the help of update ID of r, whose body requires
 // required, e.g. "name and type".
 func (r resource[T]) versionedUpsertHelp(required string) string {
 	return "Replaces the " + r.singular + " " + r.header[0] + " with the JSON body of --file, shaped as create " +
-		"takes it\nbut without an id, or creates it with that id where none exists (an upsert); it requires\n" +
-		required + ".\nWith metadata.version as " + r.getJSON() + " prints it, Emporix\nreplaces it only if " +
-		"nobody changed it since, and answers 409 Conflict (exit 5) otherwise;\nwithout metadata.version, it " +
-		"replaces it whatever its version.\n" + r.idSource() + "."
+		"takes it but without an id, or creates it with that id where none exists (an upsert); it requires " +
+		required + ". With metadata.version as " + r.getJSON() + " prints it, Emporix replaces it only if " +
+		"nobody changed it since, and answers 409 Conflict (exit 5) otherwise; without metadata.version, it " +
+		"replaces it whatever its version. " + r.idSource() + "."
 }
 
 // versionedDeleteHelp returns the help of delete ID of r, of which an
 // unknown item gives unknown.
 func (r resource[T]) versionedDeleteHelp(unknown unknownParent) string {
-	return "Deletes the " + r.singular + " " + r.header[0] + "; it sends no body.\n" + r.idSource() +
+	return "Deletes the " + r.singular + " " + r.header[0] + "; it sends no body. " + r.idSource() +
 		"; an unknown one " + string(unknown) + "."
 }
 

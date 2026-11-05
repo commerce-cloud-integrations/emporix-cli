@@ -6,15 +6,9 @@ description: "Read, create, replace and delete customers' shopping lists."
 
 ## epx shopping-lists
 
-Reads customers' shopping lists, personal data included: each customer's lists by name,
-with how many items they hold. Items are only in `-o json`. CUSTOMER is the customer id the
-lists are kept under (the reference calls it the customer number; for a customer that
-Emporix numbered, the two are the same); get takes it, and a customer without shopping
-lists is not found.
-create, update and delete create, replace and delete a customer's lists.
+Reads customers' shopping lists, personal data included: each customer's lists by name, with how many items they hold. Items are only in `-o json`. CUSTOMER is the customer id the lists are kept under (the reference calls it the customer number; for a customer that Emporix numbered, the two are the same); get takes it, and a customer without shopping lists is not found. create, update and delete create, replace and delete a customer's lists.
 
-Its reads require the shoppinglist.shoppinglist\_read scope.
-Its writes require the shoppinglist.shoppinglist\_manage scope.
+Its reads require the shoppinglist.shoppinglist\_read scope. Its writes require the shoppinglist.shoppinglist\_manage scope.
 
 **Command:** `epx shopping-lists [flags]`, `epx shopping-lists [command]`
 
@@ -39,15 +33,9 @@ Its writes require the shoppinglist.shoppinglist\_manage scope.
 
 Create a shopping list of a customer.
 
-Creates the shopping list in `--file`, a JSON object with the customerId of the customer it
-belongs to, the list's name and its items (each with its id, productId and quantity), and
-prints what Emporix answers with: the customer's id. A list of that name that the customer
-has already is a conflict (exit 5). Emporix does not check the customer: it creates the list
-of an unknown customer id too.
+Creates the shopping list in `--file`, a JSON object with the customerId of the customer it belongs to, the list's name and its items (each with its id, productId and quantity), and prints what Emporix answers with: the customer's id. A list of that name that the customer has already is a conflict (exit 5). Emporix does not check the customer: it creates the list of an unknown customer id too.
 
-Changes data: on a terminal, epx asks before it sends POST. `--yes` sends without
-asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
-instead of sending it.
+Changes data: on a terminal, epx asks before it sends POST. `--yes` sends without asking (required without a terminal, or with `--file` -); `--dry-run` prints the request instead of sending it.
 
 Requires the shoppinglist.shoppinglist\_manage scope.
 
@@ -76,14 +64,9 @@ epx shopping-lists create --file list.json --dry-run
 
 Delete a shopping list of a customer.
 
-Deletes the shopping list `--name` of CUSTOMER; its other lists stay.
-A customer without shopping lists, or without a list of that name, is not found (exit 4).
-[`epx shopping-lists get CUSTOMER`](/commands/shopping-lists#epx-shopping-lists-get) shows the lists that are left.
+Deletes the shopping list `--name` of CUSTOMER; its other lists stay. A customer without shopping lists, or without a list of that name, is not found (exit 4). [`epx shopping-lists get CUSTOMER`](/commands/shopping-lists#epx-shopping-lists-get) shows the lists that are left.
 
-Deletes data, which cannot be undone.
-On a terminal, epx sends DELETE only once you type CUSTOMER at its prompt.
-`--yes` sends without asking (required without a terminal);
-`--dry-run` prints the request instead of sending it.
+Deletes data, which cannot be undone. On a terminal, epx sends DELETE only once you type CUSTOMER at its prompt. `--yes` sends without asking (required without a terminal); `--dry-run` prints the request instead of sending it.
 
 Requires the shoppinglist.shoppinglist\_manage scope.
 
@@ -106,13 +89,9 @@ Also takes the [global flags](/commands#global-flags).
 
 Delete every shopping list of a customer.
 
-Deletes every shopping list of CUSTOMER.
-A customer without shopping lists is not found (exit 4).
+Deletes every shopping list of CUSTOMER. A customer without shopping lists is not found (exit 4).
 
-Deletes every shopping list of the customer with one request, which cannot be undone.
-On a terminal, epx sends DELETE only once you type CUSTOMER at its prompt.
-`--yes` sends without asking (required without a terminal);
-`--dry-run` prints the request instead of sending it.
+Deletes every shopping list of the customer with one request, which cannot be undone. On a terminal, epx sends DELETE only once you type CUSTOMER at its prompt. `--yes` sends without asking (required without a terminal); `--dry-run` prints the request instead of sending it.
 
 Requires the shoppinglist.shoppinglist\_manage scope.
 
@@ -133,11 +112,7 @@ Also takes the [global flags](/commands#global-flags).
 
 Show one customer's shopping lists.
 
-Reads customers' shopping lists, personal data included: each customer's lists by name,
-with how many items they hold. Items are only in `-o json`. CUSTOMER is the customer id the
-lists are kept under (the reference calls it the customer number; for a customer that
-Emporix numbered, the two are the same); get takes it, and a customer without shopping
-lists is not found.
+Reads customers' shopping lists, personal data included: each customer's lists by name, with how many items they hold. Items are only in `-o json`. CUSTOMER is the customer id the lists are kept under (the reference calls it the customer number; for a customer that Emporix numbered, the two are the same); get takes it, and a customer without shopping lists is not found.
 
 Requires the shoppinglist.shoppinglist\_read scope.
 
@@ -158,11 +133,7 @@ Also takes the [global flags](/commands#global-flags).
 
 List customers' shopping lists.
 
-Reads customers' shopping lists, personal data included: each customer's lists by name,
-with how many items they hold. Items are only in `-o json`. CUSTOMER is the customer id the
-lists are kept under (the reference calls it the customer number; for a customer that
-Emporix numbered, the two are the same); get takes it, and a customer without shopping
-lists is not found.
+Reads customers' shopping lists, personal data included: each customer's lists by name, with how many items they hold. Items are only in `-o json`. CUSTOMER is the customer id the lists are kept under (the reference calls it the customer number; for a customer that Emporix numbered, the two are the same); get takes it, and a customer without shopping lists is not found.
 
 Requires the shoppinglist.shoppinglist\_read scope.
 
@@ -187,15 +158,9 @@ Also takes the [global flags](/commands#global-flags).
 
 Replace a shopping list of a customer.
 
-Replaces the shopping list of CUSTOMER that the JSON in `--file` names with it: an object
-with the list's name and its items (each with its id, productId and quantity). Send its
-metadata.version as read to replace it only if nobody changed it since: Emporix answers
-409 Conflict (exit 5) otherwise.
-A customer without shopping lists, or without a list of that name, is not found (exit 4). Update creates no list; create does.
+Replaces the shopping list of CUSTOMER that the JSON in `--file` names with it: an object with the list's name and its items (each with its id, productId and quantity). Send its metadata.version as read to replace it only if nobody changed it since: Emporix answers 409 Conflict (exit 5) otherwise. A customer without shopping lists, or without a list of that name, is not found (exit 4). Update creates no list; create does.
 
-Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without
-asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
-instead of sending it.
+Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without asking (required without a terminal, or with `--file` -); `--dry-run` prints the request instead of sending it.
 
 Requires the shoppinglist.shoppinglist\_manage scope.
 

@@ -26,10 +26,10 @@ func newUnitsCommand(a *app) *cobra.Command {
 	units := resource[unit]{
 		use:   "units",
 		short: "Read and change units of measurement; read unit types and convert between units",
-		long: "Reads units of measurement. TYPE groups units that convert into each other, BASE marks\n" +
-			"the base unit of a type, and FACTOR converts a unit into its type's base unit, as sent by\n" +
-			"Emporix (g: 0.001 when kg is the base). `epx units types` lists the types;\n" +
-			"`epx units convert` and `conversion-factor` convert between units of a type.\n" +
+		long: "Reads units of measurement. TYPE groups units that convert into each other, BASE marks " +
+			"the base unit of a type, and FACTOR converts a unit into its type's base unit, as sent by " +
+			"Emporix (g: 0.001 when kg is the base). `epx units types` lists the types; " +
+			"`epx units convert` and `conversion-factor` convert between units of a type. " +
 			"`epx units create`, `update`, `delete` and `bulk-delete` change the units.",
 		path:    "/unit-handling/{tenant}/units",
 		filters: listFilters{kinds: sortable},
@@ -60,7 +60,7 @@ const unitManageScope = "unithandling.unit_manage"
 // unitLanguageHelp is what the help of units update says of the localized
 // text of its body: Emporix replaces a name with a string in one language,
 // so that the unit's other translations are gone.
-const unitLanguageHelp = contentLanguageHelp + "\nSuch a string replaces the unit's other translations of " +
+const unitLanguageHelp = contentLanguageHelp + " Such a string replaces the unit's other translations of " +
 	"that text; send the map to keep them."
 
 // unitWriteCommands returns the writes of units, with the scope that the
@@ -71,35 +71,35 @@ const unitLanguageHelp = contentLanguageHelp + "\nSuch a string replaces the uni
 // with 404 Not Found: a conflict when the body carries one.
 func unitWriteCommands(a *app, units resource[unit]) []*cobra.Command {
 	manage := []string{unitManageScope}
-	const visibility = "\nOther services see the change after up to 5 minutes."
+	const visibility = "Other services see the change after up to 5 minutes."
 	return []*cobra.Command{
 		(&write{
 			use:   createUse,
 			short: "Create a unit",
-			long: "Creates the unit that the JSON body of --file describes: its code, name, type, baseUnit\n" +
-				"(whether it is the base unit of its type) and factor (what converts it into the base unit,\n" +
-				"greater than zero), and its symbol if any. Emporix answers with the unit's code; a unit\n" +
-				"with the code exists already: a conflict (exit 5)." + visibility,
+			long: "Creates the unit that the JSON body of --file describes: its code, name, type, baseUnit " +
+				"(whether it is the base unit of its type) and factor (what converts it into the base unit, " +
+				"greater than zero), and its symbol if any. Emporix answers with the unit's code; a unit " +
+				"with the code exists already: a conflict (exit 5). " + visibility,
 			method: http.MethodPost, req: request{path: units.path}, scopes: manage, body: &payload{}, language: stringsOrMaps,
 		}).command(a),
 		(&write{
 			use:   units.itemUse("update"),
 			short: "Update a unit",
-			long: "Replaces the unit CODE (the CODE that `epx units list` shows) with the unit that the JSON\n" +
-				"body of --file describes, as create does, with the same code; Emporix creates no missing\n" +
-				"unit. With metadata.version in the body, as `epx units get CODE -o json` prints it, Emporix\n" +
-				"replaces only that version of the unit, and answers an older one as it answers an unknown\n" +
-				"unit, with 404 Not Found: epx then exits with 5, a conflict (read the unit again before\n" +
-				"you retry), and without a version with 4, not found." + visibility,
+			long: "Replaces the unit CODE (the CODE that `epx units list` shows) with the unit that the JSON " +
+				"body of --file describes, as create does, with the same code; Emporix creates no missing " +
+				"unit. With metadata.version in the body, as `epx units get CODE -o json` prints it, Emporix " +
+				"replaces only that version of the unit, and answers an older one as it answers an unknown " +
+				"unit, with 404 Not Found: epx then exits with 5, a conflict (read the unit again before " +
+				"you retry), and without a version with 4, not found. " + visibility,
 			method: http.MethodPut, req: request{path: units.itemPath()}, scopes: manage, body: &payload{},
 			language: stringsOrMaps, languageHelp: unitLanguageHelp, ids: units.itemIDs(),
 			answers: emporix.Answers{StaleNotFound: true},
 		}).command(a),
-		itemDelete(units, "Delete a unit", "Deletes the unit CODE, as `epx units list` shows it."+visibility,
+		itemDelete(units, "Delete a unit", "Deletes the unit CODE, as `epx units list` shows it. "+visibility,
 			manage).command(a),
 		(&write{
 			use: bulkDeleteUse, short: "Delete units by their codes", method: http.MethodDelete,
-			long: "Deletes the units whose codes the JSON array of --file names, such as [\"g\", \"kg\"]." +
+			long: "Deletes the units whose codes the JSON array of --file names, such as [\"g\", \"kg\"]. " +
 				visibility,
 			req: request{path: units.path}, scopes: manage, body: &payload{},
 			deletes: deletion{many: "the units whose codes --file names"},
@@ -123,7 +123,7 @@ type unitConversion struct {
 }
 
 // unitConversionHelp ends the help of the unit conversions.
-const unitConversionHelp = "\nAn unknown unit is not found (exit 4); Emporix answers units of different types with\n" +
+const unitConversionHelp = "An unknown unit is not found (exit 4); Emporix answers units of different types with " +
 	"400 Bad Request (exit 1)."
 
 // newUnitConvertCommand returns `convert`, an amount of one unit in
@@ -141,8 +141,8 @@ func newUnitConvertCommand(a *app) *cobra.Command {
 	}}.command(a, &command{
 		use:   "convert",
 		short: "Convert an amount from one unit into another",
-		long: "Converts an --amount of one unit into another of the same type (`epx units list` shows\n" +
-			"their codes and types): FROM is the amount given, TO what it converts to." +
+		long: "Converts an --amount of one unit into another of the same type (`epx units list` shows " +
+			"their codes and types): FROM is the amount given, TO what it converts to. " +
 			unitConversionHelp,
 		req: request{path: "/unit-handling/{tenant}/units/convert-unit-commands"},
 		fetch: bodyRead{method: http.MethodPut, created: true, body: objectBody(append(unitPairFields(),
@@ -163,9 +163,9 @@ func newUnitConversionFactorCommand(a *app) *cobra.Command {
 	}}.command(a, &command{
 		use:   "conversion-factor",
 		short: "Calculate the factor that converts one unit into another",
-		long: "Calculates the FACTOR that converts one unit into another of the same type\n" +
-			"(`epx units list` shows their codes and types): an amount in FROM units times FACTOR is\n" +
-			"the amount in TO units." +
+		long: "Calculates the FACTOR that converts one unit into another of the same type " +
+			"(`epx units list` shows their codes and types): an amount in FROM units times FACTOR is " +
+			"the amount in TO units. " +
 			unitConversionHelp,
 		req: request{path: "/unit-handling/{tenant}/units/conversion-factor-commands"},
 		fetch: bodyRead{method: http.MethodPut, created: true, body: objectBody(unitPairFields()),

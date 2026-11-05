@@ -42,14 +42,14 @@ func newPaymentTransactionsCommand(a *app) *cobra.Command {
 	transactions := resource[paymentTransaction]{
 		use:   "payment-transactions",
 		short: "Read payment transactions; authorize, capture, refund and cancel payments",
-		about: "Reads payment transactions, personal data included, and runs payments through the\n" +
-			"tenant's payment providers: authorize starts a transaction for an order, capture collects\n" +
-			"an authorized amount, refund returns a captured one and cancel voids an authorization.\n" +
+		about: "Reads payment transactions, personal data included, and runs payments through the " +
+			"tenant's payment providers: authorize starts a transaction for an order, capture collects " +
+			"an authorized amount, refund returns a captured one and cancel voids an authorization. " +
 			"Capture, refund and cancel move money.",
-		long: "Reads payment transactions, personal data included. PAYMENT MODE is the id of the payment\n" +
-			"mode used, and ENTRIES the operations the provider ran, in the order sent: type and amount,\n" +
-			"marked failed when they failed. Payment details (such as bank details and pay-by-link URLs),\n" +
-			"card tokens and the provider's requests and responses are only in -o json. list's --sort\n" +
+		long: "Reads payment transactions, personal data included. PAYMENT MODE is the id of the payment " +
+			"mode used, and ENTRIES the operations the provider ran, in the order sent: type and amount, " +
+			"marked failed when they failed. Payment details (such as bank details and pay-by-link URLs), " +
+			"card tokens and the provider's requests and responses are only in -o json. list's --sort " +
 			"takes only createdDate (e.g. createdDate:desc); Emporix rejects other and several fields.",
 		path:    "/payment-gateway/{tenant}/transactions",
 		scopes:  []string{"payment-gateway.paymenttransactions_read"},
@@ -81,7 +81,7 @@ func paymentWrites(a *app, transactions resource[paymentTransaction]) []*cobra.C
 		payments    = "/payment-gateway/{tenant}/payment"
 		transaction = payments + "/" + placeholderID
 		// moves is the second paragraph of the help of capture, refund and cancel.
-		moves = "This moves money: the confirmation names the transaction in the URL that it shows. ID is\n" +
+		moves = "This moves money: the confirmation names the transaction in the URL that it shows. ID is " +
 			"the ID that `epx payment-transactions list` shows; an unknown one is not found (exit 4)."
 	)
 	amount := func(verb string) []bodyField {
@@ -93,10 +93,10 @@ func paymentWrites(a *app, transactions resource[paymentTransaction]) []*cobra.C
 	return []*cobra.Command{
 		(&write{
 			use: "authorize", short: "Authorize a payment", method: http.MethodPost,
-			long: "Authorizes the payment of an order with a payment mode, as --file, a JSON object, gives\n" +
-				"them: order.id, paymentModeId, amountToAuthorize and currency, and what the provider\n" +
-				"needs, such as creditCardToken. The provider reserves the amount, which capture then\n" +
-				"collects. Emporix answers with the paymentTransactionId and, where the customer must\n" +
+			long: "Authorizes the payment of an order with a payment mode, as --file, a JSON object, gives " +
+				"them: order.id, paymentModeId, amountToAuthorize and currency, and what the provider " +
+				"needs, such as creditCardToken. The provider reserves the amount, which capture then " +
+				"collects. Emporix answers with the paymentTransactionId and, where the customer must " +
 				"finish the payment with the provider, where to send them (externalPaymentRedirectURL).",
 			example: "  epx payment-transactions authorize --file authorize.json --dry-run",
 			req:     request{path: payments + "/authorize"}, scopes: []string{"payment-gateway.authorize_manage"},
@@ -104,8 +104,8 @@ func paymentWrites(a *app, transactions resource[paymentTransaction]) []*cobra.C
 		}).command(a),
 		(&write{
 			use: transactions.itemUse("capture"), short: "Capture an authorized payment", method: http.MethodPost,
-			long: "Captures --amount in --currency of the authorized payment of transaction ID, at most the\n" +
-				"amount authorized: the provider collects it from the customer. Emporix answers with the\n" +
+			long: "Captures --amount in --currency of the authorized payment of transaction ID, at most the " +
+				"amount authorized: the provider collects it from the customer. Emporix answers with the " +
 				"provider's captureId, which refund --capture-id takes.\n\n" + moves,
 			example: "  epx payment-transactions capture T1 --amount 3.99 --currency EUR --dry-run",
 			req:     request{path: transaction + "/capture"}, scopes: []string{"payment-gateway.capture_manage"},
@@ -114,8 +114,8 @@ func paymentWrites(a *app, transactions resource[paymentTransaction]) []*cobra.C
 		}).command(a),
 		(&write{
 			use: transactions.itemUse("refund"), short: "Refund a captured payment", method: http.MethodPost,
-			long: "Refunds --amount in --currency of the captured payment of transaction ID, at most the\n" +
-				"amount captured: the provider returns it to the customer. Where the payment was captured\n" +
+			long: "Refunds --amount in --currency of the captured payment of transaction ID, at most the " +
+				"amount captured: the provider returns it to the customer. Where the payment was captured " +
 				"more than once, --capture-id names the capture to refund.\n\n" + moves,
 			example: "  epx payment-transactions refund T1 --amount 3.99 --currency EUR --dry-run",
 			req:     request{path: transaction + "/refund"}, scopes: []string{"payment-gateway.refund_manage"},
@@ -125,7 +125,7 @@ func paymentWrites(a *app, transactions resource[paymentTransaction]) []*cobra.C
 		}).command(a),
 		(&write{
 			use: transactions.itemUse("cancel"), short: "Cancel an authorized payment", method: http.MethodPost,
-			long: "Cancels the authorized payment of transaction ID: the provider releases the amount that\n" +
+			long: "Cancels the authorized payment of transaction ID: the provider releases the amount that " +
 				"it reserved.\n\n" + moves,
 			example: "  epx payment-transactions cancel T1 --dry-run",
 			req:     request{path: transaction + "/cancel"}, scopes: []string{"payment-gateway.cancel_manage"},

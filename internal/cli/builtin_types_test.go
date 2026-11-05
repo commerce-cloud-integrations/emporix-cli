@@ -91,9 +91,9 @@ func TestSearchTypesOnlyInTheirSpelling(t *testing.T) {
 	}
 }
 
-// unscopedLines is what typeSentence says an unknown type gives, unscoped
-// on two lines.
-const unscopedLines = unscopedLead + "\n" + unscopedRest + "."
+// unscopedEnd is how typeSentence ends: what an unknown type gives.
+const unscopedEnd = "has no scope that Emporix grants (exit code 3), and a type created in the last minutes has " +
+	"none yet."
 
 // TestTypedCommandsNameTheirBuiltInTypes checks that a command with built-in
 // types names them where it refuses what no type is, in what its help says
@@ -109,18 +109,18 @@ func TestTypedCommandsNameTheirBuiltInTypes(t *testing.T) {
 		t.Errorf("exit %d, stdout %q, stderr %q; want exit 2 and %q", code, stdout, stderr, refused)
 	}
 	fake.assertNothingSent(t)
-	const sentence = "TYPE is customer or legal-entity, exactly as written, or a custom entity type,\n" +
-		"whose ID `epx custom-entities list` shows; an unknown one " + unscopedLines
+	const sentence = "TYPE is customer or legal-entity, exactly as written, or a custom entity type, " +
+		"whose ID `epx custom-entities list` shows; an unknown one " + unscopedEnd
 	if got := typeSentence(searchTypes()); got != sentence {
 		t.Errorf("type sentence %q; want %q", got, sentence)
 	}
-	if got, want := typeSentence(builtInTypes{}), "TYPE is a custom entity type,\nwhose ID "+
-		"`epx custom-entities list` shows; an unknown one "+unscopedLines; got != want {
+	if got, want := typeSentence(builtInTypes{}), "TYPE is a custom entity type, whose ID "+
+		"`epx custom-entities list` shows; an unknown one "+unscopedEnd; got != want {
 		t.Errorf("type sentence without built-in types %q; want %q", got, want)
 	}
-	const scopes = "\nIn place of custom.<type>_read, customer requires customer.customer_read;\nlegal-entity " +
+	const scopes = " In place of custom.<type>_read, customer requires customer.customer_read; legal-entity " +
 		"requires customermanagement.legalentity_read.\n\nRequires the search.search_read, custom.<type>_read " +
-		"scopes.\n<type> is the custom entity type in lower case (custom.document_read for DOCUMENT)."
+		"scopes. <type> is the custom entity type in lower case (custom.document_read for DOCUMENT)."
 	cmd, _, err := newTestRoot().Find([]string{"search", "documents"})
 	if err != nil || !strings.Contains(cmd.Long, sentence) || !strings.HasSuffix(cmd.Long, scopes) ||
 		cmd.Annotations[scopesAnnotation] != "search.search_read custom.<type>_read" {

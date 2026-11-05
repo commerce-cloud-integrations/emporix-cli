@@ -9,9 +9,9 @@ const iamUse = "iam"
 // groups and what they may do.
 func newIAMCommand(a *app) *cobra.Command {
 	return newGroup(iamUse, "Read and change IAM users, groups and access rights",
-		"Reads the tenant's IAM (identity and access management) data: user accounts, the groups they\n"+
-			"belong to and what these may do: scopes, access controls and templates. Its writes change\n"+
-			"users, groups and their users, access controls and custom scopes, and with them who may do\n"+
+		"Reads the tenant's IAM (identity and access management) data: user accounts, the groups they "+
+			"belong to and what these may do: scopes, access controls and templates. Its writes change "+
+			"users, groups and their users, access controls and custom scopes, and with them who may do "+
 			"what in the tenant.",
 		newIAMUsersCommand(a), newIAMGroupsCommand(a), newIAMScopesCommand(a), newIAMAccessControlsCommand(a),
 		newIAMTemplatesCommand(a))

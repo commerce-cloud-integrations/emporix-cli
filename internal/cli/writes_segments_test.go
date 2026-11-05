@@ -239,34 +239,34 @@ func TestSegmentGroupsStateTheirScopes(t *testing.T) {
 		args []string
 		want string
 	}{
-		{args: []string{"segments"}, want: "Its reads require different OAuth scopes; the help of each names them.\n" +
-			"Opt-in: epx requests a write-capable scope for a read only when given --allow-write-scope.\n" +
+		{args: []string{"segments"}, want: "Its reads require different OAuth scopes; the help of each names them. " +
+			"Opt-in: epx requests a write-capable scope for a read only when given --allow-write-scope. " +
 			"Its writes require the customersegment.segment_manage scope.\n\nUsage:"},
-		{args: []string{"segments", "items"}, want: "Its reads require the customersegment.segment_read scope.\n" +
+		{args: []string{"segments", "items"}, want: "Its reads require the customersegment.segment_read scope. " +
 			"Its writes require the customersegment.segment_manage scope.\n\nUsage:"},
 		{args: []string{"segments", "customers", "get-b2b"}, want: "CUSTOMER and LEGAL_ENTITY are the CUSTOMER and " +
 			"LEGAL ENTITY that `epx segments customers list SEGMENT_ID` shows"},
 		{args: []string{"segments", "groups", "search"}, want: "`epx segments groups list SEGMENT_ID`"},
 		{args: []string{"segments", "delete"}, want: "unless --with-assignments deletes those assignments with it"},
-		{args: []string{"segments", "delete"}, want: "a segment with only\nIAM groups assigned is deleted without " +
-			"--with-assignments.\nEmporix answers an unknown ID as one that it deleted"},
+		{args: []string{"segments", "delete"}, want: "a segment with only IAM groups assigned is deleted without " +
+			"--with-assignments. Emporix answers an unknown ID as one that it deleted"},
 		{args: []string{"segments", "bulk-delete"}, want: "(its IAM group assignments go either way)"},
 		{args: []string{"segments", "create"}, want: "sent with Content-Language: *. Emporix refuses a string " +
-			"in\nits place."},
+			"in its place."},
 		{args: []string{"segments", "update"}, want: "members it leaves out, such as a description, are removed."},
 		{args: []string{"segments", "patch"}, want: "raises the segment's metadata.version."},
 		{args: []string{"segments", "patch"}, want: "a path to one translation, such as /name/de, takes a string"},
 		{args: []string{"segments", "customers", "update"}, want: "Emporix refuses to assign one of the other kind."},
 		{args: []string{"segments", "customers", "bulk-update"}, want: "Emporix refuses to assign one of the other kind."},
-		{args: []string{"segments", "groups", "delete"}, want: "Emporix answers one that is not\nassigned as removed."},
+		{args: []string{"segments", "groups", "delete"}, want: "Emporix answers one that is not assigned as removed."},
 		{args: []string{"segments", "items", "update"}, want: "without it, epx sends an empty object"},
 		{args: []string{"segments", "items", "update"}, want: "Emporix refuses an ID of no product or category of TYPE"},
 		{args: []string{"segments", "items", "bulk-update"}, want: "Emporix refuses an ID of no product or category"},
-		{args: []string{"segments", "match"}, want: "a product\nnamed twice is listed twice, and unknown products " +
+		{args: []string{"segments", "match"}, want: "a product named twice is listed twice, and unknown products " +
 			"are left out."},
 	} {
 		code, help, stderr := runCLI(t, nil, append(tt.args, "--help")...)
-		if code != ExitOK || !strings.Contains(help, tt.want) {
+		if code != ExitOK || !containsFlat(help, tt.want) {
 			t.Errorf("%q: exit %d, stderr %q, help %q; want %q", tt.args, code, stderr, help, tt.want)
 		}
 	}

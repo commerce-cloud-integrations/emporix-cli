@@ -6,16 +6,9 @@ description: "Manage profiles: named settings and credentials of a tenant."
 
 ## epx profile
 
-A profile keeps the settings of one API key: its tenant, API URL and client ID, and a default
-site and language. Profiles are in epx/config.json in your configuration directory (~/.config on
-Linux, ~/Library/Application Support on macOS, %AppData% on Windows), which only you may read;
-the client secret of each is in the OS keychain (the macOS Keychain, the Windows Credential
-Manager or a Secret Service on Linux), never in that file.
+A profile keeps the settings of one API key: its tenant, API URL and client ID, and a default site and language. Profiles are in epx/config.json in your configuration directory (~/.config on Linux, ~/Library/Application Support on macOS, %AppData% on Windows), which only you may read; the client secret of each is in the OS keychain (the macOS Keychain, the Windows Credential Manager or a Secret Service on Linux), never in that file.
 
-A command uses the profile that `--profile` names, else the one EPX\_PROFILE names, else the
-default ([`epx profile use`](/commands/profile#epx-profile-use)), but only where no EMPORIX\_ variable is set: those give the whole
-API key, never mixed with a profile's. `--tenant` overrides the profile's tenant. These commands
-change only the configuration file and the keychain: they send nothing to Emporix.
+A command uses the profile that `--profile` names, else the one EPX\_PROFILE names, else the default ([`epx profile use`](/commands/profile#epx-profile-use)), but only where no EMPORIX\_ variable is set: those give the whole API key, never mixed with a profile's. `--tenant` overrides the profile's tenant. These commands change only the configuration file and the keychain: they send nothing to Emporix.
 
 **Command:** `epx profile [flags]`, `epx profile [command]`
 
@@ -38,10 +31,7 @@ change only the configuration file and the keychain: they send nothing to Empori
 
 Add a profile, or replace one, with its client secret in the OS keychain.
 
-Adds the profile NAME, or replaces the profile of that name, and stores its client secret in
-the OS keychain. On a terminal, epx asks for the secret without showing it; otherwise it reads
-the first line of standard input. It never takes the secret from a flag. Where no profile is
-the default, as for the first one, it becomes the default. Nothing is sent to Emporix: [`epx auth status`](/commands/auth#epx-auth-status) with `--profile` NAME checks the API key.
+Adds the profile NAME, or replaces the profile of that name, and stores its client secret in the OS keychain. On a terminal, epx asks for the secret without showing it; otherwise it reads the first line of standard input. It never takes the secret from a flag. Where no profile is the default, as for the first one, it becomes the default. Nothing is sent to Emporix: [`epx auth status`](/commands/auth#epx-auth-status) with `--profile` NAME checks the API key.
 
 **Command:** `epx profile add NAME [flags]`
 
@@ -90,10 +80,7 @@ Also takes the [global flags](/commands#global-flags).
 
 Remove a profile and its client secret.
 
-Removes the profile NAME and deletes its client secret from the OS keychain. On a terminal,
-epx asks first; `--yes` removes it without asking, as scripts must. Removing the default
-profile leaves no default. Where the keychain cannot delete the secret, the profile is removed
-all the same, and the error names the keychain entry (service epx, account NAME) that still holds it.
+Removes the profile NAME and deletes its client secret from the OS keychain. On a terminal, epx asks first; `--yes` removes it without asking, as scripts must. Removing the default profile leaves no default. Where the keychain cannot delete the secret, the profile is removed all the same, and the error names the keychain entry (service epx, account NAME) that still holds it.
 
 **Command:** `epx profile remove NAME [flags]`
 
@@ -108,8 +95,7 @@ Also takes the [global flags](/commands#global-flags).
 
 Show a profile and whether its client secret is stored.
 
-Shows the settings of the profile NAME and whether the OS keychain holds its client secret.
-The secret itself is never shown.
+Shows the settings of the profile NAME and whether the OS keychain holds its client secret. The secret itself is never shown.
 
 **Command:** `epx profile show NAME [flags]`
 

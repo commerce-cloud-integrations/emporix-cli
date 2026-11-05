@@ -218,7 +218,7 @@ func TestSubscriptionChangesListTheEventsThatFailed(t *testing.T) {
 func TestIDsAreIssuedAsWrites(t *testing.T) {
 	for _, use := range []string{"next-id", "next-ids"} {
 		_, help, _ := runCLI(t, nil, "sequential-ids", use, "--help")
-		if !strings.Contains(help, "Each ID issued advances the schema's counter.\n"+
+		if !containsFlat(help, "Each ID issued advances the schema's counter. "+
 			"It changes data although Emporix needs no write-capable scope for it.\n\n") {
 			t.Errorf("%s: help %q; want it to say that it changes data", use, help)
 		}

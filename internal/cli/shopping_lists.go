@@ -88,17 +88,17 @@ func (l shoppingList) String() string {
 // customer's lists, and Emporix sends no total, so it is read with one
 // request.
 func newShoppingListsCommand(a *app) *cobra.Command {
-	const long = "Reads customers' shopping lists, personal data included: each customer's lists by name,\n" +
-		"with how many items they hold. Items are only in -o json. CUSTOMER is the customer id the\n" +
-		"lists are kept under (the reference calls it the customer number; for a customer that\n" +
-		"Emporix numbered, the two are the same); get takes it, and a customer without shopping\n" +
+	const long = "Reads customers' shopping lists, personal data included: each customer's lists by name, " +
+		"with how many items they hold. Items are only in -o json. CUSTOMER is the customer id the " +
+		"lists are kept under (the reference calls it the customer number; for a customer that " +
+		"Emporix numbered, the two are the same); get takes it, and a customer without shopping " +
 		"lists is not found."
 	lists := resource[customerShoppingLists]{
 		use:    "shopping-lists",
 		noun:   "customers' shopping lists",
 		short:  "Read, create, replace and delete customers' shopping lists",
 		long:   long,
-		about:  long + "\ncreate, update and delete create, replace and delete a customer's lists.",
+		about:  long + " create, update and delete create, replace and delete a customer's lists.",
 		path:   "/shoppinglist/{tenant}/shopping-lists",
 		scopes: []string{"shoppinglist.shoppinglist_read"},
 		read:   (*emporix.Client).GetUnpaged,
@@ -132,26 +132,26 @@ func shoppingListWrites(a *app, lists resource[customerShoppingLists]) []*cobra.
 	return []*cobra.Command{
 		(&write{
 			use: createUse, short: "Create a shopping list of a customer", method: http.MethodPost,
-			long: "Creates the shopping list in --file, a JSON object with the customerId of the customer it\n" +
-				"belongs to, the list's name and its items (each with its id, productId and quantity), and\n" +
-				"prints what Emporix answers with: the customer's id. A list of that name that the customer\n" +
-				"has already is a conflict (exit 5). Emporix does not check the customer: it creates the list\n" +
+			long: "Creates the shopping list in --file, a JSON object with the customerId of the customer it " +
+				"belongs to, the list's name and its items (each with its id, productId and quantity), and " +
+				"prints what Emporix answers with: the customer's id. A list of that name that the customer " +
+				"has already is a conflict (exit 5). Emporix does not check the customer: it creates the list " +
 				"of an unknown customer id too.",
 			example: "  epx shopping-lists create --file list.json --dry-run",
 			req:     request{path: lists.path}, scopes: manage, body: &payload{},
 		}).command(a),
 		(&write{
 			use: lists.itemUse("update"), short: "Replace a shopping list of a customer", method: http.MethodPut,
-			long: "Replaces the shopping list of CUSTOMER that the JSON in --file names with it: an object\n" +
-				"with the list's name and its items (each with its id, productId and quantity). Send its\n" +
-				"metadata.version as read to replace it only if nobody changed it since: Emporix answers\n" +
-				"409 Conflict (exit 5) otherwise.\n" + unknownList + " Update creates no list; create does.",
+			long: "Replaces the shopping list of CUSTOMER that the JSON in --file names with it: an object " +
+				"with the list's name and its items (each with its id, productId and quantity). Send its " +
+				"metadata.version as read to replace it only if nobody changed it since: Emporix answers " +
+				"409 Conflict (exit 5) otherwise. " + unknownList + " Update creates no list; create does.",
 			req: request{path: lists.itemPath()}, scopes: manage, body: &payload{}, ids: lists.itemIDs(),
 		}).command(a),
 		(&write{
 			use: lists.itemUse(deleteUse), short: "Delete a shopping list of a customer", method: http.MethodDelete,
-			long: "Deletes the shopping list --name of CUSTOMER; its other lists stay.\n" +
-				unknownList + "\n`epx shopping-lists get CUSTOMER` shows the lists that are left.",
+			long: "Deletes the shopping list --name of CUSTOMER; its other lists stay. " +
+				unknownList + " `epx shopping-lists get CUSTOMER` shows the lists that are left.",
 			req: request{path: lists.itemPath()}, scopes: manage, body: noBody{}, ids: lists.itemIDs(),
 			params: queryFlags{required: []paramFlag{{param: listNameParam, flag: listNameParam,
 				usage: "the `NAME` of the list to delete"}}},
@@ -159,7 +159,7 @@ func shoppingListWrites(a *app, lists resource[customerShoppingLists]) []*cobra.
 		(&write{
 			use: lists.itemUse("delete-all"), short: "Delete every shopping list of a customer",
 			method: http.MethodDelete,
-			long:   "Deletes every shopping list of CUSTOMER.\n" + unknown,
+			long:   "Deletes every shopping list of CUSTOMER. " + unknown,
 			req:    request{path: lists.itemPath()}, scopes: manage, body: noBody{}, ids: lists.itemIDs(),
 			deletes: deletion{many: "every shopping list of the customer"},
 		}).command(a),

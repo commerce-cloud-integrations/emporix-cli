@@ -26,13 +26,13 @@ func categoryTrees() resource[treeCategory] {
 	return resource[treeCategory]{
 		use:   "category-trees",
 		short: "Read and rebuild category trees",
-		long: "Reads category trees, published and unpublished: each root category followed by its\n" +
-			"subcategories, depth first, in the order Emporix sends them; NAME is indented by the\n" +
-			"category's level. get takes the id of a root category: Emporix answers another\n" +
-			"category's id as not found. list's --limit counts trees, each shown whole. list's --type\n" +
-			"lists only the trees of one category type: STANDARD (regular categories) or\n" +
-			"CLASSIFICATION (categories that define classification mixins, the attributes that the\n" +
-			"products in them take). A move of a category shows in its tree a few seconds later; a\n" +
+		long: "Reads category trees, published and unpublished: each root category followed by its " +
+			"subcategories, depth first, in the order Emporix sends them; NAME is indented by the " +
+			"category's level. get takes the id of a root category: Emporix answers another " +
+			"category's id as not found. list's --limit counts trees, each shown whole. list's --type " +
+			"lists only the trees of one category type: STANDARD (regular categories) or " +
+			"CLASSIFICATION (categories that define classification mixins, the attributes that the " +
+			"products in them take). A move of a category shows in its tree a few seconds later; a " +
 			"root category moved below another may keep its old tree until it is deleted.",
 		path:  "/category/{tenant}/category-trees",
 		query: withUnpublished(),
@@ -67,7 +67,7 @@ func newCategoryTreesCommand(a *app) *cobra.Command {
 	r := categoryTrees()
 	// Without --category, Emporix answers every tree, as list does (seen live).
 	search := r.searchCommand(a,
-		"Reads the category trees, published and unpublished, that hold any of the categories\n"+
+		"Reads the category trees, published and unpublished, that hold any of the categories "+
 			"--category names, each whole; without --category, every tree. --limit counts trees.",
 		listField("categoryIds", "category", "a category `ID` whose tree to read (repeatable)"))
 	return newResourceCommand(a, r, search, rebuildCommand(a, r))

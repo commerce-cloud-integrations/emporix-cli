@@ -73,7 +73,7 @@ func (f form) bindRead(cmd *cobra.Command) (made makeBody, sends string) {
 			return emporix.Body{}, err
 		}
 		return encodeForm(given, f.limit())
-	}, "a multipart/form-data\nbody, which the flags make."
+	}, "a multipart/form-data body, which the flags make."
 }
 
 // filePart is the part name of a form that sends the JSON file that --flag

@@ -42,9 +42,9 @@ func newMediaCommand(a *app) *cobra.Command {
 		use:   "media",
 		noun:  "media assets",
 		short: "Read, upload, link and change media assets",
-		long: "Reads media assets: files Emporix stores (BLOB) or links to files elsewhere (LINK). ACCESS\n" +
-			"is PUBLIC or PRIVATE; STATUS is PENDING until an upload completes, then READY or empty;\n" +
-			"BYTES is the file size as sent, and REFERENCES the items an asset belongs to (type and\n" +
+		long: "Reads media assets: files Emporix stores (BLOB) or links to files elsewhere (LINK). ACCESS " +
+			"is PUBLIC or PRIVATE; STATUS is PENDING until an upload completes, then READY or empty; " +
+			"BYTES is the file size as sent, and REFERENCES the items an asset belongs to (type and " +
 			"id). URLs are only in -o json; `epx media download-url` gives one that downloads the file.",
 		path:    "/media/{tenant}/assets",
 		scopes:  []string{"media.asset_read"},
@@ -63,10 +63,10 @@ func newMediaCommand(a *app) *cobra.Command {
 	return newResourceCommand(a, assets, append([]*cobra.Command{childCommand(a, assets, child[downloadURL]{
 		use:   "download-url",
 		short: "Show a URL that downloads an asset",
-		long: "Reads a URL that downloads an asset. For a private stored file it is a signed URL that\n" +
-			"works without a token until EXPIRES (15 minutes by default), so treat it as a secret; for\n" +
-			"a public file or a link, PROVIDER CLOUDINARY or LINK, it is the asset's permanent URL.\n" +
-			"Reading the URL of a pending upload whose file is stored makes Emporix complete it; one\n" +
+		long: "Reads a URL that downloads an asset. For a private stored file it is a signed URL that " +
+			"works without a token until EXPIRES (15 minutes by default), so treat it as a secret; for " +
+			"a public file or a link, PROVIDER CLOUDINARY or LINK, it is the asset's permanent URL. " +
+			"Reading the URL of a pending upload whose file is stored makes Emporix complete it; one " +
 			"whose file is not stored yet fails.",
 		fetch: single{items: oneItem},
 		view: view[downloadURL]{

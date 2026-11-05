@@ -112,7 +112,7 @@ func builtInTypesOf(cmd *cobra.Command) builtInTypes {
 func TestOnlySearchDocumentsHasScopedBuiltInTypes(t *testing.T) {
 	var noted []string
 	walkCommands(newTestRoot(), func(cmd *cobra.Command) {
-		if strings.Contains(cmd.Long, "\nIn place of ") {
+		if strings.Contains(cmd.Long, " In place of ") {
 			noted = append(noted, cmd.CommandPath())
 		}
 	})
@@ -267,13 +267,13 @@ func TestFileUsageSaysWhetherItIsRequired(t *testing.T) {
 // --allow-write-scope, and that a write's help ends with its scope alone.
 func TestOptInNamesReadsOnly(t *testing.T) {
 	_, help, _ := runCLI(t, nil, "schemas", "--help")
-	if want := "Its reads require different OAuth scopes; the help of each names them.\nOpt-in: epx requests a " +
-		"write-capable scope for a read only when given --allow-write-scope.\nIts writes require the " +
-		"schema.schema_manage scope.\n"; !strings.Contains(help, want) {
+	if want := "Its reads require different OAuth scopes; the help of each names them. Opt-in: epx requests a " +
+		"write-capable scope for a read only when given --allow-write-scope. Its writes require the " +
+		"schema.schema_manage scope.\n\n"; !containsFlat(help, want) {
 		t.Errorf("schemas help %q; want %q, whose opt-in names reads only", help, want)
 	}
 	_, help, _ = runCLI(t, nil, "schemas", "create", "--help")
-	if strings.Contains(help, "Opt-in") || !strings.Contains(help, "\n\nRequires the schema.schema_manage scope.\n") {
+	if containsFlat(help, "Opt-in") || !containsFlat(help, "\n\nRequires the schema.schema_manage scope.\n\n") {
 		t.Errorf("schemas create help %q; want it to end with its scope, without the opt-in of a read", help)
 	}
 }

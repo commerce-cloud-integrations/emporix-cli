@@ -291,15 +291,15 @@ func TestReindexJobWaitOutputFailures(t *testing.T) {
 func TestReindexJobCreateHelp(t *testing.T) {
 	_, help, _ := runCLI(t, nil, "indexing", "reindex-jobs", "create", "--help")
 	for _, want := range []string{
-		"--wait then reads the job again every --poll-interval, as `epx indexing reindex-jobs get`\n" +
+		"--wait then reads the job again every --poll-interval, as `epx indexing reindex-jobs get` " +
 			"does and with the indexing.search_view scope too,",
-		"exits 0 if it ended SUCCESS, else 1.", "exits as that read\ndoes, e.g. 4 when the job is not found.",
-		"\n\nRequires the indexing.search_manage scope.\n",
+		"exits 0 if it ended SUCCESS, else 1.", "exits as that read does, e.g. 4 when the job is not found.",
+		"\n\nRequires the indexing.search_manage scope.\n\n",
 		"--wait-timeout duration    how long --wait waits, 1s or more (only with --wait) (default 30m0s)",
 		"--poll-interval duration   how often --wait reads the reindex job, 1s or more (only with --wait) (default 5s)",
 		"--entity-type TYPE", "(required without --file)",
 	} {
-		if !strings.Contains(help, want) {
+		if !containsFlat(help, want) {
 			t.Errorf("help %q; want %q", help, want)
 		}
 	}

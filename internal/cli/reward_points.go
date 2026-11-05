@@ -81,10 +81,10 @@ const redeemOptionsPath = "/reward-points/{tenant}/redeemOptions"
 // redeem options are read with one request.
 func newRewardPointsCommand(a *app) *cobra.Command {
 	const scope = "rewardspoints.rewardpoints_view" // reads customers' reward points
-	const long = "Reads customers' reward points, personal data included: ACTIVE is the number of points\n" +
-		"a customer can redeem now (expired points are left out), ADDED and REDEEMED the points added\n" +
-		"and redeemed so far, expired ones included (a failed redemption is refunded as an\n" +
-		"addition), so ACTIVE may be less than ADDED minus REDEEMED. Each addition and redemption is\n" +
+	const long = "Reads customers' reward points, personal data included: ACTIVE is the number of points " +
+		"a customer can redeem now (expired points are left out), ADDED and REDEEMED the points added " +
+		"and redeemed so far, expired ones included (a failed redemption is refunded as an " +
+		"addition), so ACTIVE may be less than ADDED minus REDEEMED. Each addition and redemption is " +
 		"only in -o json."
 	summaries := reader[rewardSummary]{view: view[rewardSummary]{
 		singular: "reward points summary",
@@ -120,7 +120,7 @@ func newRewardPointsCommand(a *app) *cobra.Command {
 		summaries.command(a, &command{
 			use:   "get CUSTOMER",
 			short: "Show the reward points of a customer",
-			long:  long + "\n" + customerSentence + "; one without reward points is not found.",
+			long:  joinSentences(long, customerSentence+"; one without reward points is not found."),
 			req:   request{path: rewardCustomerPath + "/summary"},
 			fetch: single{items: oneItem},
 			ids:   listed,
@@ -128,9 +128,9 @@ func newRewardPointsCommand(a *app) *cobra.Command {
 		balance.command(a, &command{
 			use:   "balance CUSTOMER",
 			short: "Show the reward points balance of a customer",
-			long: "Reads the reward points balance of a customer, personal data: POINTS, one number, the\n" +
-				"points that the customer can redeem now: ACTIVE of `epx reward-points get`, which also shows\n" +
-				"the points added and redeemed so far.\n" +
+			long: "Reads the reward points balance of a customer, personal data: POINTS, one number, the " +
+				"points that the customer can redeem now: ACTIVE of `epx reward-points get`, which also shows " +
+				"the points added and redeemed so far. " +
 				customerSentence + "; an unknown one is not found (exit 4).",
 			req:   request{path: rewardCustomerPath},
 			fetch: single{items: oneNumber},
@@ -145,9 +145,9 @@ func newRewardPointsCommand(a *app) *cobra.Command {
 		}),
 	}
 	return newGroup("reward-points", "Read and change reward points and the ways to redeem them",
-		long+"\n`epx reward-points redeem-options` lists the ways to redeem points. The writes create and\n"+
-			"delete a customer's reward points entry (create, delete), add and redeem points (add,\n"+
-			"redeem), and create, replace and delete the ways to redeem them (redeem-option-create,\n"+
+		long+" `epx reward-points redeem-options` lists the ways to redeem points. The writes create and "+
+			"delete a customer's reward points entry (create, delete), add and redeem points (add, "+
+			"redeem), and create, replace and delete the ways to redeem them (redeem-option-create, "+
 			"-update, -delete).",
 		append(reads, rewardPointWrites(a, listed, optionIDs)...)...)
 }

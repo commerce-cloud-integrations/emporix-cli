@@ -131,16 +131,16 @@ func exitCode(err error) int {
 const rootHelp = "Command-line client for the Emporix Commerce APIs.\n\n" +
 	"Credentials are read from the environment:\n" +
 	"  EMPORIX_TENANT, EMPORIX_CLIENT_ID, EMPORIX_CLIENT_SECRET (and optionally EMPORIX_API_URL).\n" +
-	"Where none of these is set, a profile (`epx profile add`) gives them, its client secret from the\n" +
-	"OS keychain: the profile that --profile names, else EPX_PROFILE, else the default profile (`epx\n" +
-	"profile use`). The two never mix, and naming a profile while one is set is a usage error.\n" +
-	"--tenant overrides the tenant of either. A profile's default site and language apply where a\n" +
+	"Where none of these is set, a profile (`epx profile add`) gives them, its client secret from the " +
+	"OS keychain: the profile that --profile names, else EPX_PROFILE, else the default profile (`epx " +
+	"profile use`). The two never mix, and naming a profile while one is set is a usage error. " +
+	"--tenant overrides the tenant of either. A profile's default site and language apply where a " +
 	"command needs a site or shows translations and the flag is not given, on the profile's tenant.\n\n" +
-	"Exit codes: 0 success, 1 error, 2 invalid usage or configuration,\n" +
-	"3 authentication or missing scopes, 4 not found, 5 conflict: a write that Emporix answered with\n" +
-	"409 Conflict, as when the item changed since it was read or exists already, or a `units update`\n" +
-	"or `catalogs patch` with metadata.version answered with 404 Not Found, as the Unit and Catalog\n" +
-	"services answer a stale version. A 403 Forbidden that the help of a command calls a refusal\n" +
+	"Exit codes: 0 success, 1 error, 2 invalid usage or configuration, " +
+	"3 authentication or missing scopes, 4 not found, 5 conflict: a write that Emporix answered with " +
+	"409 Conflict, as when the item changed since it was read or exists already, or a `units update` " +
+	"or `catalogs patch` with metadata.version answered with 404 Not Found, as the Unit and Catalog " +
+	"services answer a stale version. A 403 Forbidden that the help of a command calls a refusal " +
 	"of its input exits 1."
 
 // newRootCommand builds the command tree writing to out and errOut.
@@ -177,6 +177,7 @@ func newRootCommand(a *app, out, errOut io.Writer) *cobra.Command {
 	if completion, _, err := root.Find([]string{"completion"}); err == nil {
 		explainCompletion(completion)
 	}
+	reflowHelp(root)
 	applyExitPolicy(root)
 	return root
 }

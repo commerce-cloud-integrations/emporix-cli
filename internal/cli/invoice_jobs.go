@@ -55,13 +55,13 @@ func newInvoiceJobsCommand(a *app) *cobra.Command {
 		jobs.command(a, &command{
 			use:   "get ID",
 			short: "Show the status of an invoice job",
-			long: "Reads an invoice job: STATUS is IN_PROGRESS or DONE and TYPE MANUAL (orders chosen when\n" +
-				"the job was created) or AUTOMATIC (orders that the tenant's configuration selects). ORDERS\n" +
-				"counts the orders the job processed, of which INVOICED got an invoice, FAILED did not and\n" +
-				"PENDING wait for one. Each order's entry in invoices (orderId and status; errorStep and\n" +
-				"message for a failure, e.g. an order not ready for invoicing; for a success, the reference\n" +
-				"documents the invoice number and download link) is only in -o json.\n" +
-				"ID is the job id that creating the job returned. Emporix answers an unknown job with\n" +
+			long: "Reads an invoice job: STATUS is IN_PROGRESS or DONE and TYPE MANUAL (orders chosen when " +
+				"the job was created) or AUTOMATIC (orders that the tenant's configuration selects). ORDERS " +
+				"counts the orders the job processed, of which INVOICED got an invoice, FAILED did not and " +
+				"PENDING wait for one. Each order's entry in invoices (orderId and status; errorStep and " +
+				"message for a failure, e.g. an order not ready for invoicing; for a success, the reference " +
+				"documents the invoice number and download link) is only in -o json. " +
+				"ID is the job id that creating the job returned. Emporix answers an unknown job with " +
 				"500 Internal Server Error (the reference documents 404), so get fails with exit code 1.",
 			req:   request{path: "/invoice/{tenant}/jobs/invoices/" + placeholderID},
 			fetch: single{items: oneItem},
@@ -74,14 +74,14 @@ func invoiceJobCreate() *write {
 	return &write{
 		use:   createUse,
 		short: "Start an invoice job",
-		long: "Starts a job that generates the invoices of orders: of those that --order names\n" +
-			"(--type MANUAL, which requires one at least), or of those ready for an invoice that the\n" +
-			"tenant's invoice configuration selects (--type AUTOMATIC, which takes no --order).\n" +
-			"Without an invoice configuration of the tenant's own, an order is ready for an invoice when\n" +
-			"its mixins.generalAttributes.extendedOrderStatus is 70, 75 or 76 (`epx orders create`\n" +
-			"stores 10; `epx orders patch` changes it); the job's entry of an order with 10 fails as not\n" +
-			"ready. Invoicing a ready order calls the tenant's Pick-Pack service: where that service is\n" +
-			"not reachable, the entry fails at the VALIDATION step.\n" +
+		long: "Starts a job that generates the invoices of orders: of those that --order names " +
+			"(--type MANUAL, which requires one at least), or of those ready for an invoice that the " +
+			"tenant's invoice configuration selects (--type AUTOMATIC, which takes no --order). " +
+			"Without an invoice configuration of the tenant's own, an order is ready for an invoice when " +
+			"its mixins.generalAttributes.extendedOrderStatus is 70, 75 or 76 (`epx orders create` " +
+			"stores 10; `epx orders patch` changes it); the job's entry of an order with 10 fails as not " +
+			"ready. Invoicing a ready order calls the tenant's Pick-Pack service: where that service is " +
+			"not reachable, the entry fails at the VALIDATION step. " +
 			"Emporix answers with the job's id (jobId), which `epx invoice-jobs get ID` reads.",
 		example: "  epx invoice-jobs create --type MANUAL --order O1001 --order O1002\n" +
 			"  epx invoice-jobs create --type AUTOMATIC --yes",

@@ -68,11 +68,11 @@ func fileModeShownBy(streams resource[importStream]) string {
 // stream's fileMode, in the help of the file queue and of its list, where
 // shownBy is where a stream shows its fileMode (fileModeShownBy).
 func fileModesHelp(shownBy string) string {
-	return "A file-based stream reads its files by its fileMode, SNAPSHOT by default. A SNAPSHOT stream\n" +
-		"takes each file as the whole picture: its run reads only the most recently arrived waiting\n" +
-		"file and may report the older ones superseded, in their MESSAGE. An INCREMENTAL stream takes\n" +
-		"each file as a change set: its run reads them all, in load order, a later file's values\n" +
-		"winning on a key that an earlier one carries too. A stream without fileMode reads no files\n" +
+	return "A file-based stream reads its files by its fileMode, SNAPSHOT by default. A SNAPSHOT stream " +
+		"takes each file as the whole picture: its run reads only the most recently arrived waiting " +
+		"file and may report the older ones superseded, in their MESSAGE. An INCREMENTAL stream takes " +
+		"each file as a change set: its run reads them all, in load order, a later file's values " +
+		"winning on a key that an earlier one carries too. A stream without fileMode reads no files " +
 		"(" + shownBy + " shows it)."
 }
 
@@ -84,10 +84,10 @@ func newImportFilesCommand(a *app, streams resource[importStream]) *cobra.Comman
 	modes := fileModesHelp(shownBy)
 	files := streamFiles(filesOf, modes)
 	return newGroup(filesOf.use, "Read and change the files that a file-based stream imports",
-		"Reads the file queue of a file-based import stream: the files that it waits to import, in\n"+
-			"the order that its next run reads them, and those it dealt with; uploads a file to it, sets\n"+
-			"the order of the waiting files and removes one. Nothing is imported until a run starts\n"+
-			"(`epx imports configurations trigger`).\n"+modes,
+		"Reads the file queue of a file-based import stream: the files that it waits to import, in "+
+			"the order that its next run reads them, and those it dealt with; uploads a file to it, sets "+
+			"the order of the waiting files and removes one. Nothing is imported until a run starts "+
+			"(`epx imports configurations trigger`). "+modes,
 		childCommand(a, filesOf, files),
 		childCommand(a, filesOf, fileUploadLimits(filesOf)),
 		fileUpload(filesOf, files, shownBy).command(a),
@@ -116,15 +116,15 @@ func streamFiles(filesOf resource[importStream], modes string) child[queuedFile[
 		use:   listUse,
 		sub:   filesSegment,
 		short: "List the files that a stream waits to import and those it dealt with",
-		long: "Reads the file queue of a file-based stream. First come the files waiting, in the order\n" +
-			"that its next run reads them: LOAD ORDER is a file's place among all the files waiting,\n" +
-			"e.g. 1 of 3.\n" + modes + "\n" +
-			"Emporix lists up to 2000 waiting files: where more wait, the last LOAD ORDER listed ends\n" +
-			"below the total, e.g. 2000 of 2500, and " + queueLine(filesOf, "order") + " cannot reorder\n" +
-			"them. Then comes the history, newest first and without LOAD ORDER: up to --history-limit\n" +
-			"files that a run claimed (STATUS IN_PROGRESS), read to the end (PROCESSED, also with\n" +
-			"records that failed, as MESSAGE says) or could not import (FAILED: it can be uploaded\n" +
-			"again). SIZE is in bytes, QUEUED when the file was uploaded, PROCESSED when its import\n" +
+		long: "Reads the file queue of a file-based stream. First come the files waiting, in the order " +
+			"that its next run reads them: LOAD ORDER is a file's place among all the files waiting, " +
+			"e.g. 1 of 3. " + modes + " " +
+			"Emporix lists up to 2000 waiting files: where more wait, the last LOAD ORDER listed ends " +
+			"below the total, e.g. 2000 of 2500, and " + queueLine(filesOf, "order") + " cannot reorder " +
+			"them. Then comes the history, newest first and without LOAD ORDER: up to --history-limit " +
+			"files that a run claimed (STATUS IN_PROGRESS), read to the end (PROCESSED, also with " +
+			"records that failed, as MESSAGE says) or could not import (FAILED: it can be uploaded " +
+			"again). SIZE is in bytes, QUEUED when the file was uploaded, PROCESSED when its import " +
 			"ended and READ the records read from it. A file's load rank and run are only in -o json.",
 		fetch: &paramRead{
 			params: queryFlags{optional: []paramFlag{{
@@ -156,12 +156,12 @@ func fileUploadLimits(filesOf resource[importStream]) child[fileLimits] {
 		use:   "limits",
 		sub:   filesSegment + "/limits",
 		short: "Show the most bytes that an upload to a stream takes",
-		long: "Reads the largest file that the environment takes in " + queueLine(filesOf, "upload") + ":\n" +
-			"MAX UPLOAD BYTES, which the API gateway in front of the Import Service sets where GATEWAY\n" +
-			"LIMITED is true (it refuses a larger file with its own 413 before the service sees it), and\n" +
-			"UPLOAD SUPPORTED, false where the environment has nowhere to store an uploaded file (an\n" +
-			"upload is then answered 503 Service Unavailable). A larger file can be published at an\n" +
-			"HTTP(S) URL that the stream's connection reads instead, a change that needs\n" +
+		long: "Reads the largest file that the environment takes in " + queueLine(filesOf, "upload") + ": " +
+			"MAX UPLOAD BYTES, which the API gateway in front of the Import Service sets where GATEWAY " +
+			"LIMITED is true (it refuses a larger file with its own 413 before the service sees it), and " +
+			"UPLOAD SUPPORTED, false where the environment has nowhere to store an uploaded file (an " +
+			"upload is then answered 503 Service Unavailable). A larger file can be published at an " +
+			"HTTP(S) URL that the stream's connection reads instead, a change that needs " +
 			"importtool.import_manage, which epx does not request.",
 		fetch: single{items: oneObject},
 		view: view[fileLimits]{
@@ -260,25 +260,25 @@ func fileUpload(filesOf resource[importStream], files child[queuedFile[importFil
 	stream, limits, list := filesOf.argument(), queueLine(filesOf, "limits"), queueList(filesOf, files)
 	return &write{
 		use: "upload " + stream, short: "Upload a file for a stream to import", method: http.MethodPost,
-		long: "Uploads the delimited file (CSV or a variant) that --" + uploadFlag + " names to the queue of the\n" +
-			"file-based stream " + stream + ", which imports it on its next run: nothing is imported now.\n" +
-			"The file's name is sent with it and tells Emporix a compression, such as .gz. Emporix\n" +
-			"answers with the file queued, whose id " + queueLine(filesOf, "order") + " and\n" +
-			queueLine(filesOf, deleteUse) + " take. Which waiting files a run reads depends on the\n" +
-			"stream's fileMode, as " + list + " says.\n" +
-			"Emporix knows a file by its content, whatever its name, and never imports it twice: content\n" +
-			"that the stream imported or queued already is a conflict (exit 5), as is an upload to a\n" +
-			"stream that reads no files or one that would replace content that a run in flight reads; a\n" +
-			"file that FAILED is taken again.\n" +
-			"epx sends a file of " + uploadLimitHelp + ", and the environment may take less\n" +
-			"(" + limits + "): Emporix answers a larger one with\n" +
-			"413 Request Entity Too Large (exit 1). A large file may need a longer --timeout, e.g.\n" +
-			"--timeout 5m, as it bounds the whole request.\n" +
-			"A 503 Service Unavailable (exit 1) comes from an environment that cannot store uploads\n" +
-			"(UPLOAD SUPPORTED false in " + limits + "), which queued nothing, or from\n" +
-			"a gateway that failed, after which the file may have been queued: check\n" +
-			list + " before you send it again; if it was\n" +
-			"queued, a resend is a conflict (exit 5), not a second import.\n" +
+		long: "Uploads the delimited file (CSV or a variant) that --" + uploadFlag + " names to the queue of the " +
+			"file-based stream " + stream + ", which imports it on its next run: nothing is imported now. " +
+			"The file's name is sent with it and tells Emporix a compression, such as .gz. Emporix " +
+			"answers with the file queued, whose id " + queueLine(filesOf, "order") + " and " +
+			queueLine(filesOf, deleteUse) + " take. Which waiting files a run reads depends on the " +
+			"stream's fileMode, as " + list + " says. " +
+			"Emporix knows a file by its content, whatever its name, and never imports it twice: content " +
+			"that the stream imported or queued already is a conflict (exit 5), as is an upload to a " +
+			"stream that reads no files or one that would replace content that a run in flight reads; a " +
+			"file that FAILED is taken again. " +
+			"epx sends a file of " + uploadLimitHelp + ", and the environment may take less " +
+			"(" + limits + "): Emporix answers a larger one with " +
+			"413 Request Entity Too Large (exit 1). A large file may need a longer --timeout, e.g. " +
+			"--timeout 5m, as it bounds the whole request. " +
+			"A 503 Service Unavailable (exit 1) comes from an environment that cannot store uploads " +
+			"(UPLOAD SUPPORTED false in " + limits + "), which queued nothing, or from " +
+			"a gateway that failed, after which the file may have been queued: check " +
+			list + " before you send it again; if it was " +
+			"queued, a resend is a conflict (exit 5), not a second import. " +
 			filesOf.argumentSentence(notFound),
 		example: "  epx imports streams files upload 3fa85f64-5717-4562-b3fc-2c963f66afa6 --upload vendors.csv",
 		req:     request{path: files.below(filesOf.path)}, scopes: importScopes(),
@@ -295,13 +295,13 @@ func fileOrder(filesOf resource[importStream], files child[queuedFile[importFile
 	return &write{
 		use: "order " + stream, short: "Set the order in which a stream imports its waiting files",
 		method: http.MethodPut,
-		long: "Sets the order in which the stream " + stream + " reads its waiting files: --id names each one,\n" +
-			"the first to load first, as " + list + " shows its ID;\n" +
-			"--file gives the JSON array of their ids instead. The order matters only for an INCREMENTAL\n" +
-			"stream, as that list says. Emporix takes every waiting file, no more and no fewer\n" +
-			"(otherwise 400 Bad Request, exit 1), and answers with the waiting files in their new order.\n" +
-			"A stream whose job has a run in flight, or with more waiting files than the list shows, is\n" +
-			"a conflict (exit 5).\n" +
+		long: "Sets the order in which the stream " + stream + " reads its waiting files: --id names each one, " +
+			"the first to load first, as " + list + " shows its ID; " +
+			"--file gives the JSON array of their ids instead. The order matters only for an INCREMENTAL " +
+			"stream, as that list says. Emporix takes every waiting file, no more and no fewer " +
+			"(otherwise 400 Bad Request, exit 1), and answers with the waiting files in their new order. " +
+			"A stream whose job has a run in flight, or with more waiting files than the list shows, is " +
+			"a conflict (exit 5). " +
 			filesOf.argumentSentence(notFound),
 		example: "  epx imports streams files order 3fa85f64-5717-4562-b3fc-2c963f66afa6 " +
 			"--id 9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d --id c56a4180-65aa-42ec-a945-5fd21dec0538",
@@ -317,9 +317,9 @@ func fileOrder(filesOf resource[importStream], files child[queuedFile[importFile
 func fileDelete(filesOf resource[importStream], files child[queuedFile[importFile]]) *write {
 	remove := childItemTarget(filesOf, files, deleteUse, nil)
 	w := deleteWrite(remove.use, "Remove a waiting file from a stream's queue",
-		"Removes the waiting file ID from the queue of the stream "+filesOf.argument()+" and deletes its\n"+
-			"content. Only a waiting file is removed: one that a run claimed or imported is a conflict\n"+
-			"(exit 5), as is any while the stream's job has a run in flight."+childItemHelp(filesOf, files, &remove),
+		"Removes the waiting file ID from the queue of the stream "+filesOf.argument()+" and deletes its "+
+			"content. Only a waiting file is removed: one that a run claimed or imported is a conflict "+
+			"(exit 5), as is any while the stream's job has a run in flight. "+childItemHelp(filesOf, files, &remove),
 		request{path: remove.path}, importScopes())
 	w.conflict = fileDeleteConflict(queueList(filesOf, files))
 	return w

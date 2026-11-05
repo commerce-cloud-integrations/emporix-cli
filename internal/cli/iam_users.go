@@ -43,16 +43,16 @@ func newIAMUsersCommand(a *app) *cobra.Command {
 		noun:  "IAM users",
 		short: "Read, create, replace and delete IAM users; read what they may do",
 		under: iamUse,
-		long: "Reads the tenant's users (such as employees), personal data included. STATUS and LOCKED\n" +
-			"tell whether a user can sign in, and GROUPS counts the groups a user belongs to\n" +
-			"(`epx iam users groups list` lists them). Emporix orders users differently on every\n" +
-			"request and fails on most second pages, so list reads them as " + onePage(iamUsersPage) + ": the\n" +
+		long: "Reads the tenant's users (such as employees), personal data included. STATUS and LOCKED " +
+			"tell whether a user can sign in, and GROUPS counts the groups a user belongs to " +
+			"(`epx iam users groups list` lists them). Emporix orders users differently on every " +
+			"request and fails on most second pages, so list reads them as " + onePage(iamUsersPage) + ": the " +
 			"order, and the users --limit keeps, vary per run, and a tenant with more users fails.",
 		path:   "/iam/{tenant}/users",
 		scopes: []string{"iam.user_read"},
-		about: "Reads the tenant's users (such as employees), personal data included, their groups and what\n" +
-			"they may do, and the users of a vendor; creates, replaces and deletes users and removes them\n" +
-			"from their groups." + writesChangeAccess,
+		about: "Reads the tenant's users (such as employees), personal data included, their groups and what " +
+			"they may do, and the users of a vendor; creates, replaces and deletes users and removes them " +
+			"from their groups. " + writesChangeAccess,
 		read: inOnePage(iamUsersPage),
 		view: view[iamUser]{
 			singular: "user",
@@ -87,7 +87,7 @@ func newUserGroupsCommand(a *app, users resource[iamUser]) *cobra.Command {
 		view:    groups.view,
 	}
 	return newGroup(groupsOf.use, "Read the groups of a user, remove a user from them",
-		"Reads the groups a user belongs to, all or one, and removes a user from every group."+writesChangeAccess,
+		"Reads the groups a user belongs to, all or one, and removes a user from every group. "+writesChangeAccess,
 		childCommand(a, groupsOf, userGroups),
 		childItemCommand(a, groupsOf, userGroups, &childItem{use: getUse, short: "Show one group of a user",
 			long: "Reads one group a user belongs to; one the user does not belong to is not found."}),
@@ -102,7 +102,7 @@ func userAccessReads(a *app, users resource[iamUser]) []*cobra.Command {
 		childCommand(a, users, child[string]{
 			use:   "scopes",
 			short: "List the scopes of a user",
-			long: "Reads the scopes a user is granted through their groups, sorted, without the tenant\n" +
+			long: "Reads the scopes a user is granted through their groups, sorted, without the tenant " +
 				"entry; a user without scopes lists nothing, like an unknown one.",
 			scopes:  []string{"iam.scope_read"},
 			fetch:   single{items: userScopeItems},
@@ -112,9 +112,9 @@ func userAccessReads(a *app, users resource[iamUser]) []*cobra.Command {
 		childCommand(a, users, child[iamAccessControl]{
 			use:   "access-controls",
 			short: "List the access controls of a user",
-			long: "Reads the access controls a user is granted through their groups.\n" + accessControlColumns + "\n" +
+			long: "Reads the access controls a user is granted through their groups. " + accessControlColumns + " " +
 				"Emporix lists them on one page only, so they are read as " + onePage(userAccessControlsPage) +
-				": a user\nwith more fails.",
+				": a user with more fails.",
 			scopes:  accessControls.scopes,
 			fetch:   listing{read: onFirstPage(userAccessControlsPage)},
 			unknown: listsNothing,
@@ -132,8 +132,8 @@ func vendorUsers(a *app, users resource[iamUser]) *cobra.Command {
 	return users.reader().command(a, &command{
 		use:   "for-vendor " + sellers.argument(),
 		short: "List the users of a vendor",
-		long: "Reads the users of a vendor (`epx vendors list`), personal data included, with the columns\n" +
-			"of `epx iam users list`.\n" +
+		long: "Reads the users of a vendor (`epx vendors list`), personal data included, with the columns " +
+			"of `epx iam users list`. " +
 			sellers.argumentSentence(listsNothing),
 		req:   request{path: users.path + "/vendors/" + placeholderID},
 		fetch: listing{},

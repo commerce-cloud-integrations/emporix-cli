@@ -226,12 +226,12 @@ func TestPromotionWritesHelp(t *testing.T) {
 			"Sent twice, it redeems the coupon twice", "Emporix refuses it to a token with coupon.coupon_manage"},
 		"coupons validate":          {"may not redeem with " + forbiddenRefusal, legalEntityNote},
 		"coupons redemption-delete": {"which then counts one redemption less"},
-		"coupons referral-create": {"couponSettings mixin; where the main site has\nnone, it answers 400 Bad Request",
+		"coupons referral-create": {"couponSettings mixin; where the main site has none, it answers 400 Bad Request",
 			"A deleted referral coupon stays the customer's", readScopedNote, noScopeSentence},
 		"reward-points create": {"couponSettings mixin", "unknown site code, and the points then stay valid 36 months",
-			"the default site of the profile in\neffect without it, and site main without either", "so epx prints nothing",
-			"must give customerId, CUSTOMER again", "A customer\nwith an entry is a conflict (exit 5)"},
-		"reward-points add": {"couponSettings mixin", "reads a time that ends in Z", "so epx prints\nnothing",
+			"the default site of the profile in effect without it, and site main without either", "so epx prints nothing",
+			"must give customerId, CUSTOMER again", "A customer with an entry is a conflict (exit 5)"},
+		"reward-points add": {"couponSettings mixin", "reads a time that ends in Z", "so epx prints nothing",
 			"Sent twice, it adds them twice", "without a reward points entry is not found"},
 		"reward-points redeem": {"without a reward points entry is not found", "so epx prints nothing",
 			"More points than are active", "Sent twice, it redeems them twice"},
@@ -249,7 +249,7 @@ func assertHelpHolds(t *testing.T, parts map[string][]string) {
 	for args, want := range parts {
 		_, help, _ := runCLI(t, nil, append(strings.Fields(args), "--help")...)
 		for _, part := range want {
-			if !strings.Contains(help, part) {
+			if !containsFlat(help, part) {
 				t.Errorf("%s help %q; want %q", args, help, part)
 			}
 		}

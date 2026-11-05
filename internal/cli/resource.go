@@ -216,7 +216,7 @@ type resource[T any] struct {
 	noun       string         // the items in help text; use without hyphens when empty
 	short      string         // summary of the group; "Read " + noun when empty
 	long       string         // what the reads return and leave out
-	listNote   string         // help that list adds on lines of its own after long, e.g. the order it sorts in
+	listNote   string         // help that list adds after long, e.g. the order it sorts in
 	about      string         // the group's help where it says more than long, e.g. what its writes change
 	under      string         // the commands above the group, if any, e.g. "shipping"
 	listedBy   string         // a group without list: the command line, without epx, that lists the items
@@ -246,15 +246,6 @@ func (r resource[T]) summary() string { return cmp.Or(r.short, "Read "+r.nouns()
 
 // groupHelp returns the help of r's group: about, else long.
 func (r resource[T]) groupHelp() string { return cmp.Or(r.about, r.long) }
-
-// withNote returns help ended by note, if not empty: help on lines of its
-// own, such as what list adds after long (listNote).
-func withNote(help, note string) string {
-	if note == "" {
-		return help
-	}
-	return help + "\n" + note
-}
 
 // reader returns the reader of r's reads.
 func (r resource[T]) reader() reader[T] { return reader[T]{view: r.view, scopes: r.scopes} }
@@ -305,7 +296,7 @@ func (r resource[T]) listCommand(a *app) *cobra.Command {
 	if req.names(placeholderSite) {
 		short = "List the " + r.nouns() + " of a site"
 	}
-	return r.reader().command(a, &command{use: listUse, short: short, long: withNote(r.long, r.listNote), req: req,
+	return r.reader().command(a, &command{use: listUse, short: short, long: joinSentences(r.long, r.listNote), req: req,
 		fetch: &paramRead{params: queryFlags{optional: r.listParams}, fetch: r.listing()}})
 }
 
@@ -343,13 +334,11 @@ func (r resource[T]) getLine() string { return r.commandLine(r.itemUse(getUse), 
 // and what ends the help of a read of rd's scopes whose type argument takes
 // what rule says (typeRule.helpEnding).
 func (rd reader[T]) help(long string, rule typeRule) string {
-	if rd.legend != "" {
-		long += "\n" + rd.legend
-	}
+	long = joinSentences(long, rd.legend)
 	if rd.siteAware {
 		long += "\n\n" + mixinSiteHelp
 	}
-	return long + rule.helpEnding(scopeSentence(rd.scopes))
+	return rule.helpEnding(long, scopeSentence(rd.scopes))
 }
 
 // readTarget is what a run of a read command requests, as newRead binds it,

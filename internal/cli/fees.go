@@ -14,7 +14,7 @@ const feeService = "/fee/{tenant}"
 
 // yrnNote shows how to give the YRN that names an item, such as a product,
 // in the Fee Service: an example, quoted for the shell.
-const yrnNote = "e.g. 'urn:yaas:saasag:caasproduct:product:TENANT;PRODUCT_ID'\n" +
+const yrnNote = "e.g. 'urn:yaas:saasag:caasproduct:product:TENANT;PRODUCT_ID' " +
 	"(quoted, because the shell would end the command at ;)"
 
 // fee is the part of a Fee Service fee shown in tables.
@@ -66,15 +66,15 @@ func newFeesCommand(a *app) *cobra.Command {
 	r := resource[fee]{
 		use:   "fees",
 		short: "Read and change fees and which items have them",
-		about: "Reads and changes fees, surcharges on items such as products or payment types, and in\n" +
-			"`assignments` which items have which fees. Emporix filters fees by site and documents main as\n" +
-			"the default site, so list, for-product and for-item require --site. create, update and delete\n" +
+		about: "Reads and changes fees, surcharges on items such as products or payment types, and in " +
+			"`assignments` which items have which fees. Emporix filters fees by site and documents main as " +
+			"the default site, so list, for-product and for-item require --site. create, update and delete " +
 			"change one fee.",
-		long: "Reads fees, surcharges on items such as products or payment types. Emporix filters fees\n" +
-			"by site and documents main as the default site, so list, for-product and for-item require\n" +
-			"--site; an unknown site lists nothing. TYPE is PERCENT, ABSOLUTE or\n" +
-			"ABSOLUTE_MULTIPLY_ITEMQUANTITY (the amount times the item quantity), AMOUNT the percentage\n" +
-			"or the amount in its currency, ITEM TYPE the type of item the fee applies to (PRODUCT or\n" +
+		long: "Reads fees, surcharges on items such as products or payment types. Emporix filters fees " +
+			"by site and documents main as the default site, so list, for-product and for-item require " +
+			"--site; an unknown site lists nothing. TYPE is PERCENT, ABSOLUTE or " +
+			"ABSOLUTE_MULTIPLY_ITEMQUANTITY (the amount times the item quantity), AMOUNT the percentage " +
+			"or the amount in its currency, ITEM TYPE the type of item the fee applies to (PRODUCT or " +
 			"PAYMENTTYPE), and FROM and TO the active time span.",
 		path:      feeService + "/fees",
 		listQuery: url.Values{siteCodeParam: {placeholderSite}},
@@ -106,7 +106,7 @@ func newFeesCommand(a *app) *cobra.Command {
 		r.reader().command(a, &command{
 			use:   forProductUse,
 			short: "List the fees of a product on a site",
-			long:  r.long + productIDNote + "\nAn unknown id lists nothing.",
+			long:  joinSentences(r.long, productIDNote, "An unknown id lists nothing."),
 			req:   feesOf(product),
 			fetch: listing{read: (*emporix.Client).GetUnpaged},
 			ids:   argumentIDs{productID: products().ids()},
@@ -114,7 +114,7 @@ func newFeesCommand(a *app) *cobra.Command {
 		r.reader().command(a, &command{
 			use:   "for-item YRN",
 			short: "List the fees of an item on a site",
-			long: r.long + "\nYRN names the item, " + yrnNote + ". An unknown item lists nothing;\n" +
+			long: r.long + " YRN names the item, " + yrnNote + ". An unknown item lists nothing; " +
 				"Emporix fails on a malformed YRN.",
 			req:   feesOf(item),
 			fetch: listing{read: (*emporix.Client).GetUnpaged},

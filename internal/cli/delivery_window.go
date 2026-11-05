@@ -48,14 +48,14 @@ func newDeliveryWindowsCommand(a *app) *cobra.Command {
 	}}.command(a, &command{
 		use:   "windows CART_ID",
 		short: "List the delivery windows open to a cart",
-		long: "Reads the delivery windows in which a cart can be delivered to the country and postal code\n" +
-			"set on the cart. DATE is the delivery day, FROM and TO the delivery time range on it,\n" +
-			"METHOD the shipping method, ZONE the shipping zone, CUT-OFF the latest time to order for\n" +
-			"the window, SLOT the time slot of its delivery time, which\n" +
-			"`epx delivery-times slots list DELIVERY_TIME_ID` lists, and ID the id of that delivery\n" +
-			"time (`epx delivery-times get ID`); the delivery cycle is only in -o json.\n" +
-			"For another postal code than the cart's, run\n" +
-			"`epx api get /shipping/{tenant}/actualDeliveryWindows/CART_ID -p postalCode=CODE`.\n" +
+		long: "Reads the delivery windows in which a cart can be delivered to the country and postal code " +
+			"set on the cart. DATE is the delivery day, FROM and TO the delivery time range on it, " +
+			"METHOD the shipping method, ZONE the shipping zone, CUT-OFF the latest time to order for " +
+			"the window, SLOT the time slot of its delivery time, which " +
+			"`epx delivery-times slots list DELIVERY_TIME_ID` lists, and ID the id of that delivery " +
+			"time (`epx delivery-times get ID`); the delivery cycle is only in -o json. " +
+			"For another postal code than the cart's, run " +
+			"`epx api get /shipping/{tenant}/actualDeliveryWindows/CART_ID -p postalCode=CODE`. " +
 			"CART_ID is the id of a cart; an unknown one is not found (exit 4).",
 		req:   request{path: "/shipping/{tenant}/actualDeliveryWindows/" + placeholderID},
 		fetch: listing{read: (*emporix.Client).GetUnpaged},
@@ -70,9 +70,9 @@ func newDeliveryWindowValidationCommand(a *app) *cobra.Command {
 	return check.command(a, &command{
 		use:   "validate",
 		short: "Check whether a delivery window can take an order",
-		long: "Checks whether a delivery window can take an order.\n" + deliveryWindowHelp + "\n" +
-			"VALID is true when it can; Emporix answers a date in the past or in another format, or a\n" +
-			"window that is full or not offered that day, with 400 Bad Request (exit 1), and an unknown\n" +
+		long: "Checks whether a delivery window can take an order. " + deliveryWindowHelp + " " +
+			"VALID is true when it can; Emporix answers a date in the past or in another format, or a " +
+			"window that is full or not offered that day, with 400 Bad Request (exit 1), and an unknown " +
 			"delivery time as not found (exit 4).",
 		req: request{path: "/shipping/{tenant}/deliveryWindowValidation"},
 		fetch: bodyRead{method: http.MethodPost, body: deliveryWindowBody(deliveryWindowMember),
@@ -88,10 +88,10 @@ func newDeliveryWindowCountCommand(a *app) *cobra.Command {
 	return (&write{
 		use:   "increment-counter",
 		short: "Count one more order in a delivery window",
-		long: "Counts one more order in a delivery window that has capacity left.\n" + deliveryWindowHelp +
-			"\nThe Checkout Service counts each order that it places with a delivery window; only a\n" +
-			"checkout of your own needs this. Emporix answers true once it counted the order, and a\n" +
-			"window that is full or not offered that day, or a date in the past or in another format,\n" +
+		long: "Counts one more order in a delivery window that has capacity left. " + deliveryWindowHelp +
+			" The Checkout Service counts each order that it places with a delivery window; only a " +
+			"checkout of your own needs this. Emporix answers true once it counted the order, and a " +
+			"window that is full or not offered that day, or a date in the past or in another format, " +
 			"with 400 Bad Request (exit 1). " + wholeBodyNote,
 		method: http.MethodPost, req: request{path: "/shipping/{tenant}/actualDeliveryWindows/incrementCounter"},
 		scopes: []string{shippingManageScope}, body: &payload{typed: deliveryWindowBody(deliveryWindowMember)},
@@ -112,11 +112,11 @@ func newDeliveryCycleCommand(a *app) *cobra.Command {
 	return cycle.command(a, &command{
 		use:   "generate-cycle",
 		short: "Name the delivery cycle of a delivery window",
-		long: "Prints the name of the delivery cycle of a delivery window, as Emporix names it in the\n" +
-			"delivery windows of a cart and in orders (deliveryCycle in\n" +
-			"`epx delivery-times windows CART_ID -o json`): the delivery date, the hour (UTC) of the\n" +
-			"slot's cut-off time and the deliveryCycleName of its cutOffTime, such as 2026-06-20-6morning.\n" +
-			deliveryWindowHelp + "\nEmporix answers an unknown delivery time with 403 Forbidden (exit 3), not as not found.",
+		long: "Prints the name of the delivery cycle of a delivery window, as Emporix names it in the " +
+			"delivery windows of a cart and in orders (deliveryCycle in " +
+			"`epx delivery-times windows CART_ID -o json`): the delivery date, the hour (UTC) of the " +
+			"slot's cut-off time and the deliveryCycleName of its cutOffTime, such as 2026-06-20-6morning. " +
+			deliveryWindowHelp + " Emporix answers an unknown delivery time with 403 Forbidden (exit 3), not as not found.",
 		req: request{path: "/shipping/{tenant}/delivery-cycles/generate"},
 		fetch: bodyRead{method: http.MethodPost, created: true, body: deliveryWindowBody("deliveryTimeId"),
 			fetch: cycleName{}},
@@ -143,8 +143,8 @@ func (cycleName) bind(*cobra.Command) (readFunc, shape) {
 
 // deliveryWindowHelp says which delivery window the flags of
 // deliveryWindowBody name.
-const deliveryWindowHelp = "The delivery window is the delivery time --delivery-time on --date, an ISO 8601\n" +
-	"date and time such as 2026-11-02T12:00:00.000Z, in its --slot: `epx delivery-times list`\n" +
+const deliveryWindowHelp = "The delivery window is the delivery time --delivery-time on --date, an ISO 8601 " +
+	"date and time such as 2026-11-02T12:00:00.000Z, in its --slot: `epx delivery-times list` " +
 	"and `epx delivery-times slots list` show their IDs."
 
 // wholeBodyNote ends the help of a write whose body flags make

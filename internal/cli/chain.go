@@ -23,9 +23,9 @@ type chain struct {
 func (c *chain) bind(cmd *cobra.Command) string {
 	stdin := c.payload.bind(cmd)
 	cmd.Long += "\n\nEmporix takes up to " + strconv.Itoa(c.most) + " commands in one request (epx refuses more), " +
-		"runs them in\norder and answers with the result of each that ran: when one failed, epx prints the\n" +
-		"response, lists the commands that failed on standard error (of a command that adds\nor updates items " +
-		"in a batch, the items that failed; Emporix carried out the others)\nand " + bulkExitSentence
+		"runs them in order and answers with the result of each that ran: when one failed, epx prints the " +
+		"response, lists the commands that failed on standard error (of a command that adds or updates items " +
+		"in a batch, the items that failed; Emporix carried out the others) and " + bulkExitSentence
 	return stdin
 }
 

@@ -28,7 +28,7 @@ func newCatalogsCommand(a *app) *cobra.Command {
 	r := resource[catalog]{
 		use:   "catalogs",
 		short: "Read and change catalogs",
-		long: "Reads catalogs, visible or not. STATUS and VISIBLE are separate Emporix fields and can\n" +
+		long: "Reads catalogs, visible or not. STATUS and VISIBLE are separate Emporix fields and can " +
 			"disagree. ROOT CATEGORIES counts the categories assigned directly to the catalog.",
 		path:    "/catalog/{tenant}/catalogs",
 		filters: listFilters{kinds: sortable},
@@ -47,8 +47,8 @@ func newCatalogsCommand(a *app) *cobra.Command {
 	forCategory := r.reader().command(a, &command{
 		use:   "for-category CATEGORY_ID",
 		short: "List the catalogs a category is assigned to",
-		long: r.long + "\nCATEGORY_ID is the id of a category assigned to catalogs directly, a root category\n" +
-			"(an unindented row of `epx category-trees list`); a category below one, or an unknown\n" +
+		long: r.long + " CATEGORY_ID is the id of a category assigned to catalogs directly, a root category " +
+			"(an unindented row of `epx category-trees list`); a category below one, or an unknown " +
 			"id, lists nothing.",
 		req:   request{path: r.path + "/categories/" + placeholderID},
 		fetch: listing{filters: listFilters{kinds: sortable}},

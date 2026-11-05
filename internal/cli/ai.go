@@ -99,12 +99,12 @@ func newAICommand(a *app) *cobra.Command {
 	}, scopes: []string{aiScope}}
 	events := reader[string]{view: stringsView("commerce event", "EVENT"), scopes: []string{aiScope}}
 	return newGroup(aiUse, "Read and change AI agents and their setup, chat with them, generate texts",
-		"Reads the AI Service's agents and what they are built from: agent templates, tools, tokens,\n"+
-			"OAuth configurations and MCP servers, the LLM models of the supported providers and the\n"+
-			"commerce events that can trigger an agent; what agents did: their jobs, conversations,\n"+
-			"request and session logs and analytics; and which fields the AI RAG Indexer embeds.\n"+
-			"Upserts, changes and deletes agents and what they are built from, exports and imports\n"+
-			"agents, chats with them and generates texts, which consumes AI credits. `epx ai rag\n"+
+		"Reads the AI Service's agents and what they are built from: agent templates, tools, tokens, "+
+			"OAuth configurations and MCP servers, the LLM models of the supported providers and the "+
+			"commerce events that can trigger an agent; what agents did: their jobs, conversations, "+
+			"request and session logs and analytics; and which fields the AI RAG Indexer embeds. "+
+			"Upserts, changes and deletes agents and what they are built from, exports and imports "+
+			"agents, chats with them and generates texts, which consumes AI credits. `epx ai rag "+
 			"reindex` embeds the entities of a type again.",
 		newAITemplatesCommand(a), newAIAgentsCommand(a),
 		newAIToolsCommand(a), newAITokensCommand(a), newAIOAuthsCommand(a), newAIMCPServersCommand(a),
@@ -113,8 +113,8 @@ func newAICommand(a *app) *cobra.Command {
 		models.command(a, &command{
 			use:   "models",
 			short: "List the LLM models that agents can use",
-			long: "Reads the LLM models of every provider that agents can use (openai, anthropic and google):\n" +
-				"ID is what an agent's LLM configuration names and THINKING whether the model supports\n" +
+			long: "Reads the LLM models of every provider that agents can use (openai, anthropic and google): " +
+				"ID is what an agent's LLM configuration names and THINKING whether the model supports " +
 				"thinking; descriptions are only in -o json.",
 			req:   request{path: agenticPath + "models"},
 			fetch: single{items: modelItems},
@@ -126,10 +126,10 @@ func newAICommand(a *app) *cobra.Command {
 			req:   request{path: agenticPath + "commerce-events"},
 			fetch: single{items: commerceEventItems},
 		}),
-		agentChat("chat", "Send a message to an agent and print its reply", "and prints its reply: the messages\n"+
-			"of the agent and of those it collaborates with, each with the sessionId that --session takes to\n"+
-			"go on.\n"+replyTimeout()+", or use chat-async.").command(a),
-		agentChat("chat-async", "Send a message to an agent, which replies in a job", "which replies in a job of type\n"+
+		agentChat("chat", "Send a message to an agent and print its reply", "and prints its reply: the messages "+
+			"of the agent and of those it collaborates with, each with the sessionId that --session takes to "+
+			"go on. "+replyTimeout()+", or use chat-async.").command(a),
+		agentChat("chat-async", "Send a message to an agent, which replies in a job", "which replies in a job of type "+
 			"AGENT_CHAT: Emporix answers with its jobId, which `epx ai jobs get JOB_ID` reads.").command(a),
 		textGeneration().command(a), completionGeneration().command(a),
 	)
@@ -152,8 +152,8 @@ func newAIAgentsCommand(a *app) *cobra.Command {
 	r := aiAgents()
 	return aiManagedGroup(a, r, aiItemWrites{
 		one: "an agent", language: stringsOrMaps,
-		members: "The JSON holds its name and description, userPrompt, llmConfig, triggers and mcpServers,\n" +
-			"and its nativeTools, agentCollaborations, enabledMemory and maxRecursionLimit.\n",
+		members: "The JSON holds its name and description, userPrompt, llmConfig, triggers and mcpServers, " +
+			"and its nativeTools, agentCollaborations, enabledMemory and maxRecursionLimit.",
 		remove: "delete it even where other agents collaborate with it",
 	}, agentWrites(a)...)
 }
@@ -163,8 +163,8 @@ func newAIAgentsCommand(a *app) *cobra.Command {
 func aiAgents() resource[aiAgent] {
 	return agentic(resource[aiAgent]{
 		use: "agents", noun: "AI agents", short: "Read, create, upsert, change, delete, export and import AI agents",
-		long: "Reads AI agents: TYPE is generic, complaint or anti_fraud, PROVIDER and MODEL the LLM an\n" +
-			"agent uses and TRIGGERS what starts it (endpoint, slack, teams or commerce_events). Their\n" +
+		long: "Reads AI agents: TYPE is generic, complaint or anti_fraud, PROVIDER and MODEL the LLM an " +
+			"agent uses and TRIGGERS what starts it (endpoint, slack, teams or commerce_events). Their " +
 			"prompts, tools and MCP servers are only in -o json.",
 		view: view[aiAgent]{
 			singular:  "agent",
@@ -192,8 +192,8 @@ func newAITemplatesCommand(a *app) *cobra.Command {
 func aiTemplates() resource[aiTemplate] {
 	return agentic(resource[aiTemplate]{
 		use: "templates", noun: "agent templates",
-		long: "Reads agent templates, from which agents are made: TYPE is generic, complaint or anti_fraud,\n" +
-			"PROVIDER and MODEL the LLM a template uses. Emporix reads no single template:\n" +
+		long: "Reads agent templates, from which agents are made: TYPE is generic, complaint or anti_fraud, " +
+			"PROVIDER and MODEL the LLM a template uses. Emporix reads no single template: " +
 			"`epx ai templates list --query id:ID -o json` shows one.",
 		view: view[aiTemplate]{
 			singular:  "agent template",

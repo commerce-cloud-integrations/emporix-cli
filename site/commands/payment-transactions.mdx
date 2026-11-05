@@ -6,13 +6,9 @@ description: "Read payment transactions; authorize, capture, refund and cancel p
 
 ## epx payment-transactions
 
-Reads payment transactions, personal data included, and runs payments through the
-tenant's payment providers: authorize starts a transaction for an order, capture collects
-an authorized amount, refund returns a captured one and cancel voids an authorization.
-Capture, refund and cancel move money.
+Reads payment transactions, personal data included, and runs payments through the tenant's payment providers: authorize starts a transaction for an order, capture collects an authorized amount, refund returns a captured one and cancel voids an authorization. Capture, refund and cancel move money.
 
-Its reads require the payment-gateway.paymenttransactions\_read scope.
-Its writes require different OAuth scopes; the help of each names them.
+Its reads require the payment-gateway.paymenttransactions\_read scope. Its writes require different OAuth scopes; the help of each names them.
 
 **Command:** `epx payment-transactions [flags]`, `epx payment-transactions [command]`
 
@@ -37,19 +33,11 @@ Its writes require different OAuth scopes; the help of each names them.
 
 Authorize a payment.
 
-Authorizes the payment of an order with a payment mode, as `--file`, a JSON object, gives
-them: order.id, paymentModeId, amountToAuthorize and currency, and what the provider
-needs, such as creditCardToken. The provider reserves the amount, which capture then
-collects. Emporix answers with the paymentTransactionId and, where the customer must
-finish the payment with the provider, where to send them (externalPaymentRedirectURL).
+Authorizes the payment of an order with a payment mode, as `--file`, a JSON object, gives them: order.id, paymentModeId, amountToAuthorize and currency, and what the provider needs, such as creditCardToken. The provider reserves the amount, which capture then collects. Emporix answers with the paymentTransactionId and, where the customer must finish the payment with the provider, where to send them (externalPaymentRedirectURL).
 
-Emporix answers whether the operation succeeded (successful). epx prints the response and
-exits with 1 unless it says that it did: where it says that it failed (successful false,
-with a message), and where it does not say, when it may have been carried out all the same.
+Emporix answers whether the operation succeeded (successful). epx prints the response and exits with 1 unless it says that it did: where it says that it failed (successful false, with a message), and where it does not say, when it may have been carried out all the same.
 
-Changes data: on a terminal, epx asks before it sends POST. `--yes` sends without
-asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
-instead of sending it.
+Changes data: on a terminal, epx asks before it sends POST. `--yes` sends without asking (required without a terminal, or with `--file` -); `--dry-run` prints the request instead of sending it.
 
 Requires the payment-gateway.authorize\_manage scope.
 
@@ -78,19 +66,13 @@ epx payment-transactions authorize --file authorize.json --dry-run
 
 Cancel an authorized payment.
 
-Cancels the authorized payment of transaction ID: the provider releases the amount that
-it reserved.
+Cancels the authorized payment of transaction ID: the provider releases the amount that it reserved.
 
-This moves money: the confirmation names the transaction in the URL that it shows. ID is
-the ID that [`epx payment-transactions list`](/commands/payment-transactions#epx-payment-transactions-list) shows; an unknown one is not found (exit 4).
+This moves money: the confirmation names the transaction in the URL that it shows. ID is the ID that [`epx payment-transactions list`](/commands/payment-transactions#epx-payment-transactions-list) shows; an unknown one is not found (exit 4).
 
-Emporix answers whether the operation succeeded (successful). epx prints the response and
-exits with 1 unless it says that it did: where it says that it failed (successful false,
-with a message), and where it does not say, when it may have been carried out all the same.
+Emporix answers whether the operation succeeded (successful). epx prints the response and exits with 1 unless it says that it did: where it says that it failed (successful false, with a message), and where it does not say, when it may have been carried out all the same.
 
-Changes data: on a terminal, epx asks before it sends POST. `--yes` sends without
-asking (required without a terminal); `--dry-run` prints the request
-instead of sending it.
+Changes data: on a terminal, epx asks before it sends POST. `--yes` sends without asking (required without a terminal); `--dry-run` prints the request instead of sending it.
 
 Requires the payment-gateway.cancel\_manage scope.
 
@@ -117,20 +99,13 @@ epx payment-transactions cancel T1 --dry-run
 
 Capture an authorized payment.
 
-Captures `--amount` in `--currency` of the authorized payment of transaction ID, at most the
-amount authorized: the provider collects it from the customer. Emporix answers with the
-provider's captureId, which refund `--capture-id` takes.
+Captures `--amount` in `--currency` of the authorized payment of transaction ID, at most the amount authorized: the provider collects it from the customer. Emporix answers with the provider's captureId, which refund `--capture-id` takes.
 
-This moves money: the confirmation names the transaction in the URL that it shows. ID is
-the ID that [`epx payment-transactions list`](/commands/payment-transactions#epx-payment-transactions-list) shows; an unknown one is not found (exit 4).
+This moves money: the confirmation names the transaction in the URL that it shows. ID is the ID that [`epx payment-transactions list`](/commands/payment-transactions#epx-payment-transactions-list) shows; an unknown one is not found (exit 4).
 
-Emporix answers whether the operation succeeded (successful). epx prints the response and
-exits with 1 unless it says that it did: where it says that it failed (successful false,
-with a message), and where it does not say, when it may have been carried out all the same.
+Emporix answers whether the operation succeeded (successful). epx prints the response and exits with 1 unless it says that it did: where it says that it failed (successful false, with a message), and where it does not say, when it may have been carried out all the same.
 
-Changes data: on a terminal, epx asks before it sends POST. `--yes` sends without
-asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
-instead of sending it.
+Changes data: on a terminal, epx asks before it sends POST. `--yes` sends without asking (required without a terminal, or with `--file` -); `--dry-run` prints the request instead of sending it.
 
 Requires the payment-gateway.capture\_manage scope.
 
@@ -163,11 +138,7 @@ epx payment-transactions capture T1 --amount 3.99 --currency EUR --dry-run
 
 Show one payment transaction.
 
-Reads payment transactions, personal data included. PAYMENT MODE is the id of the payment
-mode used, and ENTRIES the operations the provider ran, in the order sent: type and amount,
-marked failed when they failed. Payment details (such as bank details and pay-by-link URLs),
-card tokens and the provider's requests and responses are only in `-o json`. list's `--sort`
-takes only createdDate (e.g. createdDate:desc); Emporix rejects other and several fields.
+Reads payment transactions, personal data included. PAYMENT MODE is the id of the payment mode used, and ENTRIES the operations the provider ran, in the order sent: type and amount, marked failed when they failed. Payment details (such as bank details and pay-by-link URLs), card tokens and the provider's requests and responses are only in `-o json`. list's `--sort` takes only createdDate (e.g. createdDate:desc); Emporix rejects other and several fields.
 
 Requires the payment-gateway.paymenttransactions\_read scope.
 
@@ -188,11 +159,7 @@ Also takes the [global flags](/commands#global-flags).
 
 List payment transactions.
 
-Reads payment transactions, personal data included. PAYMENT MODE is the id of the payment
-mode used, and ENTRIES the operations the provider ran, in the order sent: type and amount,
-marked failed when they failed. Payment details (such as bank details and pay-by-link URLs),
-card tokens and the provider's requests and responses are only in `-o json`. list's `--sort`
-takes only createdDate (e.g. createdDate:desc); Emporix rejects other and several fields.
+Reads payment transactions, personal data included. PAYMENT MODE is the id of the payment mode used, and ENTRIES the operations the provider ran, in the order sent: type and amount, marked failed when they failed. Payment details (such as bank details and pay-by-link URLs), card tokens and the provider's requests and responses are only in `-o json`. list's `--sort` takes only createdDate (e.g. createdDate:desc); Emporix rejects other and several fields.
 
 Requires the payment-gateway.paymenttransactions\_read scope.
 
@@ -219,20 +186,13 @@ Also takes the [global flags](/commands#global-flags).
 
 Refund a captured payment.
 
-Refunds `--amount` in `--currency` of the captured payment of transaction ID, at most the
-amount captured: the provider returns it to the customer. Where the payment was captured
-more than once, `--capture-id` names the capture to refund.
+Refunds `--amount` in `--currency` of the captured payment of transaction ID, at most the amount captured: the provider returns it to the customer. Where the payment was captured more than once, `--capture-id` names the capture to refund.
 
-This moves money: the confirmation names the transaction in the URL that it shows. ID is
-the ID that [`epx payment-transactions list`](/commands/payment-transactions#epx-payment-transactions-list) shows; an unknown one is not found (exit 4).
+This moves money: the confirmation names the transaction in the URL that it shows. ID is the ID that [`epx payment-transactions list`](/commands/payment-transactions#epx-payment-transactions-list) shows; an unknown one is not found (exit 4).
 
-Emporix answers whether the operation succeeded (successful). epx prints the response and
-exits with 1 unless it says that it did: where it says that it failed (successful false,
-with a message), and where it does not say, when it may have been carried out all the same.
+Emporix answers whether the operation succeeded (successful). epx prints the response and exits with 1 unless it says that it did: where it says that it failed (successful false, with a message), and where it does not say, when it may have been carried out all the same.
 
-Changes data: on a terminal, epx asks before it sends POST. `--yes` sends without
-asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
-instead of sending it.
+Changes data: on a terminal, epx asks before it sends POST. `--yes` sends without asking (required without a terminal, or with `--file` -); `--dry-run` prints the request instead of sending it.
 
 Requires the payment-gateway.refund\_manage scope.
 

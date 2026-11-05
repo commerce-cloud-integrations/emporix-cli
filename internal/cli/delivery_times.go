@@ -80,14 +80,14 @@ func newDeliveryTimesCommand(a *app) *cobra.Command {
 	times := resource[deliveryTime]{
 		use:   "delivery-times",
 		short: "Read and change delivery times and their time slots; read the delivery windows of a cart",
-		long: "Reads delivery times, the days on which a site delivers to a zone. ZONE is a zone id\n" +
-			"(`epx shipping zones list --site S`), or \"all zones\" for a day without delivery on every\n" +
-			"zone; DAY is a weekday, a date or a date period (from/to); DELIVERS is false for a day\n" +
-			"without delivery; DAY SHIFT is how many days the delivery follows an order placed before\n" +
-			"the cut-off, when the delivery time sets it (a weekday's slots may set their own); SLOTS\n" +
+		long: "Reads delivery times, the days on which a site delivers to a zone. ZONE is a zone id " +
+			"(`epx shipping zones list --site S`), or \"all zones\" for a day without delivery on every " +
+			"zone; DAY is a weekday, a date or a date period (from/to); DELIVERS is false for a day " +
+			"without delivery; DAY SHIFT is how many days the delivery follows an order placed before " +
+			"the cut-off, when the delivery time sets it (a weekday's slots may set their own); SLOTS " +
 			"counts the time slots, which `epx delivery-times slots list DELIVERY_TIME_ID` lists.",
-		about: "Reads and changes delivery times, the days on which a site delivers to a zone, and their\n" +
-			"time slots; reads the delivery windows open to a cart, checks and counts the orders of a\n" +
+		about: "Reads and changes delivery times, the days on which a site delivers to a zone, and their " +
+			"time slots; reads the delivery windows open to a cart, checks and counts the orders of a " +
 			"delivery window and names its delivery cycle.",
 		path:   deliveryTimesPath,
 		scopes: []string{"shipping.shipping_read"},
@@ -127,10 +127,10 @@ func newDeliveryTimeSlotsCommand(a *app, times resource[deliveryTime]) *cobra.Co
 		view: view[deliveryTimeSlot]{
 			singular: "delivery time slot",
 			header:   []string{columnID, columnMethod, columnFrom, columnTo, "CUT-OFF", "CUT-OFF DAYS", "CAPACITY"},
-			legend: "METHOD is the shipping method of the slot (`epx shipping zones methods list`), FROM and TO\n" +
-				"its delivery window in the delivery time's TIME ZONE, CUT-OFF the latest time of day to\n" +
-				"order for the slot (sent as an ISO 8601 timestamp whose date Emporix ignores), CUT-OFF DAYS\n" +
-				"how many days the delivery follows such an order (weekday delivery times only; otherwise\n" +
+			legend: "METHOD is the shipping method of the slot (`epx shipping zones methods list`), FROM and TO " +
+				"its delivery window in the delivery time's TIME ZONE, CUT-OFF the latest time of day to " +
+				"order for the slot (sent as an ISO 8601 timestamp whose date Emporix ignores), CUT-OFF DAYS " +
+				"how many days the delivery follows such an order (weekday delivery times only; otherwise " +
 				"see DAY SHIFT in `epx delivery-times list`), and CAPACITY how many orders the slot takes.",
 			row: func(s deliveryTimeSlot, _ language) []string {
 				return []string{

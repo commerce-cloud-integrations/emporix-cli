@@ -166,16 +166,16 @@ func TestQuotePDFFailures(t *testing.T) {
 func TestQuotePDFIsARead(t *testing.T) {
 	_, help, _ := runCLI(t, nil, "quotes", "pdf", "--help")
 	for _, want := range []string{
-		"\n\nChanges nothing: Emporix serves this read as POST with no body.\n" +
+		"\n\nChanges nothing: Emporix serves this read as POST with no body. " +
 			"Emporix answers with the PDF, which epx saves to the file that --out names",
-		"An answer that is no PDF fails\n(exit 1), and nothing is saved.\n\nRequires the quote.quote_read scope.\n",
+		"An answer that is no PDF fails (exit 1), and nothing is saved.\n\nRequires the quote.quote_read scope.\n\n",
 	} {
-		if !strings.Contains(help, want) {
+		if !containsFlat(help, want) {
 			t.Errorf("quotes pdf: help %q; want %q", help, want)
 		}
 	}
 	for _, unwanted := range []string{"Changes data", "Sent as a write", "--yes", "--dry-run"} {
-		if strings.Contains(help, unwanted) {
+		if containsFlat(help, unwanted) {
 			t.Errorf("quotes pdf: help %q; want no %q", help, unwanted)
 		}
 	}

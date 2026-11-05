@@ -114,13 +114,13 @@ func newCartsCommand(a *app) *cobra.Command {
 		use:   "carts",
 		short: "Read and change carts and their items and discounts",
 		long:  "Reads shopping carts, personal data included.",
-		about: "Reads shopping carts, personal data included, with their items, discounts, delivery\n" +
+		about: "Reads shopping carts, personal data included, with their items, discounts, delivery " +
 			"restrictions and validation; creates, changes and deletes carts, their items and discounts.",
 		path:    "/cart/{tenant}/carts",
 		scopes:  []string{cartScope},
 		filters: listFilters{kinds: sortable},
 		search: &searchListing{
-			long: "Reads the carts, personal data included, that an Emporix q filter finds (--query; without\n" +
+			long: "Reads the carts, personal data included, that an Emporix q filter finds (--query; without " +
 				"it, every cart), e.g. --query 'status:OPEN siteCode:AcmeStore_NL'.",
 			fields: []bodyField{queryField()},
 		},
@@ -130,9 +130,9 @@ func newCartsCommand(a *app) *cobra.Command {
 				columnID, columnStatus, columnSite, columnType, columnCustomer, columnLegalEntity, "ITEMS", columnTotal,
 				columnModified,
 			},
-			legend: "STATUS is OPEN or CLOSED (sent by search only), CUSTOMER the customer id\n" +
-				"(empty for an anonymous cart, whose sessionId -o json shows), ITEMS the number of items and\n" +
-				"TOTAL the gross final price (items, shipping and payment fee) in the cart's currency.\n" +
+			legend: "STATUS is OPEN or CLOSED (sent by search only), CUSTOMER the customer id " +
+				"(empty for an anonymous cart, whose sessionId -o json shows), ITEMS the number of items and " +
+				"TOTAL the gross final price (items, shipping and payment fee) in the cart's currency. " +
 				"A CLOSED cart, such as one merged into another, is listed by search but not found by get.",
 			row: func(c cart, _ language) []string {
 				return []string{
@@ -196,9 +196,9 @@ func findCartCommand(a *app, carts resource[cart]) *cobra.Command {
 	return carts.reader().command(a, &command{
 		use:   "find",
 		short: "Show the cart of a customer or of an anonymous session on a site",
-		long: "Reads the one cart of a site that the criteria identify, personal data included: a\n" +
-			"customer's (--customer) or an anonymous session's (--session). Without --legal-entity, it\n" +
-			"is the cart without a legal entity, and without --type the cart without a type. epx never\n" +
+		long: "Reads the one cart of a site that the criteria identify, personal data included: a " +
+			"customer's (--customer) or an anonymous session's (--session). Without --legal-entity, it " +
+			"is the cart without a legal entity, and without --type the cart without a type. epx never " +
 			"asks Emporix to create a missing cart; when none matches, Emporix answers not found (exit 4).",
 		req: request{path: carts.path, query: url.Values{siteCodeParam: {placeholderSite}}},
 		fetch: &paramRead{
@@ -230,11 +230,11 @@ func cartItems(sub string) child[cartItem] {
 			singular:  "cart item",
 			header:    []string{columnID, columnProduct, columnName, "QUANTITY", "PRICE", "GROSS"},
 			localized: true,
-			legend: "PRODUCT is the product id, NAME the product's name, PRICE the price that matched the item,\n" +
-				"per unit and as the price states it (net or gross), and GROSS the gross value of the item's\n" +
-				"quantity before discounts, one per tax line. Emporix does not always send an item's gross\n" +
-				"unit price and total (after discounts, with fees) here: only for the items that the cart\n" +
-				"held when it was last calculated (by a read of the cart or a discount, for example), not\n" +
+			legend: "PRODUCT is the product id, NAME the product's name, PRICE the price that matched the item, " +
+				"per unit and as the price states it (net or gross), and GROSS the gross value of the item's " +
+				"quantity before discounts, one per tax line. Emporix does not always send an item's gross " +
+				"unit price and total (after discounts, with fees) here: only for the items that the cart " +
+				"held when it was last calculated (by a read of the cart or a discount, for example), not " +
 				"for those added since. The cart always has them: `epx carts get CART_ID -o json`.",
 			row: func(i cartItem, lang language) []string {
 				price := money{Amount: i.Price.EffectiveAmount, Currency: i.Price.Currency}
@@ -254,9 +254,9 @@ func cartDiscounts(sub string) child[cartDiscount] {
 		use:   listUse,
 		sub:   sub,
 		short: "List the discounts of a cart",
-		long: "Reads the discounts (coupons) applied to a cart: AMOUNT is a fixed amount, RATE a percentage\n" +
-			"of the price, APPLIES TO is SUBTOTAL or TOTAL, and INDEX its position among the cart's\n" +
-			"discounts. Whether Emporix counts a discount when it calculates the cart (valid) is not\n" +
+		long: "Reads the discounts (coupons) applied to a cart: AMOUNT is a fixed amount, RATE a percentage " +
+			"of the price, APPLIES TO is SUBTOTAL or TOTAL, and INDEX its position among the cart's " +
+			"discounts. Whether Emporix counts a discount when it calculates the cart (valid) is not " +
 			"sent here, only with the cart's own discounts: `epx carts get CART_ID -o json`.",
 		fetch: listing{read: (*emporix.Client).GetUnpaged},
 		view: view[cartDiscount]{
@@ -277,11 +277,11 @@ func cartDeliveryRestrictions() child[deliveryRestrictions] {
 		use:   "delivery-restrictions",
 		sub:   "dtRestrictions",
 		short: "Show the lead time and non-delivery days of a cart",
-		long: "Reads what limits the delivery of a cart's items: LEAD HOURS is the time needed to prepare\n" +
-			"them for delivery, the longest leadTime of the items' own mixins.productCustomAttributes,\n" +
-			"and NON-DELIVERY DAYS the days on which they cannot be delivered, the union of their\n" +
-			"nonDelivery days, as numbers from 0 (Monday). An item gets these mixins where it is added\n" +
-			"(`epx carts items create` takes them); Emporix ignores those of the item's\n" +
+		long: "Reads what limits the delivery of a cart's items: LEAD HOURS is the time needed to prepare " +
+			"them for delivery, the longest leadTime of the items' own mixins.productCustomAttributes, " +
+			"and NON-DELIVERY DAYS the days on which they cannot be delivered, the union of their " +
+			"nonDelivery days, as numbers from 0 (Monday). An item gets these mixins where it is added " +
+			"(`epx carts items create` takes them); Emporix ignores those of the item's " +
 			"product and of its product member. The cart itself also carries leadTime and nonDelivery.",
 		fetch: single{items: oneObject},
 		view: view[deliveryRestrictions]{
@@ -300,8 +300,8 @@ func cartValidationChild() child[cartValidation] {
 	return child[cartValidation]{
 		use:   "validate",
 		short: "Check the prices of a cart's items",
-		long: "Reads whether a cart's items pass Emporix's checks, which find prices that are no longer\n" +
-			"valid and prices duplicated for a product; it changes nothing. VALID is true or false and\n" +
+		long: "Reads whether a cart's items pass Emporix's checks, which find prices that are no longer " +
+			"valid and prices duplicated for a product; it changes nothing. VALID is true or false and " +
 			"ERRORS the error codes by item id (-o json adds each error's message and field).",
 		fetch: single{items: validationResult},
 		view: view[cartValidation]{

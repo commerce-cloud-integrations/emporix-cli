@@ -13,38 +13,46 @@ import (
 // escaped, backquoted spans become code spans and indented lines text blocks.
 
 // helpBlocks renders help text as Markdown blocks showing the same text:
-// paragraphs of prose lines, and runs of indented lines as text blocks.
+// runs of prose lines as paragraphs (proseBlock), and runs of indented lines
+// as text blocks.
 func helpBlocks(text string, root *cobra.Command) []string {
 	var blocks, run []string
-	indented := false
+	fenced := false // run is indented lines
 	flush := func() {
 		switch {
 		case len(run) == 0:
-		case indented:
+		case fenced:
 			blocks = append(blocks, fence(dedent(run)))
 		default:
-			blocks = append(blocks, paragraph(strings.Join(run, "\n"), root))
+			blocks = append(blocks, proseBlock(run, root))
 		}
 		run = nil
 	}
 	for line := range strings.Lines(text) {
 		line = strings.TrimRight(line, " \t\r\n")
-		lineIndented := strings.HasPrefix(line, " ") || strings.HasPrefix(line, "\t")
-		if line == "" || lineIndented != indented {
+		if line == "" || indented(line) != fenced {
 			flush()
-		}
-		if title, isHeading := helpHeading(line); isHeading {
-			flush()
-			blocks = append(blocks, "**"+markLiterals(title)+"**")
-			continue
 		}
 		if line != "" {
-			indented = lineIndented
+			fenced = indented(line)
 			run = append(run, line)
 		}
 	}
 	flush()
 	return blocks
+}
+
+// proseBlock renders run, lines of prose, as one paragraph, its lines joined
+// by spaces, so that where help breaks its lines changes nothing on the site;
+// or, where run is one line that is a Markdown heading, such as Cobra's
+// "#### Linux:", as a bold line. A heading among other lines is prose.
+func proseBlock(run []string, root *cobra.Command) string {
+	if len(run) == 1 {
+		if title, isHeading := helpHeading(run[0]); isHeading {
+			return "**" + markLiterals(title) + "**"
+		}
+	}
+	return paragraph(strings.Join(run, " "), root)
 }
 
 // helpHeading returns the title of a Markdown heading line in help text, such
@@ -73,19 +81,10 @@ func paragraph(text string, root *cobra.Command) string {
 		case part == "":
 			b.WriteString("\\`\\`")
 		default:
-			b.WriteString(citation(strings.ReplaceAll(part, "\n", " "), root))
+			b.WriteString(citation(part, root))
 		}
 	}
-	lines := strings.Split(b.String(), "\n")
-	for i, line := range lines {
-		lines[i] = escapeLineStart(line)
-	}
-	return strings.Join(lines, "\n")
-}
-
-// cell renders text for a table cell, on one line.
-func cell(text string, root *cobra.Command) string {
-	return strings.ReplaceAll(paragraph(text, root), "\n", " ")
+	return escapeLineStart(b.String())
 }
 
 // citation renders a backquoted span of help as a code span, linked to the
@@ -140,7 +139,7 @@ func markLiterals(text string) string {
 		if end <= i {
 			continue
 		}
-		b.WriteString(escapeMarkdown(text[last:i]) + codeSpan(strings.ReplaceAll(text[i:end], "\n", " ")))
+		b.WriteString(escapeMarkdown(text[last:i]) + codeSpan(text[i:end]))
 		last, i = end, end-1
 	}
 	return b.String() + escapeMarkdown(text[last:])
@@ -204,7 +203,7 @@ func valueEnd(text string, end int) int {
 		return end
 	}
 	value := end + 1
-	for value < len(text) && !strings.ContainsRune(" \t\n,;)", rune(text[value])) {
+	for value < len(text) && !strings.ContainsRune(" \t,;)", rune(text[value])) {
 		value++
 	}
 	for value > end+1 && text[value-1] == '.' {
@@ -239,12 +238,12 @@ func jsonEnd(text string, i int) int {
 }
 
 // quotedEnd returns the end of a quoted value at text[i]: a non-empty run in
-// double or single quotes on one line, the closing quote not followed by a
-// letter (an apostrophe); i otherwise.
+// double or single quotes within the paragraph, the closing quote not
+// followed by a letter (an apostrophe); i otherwise.
 func quotedEnd(text string, i int) int {
 	quote := text[i]
 	closing := strings.IndexByte(text[i+1:], quote)
-	if closing <= 0 || strings.Contains(text[i+1:i+1+closing], "\n") {
+	if closing <= 0 {
 		return i
 	}
 	end := i + 1 + closing + 1
@@ -284,24 +283,25 @@ func escapeMarkdown(text string) string {
 	return b.String()
 }
 
-// escapeLineStart escapes what would start a block at the beginning of a
-// line: a list item, a setext underline, an admonition or a numbered item.
-func escapeLineStart(line string) string {
+// escapeLineStart escapes what would start a block at the start of a
+// paragraph, text: a list item, a setext underline, an admonition or a
+// numbered item.
+func escapeLineStart(text string) string {
 	switch {
-	case line == "":
-		return line
-	case strings.ContainsRune("-+!", rune(line[0])):
-		return "\\" + line
-	case line[0] == '=':
-		return "&#61;" + line[1:]
-	case line[0] == '?':
-		return "&#63;" + line[1:]
+	case text == "":
+		return text
+	case strings.ContainsRune("-+!", rune(text[0])):
+		return "\\" + text
+	case text[0] == '=':
+		return "&#61;" + text[1:]
+	case text[0] == '?':
+		return "&#63;" + text[1:]
 	}
-	digits := len(line) - len(strings.TrimLeft(line, "0123456789"))
-	if digits > 0 && digits < len(line) && line[digits] == '.' {
-		return line[:digits] + "\\" + line[digits:]
+	digits := len(text) - len(strings.TrimLeft(text, "0123456789"))
+	if digits > 0 && digits < len(text) && text[digits] == '.' {
+		return text[:digits] + "\\" + text[digits:]
 	}
-	return line
+	return text
 }
 
 // codeSpan renders text as a code span, delimited by more backquotes than it holds.
@@ -366,7 +366,12 @@ func TestReferenceRendersHelpFaithfully(t *testing.T) {
 	root := newTestRoot()
 	for _, tt := range []struct{ help, want string }{
 		{help: `a <b> & *c* _d_ [e](f) #g {h} |i| \j`, want: `a &lt;b\> &amp; \*c\* \_d\_ \[e\](f) \#g \{h\} \|i\| \\j`},
-		{help: "x\n- y\n= z\n? w\n12. v\n!!! u\n3 t", want: "x\n\\- y\n&#61; z\n&#63; w\n12\\. v\n\\!!! u\n3 t"},
+		{
+			help: "x\n\n- y\n\n= z\n\n? w\n\n12. v\n\n!!! u\n\n3 t",
+			want: "x\n\n\\- y\n\n&#61; z\n\n&#63; w\n\n12\\. v\n\n\\!!! u\n\n3 t",
+		},
+		{help: "a\n# b\n* c\n- d\n#### e", want: "a \\# b \\* c - d \\#\\#\\#\\# e"},
+		{help: "x \"a\nb\" y, -o\njson", want: "x `\"a b\"` y, `-o json`"},
 		{
 			help: "--yes, given --dry-run; --active=false. -o json, e-mail, a--b, -- -1, --9",
 			want: "`--yes`, given `--dry-run`; `--active=false`. `-o json`, e-mail, a--b, `--` -1, `--`9",

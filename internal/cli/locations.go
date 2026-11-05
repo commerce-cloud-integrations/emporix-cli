@@ -19,7 +19,7 @@ type location struct {
 }
 
 // locationColumns ends the help of every location read.
-const locationColumns = "\nTYPE is HEADQUARTER, WAREHOUSE or OFFICE, ADDRESS the first address line and TAGS the\n" +
+const locationColumns = "TYPE is HEADQUARTER, WAREHOUSE or OFFICE, ADDRESS the first address line and TAGS the " +
 	"location's labels; phone numbers and the rest of the address are only in -o json."
 
 // locationView is the table of every location read; singular names its locations.
@@ -41,8 +41,8 @@ func locationView(singular string) view[location] {
 // customers (legal entities) and vendors make alike; locationRequired those
 // that its update requires.
 const (
-	locationMembers = "type (required: HEADQUARTER, WAREHOUSE or OFFICE), contactDetails (required: emails,\n" +
-		"phones, addressLine1, addressLine2, city, state, postcode, countryCode and tags) and name;\n" +
+	locationMembers = "type (required: HEADQUARTER, WAREHOUSE or OFFICE), contactDetails (required: emails, " +
+		"phones, addressLine1, addressLine2, city, state, postcode, countryCode and tags) and name; " +
 		"leave out \"phones\": [] (an empty list), which Emporix refuses (exit 1)."
 	locationRequired = "type and contactDetails"
 )

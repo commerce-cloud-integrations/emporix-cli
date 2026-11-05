@@ -270,7 +270,7 @@ func TestBodyReadRequiresItsSelections(t *testing.T) {
 	} {
 		_, help, _ := runCLI(t, nil, append(tt.args, "--help")...)
 		for _, want := range tt.want {
-			if !strings.Contains(help, want) {
+			if !containsFlat(help, want) {
 				t.Errorf("%q: help %q; want %q", tt.args, help, want)
 			}
 		}

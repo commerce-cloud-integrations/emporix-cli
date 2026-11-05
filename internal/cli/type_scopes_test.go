@@ -12,7 +12,7 @@ import (
 
 // typeScopeNote is what the scope sentence of the read scope of a custom
 // entity type says after naming it (typeNote).
-const typeScopeNote = "\n<type> is the custom entity type in lower case (custom.document_read for DOCUMENT)."
+const typeScopeNote = " <type> is the custom entity type in lower case (custom.document_read for DOCUMENT)."
 
 // instanceReads returns a read of the instances of the custom entity type
 // typ through each command that reads them.
@@ -109,34 +109,34 @@ func typedArguments(cmd *cobra.Command, typ string) []string {
 // the scopes of an example type.
 func TestTypeScopeSentences(t *testing.T) {
 	read, manage := customTypeReadScope, "custom.<type>_manage"
-	manageNote := "\n<type> is the custom entity type in lower case (custom.document_manage for DOCUMENT)."
+	manageNote := " <type> is the custom entity type in lower case (custom.document_manage for DOCUMENT)."
 	for _, tt := range []struct{ got, want string }{
 		{scopeSentence([]string{read}), "Requires the custom.<type>_read scope." + typeScopeNote},
 		{scopeSentence([]string{"search.search_read", read}),
 			"Requires the search.search_read, custom.<type>_read scopes." + typeScopeNote},
-		{scopeSentence([]string{manage}), "Requires the custom.<type>_manage scope." + manageNote + "\n" + optInSentence},
+		{scopeSentence([]string{manage}), "Requires the custom.<type>_manage scope." + manageNote + " " + optInSentence},
 		{writeScopeSentence([]string{manage}), "Requires the custom.<type>_manage scope." + manageNote},
-		{writeScopeSentence([]string{read, manage}), "Requires the custom.<type>_read, custom.<type>_manage scopes.\n" +
+		{writeScopeSentence([]string{read, manage}), "Requires the custom.<type>_read, custom.<type>_manage scopes. " +
 			"<type> is the custom entity type in lower case (custom.document_manage, custom.document_read for DOCUMENT)."},
 		{groupScopeSentence(scopedGroup(map[string]string{scopesAnnotation: read})),
 			"Requires the custom.<type>_read scope." + typeScopeNote},
-		// A group explains <type> once, for the scopes its lines name.
+		// A group explains <type> once, for the scopes its sentences name.
 		{groupScopeSentence(scopedGroup(map[string]string{scopesAnnotation: read},
 			map[string]string{writeScopesAnnotation: manage})),
-			"Its reads require the custom.<type>_read scope.\nIts writes require the custom.<type>_manage scope.\n" +
+			"Its reads require the custom.<type>_read scope. Its writes require the custom.<type>_manage scope. " +
 				"<type> is the custom entity type in lower case (custom.document_manage, custom.document_read for DOCUMENT)."},
 		{groupScopeSentence(scopedGroup(map[string]string{scopesAnnotation: read},
 			map[string]string{writeScopesAnnotation: read + " " + manage})),
-			"Its reads require the custom.<type>_read scope.\nIts writes require the custom.<type>_manage, " +
-				"custom.<type>_read scopes.\n<type> is the custom entity type in lower case " +
+			"Its reads require the custom.<type>_read scope. Its writes require the custom.<type>_manage, " +
+				"custom.<type>_read scopes. <type> is the custom entity type in lower case " +
 				"(custom.document_manage, custom.document_read for DOCUMENT)."},
-		// Nor where the lines name none: the help of each read does.
+		// Nor where the sentences name none: the help of each read does.
 		{groupScopeSentence(scopedGroup(map[string]string{scopesAnnotation: read},
 			map[string]string{scopesAnnotation: ""})),
 			"Its reads require different OAuth scopes; the help of each names them."},
 		{groupScopeSentence(scopedGroup(map[string]string{scopesAnnotation: ""},
 			map[string]string{writeScopesAnnotation: manage})),
-			"Its reads need no OAuth scope.\nIts writes require the custom.<type>_manage scope." + manageNote},
+			"Its reads need no OAuth scope. Its writes require the custom.<type>_manage scope." + manageNote},
 	} {
 		if tt.got != tt.want {
 			t.Errorf("got %q, want %q", tt.got, tt.want)
@@ -175,7 +175,7 @@ func TestWriteRequestsTheScopeOfItsType(t *testing.T) {
 	}
 	fake.assertScopes(t, "custom.document_manage")
 	cmd, _, _ := root.Find([]string{"create-instance"})
-	if want := "Requires the custom.<type>_manage scope.\n<type> is the custom entity type in lower case " +
+	if want := "Requires the custom.<type>_manage scope. <type> is the custom entity type in lower case " +
 		"(custom.document_manage for DOCUMENT)."; !strings.HasSuffix(cmd.Long, want) {
 		t.Errorf("help %q; want it to end with %q", cmd.Long, want)
 	}

@@ -51,13 +51,13 @@ func newCategoriesCommand(a *app) *cobra.Command {
 	}
 	// The assignments of a product are sorted but not filtered.
 	reads := []*cobra.Command{
-		r.searchCommand(a, "Reads the categories, published and unpublished, that an Emporix q filter finds\n"+
+		r.searchCommand(a, "Reads the categories, published and unpublished, that an Emporix q filter finds "+
 			"(--query; without it, every category).", queryField()),
 		r.reader().command(a, &command{
 			use:   forProductUse,
 			short: "List the categories a product is assigned to",
-			long: r.long + productIDNote + "\nAn unknown id lists nothing, because Emporix does not distinguish it\n" +
-				"from a product without assignments.",
+			long: joinSentences(r.long, productIDNote, "An unknown id lists nothing, because Emporix does not "+
+				"distinguish it from a product without assignments."),
 			req:   request{path: "/category/{tenant}/assignments/references/" + placeholderID, query: r.query},
 			fetch: listing{filters: listFilters{kinds: sortable}},
 			ids:   argumentIDs{productID: products().ids()},
@@ -65,7 +65,7 @@ func newCategoriesCommand(a *app) *cobra.Command {
 		childCommand(a, r, child[category]{
 			use:   "subcategories",
 			short: "List the categories below a category",
-			long: "Reads every category below a category, at all levels, published and unpublished; PARENT\n" +
+			long: "Reads every category below a category, at all levels, published and unpublished; PARENT " +
 				"is the id of the category each one lies directly below.",
 			query: r.query,
 			fetch: listing{filters: listFilters{kinds: sortable}},
@@ -74,7 +74,7 @@ func newCategoriesCommand(a *app) *cobra.Command {
 		childCommand(a, r, child[category]{
 			use:   "parents",
 			short: "List the categories above a category",
-			long: "Reads the categories above a category, published and unpublished, from its root down\n" +
+			long: "Reads the categories above a category, published and unpublished, from its root down " +
 				"unless --sort says otherwise.",
 			query: r.query,
 			fetch: listing{filters: listFilters{kinds: sortable}},
@@ -94,7 +94,7 @@ func newCategoryAssignmentsCommand(a *app, categories resource[category]) *cobra
 		use:   listUse,
 		sub:   "assignments",
 		short: "List the products assigned to a category",
-		long: "Reads the products assigned to a category, published and unpublished. PRODUCT is the\n" +
+		long: "Reads the products assigned to a category, published and unpublished. PRODUCT is the " +
 			"product id (as in `epx products list`) and TYPE the kind of item, a product.",
 		query: categories.query,
 		fetch: listing{filters: listFilters{kinds: sortable}},

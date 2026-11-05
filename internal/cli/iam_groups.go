@@ -27,8 +27,8 @@ type groupMember struct {
 // as too.
 func iamGroups() resource[iamGroup] {
 	return iamList(groupsUse, "iam.group_read",
-		"Reads the tenant's user groups. TYPE is the kind of user a group is for (e.g. EMPLOYEE,\n"+
-			"CUSTOMER), and ACCESS CONTROLS counts the access controls it grants (-o json lists their\n"+
+		"Reads the tenant's user groups. TYPE is the kind of user a group is for (e.g. EMPLOYEE, "+
+			"CUSTOMER), and ACCESS CONTROLS counts the access controls it grants (-o json lists their "+
 			"ids, `epx iam groups access-controls` reads them).", listFilters{kinds: filterable},
 		view[iamGroup]{
 			singular:  "group",
@@ -46,14 +46,14 @@ func iamGroups() resource[iamGroup] {
 func newIAMGroupsCommand(a *app) *cobra.Command {
 	groups, accessControls := iamGroups(), iamAccessControls().reader()
 	groups.short = "Read, create, upsert and delete IAM groups and their users"
-	groups.about = "Reads the tenant's user groups, their users and the access controls they grant, and\n" +
-		"changes groups and their users." + writesChangeAccess
+	groups.about = "Reads the tenant's user groups, their users and the access controls they grant, and " +
+		"changes groups and their users. " + writesChangeAccess
 	extra := append(iamGroupWrites(a, groups), newGroupUsersCommand(a, groups),
 		childCommand(a, groups, child[iamAccessControl]{
 			use:   "access-controls",
 			short: "List the access controls of a group",
-			long: "Reads the access controls a group grants its users.\n" + accessControlColumns + "\n" +
-				"A group's ACCESS CONTROLS in `epx iam groups list` may also count removed access controls,\n" +
+			long: "Reads the access controls a group grants its users. " + accessControlColumns + " " +
+				"A group's ACCESS CONTROLS in `epx iam groups list` may also count removed access controls, " +
 				"which this leaves out.",
 			scopes: accessControls.scopes,
 			fetch:  listing{},
@@ -83,6 +83,6 @@ func newGroupUsersCommand(a *app, groups resource[iamGroup]) *cobra.Command {
 		},
 	}
 	return newGroup(membersOf.use, "Read the users of a group, add and remove them",
-		"Reads the users of a group, adds users to it and removes them from it."+writesChangeAccess,
+		"Reads the users of a group, adds users to it and removes them from it. "+writesChangeAccess,
 		append([]*cobra.Command{childCommand(a, membersOf, members)}, groupUserWrites(a, membersOf, members)...)...)
 }

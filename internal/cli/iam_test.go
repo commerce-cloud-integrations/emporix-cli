@@ -90,13 +90,13 @@ func TestIAMPagingNoteIsOnListOnly(t *testing.T) {
 		{group: "templates"}, // Emporix reads no template by id
 		{group: "groups", hasGet: true},
 	} {
-		if _, stdout, _ := runCLI(t, nil, "iam", tt.group, "list", "--help"); !strings.Contains(stdout, iamPagingNote) {
+		if _, stdout, _ := runCLI(t, nil, "iam", tt.group, "list", "--help"); !containsFlat(stdout, iamPagingNote) {
 			t.Errorf("iam %s list --help lacks the paging note:\n%s", tt.group, stdout)
 		}
 		if !tt.hasGet {
 			continue
 		}
-		if _, stdout, _ := runCLI(t, nil, "iam", tt.group, "get", "--help"); strings.Contains(stdout, iamPagingNote) {
+		if _, stdout, _ := runCLI(t, nil, "iam", tt.group, "get", "--help"); containsFlat(stdout, iamPagingNote) {
 			t.Errorf("iam %s get --help has the paging note:\n%s", tt.group, stdout)
 		}
 	}

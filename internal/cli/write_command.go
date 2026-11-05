@@ -124,7 +124,8 @@ func (w *write) command(a *app) *cobra.Command {
 	if w.answer != nil {
 		end = w.answer.bind(a, cmd)
 	}
-	cmd.Long += w.choice.scopeNote() + w.paramScopes.note() + rule.helpEnding(writeScopeSentence(scopes))
+	long := joinParagraphs(cmd.Long, w.choice.scopeNote(), w.paramScopes.note())
+	cmd.Long = rule.helpEnding(long, writeScopeSentence(scopes))
 	n := len(w.req.arguments())
 	cmd.RunE = func(c *cobra.Command, args []string) error {
 		path, query := w.req.fill(args, *site)
@@ -200,7 +201,7 @@ func (w *write) checkDeclaration() {
 // readScopedNote for a readScoped write.
 func (w *write) what() string {
 	if w.readScoped {
-		return w.long + "\n" + readScopedNote
+		return joinSentences(w.long, readScopedNote)
 	}
 	return w.long
 }
@@ -247,7 +248,7 @@ func (d deletion) sentence() string {
 	case d.with == "":
 		return "Deletes " + deletesMany(d.many) + ", which cannot be undone."
 	default:
-		return "Deletes data, which cannot be undone.\nWith --" + d.with + ", it deletes " + deletesMany(d.many) + "."
+		return "Deletes data, which cannot be undone. With --" + d.with + ", it deletes " + deletesMany(d.many) + "."
 	}
 }
 
@@ -295,13 +296,13 @@ func deleteWrite(use, short, long string, req request, scopes []string) *write {
 
 // ifUnchangedNote says how a write that sends metadata.version avoids
 // overwriting a change made since the item was read.
-const ifUnchangedNote = "Send its metadata.version as read to change it only if nobody changed it since:\n" +
+const ifUnchangedNote = "Send its metadata.version as read to change it only if nobody changed it since: " +
 	"Emporix answers 409 Conflict (exit 5) otherwise."
 
 // unknownAsDeleted ends the help of a delete that Emporix answers for an
 // unknown item, named by the argument arg, as for one that it deleted.
 func unknownAsDeleted(arg string) string {
-	return "\nEmporix answers an unknown " + arg + " as one that it deleted (204 No Content)."
+	return "Emporix answers an unknown " + arg + " as one that it deleted (204 No Content)."
 }
 
 // itemDelete declares `delete ID` of r: a DELETE of the item ID (its
@@ -465,6 +466,6 @@ func partialSwitch(what string) paramFlag {
 
 // outcomeHelp follows what a write whose response says whether it was carried
 // out (write.answers.ReportsOutcome) sends, in its help.
-const outcomeHelp = "Emporix answers whether the operation succeeded (successful). epx prints the response and\n" +
-	"exits with 1 unless it says that it did: where it says that it failed (successful false,\n" +
+const outcomeHelp = "Emporix answers whether the operation succeeded (successful). epx prints the response and " +
+	"exits with 1 unless it says that it did: where it says that it failed (successful false, " +
 	"with a message), and where it does not say, when it may have been carried out all the same."

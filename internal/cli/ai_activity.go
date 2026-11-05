@@ -73,17 +73,17 @@ func aiLogView(singular string, ids func(aiLog) []string, idColumns ...string) v
 const aiLogsUse = "logs"
 
 // logsLegend says what the columns of request and session logs hold.
-const logsLegend = "AGENT is the agent that was called, SEVERITY INFO, WARNING or ERROR, MESSAGES how many\n" +
-	"messages were logged (empty when a log comes without them) and SECONDS how long it took; the\n" +
+const logsLegend = "AGENT is the agent that was called, SEVERITY INFO, WARNING or ERROR, MESSAGES how many " +
+	"messages were logged (empty when a log comes without them) and SECONDS how long it took; the " +
 	"messages, the other agents that took part and the LLM tokens used are only in -o json."
 
 // newAIJobsCommand reads the jobs of the AI Service.
 func newAIJobsCommand(a *app) *cobra.Command {
 	r := aiCollection(resource[aiJob]{
 		use: "jobs", noun: "agent jobs", short: "Read and delete agent jobs",
-		long: "Reads the jobs of the AI Service: TYPE is AGENT_CHAT (an agent's run), IMPORT or EXPORT (of\n" +
-			"agents), STATUS in_progress, success, failure or skipped, AGENT and SESSION the agent that\n" +
-			"ran and its session (`epx ai logs sessions get`) and EVENT the commerce event that started\n" +
+		long: "Reads the jobs of the AI Service: TYPE is AGENT_CHAT (an agent's run), IMPORT or EXPORT (of " +
+			"agents), STATUS in_progress, success, failure or skipped, AGENT and SESSION the agent that " +
+			"ran and its session (`epx ai logs sessions get`) and EVENT the commerce event that started " +
 			"it. The agent's message and an import's or export's result are only in -o json.",
 		view: view[aiJob]{
 			singular: "agent job",
@@ -101,9 +101,9 @@ func newAIJobsCommand(a *app) *cobra.Command {
 func newAIConversationsCommand(a *app) *cobra.Command {
 	r := agentic(resource[aiConversation]{
 		use: "conversations", noun: "agent conversations",
-		long: "Reads the conversations of agents in Microsoft Teams channels and group chats: ID is the\n" +
-			"conversation in Teams, NAME its channel or chat, SESSION the agent's session (`epx ai logs\n" +
-			"sessions get`) and LAST MESSAGE when it was last active. The channel and the context\n" +
+		long: "Reads the conversations of agents in Microsoft Teams channels and group chats: ID is the " +
+			"conversation in Teams, NAME its channel or chat, SESSION the agent's session (`epx ai logs " +
+			"sessions get`) and LAST MESSAGE when it was last active. The channel and the context " +
 			"reference are only in -o json.",
 		view: view[aiConversation]{
 			singular: "agent conversation",
@@ -121,20 +121,20 @@ func newAIConversationsCommand(a *app) *cobra.Command {
 func newAILogsCommand(a *app) *cobra.Command {
 	requests := aiLogs(resource[aiLog]{
 		use: "requests", noun: "agent request logs",
-		long: "Reads the logs of the requests to agents, one per request: ID is the log that get takes,\n" +
-			"REQUEST the request it logs and SESSION the session it belongs to.\n" +
+		long: "Reads the logs of the requests to agents, one per request: ID is the log that get takes, " +
+			"REQUEST the request it logs and SESSION the session it belongs to. " +
 			logsLegend,
 		view: aiLogView("agent request log", func(l aiLog) []string { return []string{l.ID, l.RequestID, l.SessionID} },
 			columnID, "REQUEST", columnSession),
 	})
 	sessions := aiLogs(resource[aiLog]{
 		use: "sessions", noun: "agent session logs",
-		long: "Reads the logs of the sessions of agents, one per session, with the messages of each of its\n" +
-			"requests.\n" + logsLegend,
+		long: "Reads the logs of the sessions of agents, one per session, with the messages of each of its " +
+			"requests. " + logsLegend,
 		view: aiLogView("agent session log", func(l aiLog) []string { return []string{l.SessionID} }, columnID),
 	})
 	return newGroup(aiLogsUse, "Read the logs of agent requests and sessions",
-		"Reads the logs that agents write: one per request, and one per session, which holds the\n"+
+		"Reads the logs that agents write: one per request, and one per session, which holds the "+
 			"messages of its requests.",
 		newResourceCommand(a, requests, requests.querySearchCommand(a)),
 		newResourceCommand(a, sessions, sessions.querySearchCommand(a)))

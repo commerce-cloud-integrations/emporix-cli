@@ -31,12 +31,12 @@ func newRecalculationJobsCommand(a *app) *cobra.Command {
 		use:   "recalculation-jobs",
 		noun:  "variant recalculation jobs",
 		under: productsUse,
-		long: "Reads the jobs that rebuild the variant tree of a DYNAMIC_VARIANT product once a\n" +
-			"recalculation was triggered, one per ROOT PRODUCT (an id). STATUS is PENDING, PROCESSING,\n" +
-			"FINISHED, FAILED or FAILED_PERMANENT, ATTEMPTS counts processing attempts and ERROR says why a\n" +
-			"job failed; -o json adds the product ids it was requested for and when processing started,\n" +
-			"and leaves out each of processingStartedAt, finishedAt and error until it is set.\n" +
-			"Emporix removes jobs about 30 days after they end. The jobs of one status: `epx api get\n" +
+		long: "Reads the jobs that rebuild the variant tree of a DYNAMIC_VARIANT product once a " +
+			"recalculation was triggered, one per ROOT PRODUCT (an id). STATUS is PENDING, PROCESSING, " +
+			"FINISHED, FAILED or FAILED_PERMANENT, ATTEMPTS counts processing attempts and ERROR says why a " +
+			"job failed; -o json adds the product ids it was requested for and when processing started, " +
+			"and leaves out each of processingStartedAt, finishedAt and error until it is set. " +
+			"Emporix removes jobs about 30 days after they end. The jobs of one status: `epx api get " +
 			"/product/{tenant}/products/recalculate/jobs -p status=FAILED --scope product.product_manage`.",
 		path:   "/product/{tenant}/products/recalculate/jobs",
 		scopes: []string{productManageScope},

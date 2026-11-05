@@ -148,7 +148,7 @@ func rootPage(root *cobra.Command) string {
 		"This reference documents every command and flag of " + root.Name() + ". The same text is in " +
 			codeSpan(root.Name()+" <command> --help") + ".",
 	}
-	blocks = append(blocks, helpBlocks(root.Long, root)...)
+	blocks = append(blocks, helpBlocks(longHelp(root), root)...)
 	blocks = append(blocks,
 		"## Global flags",
 		"Every command takes these flags.",
@@ -168,7 +168,7 @@ func section(cmd *cobra.Command) []string {
 	if cmd.Parent() != root {
 		blocks = append(blocks, paragraph(sentence(cmd.Short), root))
 	}
-	blocks = append(blocks, helpBlocks(cmd.Long, root)...)
+	blocks = append(blocks, helpBlocks(longHelp(cmd), root)...)
 	blocks = append(blocks, "**Command:** "+codeList(usage(cmd)))
 	if len(cmd.Aliases) > 0 {
 		blocks = append(blocks, "**Aliases:** "+codeList(cmd.Aliases))
@@ -254,7 +254,7 @@ func flagItems(flags *pflag.FlagSet, root *cobra.Command, skip ...string) []stri
 		if kind != "" {
 			name += " <" + kind + ">"
 		}
-		items = append(items, listItem(codeSpan(name), cell(sentence(text), root)+defaultNote(f.DefValue)))
+		items = append(items, listItem(codeSpan(name), paragraph(sentence(text), root)+defaultNote(f.DefValue)))
 	})
 	return items
 }
@@ -288,7 +288,7 @@ func commandList(cmds []*cobra.Command, link func(*cobra.Command) string) string
 	items := make([]string, len(cmds))
 	for i, cmd := range cmds {
 		term := fmt.Sprintf("[%s](%s)", codeSpan(cmd.CommandPath()), link(cmd))
-		items[i] = listItem(term, cell(sentence(cmd.Short), cmd.Root()))
+		items[i] = listItem(term, paragraph(sentence(cmd.Short), cmd.Root()))
 	}
 	return strings.Join(items, "\n")
 }

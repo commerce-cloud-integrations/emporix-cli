@@ -21,23 +21,23 @@ const (
 const iamGroupManage = "iam.group_manage"
 
 // accessChange follows what an IAM write sends, in its help (accessChanging).
-const accessChange = "\nIt changes who may do what in the tenant."
+const accessChange = "It changes who may do what in the tenant."
 
 // writesChangeAccess ends the help of a group of IAM reads and writes, after
 // what it reads and changes.
-const writesChangeAccess = "\nIts writes change who may do what in the tenant."
+const writesChangeAccess = "Its writes change who may do what in the tenant."
 
 // upsertTerms says, in the help of an IAM upsert, how metadata.version locks
 // it (the IAM Service checks it where the body gives it), and what Emporix
 // answers.
-const upsertTerms = "With metadata.version as read, Emporix changes it only if that is still its version.\n" +
+const upsertTerms = "With metadata.version as read, Emporix changes it only if that is still its version. " +
 	"Emporix answers with the id of one it created, and with nothing when it replaced one."
 
 // unknownUpdate says, in the help of users update, what an unknown ID gets: Emporix answers 204 and
 // makes the ID a member of the groups of groupIds (live), so no refusal is sent by epx: the service
 // decides, and a read first would be a second request that a concurrent delete can outdate.
-const unknownUpdate = "An unknown ID is not refused: Emporix answers 204 No Content and adds that ID as a member of\n" +
-	"each group of groupIds, so those groups take effect for it. Check the ID with `epx iam users get`\n" +
+const unknownUpdate = "An unknown ID is not refused: Emporix answers 204 No Content and adds that ID as a member of " +
+	"each group of groupIds, so those groups take effect for it. Check the ID with `epx iam users get` " +
 	"first; `epx iam users groups delete-all ID` removes it from every group it is in."
 
 // iamUserTypes returns the only kinds of user that a group's users have, in
@@ -48,7 +48,7 @@ func iamUserTypes() []string { return []string{"CUSTOMER", "EMPLOYEE"} }
 // changes who may do what (accessChange): every IAM write is declared
 // through it.
 func accessChanging(w *write) *write {
-	w.long += accessChange
+	w.long = joinSentences(w.long, accessChange)
 	return w
 }
 
@@ -57,22 +57,22 @@ func accessChanging(w *write) *write {
 func newIAMAccessControlsCommand(a *app) *cobra.Command {
 	controls := iamAccessControls()
 	controls.short = "Read, upsert and delete access controls"
-	controls.about = "Reads IAM access controls, the scopes they grant the users of the groups that hold them, and\n" +
-		"upserts and deletes them." + writesChangeAccess
+	controls.about = "Reads IAM access controls, the scopes they grant the users of the groups that hold them, and " +
+		"upserts and deletes them. " + writesChangeAccess
 	scopes := []string{iamAccessManage}
 	return newResourceCommand(a, controls,
 		accessChanging(&write{
 			use: controls.itemUse("update"), short: "Upsert an access control", method: http.MethodPut,
-			long: "Replaces the access control ID with the JSON in --file, or creates it with that id where\n" +
-				"none exists (an upsert): the scopes it grants (at least one), and optionally its name and\n" +
-				"description, domains and restrictedTo (CUSTOMER or EMPLOYEE: the only kind of group that may\n" +
-				"grant it, set when it is created only).\n" + upsertTerms,
+			long: "Replaces the access control ID with the JSON in --file, or creates it with that id where " +
+				"none exists (an upsert): the scopes it grants (at least one), and optionally its name and " +
+				"description, domains and restrictedTo (CUSTOMER or EMPLOYEE: the only kind of group that may " +
+				"grant it, set when it is created only). " + upsertTerms,
 			req: request{path: controls.itemPath()}, scopes: scopes, body: &payload{}, language: mapsOnly,
 			ids: controls.itemIDs(),
 		}).command(a),
 		accessChanging(&write{
 			use: controls.itemUse("delete"), short: "Delete an access control", method: http.MethodDelete,
-			long: "Deletes the access control ID. Emporix deletes only those made for the tenant, not the\n" +
+			long: "Deletes the access control ID. Emporix deletes only those made for the tenant, not the " +
 				"predefined ones (PREDEFINED in `epx iam access-controls list`).",
 			req: request{path: controls.itemPath()}, scopes: scopes, body: noBody{}, ids: controls.itemIDs(),
 		}).command(a))
@@ -85,22 +85,22 @@ func newIAMAccessControlsCommand(a *app) *cobra.Command {
 func newIAMScopesCommand(a *app) *cobra.Command {
 	scopes := iamScopes()
 	scopes.short = "Read, upsert and delete OAuth scopes"
-	scopes.about = "Reads the OAuth scopes the tenant knows, and upserts and deletes its custom scopes." +
+	scopes.about = "Reads the OAuth scopes the tenant knows, and upserts and deletes its custom scopes. " +
 		writesChangeAccess
 	manage := []string{iamScopeManage}
 	return newResourceCommand(a, scopes,
 		accessChanging(&write{
 			use: scopes.itemUse("update"), short: "Upsert a custom scope", method: http.MethodPut,
-			long: "Replaces the custom scope ID, e.g. acme.vehicle_manage, with the JSON in --file, or creates\n" +
-				"it where none exists (an upsert): its domain and description, a map of translations such\n" +
-				`as {"en": "Manage vehicles"}.` + "\n" + upsertTerms + "\nAccess controls " +
+			long: "Replaces the custom scope ID, e.g. acme.vehicle_manage, with the JSON in --file, or creates " +
+				"it where none exists (an upsert): its domain and description, a map of translations such " +
+				`as {"en": "Manage vehicles"}. ` + upsertTerms + " Access controls " +
 				"grant scopes (`epx iam access-controls update`).",
 			req: request{path: scopes.itemPath()}, scopes: manage, body: &payload{}, ids: scopes.itemIDs(),
 		}).command(a),
 		accessChanging(&write{
 			use: scopes.itemUse("delete"), short: "Delete a custom scope", method: http.MethodDelete,
-			long: "Deletes the custom scope ID: it can no longer be used, though API keys made before may\n" +
-				"still show it. Emporix deletes only custom scopes, not the predefined ones (PREDEFINED in\n" +
+			long: "Deletes the custom scope ID: it can no longer be used, though API keys made before may " +
+				"still show it. Emporix deletes only custom scopes, not the predefined ones (PREDEFINED in " +
 				"`epx iam scopes list`).",
 			req: request{path: scopes.itemPath()}, scopes: manage, body: noBody{}, ids: scopes.itemIDs(),
 		}).command(a))
@@ -116,25 +116,25 @@ func iamGroupWrites(a *app, groups resource[iamGroup]) []*cobra.Command {
 	return []*cobra.Command{
 		accessChanging(&write{
 			use: createUse, short: "Create a group", method: http.MethodPost,
-			long: "Creates the group in --file, a JSON object with its name and the ids of the access controls\n" +
-				"that its users get (accessControls, from `epx iam access-controls list`), and optionally\n" +
-				"its id (Emporix makes one otherwise), description, userType (CUSTOMER, or EMPLOYEE, the\n" +
-				"default), templates, b2b.legalEntityId, restrictions and mixins. Emporix answers with the\n" +
+			long: "Creates the group in --file, a JSON object with its name and the ids of the access controls " +
+				"that its users get (accessControls, from `epx iam access-controls list`), and optionally " +
+				"its id (Emporix makes one otherwise), description, userType (CUSTOMER, or EMPLOYEE, the " +
+				"default), templates, b2b.legalEntityId, restrictions and mixins. Emporix answers with the " +
 				"group's id; a group with the id exists already: a conflict (exit 5).",
 			req: request{path: groups.path}, scopes: scopes, body: &payload{}, language: mapsOnly,
 		}).command(a),
 		accessChanging(&write{
 			use: groups.itemUse("update"), short: "Upsert a group", method: http.MethodPut,
-			long: "Replaces the group ID with the JSON in --file, as create takes it without id, or\n" +
-				"creates it with that id where none exists (an upsert): give its name and every other\n" +
-				"member to keep, as `epx iam groups get ID -o json` prints it.\n" + upsertTerms,
+			long: "Replaces the group ID with the JSON in --file, as create takes it without id, or " +
+				"creates it with that id where none exists (an upsert): give its name and every other " +
+				"member to keep, as `epx iam groups get ID -o json` prints it. " + upsertTerms,
 			req: request{path: groups.itemPath()}, scopes: scopes, body: &payload{}, language: mapsOnly,
 			ids: groups.itemIDs(),
 		}).command(a),
 		accessChanging(&write{
 			use: groups.itemUse("delete"), short: "Delete a group", method: http.MethodDelete,
-			long: "Deletes the group ID. Emporix refuses to delete a group that users belong to (400 Bad\n" +
-				"Request, exit 1; `epx iam groups users list ID` lists them) unless --force-delete is\n" +
+			long: "Deletes the group ID. Emporix refuses to delete a group that users belong to (400 Bad " +
+				"Request, exit 1; `epx iam groups users list ID` lists them) unless --force-delete is " +
 				"given, which removes every user from it too.",
 			req: request{path: groups.itemPath()}, scopes: scopes, body: noBody{}, ids: groups.itemIDs(),
 			choice: queryChoice{param: forceDeleteParam, options: []choiceOption{{
@@ -154,20 +154,20 @@ func groupUserWrites(a *app, membersOf resource[iamGroup], members child[groupMe
 	scopes := []string{iamAssignmentManage}
 	group, collection := membersOf.argument(), members.below(membersOf.path)
 	const user = "USER_ID" // a member, as the USER of the group's members
-	source := "\n" + membersOf.argumentSentence(notFound)
-	removal := "\n" + membersOf.argumentSentence(answeredDeleted)
-	removeOne := "\n" + membersOf.argumentSource() + "; an unknown GROUP_ID or USER_ID " + string(answeredDeleted) + "."
+	source := membersOf.argumentSentence(notFound)
+	removal := membersOf.argumentSentence(answeredDeleted)
+	removeOne := membersOf.argumentSource() + "; an unknown GROUP_ID or USER_ID " + string(answeredDeleted) + "."
 	ofGroup := argumentIDs{group: membersOf.ids()}
-	gets := "\nThe user then gets the scopes of the group's access controls; a group of a vendor takes\n" +
+	gets := "The user then gets the scopes of the group's access controls; a group of a vendor takes " +
 		"only the vendor's employees."
 	return []*cobra.Command{
 		accessChanging(&write{
 			use: createUse + " " + group, short: "Add a user to a group", method: http.MethodPost,
-			long: "Adds the user that --user names, of the kind that --user-type names (EMPLOYEE when left\n" +
-				"out), to the group " + group + ", or the one in --file, a JSON object with its userId and\n" +
-				"userType. Emporix answers with the id of the membership; a user already in the group is\n" +
-				"answered with a new id that is not the listed membership's, and no second membership is made\n" +
-				"(read the members with `epx iam groups users list`)." + gets + source,
+			long: "Adds the user that --user names, of the kind that --user-type names (EMPLOYEE when left " +
+				"out), to the group " + group + ", or the one in --file, a JSON object with its userId and " +
+				"userType. Emporix answers with the id of the membership; a user already in the group is " +
+				"answered with a new id that is not the listed membership's, and no second membership is made " +
+				"(read the members with `epx iam groups users list`). " + gets + " " + source,
 			req: request{path: collection}, scopes: scopes, ids: ofGroup,
 			body: &payload{typed: objectBody{
 				stringField("userId", "user", "the `USER_ID` of the user to add: the ID that `epx iam users list` "+
@@ -179,8 +179,8 @@ func groupUserWrites(a *app, membersOf resource[iamGroup], members child[groupMe
 			use:   childItemUse(membersOf, "update", []string{"USER_TYPE", user}),
 			short: "Upsert the membership of a user in a group", method: http.MethodPut,
 			long: "Adds the user USER_ID, of the kind USER_TYPE (" + alternatives(iamUserTypes()) + "), to the group " +
-				group + "\nunless it belongs to it already (an upsert): Emporix answers with the id of the membership\n" +
-				"it made, and with nothing when there was one, which it leaves as it is." + gets + source,
+				group + " unless it belongs to it already (an upsert): Emporix answers with the id of the membership " +
+				"it made, and with nothing when there was one, which it leaves as it is. " + gets + " " + source,
 			req:    request{path: collection + "/" + placeholderInner + "/" + placeholderID},
 			scopes: scopes, body: noBody{}, ids: ofGroup,
 			choices: map[string][]string{"USER_TYPE": iamUserTypes()},
@@ -188,14 +188,14 @@ func groupUserWrites(a *app, membersOf resource[iamGroup], members child[groupMe
 		accessChanging(&write{
 			use:   childItemUse(membersOf, "delete", []string{user}),
 			short: "Remove a user from a group", method: http.MethodDelete,
-			long: "Removes the user USER_ID from the group " + group + ": the user no longer gets the scopes of\n" +
-				"its access controls." + removeOne,
+			long: "Removes the user USER_ID from the group " + group + ": the user no longer gets the scopes of " +
+				"its access controls. " + removeOne,
 			req: request{path: collection + "/" + placeholderID}, scopes: scopes, body: noBody{},
 			ids: argumentIDs{group: membersOf.ids(), user: childIDs(membersOf, members, "USER")},
 		}).command(a),
 		accessChanging(&write{
 			use: "delete-all " + group, short: "Remove every user from a group", method: http.MethodDelete,
-			long: "Removes every user from the group " + group + ", which stays." + removal,
+			long: "Removes every user from the group " + group + ", which stays. " + removal,
 			req:  request{path: collection}, scopes: scopes, body: noBody{}, ids: ofGroup,
 			deletes: deletion{many: "the membership of every user of the group"},
 		}).command(a),
@@ -211,24 +211,24 @@ func userWrites(a *app, users resource[iamUser]) []*cobra.Command {
 	return []*cobra.Command{
 		accessChanging(&write{
 			use: createUse, short: "Create a user", method: http.MethodPost,
-			long: "Creates a Management Dashboard user (an employee) from the JSON in --file, which gives each\n" +
-				"of " + members + ",\ncontactEmail and groupIds (the groups that the user belongs to, from " +
-				"`epx iam groups list`).\nEmporix emails the user to confirm the address and set a password. " +
-				"An e-mail that a user of the\ntenant has already is a conflict (exit 5): Emporix creates no user. " +
+			long: "Creates a Management Dashboard user (an employee) from the JSON in --file, which gives each " +
+				"of " + members + ", contactEmail and groupIds (the groups that the user belongs to, from " +
+				"`epx iam groups list`). Emporix emails the user to confirm the address and set a password. " +
+				"An e-mail that a user of the tenant has already is a conflict (exit 5): Emporix creates no user. " +
 				"It answers with the user's id.",
 			req: request{path: users.path}, scopes: []string{"iam.user_create"}, body: &payload{},
 		}).command(a),
 		accessChanging(&write{
 			use: users.itemUse("update"), short: "Replace a user", method: http.MethodPut,
-			long: "Replaces the user ID, an employee, with the JSON in --file, which gives each of\n" +
-				members + ",\nbackofficeUserNumber and groupIds: Emporix removes the user from every group and " +
-				"adds them\nto those of groupIds.\n" + unknownUpdate,
+			long: "Replaces the user ID, an employee, with the JSON in --file, which gives each of " +
+				members + ", backofficeUserNumber and groupIds: Emporix removes the user from every group and " +
+				"adds them to those of groupIds. " + unknownUpdate,
 			req: request{path: users.itemPath()}, scopes: []string{"iam.user_update"}, body: &payload{},
 			ids: users.itemIDs(),
 		}).command(a),
 		accessChanging(&write{
 			use: users.itemUse("delete"), short: "Delete a user", method: http.MethodDelete,
-			long: "Deletes the user ID from the tenant: Emporix removes them from every group and blocks\n" +
+			long: "Deletes the user ID from the tenant: Emporix removes them from every group and blocks " +
 				"their access to the Management Dashboard; their Developer Portal account stays.",
 			req: request{path: users.itemPath()}, scopes: []string{"iam.user_delete"}, body: noBody{},
 			ids: users.itemIDs(),
@@ -243,8 +243,8 @@ func userGroupsWrite(a *app, groupsOf resource[iamUser], userGroups child[iamGro
 	user := groupsOf.argument()
 	return accessChanging(&write{
 		use: "delete-all " + user, short: "Remove a user from every group", method: http.MethodDelete,
-		long: "Removes the user " + user + " from every group: the user keeps their account, but no\n" +
-			"group grants them access any more.\n" + groupsOf.argumentSentence(answeredDeleted),
+		long: "Removes the user " + user + " from every group: the user keeps their account, but no " +
+			"group grants them access any more. " + groupsOf.argumentSentence(answeredDeleted),
 		req:    request{path: userGroups.below(groupsOf.path)},
 		scopes: []string{iamAssignmentManage}, body: noBody{}, ids: argumentIDs{user: groupsOf.ids()},
 		deletes: deletion{many: "the user's membership of every group"},

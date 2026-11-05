@@ -38,30 +38,30 @@ func rewardSite() queryFlags {
 // option from options.
 func rewardPointWrites(a *app, customers, options argumentIDs) []*cobra.Command {
 	manage := []string{rewardPointsManage}
-	const customer = "\n" + customerSentence + "."
-	const site = "The reward points settings of the site --site apply, the default site of the profile in\n" +
-		"effect without it, and site main without either: how long the points stay valid. Emporix\n" +
-		"keeps them in the site's couponSettings mixin; it accepts a site without them, also an\n" +
+	const customer = customerSentence + "."
+	const site = "The reward points settings of the site --site apply, the default site of the profile in " +
+		"effect without it, and site main without either: how long the points stay valid. Emporix " +
+		"keeps them in the site's couponSettings mixin; it accepts a site without them, also an " +
 		"unknown site code, and the points then stay valid 36 months."
-	const noEntry = "\nA customer without a reward points entry is not found (exit 4)."
+	const noEntry = "A customer without a reward points entry is not found (exit 4)."
 	const optionID = "the redeem option ID, as `epx reward-points redeem-options` shows it"
 	option := request{path: redeemOptionsPath + "/" + placeholderID}
 	optionDelete := deleteWrite("redeem-option-delete "+columnID, "Delete a way to redeem reward points",
-		"Deletes "+optionID+"; it sends no body."+unknownAsDeleted(columnID), option, manage)
+		"Deletes "+optionID+"; it sends no body. "+unknownAsDeleted(columnID), option, manage)
 	optionDelete.ids = options
 	return []*cobra.Command{
 		(&write{
 			use: "create " + columnCustomer, short: "Create the reward points entry of a customer",
 			method: http.MethodPost,
-			long: "Creates the reward points entry of a customer, with the points it starts with where\n" +
-				"--points gives them. Emporix answers without a body, so epx prints nothing. A customer\n" +
-				"with an entry is a conflict (exit 5). Emporix does not check the customer: an unknown one\n" +
-				"gets an entry too.\n" +
-				"`epx reward-points add` adds points to an entry.\n" + site + "\n" +
-				"The JSON of --file must give customerId, CUSTOMER again (Emporix answers 400 Bad Request to\n" +
-				"another and 500 Internal Server Error without one, exit 1, and creates no entry), and the\n" +
-				"points it starts with as startPoints, e.g.\n" +
-				"{\"customerId\": \"C1001\", \"startPoints\": {\"points\": 20}}." + customer,
+			long: "Creates the reward points entry of a customer, with the points it starts with where " +
+				"--points gives them. Emporix answers without a body, so epx prints nothing. A customer " +
+				"with an entry is a conflict (exit 5). Emporix does not check the customer: an unknown one " +
+				"gets an entry too. " +
+				"`epx reward-points add` adds points to an entry. " + site + " " +
+				"The JSON of --file must give customerId, CUSTOMER again (Emporix answers 400 Bad Request to " +
+				"another and 500 Internal Server Error without one, exit 1, and creates no entry), and the " +
+				"points it starts with as startPoints, e.g. " +
+				"{\"customerId\": \"C1001\", \"startPoints\": {\"points\": 20}}. " + customer,
 			example: "  epx reward-points create C1001 --site AcmeStore_NL --points 20 --description \"Welcome\"",
 			req:     request{path: rewardCustomerPath}, params: rewardSite(),
 			scopes: manage, ids: customers,
@@ -74,19 +74,19 @@ func rewardPointWrites(a *app, customers, options argumentIDs) []*cobra.Command 
 		}).command(a),
 		(&write{
 			use: "delete " + columnCustomer, short: "Delete the reward points of a customer", method: http.MethodDelete,
-			long: "Deletes the reward points entry of a customer, with the points added and redeemed so far.\n" +
-				"Emporix answers 200 OK, also for an unknown customer or one without an entry: neither is an\n" +
-				"error." + customer,
+			long: "Deletes the reward points entry of a customer, with the points added and redeemed so far. " +
+				"Emporix answers 200 OK, also for an unknown customer or one without an entry: neither is an " +
+				"error. " + customer,
 			req:    request{path: rewardCustomerPath},
 			scopes: manage, body: noBody{}, ids: customers,
 		}).command(a),
 		(&write{
 			use: "add " + columnCustomer, short: "Add reward points to a customer", method: http.MethodPost,
-			long: "Adds --points reward points to a customer. Emporix answers without a body, so epx prints\n" +
-				"nothing. Sent twice, it adds them twice.\n" + site +
-				"\n--valid-until, which gives these points their own end of validity, takes a time such as\n" +
-				"2027-12-31T23:59:59Z: unlike the redeem options, Emporix reads a time that ends in Z." +
-				noEntry + customer,
+			long: "Adds --points reward points to a customer. Emporix answers without a body, so epx prints " +
+				"nothing. Sent twice, it adds them twice. " + site +
+				" --valid-until, which gives these points their own end of validity, takes a time such as " +
+				"2027-12-31T23:59:59Z: unlike the redeem options, Emporix reads a time that ends in Z. " +
+				noEntry + " " + customer,
 			example: "  epx reward-points add C1001 --site AcmeStore_NL --points 50 --description \"Goodwill\"",
 			req:     request{path: rewardCustomerPath + "/addPoints"}, params: rewardSite(),
 			scopes: manage, ids: customers,
@@ -100,10 +100,10 @@ func rewardPointWrites(a *app, customers, options argumentIDs) []*cobra.Command 
 		}).command(a),
 		(&write{
 			use: "redeem " + columnCustomer, short: "Redeem reward points of a customer", method: http.MethodPost,
-			long: "Redeems --points reward points of a customer without making a coupon of them, the oldest\n" +
-				"points that are still valid first. Emporix answers without a body, so epx prints nothing.\n" +
-				"More points than are active (ACTIVE of `epx reward-points get`) are a conflict (exit 5).\n" +
-				"Sent twice, it redeems them twice." + noEntry + customer,
+			long: "Redeems --points reward points of a customer without making a coupon of them, the oldest " +
+				"points that are still valid first. Emporix answers without a body, so epx prints nothing. " +
+				"More points than are active (ACTIVE of `epx reward-points get`) are a conflict (exit 5). " +
+				"Sent twice, it redeems them twice. " + noEntry + " " + customer,
 			example: "  epx reward-points redeem C1001 --points 50 --description \"Gift wrapping\"",
 			req:     request{path: rewardCustomerPath + "/redeemPoints"}, scopes: manage, ids: customers,
 			body: &payload{typed: objectBody{
@@ -114,19 +114,19 @@ func rewardPointWrites(a *app, customers, options argumentIDs) []*cobra.Command 
 		}).command(a),
 		(&write{
 			use: "redeem-option-create", short: "Create a way to redeem reward points", method: http.MethodPost,
-			long: "Creates a way to redeem reward points from the JSON in --file: its type (coupon), name,\n" +
-				"the points it costs and, for a coupon, the coupon that it makes of them, as\n" +
-				"`epx coupons create` takes it. It prints the option that Emporix answers with; sending the\n" +
-				"same JSON twice creates two. The coupon's restrictions.validFrom and validUntil take epoch\n" +
-				"milliseconds or a time with a numeric offset, e.g. 2027-01-01T00:00:00.000+00:00: Emporix\n" +
+			long: "Creates a way to redeem reward points from the JSON in --file: its type (coupon), name, " +
+				"the points it costs and, for a coupon, the coupon that it makes of them, as " +
+				"`epx coupons create` takes it. It prints the option that Emporix answers with; sending the " +
+				"same JSON twice creates two. The coupon's restrictions.validFrom and validUntil take epoch " +
+				"milliseconds or a time with a numeric offset, e.g. 2027-01-01T00:00:00.000+00:00: Emporix " +
 				"refuses a time that ends in Z (400 Bad Request).",
 			req: request{path: redeemOptionsPath}, scopes: manage, body: &payload{},
 		}).command(a),
 		(&write{
 			use: "redeem-option-update " + columnID, short: "Replace a way to redeem reward points",
 			method: http.MethodPut,
-			long: "Replaces " + optionID + ", with the\n" +
-				"JSON in --file, as redeem-option-create takes it.\n" + ifUnchangedNote,
+			long: "Replaces " + optionID + ", with the " +
+				"JSON in --file, as redeem-option-create takes it. " + ifUnchangedNote,
 			req: option, scopes: manage, body: &payload{}, ids: options,
 		}).command(a),
 		optionDelete.command(a),

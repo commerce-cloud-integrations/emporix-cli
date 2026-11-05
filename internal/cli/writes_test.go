@@ -371,8 +371,8 @@ func TestCompletionOffersFilesForFileOnly(t *testing.T) {
 // Catalog services answer a stale version.
 func TestRootHelpNamesTheConflictExit(t *testing.T) {
 	_, help, _ := runCLI(t, nil, "--help")
-	if !strings.Contains(help, "4 not found, 5 conflict: a write that Emporix answered with\n409 Conflict, as") ||
-		!strings.Contains(help, "`units update`\nor `catalogs patch` with metadata.version answered with 404 Not Found") {
+	if !containsFlat(help, "4 not found, 5 conflict: a write that Emporix answered with 409 Conflict, as") ||
+		!containsFlat(help, "`units update` or `catalogs patch` with metadata.version answered with 404 Not Found") {
 		t.Fatalf("help %q; want exit code 5 explained", help)
 	}
 }

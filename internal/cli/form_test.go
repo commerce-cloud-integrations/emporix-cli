@@ -158,7 +158,7 @@ func TestFormFileFailuresSendNothing(t *testing.T) {
 // changes nothing, and that its JSON prints the response whole.
 func TestFormReadsChangeNothing(t *testing.T) {
 	_, help, _ := runCLI(t, nil, "schemas", "parse", "--help")
-	if !strings.Contains(help, "Changes nothing: Emporix serves this read as POST with a multipart/form-data\nbody") {
+	if !containsFlat(help, "Changes nothing: Emporix serves this read as POST with a multipart/form-data body") {
 		t.Errorf("help %q; want it to say that it changes nothing", help)
 	}
 	fake := newFakeEmporix(t)

@@ -54,7 +54,7 @@ type yesNo struct{}
 
 func (yesNo) help(method, required string) string {
 	return "Changes data: on a terminal, epx asks before it sends " + method + ". --" + yesFlag +
-		" sends without\nasking (" + required + "); --" + dryRunFlag + " prints the request\n" +
+		" sends without asking (" + required + "); --" + dryRunFlag + " prints the request " +
 		"instead of sending it."
 }
 
@@ -73,8 +73,8 @@ type typed struct {
 }
 
 func (t typed) help(method, required string) string {
-	return t.deletes.sentence() + "\nOn a terminal, epx sends " + method + " only once you type " + t.word +
-		" at its prompt.\n--" + yesFlag + " sends without asking (" + required + ");\n--" + dryRunFlag +
+	return t.deletes.sentence() + " On a terminal, epx sends " + method + " only once you type " + t.word +
+		" at its prompt. --" + yesFlag + " sends without asking (" + required + "); --" + dryRunFlag +
 		" prints the request instead of sending it."
 }
 

@@ -26,11 +26,11 @@ func sequenceSchemaWrites(a *app, schemas resource[sequenceSchema]) []*cobra.Com
 	writes := []*write{
 		{
 			use: createUse, short: "Create a sequential ID schema", method: http.MethodPost,
-			long: "Creates the sequence schema in --file, a JSON object with its name, schemaType (such as\n" +
-				"orderNoSequence or invoiceNoSequence; letters and digits only), startValue, maxValue and\n" +
-				"numberOfDigits, and optionally preText and postText, the text around the number, and\n" +
-				"placeholders: each placeholder in that text, named with __ at both ends such as __year__,\n" +
-				"with required and default, or sitePath, where in the data of a site its value is.\n" +
+			long: "Creates the sequence schema in --file, a JSON object with its name, schemaType (such as " +
+				"orderNoSequence or invoiceNoSequence; letters and digits only), startValue, maxValue and " +
+				"numberOfDigits, and optionally preText and postText, the text around the number, and " +
+				"placeholders: each placeholder in that text, named with __ at both ends such as __year__, " +
+				"with required and default, or sitePath, where in the data of a site its value is. " +
 				"`epx sequential-ids activate ID` makes the schema the one that numbers its type.",
 			example: "  epx sequential-ids create --file order-numbers.json --dry-run",
 			req:     request{path: schemas.path}, scopes: manage, body: &payload{},
@@ -38,7 +38,7 @@ func sequenceSchemaWrites(a *app, schemas resource[sequenceSchema]) []*cobra.Com
 		},
 		{
 			use: schemas.itemUse("activate"), short: "Activate a sequential ID schema", method: http.MethodPost,
-			long: "Makes the sequence schema ID the active one, which numbers the records of its type.\n" + id,
+			long: "Makes the sequence schema ID the active one, which numbers the records of its type. " + id,
 			req:  request{path: schemas.itemPath() + "/setActive"}, scopes: manage, body: noBody{},
 			ids: schemas.itemIDs(),
 		},
@@ -49,12 +49,12 @@ func sequenceSchemaWrites(a *app, schemas resource[sequenceSchema]) []*cobra.Com
 		},
 		{
 			use: "next-id TYPE", short: "Issue the next ID of a sequential ID schema type", method: http.MethodPost,
-			long: "Issues the next ID of the active schema of TYPE, such as orderNoSequence (`epx\n" +
-				"sequential-ids list` shows the types), and prints it. --sequence-key numbers in a sequence\n" +
-				"of its own, such as one per month, instead of the default one; --file gives the body\n" +
-				"whole, with the values of placeholders, e.g. {\"sequenceKey\": \"2026-10\",\n" +
-				"\"placeholders\": {\"__year__\": \"2026\"}}. With --site, Emporix fills in the placeholders\n" +
-				"that the body leaves out from that site's data.\n" + issuesIDs,
+			long: "Issues the next ID of the active schema of TYPE, such as orderNoSequence (`epx " +
+				"sequential-ids list` shows the types), and prints it. --sequence-key numbers in a sequence " +
+				"of its own, such as one per month, instead of the default one; --file gives the body " +
+				"whole, with the values of placeholders, e.g. {\"sequenceKey\": \"2026-10\", " +
+				"\"placeholders\": {\"__year__\": \"2026\"}}. With --site, Emporix fills in the placeholders " +
+				"that the body leaves out from that site's data. " + issuesIDs,
 			example: "  epx sequential-ids next-id orderNoSequence --sequence-key 2026-10 --dry-run",
 			req:     request{path: schemas.path + "/types/" + placeholderID + "/nextId"},
 			ids:     argumentIDs{columnType: schemas.idsIn(columnType)},
@@ -64,11 +64,11 @@ func sequenceSchemaWrites(a *app, schemas resource[sequenceSchema]) []*cobra.Com
 		},
 		{
 			use: "next-ids", short: "Issue IDs of several sequential ID schema types", method: http.MethodPost,
-			long: "Issues IDs of the active schemas of several types in one request and prints them, by\n" +
-				"type. --file gives a JSON object with a member per type, such as orderNoSequence, each\n" +
-				"with numberOfIds (how many), and optionally sequenceKey and placeholders, as next-id\n" +
-				"takes them. With --site, Emporix fills in the placeholders that the body leaves out from\n" +
-				"that site's data.\n" + issuesIDs,
+			long: "Issues IDs of the active schemas of several types in one request and prints them, by " +
+				"type. --file gives a JSON object with a member per type, such as orderNoSequence, each " +
+				"with numberOfIds (how many), and optionally sequenceKey and placeholders, as next-id " +
+				"takes them. With --site, Emporix fills in the placeholders that the body leaves out from " +
+				"that site's data. " + issuesIDs,
 			example: "  epx sequential-ids next-ids --file ids.json --site AcmeStore_NL --dry-run",
 			req:     request{path: "/sequential-id/sequenceSchemaBatch/nextIds"},
 			scopes:  schemas.scopes, readScoped: true, params: issuedForSite(), body: &payload{},

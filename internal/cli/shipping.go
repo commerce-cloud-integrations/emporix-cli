@@ -86,8 +86,8 @@ func shippingPath(collection string) string {
 // calculates shipping fees; every command but find-sites requires --site.
 func newShippingCommand(a *app) *cobra.Command {
 	return newGroup("shipping", "Read and change shipping zones, methods and groups, and calculate shipping fees",
-		"Reads and changes a site's shipping configuration, calculates its shipping fees and finds the\n"+
-			"sites that ship to a postal code. Every command but find-sites requires --site; for an\n"+
+		"Reads and changes a site's shipping configuration, calculates its shipping fees and finds the "+
+			"sites that ship to a postal code. Every command but find-sites requires --site; for an "+
 			"unknown site, the lists show nothing and the quotes fail.",
 		newShippingZonesCommand(a), newShippingGroupsCommand(a), newShippingCustomersCommand(a),
 		newShippingQuoteCommand(a), newShippingMinimumQuoteCommand(a), newShippingSlotQuoteCommand(a),
@@ -101,8 +101,8 @@ func newShippingZonesCommand(a *app) *cobra.Command {
 		use:   "zones",
 		noun:  "shipping zones",
 		short: "Read and change shipping zones and their methods",
-		long: "Reads the shipping zones of a site. SHIPS TO lists the countries of the zone, each with\n" +
-			"its postal codes when they are limited (a trailing * matches every code that starts that\n" +
+		long: "Reads the shipping zones of a site. SHIPS TO lists the countries of the zone, each with " +
+			"its postal codes when they are limited (a trailing * matches every code that starts that " +
 			"way).",
 		about: "Reads and changes the shipping zones of a site and the shipping methods of a zone.",
 		under: "shipping",
@@ -140,7 +140,7 @@ func newShippingMethodsCommand(a *app, zones resource[shippingZone]) *cobra.Comm
 			singular:  "shipping method",
 			header:    []string{columnID, columnName, columnActive, "FEES", "MAX ORDER", columnTaxCode, columnGroup},
 			localized: true,
-			legend: "FEES lists each fee as its cost from a minimum order value, with the shipping group it is\n" +
+			legend: "FEES lists each fee as its cost from a minimum order value, with the shipping group it is " +
 				"limited to in parentheses; MAX ORDER is the highest order value the method accepts.",
 			row: func(m shippingMethod, lang language) []string {
 				return []string{
@@ -169,10 +169,10 @@ func newShippingGroupsCommand(a *app) *cobra.Command {
 		use:   groupsUse,
 		noun:  "shipping groups",
 		short: "Read and change shipping groups",
-		long: "Reads the shipping groups of a site, which limit shipping fees to the customers assigned\n" +
-			"to them (`epx shipping customers`). Emporix answers an unknown group with 409 Conflict, so\n" +
+		long: "Reads the shipping groups of a site, which limit shipping fees to the customers assigned " +
+			"to them (`epx shipping customers`). Emporix answers an unknown group with 409 Conflict, so " +
 			"get fails with exit code 1.",
-		about: "Reads and changes the shipping groups of a site, which limit shipping fees to the customers\n" +
+		about: "Reads and changes the shipping groups of a site, which limit shipping fees to the customers " +
 			"assigned to them (`epx shipping customers`).",
 		path: shippingPath("groups"),
 		read: (*emporix.Client).GetUnpaged,
@@ -193,8 +193,8 @@ func newShippingCustomersCommand(a *app) *cobra.Command {
 		use:   customersCommand,
 		noun:  "shipping groups of customers",
 		short: "Read and change which shipping group each customer belongs to",
-		long: "Reads which shipping group each customer of a site belongs to. CUSTOMER is the customer\n" +
-			"id. Emporix answers a customer without a shipping group with an empty response, so get\n" +
+		long: "Reads which shipping group each customer of a site belongs to. CUSTOMER is the customer " +
+			"id. Emporix answers a customer without a shipping group with an empty response, so get " +
 			"reports it as not found.",
 		about: "Reads and changes which shipping group each customer of a site belongs to.",
 		path:  shippingPath("cgrelations"), // customer-group relations

@@ -48,14 +48,14 @@ func customers() resource[customer] {
 	return resource[customer]{
 		use:   customersCommand,
 		short: "Read and change customers and their addresses",
-		about: "Reads and changes customer profiles, personal data included, and their addresses,\n" +
-			"imports customers with their passwords and sets until when imported passwords are\n" +
+		about: "Reads and changes customer profiles, personal data included, and their addresses, " +
+			"imports customers with their passwords and sets until when imported passwords are " +
 			"migrated.",
-		long: "Reads customer profiles, personal data included. NUMBER is the customer number that get\n" +
-			"takes, EMAIL the contact email (that of the account, with which the customer signs in,\n" +
-			"may differ), BUSINESS MODEL is B2B (assigned to a company) or B2C, and ON HOLD marks a\n" +
-			"suspended profile. B2B data and the default address are only in -o json; Emporix leaves\n" +
-			"out a profile's addresses, accounts and mixins unless asked to expand them, which epx\n" +
+		long: "Reads customer profiles, personal data included. NUMBER is the customer number that get " +
+			"takes, EMAIL the contact email (that of the account, with which the customer signs in, " +
+			"may differ), BUSINESS MODEL is B2B (assigned to a company) or B2C, and ON HOLD marks a " +
+			"suspended profile. B2B data and the default address are only in -o json; Emporix leaves " +
+			"out a profile's addresses, accounts and mixins unless asked to expand them, which epx " +
 			"does not: `epx customers addresses list` lists the addresses.",
 		path:    "/customer/{tenant}/customers",
 		scopes:  []string{customerReadScope},
@@ -82,7 +82,7 @@ func newCustomersCommand(a *app) *cobra.Command {
 	profiles := customers()
 	reads := []*cobra.Command{
 		newCustomerAddressesCommand(a, profiles), newPasswordMigrationCommand(a), profiles.searchCommand(a,
-			"Reads the customer profiles, personal data included, that an Emporix q filter finds\n"+
+			"Reads the customer profiles, personal data included, that an Emporix q filter finds "+
 				"(--query; without it, every profile).", queryField()),
 	}
 	return newResourceCommand(a, profiles, slices.Concat(reads, customerWrites(a, profiles))...)
@@ -105,7 +105,7 @@ func newCustomerAddressesCommand(a *app, customers resource[customer]) *cobra.Co
 			header: []string{
 				columnID, "CONTACT", columnCompany, "STREET", "ZIP", "CITY", columnCountry, columnDefault, "TAGS",
 			},
-			legend: "DEFAULT marks the default address; TAGS are labels such as BILLING or SHIPPING. Phone\n" +
+			legend: "DEFAULT marks the default address; TAGS are labels such as BILLING or SHIPPING. Phone " +
 				"numbers, states and extra address lines are only in -o json.",
 			row: func(d customerAddress, _ language) []string {
 				return []string{

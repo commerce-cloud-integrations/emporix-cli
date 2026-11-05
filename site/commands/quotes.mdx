@@ -6,15 +6,9 @@ description: "Read, create and change quotes, their PDF, history and reasons."
 
 ## epx quotes
 
-Reads quotes, personal data included. STATUS is CREATING, AWAITING, OPEN, IN\_PROGRESS,
-ACCEPTED, DECLINED, DECLINED\_BY\_MERCHANT or EXPIRED, CUSTOMER the customer it is for (email,
-name or customer id), and TOTAL the gross total in the quote's currency. Items, prices,
-addresses and comments are only in `-o json`.
-[`epx quotes reasons`](/commands/quotes#epx-quotes-reasons) lists the reasons for changing or declining a quote.
-[`epx quotes create`](/commands/quotes#epx-quotes-create), `patch` and `delete` change quotes; `pdf` saves a quote's PDF.
+Reads quotes, personal data included. STATUS is CREATING, AWAITING, OPEN, IN\_PROGRESS, ACCEPTED, DECLINED, DECLINED\_BY\_MERCHANT or EXPIRED, CUSTOMER the customer it is for (email, name or customer id), and TOTAL the gross total in the quote's currency. Items, prices, addresses and comments are only in `-o json`. [`epx quotes reasons`](/commands/quotes#epx-quotes-reasons) lists the reasons for changing or declining a quote. [`epx quotes create`](/commands/quotes#epx-quotes-create), `patch` and `delete` change quotes; `pdf` saves a quote's PDF.
 
-Its reads require the quote.quote\_read scope.
-Its writes require the quote.quote\_manage scope.
+Its reads require the quote.quote\_read scope. Its writes require the quote.quote\_manage scope.
 
 **Command:** `epx quotes [flags]`, `epx quotes [command]`
 
@@ -43,19 +37,9 @@ Its writes require the quote.quote\_manage scope.
 
 Create a quote.
 
-Creates a quote from the JSON object in `--file`: a whole quote, with customerId (or
-customerEmail), siteCode, currency, billingAddressId, shippingAddressId and items (each
-with its product, price and quantity), or a cart's, with its cartId and optionally the
-addresses and shipping. Without an id, Emporix makes one; it answers with the quote's id.
-A quote made from a cart closes the cart (status CLOSED, with the quoteId): Emporix then
-answers its reads and its delete as not found (exit 4), while [`epx carts search`](/commands/carts#epx-carts-search) lists it.
-Without `--allow-external-prices`, Emporix refuses an item with price type EXTERNAL with 400
-Bad Request (exit 1). It fails with 500 Internal Server Error (exit 1) on a cart without
-items, and answers a product that is not published as not found (exit 4).
+Creates a quote from the JSON object in `--file`: a whole quote, with customerId (or customerEmail), siteCode, currency, billingAddressId, shippingAddressId and items (each with its product, price and quantity), or a cart's, with its cartId and optionally the addresses and shipping. Without an id, Emporix makes one; it answers with the quote's id. A quote made from a cart closes the cart (status CLOSED, with the quoteId): Emporix then answers its reads and its delete as not found (exit 4), while [`epx carts search`](/commands/carts#epx-carts-search) lists it. Without `--allow-external-prices`, Emporix refuses an item with price type EXTERNAL with 400 Bad Request (exit 1). It fails with 500 Internal Server Error (exit 1) on a cart without items, and answers a product that is not published as not found (exit 4).
 
-Changes data: on a terminal, epx asks before it sends POST. `--yes` sends without
-asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
-instead of sending it.
+Changes data: on a terminal, epx asks before it sends POST. `--yes` sends without asking (required without a terminal, or with `--file` -); `--dry-run` prints the request instead of sending it.
 
 `--allow-external-prices` also requests the cart.cart\_manage\_external\_prices scope.
 
@@ -82,14 +66,9 @@ Also takes the [global flags](/commands#global-flags).
 
 Delete one quote.
 
-Deletes the quote ID; it sends no body.
-Emporix answers an unknown ID as one that it deleted (204 No Content).
-ID is the ID that [`epx quotes list`](/commands/quotes#epx-quotes-list) shows.
+Deletes the quote ID; it sends no body. Emporix answers an unknown ID as one that it deleted (204 No Content). ID is the ID that [`epx quotes list`](/commands/quotes#epx-quotes-list) shows.
 
-Deletes data, which cannot be undone.
-On a terminal, epx sends DELETE only once you type ID at its prompt.
-`--yes` sends without asking (required without a terminal);
-`--dry-run` prints the request instead of sending it.
+Deletes data, which cannot be undone. On a terminal, epx sends DELETE only once you type ID at its prompt. `--yes` sends without asking (required without a terminal); `--dry-run` prints the request instead of sending it.
 
 Requires the quote.quote\_manage scope.
 
@@ -110,12 +89,7 @@ Also takes the [global flags](/commands#global-flags).
 
 Show one quote.
 
-Reads quotes, personal data included. STATUS is CREATING, AWAITING, OPEN, IN\_PROGRESS,
-ACCEPTED, DECLINED, DECLINED\_BY\_MERCHANT or EXPIRED, CUSTOMER the customer it is for (email,
-name or customer id), and TOTAL the gross total in the quote's currency. Items, prices,
-addresses and comments are only in `-o json`.
-[`epx quotes reasons`](/commands/quotes#epx-quotes-reasons) lists the reasons for changing or declining a quote.
-[`epx quotes create`](/commands/quotes#epx-quotes-create), `patch` and `delete` change quotes; `pdf` saves a quote's PDF.
+Reads quotes, personal data included. STATUS is CREATING, AWAITING, OPEN, IN\_PROGRESS, ACCEPTED, DECLINED, DECLINED\_BY\_MERCHANT or EXPIRED, CUSTOMER the customer it is for (email, name or customer id), and TOTAL the gross total in the quote's currency. Items, prices, addresses and comments are only in `-o json`. [`epx quotes reasons`](/commands/quotes#epx-quotes-reasons) lists the reasons for changing or declining a quote. [`epx quotes create`](/commands/quotes#epx-quotes-create), `patch` and `delete` change quotes; `pdf` saves a quote's PDF.
 
 Requires the quote.quote\_read scope.
 
@@ -136,10 +110,7 @@ Also takes the [global flags](/commands#global-flags).
 
 List the changes of a quote.
 
-Reads the history of a quote, personal data included: when (MODIFIED), by whom (BY: user
-type and name) and what changed (CHANGE: the operation and the changed part). Old and new
-values are only in `-o json`. Emporix sends the whole history in one response.
-QUOTE\_ID is the ID that [`epx quotes list`](/commands/quotes#epx-quotes-list) shows; an unknown one is not found.
+Reads the history of a quote, personal data included: when (MODIFIED), by whom (BY: user type and name) and what changed (CHANGE: the operation and the changed part). Old and new values are only in `-o json`. Emporix sends the whole history in one response. QUOTE\_ID is the ID that [`epx quotes list`](/commands/quotes#epx-quotes-list) shows; an unknown one is not found.
 
 Requires the quote.quote\_read scope.
 
@@ -164,12 +135,7 @@ Also takes the [global flags](/commands#global-flags).
 
 List quotes.
 
-Reads quotes, personal data included. STATUS is CREATING, AWAITING, OPEN, IN\_PROGRESS,
-ACCEPTED, DECLINED, DECLINED\_BY\_MERCHANT or EXPIRED, CUSTOMER the customer it is for (email,
-name or customer id), and TOTAL the gross total in the quote's currency. Items, prices,
-addresses and comments are only in `-o json`.
-[`epx quotes reasons`](/commands/quotes#epx-quotes-reasons) lists the reasons for changing or declining a quote.
-[`epx quotes create`](/commands/quotes#epx-quotes-create), `patch` and `delete` change quotes; `pdf` saves a quote's PDF.
+Reads quotes, personal data included. STATUS is CREATING, AWAITING, OPEN, IN\_PROGRESS, ACCEPTED, DECLINED, DECLINED\_BY\_MERCHANT or EXPIRED, CUSTOMER the customer it is for (email, name or customer id), and TOTAL the gross total in the quote's currency. Items, prices, addresses and comments are only in `-o json`. [`epx quotes reasons`](/commands/quotes#epx-quotes-reasons) lists the reasons for changing or declining a quote. [`epx quotes create`](/commands/quotes#epx-quotes-create), `patch` and `delete` change quotes; `pdf` saves a quote's PDF.
 
 Requires the quote.quote\_read scope.
 
@@ -198,18 +164,9 @@ Also takes the [global flags](/commands#global-flags).
 
 Change a quote.
 
-Changes the quote ID with the operations in `--file`: a JSON array of operations, each
-with op (ADD, REMOVE or REPLACE), path (such as /status, /validTo, /items or
-/items/ITEM\_ID) and value, e.g.
-`[{"op": "REPLACE", "path": "/status", "value": {"value": "OPEN"}}]`. Emporix completes
-the prices and product names of items from their ids afterwards. Emporix refuses to add
-or replace an item with price type EXTERNAL with 400 Bad Request (exit 1), also with
-cart.cart\_manage\_external\_prices (create accepts one).
-ID is the ID that [`epx quotes list`](/commands/quotes#epx-quotes-list) shows.
+Changes the quote ID with the operations in `--file`: a JSON array of operations, each with op (ADD, REMOVE or REPLACE), path (such as /status, /validTo, /items or /items/ITEM\_ID) and value, e.g. `[{"op": "REPLACE", "path": "/status", "value": {"value": "OPEN"}}]`. Emporix completes the prices and product names of items from their ids afterwards. Emporix refuses to add or replace an item with price type EXTERNAL with 400 Bad Request (exit 1), also with cart.cart\_manage\_external\_prices (create accepts one). ID is the ID that [`epx quotes list`](/commands/quotes#epx-quotes-list) shows.
 
-Changes data: on a terminal, epx asks before it sends PATCH. `--yes` sends without
-asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
-instead of sending it.
+Changes data: on a terminal, epx asks before it sends PATCH. `--yes` sends without asking (required without a terminal, or with `--file` -); `--dry-run` prints the request instead of sending it.
 
 Requires the quote.quote\_manage scope.
 
@@ -232,17 +189,9 @@ Also takes the [global flags](/commands#global-flags).
 
 Save the PDF of a quote.
 
-Reads the PDF of the quote QUOTE\_ID; an unknown quote is not found (exit 4).
-QUOTE\_ID is the ID that [`epx quotes list`](/commands/quotes#epx-quotes-list) shows.
-In a `--language` for which a product has no name, the PDF shows the template variable
-$quoteitem.productName in its place; a language that the tenant does not configure is
-answered in English, not refused.
+Reads the PDF of the quote QUOTE\_ID; an unknown quote is not found (exit 4). QUOTE\_ID is the ID that [`epx quotes list`](/commands/quotes#epx-quotes-list) shows. In a `--language` for which a product has no name, the PDF shows the template variable $quoteitem.productName in its place; a language that the tenant does not configure is answered in English, not refused.
 
-Changes nothing: Emporix serves this read as POST with no body.
-Emporix answers with the PDF, which epx saves to the file that `--out` names (readable by
-its owner only; a file there is replaced, but not a directory, device or link), or writes to
-standard output with `--out` -, unless that is a terminal. An answer that is no PDF fails
-(exit 1), and nothing is saved.
+Changes nothing: Emporix serves this read as POST with no body. Emporix answers with the PDF, which epx saves to the file that `--out` names (readable by its owner only; a file there is replaced, but not a directory, device or link), or writes to standard output with `--out` -, unless that is a terminal. An answer that is no PDF fails (exit 1), and nothing is saved.
 
 Requires the quote.quote\_read scope.
 
@@ -268,12 +217,9 @@ epx quotes pdf Q1001 --out - | lpr
 
 Read, create, change and delete quote reasons.
 
-Reads the reasons a customer or employee can give when asking for changes to a quote
-(TYPE CHANGE) or declining it (DECLINE), and their MESSAGE.
-[`epx quotes reasons create`](/commands/quotes#epx-quotes-reasons-create), `update` and `delete` change them.
+Reads the reasons a customer or employee can give when asking for changes to a quote (TYPE CHANGE) or declining it (DECLINE), and their MESSAGE. [`epx quotes reasons create`](/commands/quotes#epx-quotes-reasons-create), `update` and `delete` change them.
 
-Its reads require the quote.quote\_read scope.
-Its writes require the quote.quote\_manage scope.
+Its reads require the quote.quote\_read scope. Its writes require the quote.quote\_manage scope.
 
 **Command:** `epx quotes reasons [flags]`, `epx quotes reasons [command]`
 
@@ -296,17 +242,11 @@ Its writes require the quote.quote\_manage scope.
 
 Create a quote reason.
 
-Creates the quote reason in `--file`: its type (CHANGE or DECLINE), code and message, and
-optionally an id, which Emporix makes otherwise; it answers with the id. A reason with the
-id exists already: a conflict (exit 5).
+Creates the quote reason in `--file`: its type (CHANGE or DECLINE), code and message, and optionally an id, which Emporix makes otherwise; it answers with the id. A reason with the id exists already: a conflict (exit 5).
 
-Localized text in the body is a map of translations, e.g. `{"en": "Acme", "de": "Acme"}`,
-as `-o json` of a read prints it, sent with Content-Language: \*. Emporix refuses a string in
-its place.
+Localized text in the body is a map of translations, e.g. `{"en": "Acme", "de": "Acme"}`, as `-o json` of a read prints it, sent with Content-Language: \*. Emporix refuses a string in its place.
 
-Changes data: on a terminal, epx asks before it sends POST. `--yes` sends without
-asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
-instead of sending it.
+Changes data: on a terminal, epx asks before it sends POST. `--yes` sends without asking (required without a terminal, or with `--file` -); `--dry-run` prints the request instead of sending it.
 
 Requires the quote.quote\_manage scope.
 
@@ -329,14 +269,9 @@ Also takes the [global flags](/commands#global-flags).
 
 Delete one quote reason.
 
-Deletes the quote reason ID; it sends no body.
-Emporix answers an unknown ID as one that it deleted (204 No Content).
-ID is the ID that [`epx quotes reasons list`](/commands/quotes#epx-quotes-reasons-list) shows.
+Deletes the quote reason ID; it sends no body. Emporix answers an unknown ID as one that it deleted (204 No Content). ID is the ID that [`epx quotes reasons list`](/commands/quotes#epx-quotes-reasons-list) shows.
 
-Deletes data, which cannot be undone.
-On a terminal, epx sends DELETE only once you type ID at its prompt.
-`--yes` sends without asking (required without a terminal);
-`--dry-run` prints the request instead of sending it.
+Deletes data, which cannot be undone. On a terminal, epx sends DELETE only once you type ID at its prompt. `--yes` sends without asking (required without a terminal); `--dry-run` prints the request instead of sending it.
 
 Requires the quote.quote\_manage scope.
 
@@ -357,9 +292,7 @@ Also takes the [global flags](/commands#global-flags).
 
 Show one quote reason.
 
-Reads the reasons a customer or employee can give when asking for changes to a quote
-(TYPE CHANGE) or declining it (DECLINE), and their MESSAGE.
-[`epx quotes reasons create`](/commands/quotes#epx-quotes-reasons-create), `update` and `delete` change them.
+Reads the reasons a customer or employee can give when asking for changes to a quote (TYPE CHANGE) or declining it (DECLINE), and their MESSAGE. [`epx quotes reasons create`](/commands/quotes#epx-quotes-reasons-create), `update` and `delete` change them.
 
 Requires the quote.quote\_read scope.
 
@@ -382,9 +315,7 @@ Also takes the [global flags](/commands#global-flags).
 
 List quote reasons.
 
-Reads the reasons a customer or employee can give when asking for changes to a quote
-(TYPE CHANGE) or declining it (DECLINE), and their MESSAGE.
-[`epx quotes reasons create`](/commands/quotes#epx-quotes-reasons-create), `update` and `delete` change them.
+Reads the reasons a customer or employee can give when asking for changes to a quote (TYPE CHANGE) or declining it (DECLINE), and their MESSAGE. [`epx quotes reasons create`](/commands/quotes#epx-quotes-reasons-create), `update` and `delete` change them.
 
 Requires the quote.quote\_read scope.
 
@@ -415,19 +346,11 @@ Also takes the [global flags](/commands#global-flags).
 
 Replace a quote reason.
 
-Replaces the quote reason ID with the one in `--file`: its type, code, message and
-metadata.version, as [`epx quotes reasons get ID -o json`](/commands/quotes#epx-quotes-reasons-get) prints it. Emporix changes only
-that version of the reason and answers an older one with 409 Conflict (exit 5); an
-unknown reason is not found (exit 4).
-ID is the ID that [`epx quotes reasons list`](/commands/quotes#epx-quotes-reasons-list) shows.
+Replaces the quote reason ID with the one in `--file`: its type, code, message and metadata.version, as [`epx quotes reasons get ID -o json`](/commands/quotes#epx-quotes-reasons-get) prints it. Emporix changes only that version of the reason and answers an older one with 409 Conflict (exit 5); an unknown reason is not found (exit 4). ID is the ID that [`epx quotes reasons list`](/commands/quotes#epx-quotes-reasons-list) shows.
 
-Localized text in the body is a map of translations, e.g. `{"en": "Acme", "de": "Acme"}`,
-as `-o json` of a read prints it, sent with Content-Language: \*. Emporix refuses a string in
-its place.
+Localized text in the body is a map of translations, e.g. `{"en": "Acme", "de": "Acme"}`, as `-o json` of a read prints it, sent with Content-Language: \*. Emporix refuses a string in its place.
 
-Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without
-asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
-instead of sending it.
+Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without asking (required without a terminal, or with `--file` -); `--dry-run` prints the request instead of sending it.
 
 Requires the quote.quote\_manage scope.
 

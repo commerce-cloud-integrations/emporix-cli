@@ -69,7 +69,7 @@ func (b builtInTypes) kinds() string {
 // clause says, for help, that subject, such as TYPE, is what kinds says,
 // and where the IDs of the custom entity types are; a sentence ends it.
 func (b builtInTypes) clause(subject string) string {
-	return subject + " is " + b.kinds() + ",\nwhose ID `epx custom-entities list` shows"
+	return subject + " is " + b.kinds() + ", whose ID `epx custom-entities list` shows"
 }
 
 // sentence says, for help, what a type is (clause).
@@ -115,10 +115,9 @@ func (b builtInTypes) fill(scopes []string, typ string) []string {
 
 // inPlaceOf returns a note on typed, the scopes of a command that name a
 // custom entity type (typedScopes), in place of which it requests, for one of
-// b's types, that type's own (fill): a new line naming, one type per line,
-// the scopes that each type with scopes of its own requests in place of
-// typed; nothing where no type of b requests scopes of its own or typed is
-// empty.
+// b's types, that type's own (fill): a sentence naming, type by type, the
+// scopes that each type with scopes of its own requests in place of typed;
+// nothing where no type of b requests scopes of its own or typed is empty.
 func (b builtInTypes) inPlaceOf(typed []string) string {
 	var each []string
 	for _, t := range b.types {
@@ -129,7 +128,7 @@ func (b builtInTypes) inPlaceOf(typed []string) string {
 	if len(typed) == 0 || len(each) == 0 {
 		return ""
 	}
-	return "\nIn place of " + strings.Join(typed, ", ") + ", " + strings.Join(each, ";\n") + "."
+	return "In place of " + strings.Join(typed, ", ") + ", " + strings.Join(each, "; ") + "."
 }
 
 // withoutScopes returns b's types, as b takes them, without scopes of their

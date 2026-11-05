@@ -6,12 +6,9 @@ description: "Read and change vendors."
 
 ## epx vendors
 
-Reads and changes vendors, the sellers of a marketplace tenant; [`epx vendor-locations`](/commands/vendor-locations#epx-vendor-locations)
-reads and changes their locations.
-create and update ID (an upsert) send the JSON body of `--file`; delete ID sends none.
+Reads and changes vendors, the sellers of a marketplace tenant; [`epx vendor-locations`](/commands/vendor-locations#epx-vendor-locations) reads and changes their locations. create and update ID (an upsert) send the JSON body of `--file`; delete ID sends none.
 
-Its reads require the vendor.vendor\_read scope.
-Its writes require the vendor.vendor\_manage scope.
+Its reads require the vendor.vendor\_read scope. Its writes require the vendor.vendor\_manage scope.
 
 **Command:** `epx vendors [flags]`, `epx vendors [command]`
 
@@ -36,19 +33,9 @@ Its writes require the vendor.vendor\_manage scope.
 
 Create one vendor.
 
-Creates the vendor that the JSON body of `--file` describes, shaped as
-[`epx vendors get ID -o json`](/commands/vendors#epx-vendors-get) prints one:
-name (required), type (COMPANY, the default, or SUBSIDIARY), parentId (the vendor a
-subsidiary belongs to), legalInfo, contactDetails (a list of contacts, each as
-`{"email": ...}`, which is all Emporix keeps of one), locations (its vendor locations, each
-as `{"id": ...}` or in full, as get prints it) and mixins; parentId and locations must name
-items that exist (400 Bad Request, exit 1, otherwise).
-Without an id, Emporix makes one, and answers with it; an id that exists already is a
-conflict (exit 5).
+Creates the vendor that the JSON body of `--file` describes, shaped as [`epx vendors get ID -o json`](/commands/vendors#epx-vendors-get) prints one: name (required), type (COMPANY, the default, or SUBSIDIARY), parentId (the vendor a subsidiary belongs to), legalInfo, contactDetails (a list of contacts, each as `{"email": ...}`, which is all Emporix keeps of one), locations (its vendor locations, each as `{"id": ...}` or in full, as get prints it) and mixins; parentId and locations must name items that exist (400 Bad Request, exit 1, otherwise). Without an id, Emporix makes one, and answers with it; an id that exists already is a conflict (exit 5).
 
-Changes data: on a terminal, epx asks before it sends POST. `--yes` sends without
-asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
-instead of sending it.
+Changes data: on a terminal, epx asks before it sends POST. `--yes` sends without asking (required without a terminal, or with `--file` -); `--dry-run` prints the request instead of sending it.
 
 Requires the vendor.vendor\_manage scope.
 
@@ -71,14 +58,9 @@ Also takes the [global flags](/commands#global-flags).
 
 Delete one vendor.
 
-Deletes the vendor ID; it sends no body.
-ID is the ID that [`epx vendors list`](/commands/vendors#epx-vendors-list) shows; an unknown one is answered as one that Emporix deleted (204 No Content).
-Its subsidiaries stay and still name it as their parentId.
+Deletes the vendor ID; it sends no body. ID is the ID that [`epx vendors list`](/commands/vendors#epx-vendors-list) shows; an unknown one is answered as one that Emporix deleted (204 No Content). Its subsidiaries stay and still name it as their parentId.
 
-Deletes data, which cannot be undone.
-On a terminal, epx sends DELETE only once you type ID at its prompt.
-`--yes` sends without asking (required without a terminal);
-`--dry-run` prints the request instead of sending it.
+Deletes data, which cannot be undone. On a terminal, epx sends DELETE only once you type ID at its prompt. `--yes` sends without asking (required without a terminal); `--dry-run` prints the request instead of sending it.
 
 Requires the vendor.vendor\_manage scope.
 
@@ -99,10 +81,7 @@ Also takes the [global flags](/commands#global-flags).
 
 Show one vendor.
 
-Reads vendors, the sellers of a marketplace tenant. TYPE is COMPANY or SUBSIDIARY, PARENT
-the vendor a subsidiary belongs to and COUNTRY the country of registration. Registration
-details, contact details and locations are only in `-o json`; [`epx vendor-locations`](/commands/vendor-locations#epx-vendor-locations) lists
-the locations.
+Reads vendors, the sellers of a marketplace tenant. TYPE is COMPANY or SUBSIDIARY, PARENT the vendor a subsidiary belongs to and COUNTRY the country of registration. Registration details, contact details and locations are only in `-o json`; [`epx vendor-locations`](/commands/vendor-locations#epx-vendor-locations) lists the locations.
 
 Requires the vendor.vendor\_read scope.
 
@@ -123,10 +102,7 @@ Also takes the [global flags](/commands#global-flags).
 
 List vendors.
 
-Reads vendors, the sellers of a marketplace tenant. TYPE is COMPANY or SUBSIDIARY, PARENT
-the vendor a subsidiary belongs to and COUNTRY the country of registration. Registration
-details, contact details and locations are only in `-o json`; [`epx vendor-locations`](/commands/vendor-locations#epx-vendor-locations) lists
-the locations.
+Reads vendors, the sellers of a marketplace tenant. TYPE is COMPANY or SUBSIDIARY, PARENT the vendor a subsidiary belongs to and COUNTRY the country of registration. Registration details, contact details and locations are only in `-o json`; [`epx vendor-locations`](/commands/vendor-locations#epx-vendor-locations) lists the locations.
 
 Requires the vendor.vendor\_read scope.
 
@@ -155,11 +131,9 @@ Also takes the [global flags](/commands#global-flags).
 
 Search vendors.
 
-Reads the vendors that an Emporix q filter finds (`--query`; without it, every vendor).
-It reads and shows them as [`epx vendors list`](/commands/vendors#epx-vendors-list) does.
+Reads the vendors that an Emporix q filter finds (`--query`; without it, every vendor). It reads and shows them as [`epx vendors list`](/commands/vendors#epx-vendors-list) does.
 
-Changes nothing: Emporix serves this read as POST with a JSON body, which the
-flags make or `--body` gives whole.
+Changes nothing: Emporix serves this read as POST with a JSON body, which the flags make or `--body` gives whole.
 
 Requires the vendor.vendor\_read scope.
 
@@ -190,17 +164,9 @@ Also takes the [global flags](/commands#global-flags).
 
 Upsert one vendor.
 
-Replaces the vendor ID with the JSON body of `--file`, shaped as create takes it
-but without an id, or creates it with that id where none exists (an upsert); it requires
-name and type.
-With metadata.version as [`epx vendors get ID -o json`](/commands/vendors#epx-vendors-get) prints it, Emporix
-replaces it only if nobody changed it since, and answers 409 Conflict (exit 5) otherwise;
-without metadata.version, it replaces it whatever its version.
-ID is the ID that [`epx vendors list`](/commands/vendors#epx-vendors-list) shows.
+Replaces the vendor ID with the JSON body of `--file`, shaped as create takes it but without an id, or creates it with that id where none exists (an upsert); it requires name and type. With metadata.version as [`epx vendors get ID -o json`](/commands/vendors#epx-vendors-get) prints it, Emporix replaces it only if nobody changed it since, and answers 409 Conflict (exit 5) otherwise; without metadata.version, it replaces it whatever its version. ID is the ID that [`epx vendors list`](/commands/vendors#epx-vendors-list) shows.
 
-Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without
-asking (required without a terminal, or with `--file` -); `--dry-run` prints the request
-instead of sending it.
+Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without asking (required without a terminal, or with `--file` -); `--dry-run` prints the request instead of sending it.
 
 Requires the vendor.vendor\_manage scope.
 

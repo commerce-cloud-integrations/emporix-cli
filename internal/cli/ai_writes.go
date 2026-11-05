@@ -28,7 +28,7 @@ const removeFromAgents = "delete it even where agents use it"
 // what uses it.
 type aiItemWrites struct {
 	one      string       // the item with its article in summaries, e.g. "an MCP server"
-	members  string       // what the JSON of update holds: sentences, each line ending with a line break
+	members  string       // what the JSON of update holds: sentences
 	language languageMode // whether its body holds localized text, as an agent's does, and how it is sent
 	disable  string       // the usage of --force of update and patch (whom disabling it disables); none when empty
 	remove   string       // the usage of --force of delete (whom deleting it unassigns it from)
@@ -51,25 +51,25 @@ func aiItemWriteCommands[T any](a *app, r resource[T], w aiItemWrites) []*cobra.
 	id := r.header[:1]
 	source := r.header[0] + " is the " + r.header[0] + " that `epx " + r.listLine() + "` shows."
 	read := "`epx " + r.commandLine(r.itemUse("get"), r.itemRequest()) + " -o json`"
-	remove := itemDelete(r, "Delete "+w.one, "Deletes "+the+". Emporix refuses to delete one that others use, unless\n"+
-		"--force unassigns it from them.\n"+source, scopes)
+	remove := itemDelete(r, "Delete "+w.one, "Deletes "+the+". Emporix refuses to delete one that others use, unless "+
+		"--force unassigns it from them. "+source, scopes)
 	remove.switches = forceSwitch(w.remove)
 	return []*cobra.Command{
 		(&write{
 			use: r.itemUse("update"), short: "Upsert " + w.one, method: http.MethodPut,
-			long: "Replaces " + the + " with the JSON in --file, or creates it with that ID where\n" +
-				"none exists (an upsert): Emporix answers with the id of one it created and nothing for one it\n" +
-				"replaced. With metadata.version, as " + read + " prints it,\n" +
-				"Emporix replaces only that version: another is a conflict (exit 5).\n" + w.members + source,
+			long: joinSentences("Replaces "+the+" with the JSON in --file, or creates it with that ID where "+
+				"none exists (an upsert): Emporix answers with the id of one it created and nothing for one it "+
+				"replaced. With metadata.version, as "+read+" prints it, "+
+				"Emporix replaces only that version: another is a conflict (exit 5).", w.members, source),
 			req: item, scopes: scopes, body: &payload{}, language: w.language, switches: forceSwitch(w.disable),
 			ids: r.itemIDs(),
 		}).command(a),
 		(&write{
 			use: r.itemUse("patch"), short: "Change members of " + w.one, method: http.MethodPatch,
-			long: "Changes " + the + " with the JSON array of operations in --file, each with op\n" +
-				"(ADD, REMOVE or REPLACE), path and value, e.g.\n" +
-				`[{"op": "REPLACE", "path": "/enabled", "value": false}]; its other members keep their` + "\n" +
-				"values.\n" + itemSentence(id, id, r.listLine()),
+			long: "Changes " + the + " with the JSON array of operations in --file, each with op " +
+				"(ADD, REMOVE or REPLACE), path and value, e.g. " +
+				`[{"op": "REPLACE", "path": "/enabled", "value": false}]; its other members keep their values. ` +
+				itemSentence(id, id, r.listLine()),
 			req: item, scopes: scopes, body: operationsFile(), switches: forceSwitch(w.disable), ids: r.itemIDs(),
 		}).command(a),
 		remove.command(a),
@@ -94,8 +94,8 @@ func agentWrites(a *app) []*cobra.Command {
 		(&write{
 			use:   "create TEMPLATE_ID",
 			short: "Create an agent from a template",
-			long: "Creates an agent from the agent template TEMPLATE_ID, the ID that `epx ai templates list`\n" +
-				"shows, which must be enabled, with the JSON in --file: its name and description, its\n" +
+			long: "Creates an agent from the agent template TEMPLATE_ID, the ID that `epx ai templates list` " +
+				"shows, which must be enabled, with the JSON in --file: its name and description, its " +
 				"userPrompt and, optionally, its id. Emporix answers with the id of the agent.",
 			example: "  epx ai agents create complaint-template --file agent.json --dry-run",
 			method:  http.MethodPost,
@@ -106,9 +106,9 @@ func agentWrites(a *app) []*cobra.Command {
 		(&write{
 			use:   "export",
 			short: "Export agents, which creates an export job",
-			long: "Exports the agents that --agent names (up to 100) with the tools and MCP servers they use,\n" +
-				"and prints the export: data, the agents base64-encoded, and its checksum, which\n" +
-				"`epx ai agents import` takes on another tenant. Emporix keeps each export as a job of type\n" +
+			long: "Exports the agents that --agent names (up to 100) with the tools and MCP servers they use, " +
+				"and prints the export: data, the agents base64-encoded, and its checksum, which " +
+				"`epx ai agents import` takes on another tenant. Emporix keeps each export as a job of type " +
 				"EXPORT, the jobId of the response, which `epx ai jobs get JOB_ID` reads.",
 			example: "  epx ai agents export --agent complaint-agent --yes > agents.json",
 			method:  http.MethodPost,
@@ -122,9 +122,9 @@ func agentWrites(a *app) []*cobra.Command {
 		(&write{
 			use:   importUse,
 			short: "Import agents",
-			long: "Imports the agents of an export, with the tools and MCP servers they use, from the JSON in\n" +
-				"--file: the data and checksum that `epx ai agents export` prints, which Emporix checks.\n" +
-				"Imported agents start disabled; Emporix answers with what it imported and the jobId of the\n" +
+			long: "Imports the agents of an export, with the tools and MCP servers they use, from the JSON in " +
+				"--file: the data and checksum that `epx ai agents export` prints, which Emporix checks. " +
+				"Imported agents start disabled; Emporix answers with what it imported and the jobId of the " +
 				"IMPORT job that it keeps (`epx ai jobs get JOB_ID`).",
 			example: "  epx ai agents import --file agents.json --dry-run",
 			method:  http.MethodPost,
@@ -138,6 +138,6 @@ func agentWrites(a *app) []*cobra.Command {
 // aiJobDelete deletes a job of jobs.
 func aiJobDelete(jobs resource[aiJob]) *write {
 	id := jobs.header[:1]
-	return itemDelete(jobs, "Delete an agent job", "Deletes the agent job ID.\n"+itemSentence(id, id, jobs.listLine()),
+	return itemDelete(jobs, "Delete an agent job", "Deletes the agent job ID. "+itemSentence(id, id, jobs.listLine()),
 		[]string{aiManageScope})
 }

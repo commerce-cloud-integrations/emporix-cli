@@ -13,19 +13,19 @@ import (
 // completions and chats with agents, and the attachments of a chat.
 
 // openAICredits says what text generation and completions consume.
-const openAICredits = "It consumes AI credits: the LLM tokens of the tenant's own OpenAI account where the tenant\n" +
-	"configuration openAiApiToken holds its token, or else Emporix's, of which a tenant may use\n" +
+const openAICredits = "It consumes AI credits: the LLM tokens of the tenant's own OpenAI account where the tenant " +
+	"configuration openAiApiToken holds its token, or else Emporix's, of which a tenant may use " +
 	"3 million input and 1 million output tokens."
 
 // agentCredits says what a chat with an agent consumes.
-const agentCredits = "It consumes AI credits: the LLM tokens of the agent's model, and of the agents it\n" +
+const agentCredits = "It consumes AI credits: the LLM tokens of the agent's model, and of the agents it " +
 	"collaborates with."
 
 // replyTimeout says that a reply, which Emporix sends once it is generated,
 // may take longer than the timeout of a request.
 func replyTimeout() string {
 	return "A reply may take longer than the --timeout of a request (" + defaultTimeout.String() +
-		" by default): then give a longer\none, e.g. --timeout 5m"
+		" by default): then give a longer one, e.g. --timeout 5m"
 }
 
 // sessionFlag is the flag that names the session of a chat or attachment.
@@ -87,9 +87,9 @@ func chatBody() bodyBinder {
 }
 
 // chatHelp says how a chat goes on in a session, and with attachments.
-const chatHelp = "With --session, the chat goes on in that session, which the agent remembers where its\n" +
-	"enabledMemory is true; an attachment must be one of the session, attached to the same agent\n" +
-	"(`epx ai agents attach`). --file gives the body instead, with the caption and purpose of\n" +
+const chatHelp = "With --session, the chat goes on in that session, which the agent remembers where its " +
+	"enabledMemory is true; an attachment must be one of the session, attached to the same agent " +
+	"(`epx ai agents attach`). --file gives the body instead, with the caption and purpose of " +
 	"each attachment."
 
 // agentChat sends a message to an agent at agentic/<use>, which Emporix
@@ -99,7 +99,7 @@ func agentChat(use, short, answer string) *write {
 	return &write{
 		use:   use,
 		short: short + " (consumes AI credits)",
-		long: "Sends the message that --message gives to the agent --agent, " + answer + "\n" + agentCredits + "\n" +
+		long: "Sends the message that --message gives to the agent --agent, " + answer + " " + agentCredits + " " +
 			chatHelp,
 		example: "  epx ai " + use + " --agent complaint-agent --message \"Find order EON1243\" --yes",
 		method:  http.MethodPost,
@@ -115,8 +115,8 @@ func textGeneration() *write {
 	return &write{
 		use:   "generate-text",
 		short: "Generate a text from a prompt (consumes AI credits)",
-		long: "Generates a text from the prompt that --prompt gives, such as a product description, and\n" +
-			"prints it as result.\n" + openAICredits + "\n" + replyTimeout() + ".",
+		long: "Generates a text from the prompt that --prompt gives, such as a product description, and " +
+			"prints it as result. " + openAICredits + " " + replyTimeout() + ".",
 		example: "  epx ai generate-text --prompt \"Describe product 100200 in German\" --max-tokens 500",
 		method:  http.MethodPost,
 		req:     request{path: aiPath + "texts"},
@@ -134,8 +134,8 @@ func completionGeneration() *write {
 	return &write{
 		use:   "generate-completion",
 		short: "Generate the next message of a chat history (consumes AI credits)",
-		long: "Generates the next message of the chat history that --message gives, one message per\n" +
-			"--message in their order, and prints it as result.\n" + openAICredits + "\n" + replyTimeout() + ".",
+		long: "Generates the next message of the chat history that --message gives, one message per " +
+			"--message in their order, and prints it as result. " + openAICredits + " " + replyTimeout() + ".",
 		example: "  epx ai generate-completion --message \"SYSTEM:You write product texts\" \\\n" +
 			"    --message \"USER:Describe product 100200\"",
 		method: http.MethodPost,
@@ -156,10 +156,10 @@ func agentAttach() *write {
 	return &write{
 		use:   "attach AGENT_ID",
 		short: "Attach a file to a chat with an agent",
-		long: "Uploads the file that --" + uploadFlag + " names (jpg, jpeg, png, pdf, csv, text or txt), or assigns the\n" +
-			"media asset that --" + mediaFlag + " names (`epx media list`), to the agent AGENT_ID, the ID that\n" +
-			"`epx ai agents list` shows, in the session that --session names, or a new one. Emporix\n" +
-			"answers with the attachment's id and the sessionId, which `epx ai chat` with that agent\n" +
+		long: "Uploads the file that --" + uploadFlag + " names (jpg, jpeg, png, pdf, csv, text or txt), or assigns the " +
+			"media asset that --" + mediaFlag + " names (`epx media list`), to the agent AGENT_ID, the ID that " +
+			"`epx ai agents list` shows, in the session that --session names, or a new one. Emporix " +
+			"answers with the attachment's id and the sessionId, which `epx ai chat` with that agent " +
 			"takes as --attachment and --session.",
 		example: "  epx ai agents attach complaint-agent --upload order.pdf --yes",
 		method:  http.MethodPost,

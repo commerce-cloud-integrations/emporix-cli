@@ -46,13 +46,13 @@ func priceMatchCommand(a *app) *cobra.Command {
 	return reader[priceMatch]{view: priceMatchView(), scopes: []string{priceReadScope}}.command(a, &command{
 		use:   "match",
 		short: "Match the best price of products",
-		long: "Matches the price of one unit of each product that --product names (the product id as in\n" +
-			"`epx products list`) that Emporix would charge on the site --site names, for the country\n" +
-			"--country names, in the currency --currency names: of the prices that apply, the lowest\n" +
-			"after discounts, converted with the tenant's exchange rates and tax classes where the price\n" +
-			"is in another currency or for another country. ID is the matched price (of the price list\n" +
-			"PRICE LIST, if any), ORIGINAL and EFFECTIVE (discounted) the price of one unit, TOTAL that\n" +
-			"of QUANTITY, gross where TAX is true. Other quantities and units, a customer or a legal\n" +
+		long: "Matches the price of one unit of each product that --product names (the product id as in " +
+			"`epx products list`) that Emporix would charge on the site --site names, for the country " +
+			"--country names, in the currency --currency names: of the prices that apply, the lowest " +
+			"after discounts, converted with the tenant's exchange rates and tax classes where the price " +
+			"is in another currency or for another country. ID is the matched price (of the price list " +
+			"PRICE LIST, if any), ORIGINAL and EFFECTIVE (discounted) the price of one unit, TOTAL that " +
+			"of QUANTITY, gross where TAX is true. Other quantities and units, a customer or a legal " +
 			"entity go in --body.",
 		req: request{path: "/price/{tenant}/match-prices"},
 		fetch: bodyRead{method: http.MethodPost, fetch: single{items: priceMatches}, body: objectBody{

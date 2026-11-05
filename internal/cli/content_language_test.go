@@ -28,7 +28,7 @@ func TestLocalizedWritesSayHowTheySendMaps(t *testing.T) {
 		{args: []string{"shipping", "groups", "update"}, mode: headerlessMapsHelp, usage: headerlessMapsUsage},
 		{args: []string{"currencies", "create"}, mode: contentLanguageHelp, usage: stringsOrMapsUsage},
 		{args: []string{"units", "update"}, mode: contentLanguageHelp, usage: stringsOrMapsUsage,
-			extra: "\nSuch a string replaces the unit's other translations of that text; send the map to keep them."},
+			extra: " Such a string replaces the unit's other translations of that text; send the map to keep them."},
 		{args: []string{"iam", "access-controls", "update"}, mode: mapsOnlyHelp},
 		{args: []string{"iam", "groups", "create"}, mode: mapsOnlyHelp},
 		{args: []string{"iam", "groups", "update"}, mode: mapsOnlyHelp},
@@ -49,8 +49,8 @@ func TestLocalizedWritesSayHowTheySendMaps(t *testing.T) {
 	} {
 		_, help, _ := runCLI(t, nil, append(tt.args, "--help")...)
 		long, flags, _ := strings.Cut(help, "\n\nUsage:")
-		held := slices.DeleteFunc(slices.Clone(modes), func(mode string) bool { return !strings.Contains(long, mode) })
-		if !slices.Equal(held, []string{tt.mode}) || !strings.Contains(long, tt.mode+tt.extra) {
+		held := slices.DeleteFunc(slices.Clone(modes), func(mode string) bool { return !containsFlat(long, mode) })
+		if !slices.Equal(held, []string{tt.mode}) || !containsFlat(long, tt.mode+tt.extra) {
 			t.Errorf("%q: help %q; want only the language help %q, followed by %q", tt.args, long, tt.mode, tt.extra)
 		}
 		usage, given := flagUsage(flags, "--"+contentLanguageFlag)

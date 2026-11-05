@@ -190,13 +190,13 @@ func TestUploadDryRunShowsNoTerminalControls(t *testing.T) {
 func TestMediaWritesSayHowToUpload(t *testing.T) {
 	for _, command := range []string{"create", "update"} {
 		_, help, _ := runCLI(t, nil, "media", command, "--help")
-		if !strings.Contains(help, "--upload PATH") || !strings.Contains(help, "multipart/form-data form, with the JSON") ||
-			!strings.Contains(help, "up to 30 MB including the form") ||
-			!strings.Contains(help, "may need a longer") || !strings.Contains(help, "e.g. --timeout 5m") {
+		if !containsFlat(help, "--upload PATH") || !containsFlat(help, "multipart/form-data form, with the JSON") ||
+			!containsFlat(help, "up to 30 MB including the form") ||
+			!containsFlat(help, "may need a longer") || !containsFlat(help, "e.g. --timeout 5m") {
 			t.Errorf("media %s help %q; want --upload explained", command, help)
 		}
 	}
-	if _, help, _ := runCLI(t, nil, "media", "delete", "--help"); strings.Contains(help, "--file") {
+	if _, help, _ := runCLI(t, nil, "media", "delete", "--help"); containsFlat(help, "--file") {
 		t.Errorf("media delete help %q; want no --file", help)
 	}
 }

@@ -28,7 +28,7 @@ func newCountriesCommand(a *app) *cobra.Command {
 	r := resource[country]{
 		use:   "countries",
 		short: "Read countries, and activate or deactivate them",
-		long: "Reads all countries known to the tenant, active or not (ACTIVE shows which ones the\n" +
+		long: "Reads all countries known to the tenant, active or not (ACTIVE shows which ones the " +
 			"tenant uses). REGIONS lists region codes (see `epx regions`).",
 		path:      "/country/{tenant}/countries",
 		listQuery: url.Values{sortParameter: {"code"}},
@@ -54,11 +54,11 @@ func countryWrites(a *app, countries resource[country]) []*cobra.Command {
 	return []*cobra.Command{(&write{
 		use:   countries.itemUse("patch"),
 		short: "Activate or deactivate a country",
-		long: "Activates the country CODE for the tenant (--active) or deactivates it (--active=false):\n" +
-			"Emporix lets a PATCH change active only. epx takes the country's metadata.version as read\n" +
-			"(--version, as `epx countries get CODE -o json` prints it), which the reference asks for;\n" +
-			"Emporix does not check it, so a stale version is accepted and applied. --file gives the JSON body\n" +
-			`instead, e.g. {"active": true, "metadata": {"version": 1}}. An unknown CODE is not found` + "\n" +
+		long: "Activates the country CODE for the tenant (--active) or deactivates it (--active=false): " +
+			"Emporix lets a PATCH change active only. epx takes the country's metadata.version as read " +
+			"(--version, as `epx countries get CODE -o json` prints it), which the reference asks for; " +
+			"Emporix does not check it, so a stale version is accepted and applied. --file gives the JSON body " +
+			`instead, e.g. {"active": true, "metadata": {"version": 1}}. An unknown CODE is not found ` +
 			"(exit 4).",
 		example: "  epx countries patch NL --active --version 1",
 		method:  http.MethodPatch,
