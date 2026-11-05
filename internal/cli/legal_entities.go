@@ -22,7 +22,7 @@ type legalEntity struct {
 }
 
 // legalEntityReadScope reads every legal entity, as legal-entities and a
-// search of the legal-entity documents of the Search Service (searchTypes)
+// search of the legal-entity documents of the Search Service (searchDocumentTypes)
 // request it.
 const legalEntityReadScope = "customermanagement.legalentity_read"
 

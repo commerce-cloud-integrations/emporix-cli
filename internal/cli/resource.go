@@ -7,7 +7,6 @@ import (
 	"errors"
 	"fmt"
 	"net/url"
-	"slices"
 	"strconv"
 	"strings"
 
@@ -331,49 +330,45 @@ func (r resource[T]) getLine() string { return r.commandLine(r.itemUse(getUse), 
 
 // help returns long followed by the legend of rd's view, the help of
 // --mixin-site where its items may hold site-aware mixins (mixinSiteHelp),
-// and the scope sentence of tokens, the scopes of its read
-// (readTarget.tokens).
-func (rd reader[T]) help(long string, tokens []string) string {
+// and what ends the help of a read of rd's scopes whose type argument takes
+// what rule says (typeRule.helpEnding).
+func (rd reader[T]) help(long string, rule typeRule) string {
 	if rd.legend != "" {
 		long += "\n" + rd.legend
 	}
 	if rd.siteAware {
 		long += "\n\n" + mixinSiteHelp
 	}
-	return long + "\n\n" + scopeSentence(tokens)
+	return long + rule.helpEnding(scopeSentence(rd.scopes))
 }
 
 // readTarget is what a run of a read command requests, as newRead binds it,
 // and with which scopes.
 type readTarget struct {
-	a         *app
-	req       request
-	site      *siteCode                    // --site, where req names {site}
-	tokens    []string                     // its scopes; where they name a custom entity type, its built-in types' too
-	scopesFor func(args []string) []string // the scopes of a run with args (typeScopes)
-	optedIn   func() error                 // fails a run that requests a write-capable scope without opting in
+	a       *app
+	req     request
+	site    *siteCode    // --site, where req names {site}
+	rule    typeRule     // what its first argument takes as a type (typeScopes)
+	scopes  []string     // its scopes, which rule fills in for a run (typeRule.fill)
+	optedIn func() error // fails a run that requests a write-capable scope without opting in
 }
 
 // newRead returns the read command c of scopes, without how it reads and
 // what it does with the answer, and how a run opens the read (open): the one
 // place that builds read commands, for reader.command, which prints what it
 // reads, and reader.fileCommand, which saves a file. The command notes its
-// scopes and, where they name a custom entity type, the tokens of its
-// built-in types' scopes (scopesAnnotation, builtInTypes.tokens), takes an ID
-// argument where c.req names {id}, preceded by the arguments of {parent} and
-// {inner} where it names those (each one of its choices, if any), the first
-// a type where scopes name one or c.builtIn holds types (typeScopes),
-// which complete as c.ids lists them, requires --site where it names {site},
-// and --allow-write-scope where one of scopes is write-capable
-// (requireOptIn).
+// scopes (scopesAnnotation), takes an ID argument where c.req names {id},
+// preceded by the arguments of {parent} and {inner} where it names those
+// (each one of its choices, if any), the first a type where scopes name one
+// or c.builtIn holds types (typeScopes), which complete as c.ids lists them
+// and as the type's rule accepts, requires --site where it names {site}, and
+// --allow-write-scope where one of scopes is write-capable (requireOptIn).
 func newRead(a *app, c *command, scopes []string) (*cobra.Command, *readTarget) {
-	cmd := &cobra.Command{Use: c.use, Short: c.short, Long: c.long, Annotations: map[string]string{}}
-	t := &readTarget{a: a, req: c.req, site: c.req.bind(cmd, c.choices)}
-	typeTokens, fill := typeScopes(cmd, c.req, scopes, c.builtIn) // after request.bind, whose argument rule it wraps
-	t.tokens = slices.Concat(scopes, typeTokens)
-	cmd.Annotations[scopesAnnotation] = strings.Join(t.tokens, " ")
-	t.scopesFor = func(args []string) []string { return fill(args, scopes) }
-	completeArguments(a, cmd, t.site, c.ids, c.choices, c.builtIn)
+	cmd := &cobra.Command{Use: c.use, Short: c.short, Long: c.long,
+		Annotations: map[string]string{scopesAnnotation: strings.Join(scopes, " ")}}
+	t := &readTarget{a: a, req: c.req, site: c.req.bind(cmd, c.choices), scopes: scopes}
+	t.rule = typeScopes(cmd, c.req, scopes, c.builtIn) // after request.bind, whose argument rule it wraps
+	completeArguments(a, cmd, t.site, c.ids, c.choices, t.rule)
 	t.optedIn = requireOptIn(cmd, scopes)
 	return cmd, t
 }
@@ -387,7 +382,7 @@ func (t *readTarget) open(ctx context.Context, args []string) (*emporix.Client, 
 	if err := t.optedIn(); err != nil {
 		return nil, "", nil, err
 	}
-	client, err := t.a.client(ctx, t.scopesFor(args)...)
+	client, err := t.a.client(ctx, t.rule.fill(args, t.scopes)...)
 	if err != nil {
 		return nil, "", nil, err
 	}
@@ -404,7 +399,7 @@ func (rd reader[T]) command(a *app, c *command) *cobra.Command {
 	cmd, target := newRead(a, c, rd.scopes)
 	printed := addTableOutput(cmd, rd.header, rd.long...)
 	read, items := rd.withMixinSite(c.fetch).bind(cmd)
-	cmd.Long = rd.help(cmd.Long, target.tokens) // after bind, which may add to the help that the scope sentence ends
+	cmd.Long = rd.help(cmd.Long, target.rule) // after bind, which may add to the help that the scope sentence ends
 	lang := defaultLanguage
 	cmd.RunE = func(cc *cobra.Command, args []string) error {
 		client, path, query, err := target.open(cc.Context(), args)

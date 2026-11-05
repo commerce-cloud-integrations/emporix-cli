@@ -144,7 +144,7 @@ operation. epx exits with code 1 unless it's `true`.
 
 | Failure | Exit code | What to do |
 | --- | --- | --- |
-| Conflict: the item changed since you read it, or already exists. | 5 | Read the item again, apply your change to its current state, and send it again. |
+| Conflict: the item changed since you read it, already exists, or can't take the change in its current state. | 5 | Follow the error's next step. For a changed item, read it again, apply your change to its current state, and send it again. |
 | The write may have been carried out: a 500, 502, 503, or 504 answer, or a network failure after the connection was made. | 1 | Read the item to check whether the change was made before you retry. The error says `it may have been carried out all the same`. |
 | Authentication or a missing scope. | 3 | Fix the API key, or add the scope the help names. Emporix didn't carry out the write. |
 | Not found. | 4 | Check the ID. |

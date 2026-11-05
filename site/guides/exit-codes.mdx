@@ -17,7 +17,7 @@ a missing scope.
 | `2` | Invalid usage or configuration | An unknown command or flag, a bad flag value, missing API key settings, a body that isn't JSON, or a write without `--yes` where epx can't ask. Nothing was sent. |
 | `3` | Authentication failed or scopes missing | Emporix rejected the API key, the token belongs to another tenant, a scope wasn't granted, or Emporix answered 401 or 403. |
 | `4` | Not found | Emporix doesn't know the item, such as `epx products get` with an unknown ID. |
-| `5` | Conflict | Emporix answered a write with 409 Conflict: the item changed since you read it, or already exists. A stale version sent to `units update` or `catalogs patch`, and a bulk write whose failed items were all conflicts, exit 5 too. Read the item again before you retry. |
+| `5` | Conflict | Emporix answered a write with 409 Conflict: the item changed since you read it, already exists, or can't take the change in its current state, such as a stream's file queue while an import run is in flight. A stale version sent to `units update` or `catalogs patch`, and a bulk write whose failed items were all conflicts, exit 5 too. Follow the error's next step before you retry. |
 
 <Note>
   Some commands get a 403 from Emporix that refuses their input rather than the

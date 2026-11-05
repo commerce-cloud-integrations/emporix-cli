@@ -351,10 +351,12 @@ func TestMixinSiteOnlyOnTheSiteAwareReads(t *testing.T) {
 }
 
 // TestMixinSiteRefusesWhatNamesNoSite checks that a value of --mixin-site
-// that names no site or cannot be sent as a header fails as a usage error,
+// that is blank, so names no site, has spaces around the site code, or
+// cannot be sent as a header (a line break, DEL) fails as a usage error,
 // named by its flag, before anything is sent.
 func TestMixinSiteRefusesWhatNamesNoSite(t *testing.T) {
-	for _, value := range []string{"", " ", ".", "..", "main\r\nX-Injected: 1", "main\x7f"} {
+	for _, value := range []string{"", " ", "\t", " main", "main\t", "main\r\nX-Injected: 1", "main\nX",
+		"main\x7f"} {
 		fake := newFakeEmporix(t)
 		code, stdout, stderr := runCLI(t, fake.env(), "products", "list", "--"+mixinSiteFlag, value)
 		if code != ExitUsage || stdout != "" || !strings.Contains(stderr, `for "--`+mixinSiteFlag+`" flag`) {

@@ -62,7 +62,7 @@ func completeFlags(a *app, cmd *cobra.Command, codes *idSource) {
 // applies (no file names): with the values or file names that it records,
 // --profile with the names of the profiles, and --site and --mixin-site,
 // wherever a command has one, with the site codes that codes lists, as
-// listedItems reads them.
+// listedItems reads them, up to completionSize (offerArgument).
 func flagCompletion(a *app, flag *pflag.Flag, codes *idSource) cobra.CompletionFunc {
 	if values, ok := flag.Annotations[choicesAnnotation]; ok {
 		return cobra.FixedCompletions(values, cobra.ShellCompDirectiveNoFileComp)
@@ -75,7 +75,7 @@ func flagCompletion(a *app, flag *pflag.Flag, codes *idSource) cobra.CompletionF
 		return a.completeProfiles
 	case siteFlag, mixinSiteFlag:
 		return func(c *cobra.Command, _ []string, toComplete string) ([]cobra.Completion, cobra.ShellCompDirective) {
-			return codes.offer(a.listedItems(c.Context(), codes, nil, ""), toComplete), cobra.ShellCompDirectiveNoFileComp
+			return offerArgument(nil, codes, a.listedItems(c.Context(), codes, nil, ""), toComplete)
 		}
 	default:
 		return nil

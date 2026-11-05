@@ -3,7 +3,9 @@ package cli
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"net/url"
+	"strings"
 
 	"github.com/spf13/cobra"
 
@@ -59,11 +61,17 @@ func (m mixinSiteRead) bind(cmd *cobra.Command) (readFunc, shape) {
 	}, items
 }
 
-// mixinSite refuses a value of --mixin-site that names no site (siteCode)
-// or that cannot be sent as a header value.
+// mixinSite refuses a value of --mixin-site that is blank, which names no
+// site, that has spaces around the site code, which a header sent over
+// HTTP/2 keeps, or that cannot be sent as a header value
+// (emporix.CheckHeaderValue, which Client.WithHeader checks again before it
+// sends it).
 func mixinSite(value string) error {
-	if err := new(siteCode).Set(value); err != nil {
-		return err
+	switch trimmed := strings.TrimSpace(value); {
+	case trimmed == "":
+		return errors.New("names no site")
+	case trimmed != value:
+		return errors.New("has spaces around the site code")
 	}
 	return emporix.CheckHeaderValue(value)
 }

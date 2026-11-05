@@ -79,22 +79,45 @@ func checkFileFlag(t *testing.T, cmd *cobra.Command, withFile, typed bool) {
 	}
 }
 
-// typeOfRun returns how the scopes that tokens name, a scope annotation
-// (parseScopeTokens), are filled in for a run of cmd with rest, its
-// arguments and flags, as typeScopes fills them in: for the type that its
-// first argument names (builtInTypes.fill), where the built-in types that
-// tokens hold are taken as written, as the cases name them.
-func typeOfRun(cmd *cobra.Command, rest []string) func(tokens []string) []string {
-	typ := ""
-	if cmd.ParseFlags(rest) == nil && cmd.Flags().NArg() > 0 {
-		typ = cmd.Flags().Arg(0)
+// typeOfRun returns how the scopes of a scope annotation are filled in for a
+// run of cmd with rest, its arguments and flags, as typeScopes fills them in
+// (typeRule.fill) with the built-in types of cmd (builtInTypesOf).
+func typeOfRun(cmd *cobra.Command, rest []string) func(scopes []string) []string {
+	var args []string
+	if cmd.ParseFlags(rest) == nil {
+		args = cmd.Flags().Args()
 	}
-	return func(tokens []string) []string {
-		scopes, types := parseScopeTokens(tokens)
-		if typ == "" {
+	return func(scopes []string) []string {
+		if len(args) == 0 {
 			return scopes
 		}
-		return spelledTypes(types...).fill(scopes, typ)
+		return newTypeRule(scopes, builtInTypesOf(cmd)).fill(args, scopes)
+	}
+}
+
+// builtInTypesOf returns the built-in types that request scopes of their own
+// that cmd takes: those of the Search Service for search documents, the one
+// command that has them, as its help says (TestOnlySearchDocumentsHasScopedBuiltInTypes).
+func builtInTypesOf(cmd *cobra.Command) builtInTypes {
+	if cmd.CommandPath() == "epx search documents" {
+		return searchDocumentTypes()
+	}
+	return builtInTypes{}
+}
+
+// TestOnlySearchDocumentsHasScopedBuiltInTypes checks that no command but
+// search documents names in its help scopes that built-in types request in
+// place of those of a custom entity type (builtInTypes.inPlaceOf), which
+// builtInTypesOf would not know.
+func TestOnlySearchDocumentsHasScopedBuiltInTypes(t *testing.T) {
+	var noted []string
+	walkCommands(newTestRoot(), func(cmd *cobra.Command) {
+		if strings.Contains(cmd.Long, "\nIn place of ") {
+			noted = append(noted, cmd.CommandPath())
+		}
+	})
+	if !slices.Equal(noted, []string{"epx search documents"}) {
+		t.Errorf("commands with scoped built-in types %q; want only epx search documents", noted)
 	}
 }
 

@@ -19,7 +19,7 @@ func aiRAGReads() []readCase {
 			want:   "FIELD\ncode\nname\nname.en\nmixins.productCustomAttributes.color\n",
 		},
 		{
-			// A predefined type in lower case, sent as given.
+			// A built-in type in lower case, sent as given.
 			args:   []string{"ai", "rag", "fields", "legal-entity"},
 			path:   "/ai-rag-indexer/acme1/legal-entity/rag-metadata",
 			scopes: []string{scope},
@@ -128,8 +128,8 @@ func TestRAGReadOfAnUnknownTypeFails(t *testing.T) {
 // for products, without it for customers and legal entities.
 func TestRAGReindexHelpNamesTheReindexJobs(t *testing.T) {
 	const want = "Emporix has deprecated this endpoint in favor of a reindex job: " +
-		"`epx indexing reindex-jobs create`, which --wait follows. Give it --rag for PRODUCT; for the " +
-		"other types, such as CUSTOMER and LEGAL-ENTITY, the job updates their embeddings without it."
+		"`epx indexing reindex-jobs create`, which --wait follows. Give it --rag for PRODUCT; for " +
+		"CUSTOMER and LEGAL-ENTITY, the job updates their embeddings without it."
 	if text := helpText(t, "ai", "rag", "reindex"); !strings.Contains(text, want) {
 		t.Errorf("help lacks %q:\n%s", want, text)
 	}

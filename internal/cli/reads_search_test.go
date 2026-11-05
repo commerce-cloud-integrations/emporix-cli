@@ -228,8 +228,11 @@ func TestSearchListHelpNamesTheFilterValues(t *testing.T) {
 
 // TestSearchHelpNamesTheBuiltInTypes checks that the help of the search group,
 // of documents, and of indexes and queries and their commands per type names
-// customer and legal-entity as types beside the custom entity types, and that
-// the help of documents names the limitation of the scopes that it requests.
+// customer and legal-entity as types beside the custom entity types, that
+// the help of documents names the limitation of the scopes that it requests,
+// and that the help of indexes and queries, their reads and writes per type
+// and the export of indexes says how to reach an item kept under another
+// spelling of a built-in type.
 func TestSearchHelpNamesTheBuiltInTypes(t *testing.T) {
 	const types = "customer or legal-entity, exactly as written, or a custom entity type"
 	for _, args := range [][]string{
@@ -249,5 +252,47 @@ func TestSearchHelpNamesTheBuiltInTypes(t *testing.T) {
 		"only the own-read scope, such as customer.customer_read_own, fails with exit code 3."
 	if text := helpText(t, "search", "documents"); !strings.Contains(text, limitation) {
 		t.Errorf("search documents: help lacks %q:\n%s", limitation, text)
+	}
+	// What TYPE refuses in another spelling is listed, exported with --body, and reached with epx api.
+	const otherwise = " kept under another spelling of a built-in type, such as CUSTOMER, "
+	for singular, use := range map[string]string{"search index": "indexes", "saved search": "queries"} {
+		path := " /search/{tenant}/search/CUSTOMER/" + use + "/ID --scope search.search_"
+		for args, want := range map[[3]string]string{
+			{"search", use}: "A " + singular + otherwise + "is listed too; `epx api` reaches it by its path, such as " +
+				"`epx api get" + path + "read`.",
+			{"search", use, "for-type"}: "`epx api get" + path + "read`.",
+			{"search", use, "get"}:      "`epx api get" + path + "read`.",
+			{"search", use, "update"}: "A " + singular + otherwise + "is upserted with `epx api put" + path +
+				"manage --file FILE`.",
+			{"search", use, "delete"}: "A " + singular + otherwise + "is deleted with `epx api delete" + path + "manage`.",
+		} {
+			if text := helpText(t, args[:]...); !strings.Contains(text, want) {
+				t.Errorf("%q: help lacks %q:\n%s", args, want, text)
+			}
+		}
+	}
+	const export = "A search index" + otherwise + "is exported with --body."
+	if text := helpText(t, "search", "indexes", "export"); !strings.Contains(text, export) {
+		t.Errorf("search indexes export: help lacks %q:\n%s", export, text)
+	}
+}
+
+// TestExactTypesNeedBuiltInTypes checks that saying how to reach an item
+// under another spelling of a built-in type, for a service whose collections
+// take none, take them in any case, or name the first in upper case, is
+// refused while the command tree is built, naming the service (its use).
+func TestExactTypesNeedBuiltInTypes(t *testing.T) {
+	const want = "things: says how to reach an item under another spelling of a built-in type, but TYPE " +
+		"does not refuse the upper-case spelling of its first built-in type, if it has one"
+	for name, types := range map[string]builtInTypes{"none": {}, "any case": anyCaseTypes("PRODUCT"),
+		"spelled upper": spelledTypes(builtInType{name: "PRODUCT"})} {
+		t.Run(name, func(t *testing.T) {
+			defer func() {
+				if recovered, _ := recover().(string); recovered != want {
+					t.Fatalf("panic %q; want %q", recovered, want)
+				}
+			}()
+			newExactTypes(types, "things")
+		})
 	}
 }

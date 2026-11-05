@@ -204,7 +204,7 @@ every command and flag.
 | `2` | Invalid usage or configuration; nothing was sent |
 | `3` | Authentication failed or scopes missing |
 | `4` | Not found |
-| `5` | Conflict: the item changed since you read it, or already exists |
+| `5` | Conflict: the item changed since you read it, already exists, or can't take the change in its current state; the error says what to do next |
 
 ## Documentation
 

@@ -1800,8 +1800,8 @@ Embed every entity of a type again for RAG search (deprecated by Emporix).
 
 Embeds every entity of a type again in the vector database, replacing its records there;
 it sends no body. Emporix has deprecated this endpoint in favor of a reindex job:
-[`epx indexing reindex-jobs create`](/commands/indexing#epx-indexing-reindex-jobs-create), which `--wait` follows. Give it `--rag` for PRODUCT; for the
-other types, such as CUSTOMER and LEGAL-ENTITY, the job updates their embeddings without it.
+[`epx indexing reindex-jobs create`](/commands/indexing#epx-indexing-reindex-jobs-create), which `--wait` follows. Give it `--rag` for PRODUCT; for
+CUSTOMER and LEGAL-ENTITY, the job updates their embeddings without it.
 TYPE is PRODUCT, ORDER, CUSTOMER or LEGAL-ENTITY in any case, or a custom entity type,
 whose ID [`epx custom-entities list`](/commands/custom-entities#epx-custom-entities-list) shows.
 LEGAL-ENTITY takes a hyphen, not an underscore.
@@ -2147,9 +2147,9 @@ Reads the native tools that agents can use: TYPE is slack, teams, rag\_custom (r
 augmented generation over the tenant's own vector database), rag\_emporix (over Emporix
 data) or search (customers or legal entities, found without embeddings in a search index
 that Emporix keeps); their configuration is only in `-o json`.
-The first search tool of an entity type (customer or legal-entity) finds nothing until a
-reindex job of that type ([`epx indexing reindex-jobs create --entity-type CUSTOMER`](/commands/indexing#epx-indexing-reindex-jobs-create) or LEGAL-ENTITY),
-started after the tool is saved, ends.
+The first search tool of an entity type (customer or legal-entity) finds nothing until a reindex
+job of that type ([`epx indexing reindex-jobs create --entity-type CUSTOMER`](/commands/indexing#epx-indexing-reindex-jobs-create) or
+LEGAL-ENTITY), started after the tool is saved, ends.
 
 Its reads require the ai.agent\_read scope.
 Its writes require the ai.agent\_manage scope.
@@ -2211,9 +2211,9 @@ Reads the native tools that agents can use: TYPE is slack, teams, rag\_custom (r
 augmented generation over the tenant's own vector database), rag\_emporix (over Emporix
 data) or search (customers or legal entities, found without embeddings in a search index
 that Emporix keeps); their configuration is only in `-o json`.
-The first search tool of an entity type (customer or legal-entity) finds nothing until a
-reindex job of that type ([`epx indexing reindex-jobs create --entity-type CUSTOMER`](/commands/indexing#epx-indexing-reindex-jobs-create) or LEGAL-ENTITY),
-started after the tool is saved, ends.
+The first search tool of an entity type (customer or legal-entity) finds nothing until a reindex
+job of that type ([`epx indexing reindex-jobs create --entity-type CUSTOMER`](/commands/indexing#epx-indexing-reindex-jobs-create) or
+LEGAL-ENTITY), started after the tool is saved, ends.
 
 Requires the ai.agent\_read scope.
 
@@ -2238,9 +2238,9 @@ Reads the native tools that agents can use: TYPE is slack, teams, rag\_custom (r
 augmented generation over the tenant's own vector database), rag\_emporix (over Emporix
 data) or search (customers or legal entities, found without embeddings in a search index
 that Emporix keeps); their configuration is only in `-o json`.
-The first search tool of an entity type (customer or legal-entity) finds nothing until a
-reindex job of that type ([`epx indexing reindex-jobs create --entity-type CUSTOMER`](/commands/indexing#epx-indexing-reindex-jobs-create) or LEGAL-ENTITY),
-started after the tool is saved, ends.
+The first search tool of an entity type (customer or legal-entity) finds nothing until a reindex
+job of that type ([`epx indexing reindex-jobs create --entity-type CUSTOMER`](/commands/indexing#epx-indexing-reindex-jobs-create) or
+LEGAL-ENTITY), started after the tool is saved, ends.
 
 Requires the ai.agent\_read scope.
 
@@ -2344,9 +2344,9 @@ replaced. With metadata.version, as [`epx ai tools get ID -o json`](/commands/ai
 Emporix replaces only that version: another is a conflict (exit 5).
 The JSON holds its type (slack, teams, rag\_custom, rag\_emporix or search), name and config,
 and whether it is enabled.
-The first search tool of an entity type (customer or legal-entity) finds nothing until a
-reindex job of that type ([`epx indexing reindex-jobs create --entity-type CUSTOMER`](/commands/indexing#epx-indexing-reindex-jobs-create) or LEGAL-ENTITY),
-started after the tool is saved, ends.
+The first search tool of an entity type (customer or legal-entity) finds nothing until a reindex
+job of that type ([`epx indexing reindex-jobs create --entity-type CUSTOMER`](/commands/indexing#epx-indexing-reindex-jobs-create) or
+LEGAL-ENTITY), started after the tool is saved, ends.
 ID is the ID that [`epx ai tools list`](/commands/ai#epx-ai-tools-list) shows.
 
 Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without

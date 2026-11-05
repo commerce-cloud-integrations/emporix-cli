@@ -97,15 +97,15 @@ type write struct {
 // tree is built, which every test of the tree does.
 func (w *write) command(a *app) *cobra.Command {
 	w.checkDeclaration()
+	scopes := w.requested()
 	cmd := &cobra.Command{
-		Use: w.use, Short: w.short, Long: w.what(), Example: w.example, Annotations: map[string]string{},
+		Use: w.use, Short: w.short, Long: w.what(), Example: w.example,
+		Annotations: map[string]string{writeScopesAnnotation: strings.Join(scopes, " ")},
 	}
 	if w.answers.ForbiddenIsRefusal {
 		checkRefusalHelp(cmd)
 	}
-	site, typeTokens, fillType := w.bindArguments(a, cmd)
-	tokens := slices.Concat(w.requested(), typeTokens)
-	cmd.Annotations[writeScopesAnnotation] = strings.Join(tokens, " ")
+	site, rule := w.bindArguments(a, cmd)
 	lang := w.bindLanguage(cmd)
 	if w.answers.ReportsOutcome {
 		cmd.Long += "\n\n" + outcomeHelp
@@ -124,7 +124,7 @@ func (w *write) command(a *app) *cobra.Command {
 	if w.answer != nil {
 		end = w.answer.bind(a, cmd)
 	}
-	cmd.Long += w.choice.scopeNote() + w.paramScopes.note() + "\n\n" + writeScopeSentence(tokens)
+	cmd.Long += w.choice.scopeNote() + w.paramScopes.note() + rule.helpEnding(writeScopeSentence(scopes))
 	n := len(w.req.arguments())
 	cmd.RunE = func(c *cobra.Command, args []string) error {
 		path, query := w.req.fill(args, *site)
@@ -140,7 +140,7 @@ func (w *write) command(a *app) *cobra.Command {
 			sent.Header.Set("Content-Language", header)
 		}
 		setHeaders(sent.Header)
-		scopes, then := end.plan(c, choose(query, fillType(args, slices.Concat(w.scopes, needed))))
+		scopes, then := end.plan(c, choose(query, rule.fill(args, slices.Concat(w.scopes, needed))))
 		return s.sendThen(c, scopes, sent, args[n:], w.subject(c, args), then)
 	}
 	return cmd
@@ -151,11 +151,9 @@ func (w *write) command(a *app) *cobra.Command {
 // (refuseReserved) and, where the first is a type, what no type is
 // (typeScopes), and complete with their choices and built-in types
 // and as w.ids lists them (completeArguments). It returns the site that
-// --site gives; where w's scopes name a custom entity type, the tokens of the
-// scopes of its built-in types (builtInTypes.tokens), none otherwise; and how
-// a run fills in the scopes that it requests (typeScopes).
-func (w *write) bindArguments(a *app, cmd *cobra.Command) (
-	site *siteCode, typeTokens []string, fill func(args, requested []string) []string) {
+// --site gives and the rule of its type argument, which fills in the scopes
+// that a run requests (typeScopes).
+func (w *write) bindArguments(a *app, cmd *cobra.Command) (site *siteCode, rule typeRule) {
 	site = w.req.bind(cmd, w.choices)
 	if len(w.reserved) > 0 {
 		if !w.req.names(placeholderID) {
@@ -165,9 +163,9 @@ func (w *write) bindArguments(a *app, cmd *cobra.Command) (
 	}
 	// After request.bind and refuseReserved, whose argument rules it wraps; every scope that may name a
 	// custom entity type.
-	typeTokens, fill = typeScopes(cmd, w.req, slices.Concat(w.scopes, w.paramScopes.scopes), w.builtIn)
-	completeArguments(a, cmd, site, w.ids, w.choices, w.builtIn)
-	return site, typeTokens, fill
+	rule = typeScopes(cmd, w.req, slices.Concat(w.scopes, w.paramScopes.scopes), w.builtIn)
+	completeArguments(a, cmd, site, w.ids, w.choices, rule)
+	return site, rule
 }
 
 // requested returns the scopes that w's help and annotation name: those of

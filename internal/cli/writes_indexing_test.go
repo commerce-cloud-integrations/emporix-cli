@@ -69,13 +69,13 @@ func indexingWrites() []writeCase {
 }
 
 // TestReindexJobCreateSendsTheEntityTypeAsGiven checks that --entity-type
-// takes every type, predefined in either case or custom, and sends it as
-// given: Emporix takes the predefined ones in any case, and
+// takes every type, built-in in either case or custom, and sends it as
+// given: Emporix takes the built-in ones in any case, and
 // LEGAL-ENTITY with a hyphen. Its help names them; shells complete the
-// predefined ones (TestCompletionNeverSuggestsFiles).
+// built-in ones (TestCompletionNeverSuggestsFiles).
 func TestReindexJobCreateSendsTheEntityTypeAsGiven(t *testing.T) {
 	sent := []string{"vehicle"} // a custom entity type
-	for _, name := range predefinedTypeNames() {
+	for _, name := range entityBuiltInTypeNames() {
 		sent = append(sent, name, strings.ToLower(name))
 	}
 	for _, entityType := range sent {

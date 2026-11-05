@@ -3,6 +3,7 @@ package cli
 import (
 	"bytes"
 	"context"
+	"fmt"
 	"net/http"
 	"slices"
 	"strconv"
@@ -253,7 +254,7 @@ func TestCompletionReadsNothingUnlessItCan(t *testing.T) {
 		{name: "several IDs, after a comma, not opted in", env: (*fakeEmporix).env,
 			args: []string{"ai", "analytics", "executions", "a1,"}},
 		{name: "built-in types, not opted in", env: (*fakeEmporix).env, args: []string{"ai", "rag", "fields", ""},
-			want: predefinedTypeNames()},
+			want: entityBuiltInTypeNames()},
 		{name: "the built-in types that start with C", env: (*fakeEmporix).env,
 			args: []string{"ai", "rag", "filter-fields", "C"}, want: []string{"CUSTOMER"}},
 		{name: "built-in types that start with what is typed", env: (*fakeEmporix).env,
@@ -261,7 +262,7 @@ func TestCompletionReadsNothingUnlessItCan(t *testing.T) {
 		{name: "no built-in type that starts with what is typed", env: (*fakeEmporix).env,
 			args: []string{"ai", "rag", "filter-fields", "X"}},
 		{name: "a profile that cannot be read", env: completionEnv,
-			args: []string{"ai", "rag", "fields", "--profile", "missing", ""}, want: predefinedTypeNames()},
+			args: []string{"ai", "rag", "fields", "--profile", "missing", ""}, want: entityBuiltInTypeNames()},
 		{name: "an argument beyond the built-in types", env: completionEnv,
 			args: []string{"ai", "rag", "fields", "ORDER", ""}},
 		{name: "the choices of an argument, which no list holds", env: completionEnv,
@@ -374,4 +375,51 @@ func TestCompletionTakesTheProfileInEffect(t *testing.T) {
 	if code, stdout, _ := runIn(t, env, args...); code != ExitOK || strings.Contains(stdout, "Z1") {
 		t.Fatalf("not opted in: exit %d, stdout %q; want no IDs", code, stdout)
 	}
+}
+
+// TestCompletionCountsOnlyWhatTheArgumentTakes checks that a listed type that
+// the argument refuses, CUSTOMER where it takes customer as written, takes no
+// place among the completionSize values offered: the two built-in types and
+// the 98 types listed after it make the 100.
+func TestCompletionCountsOnlyWhatTheArgumentTakes(t *testing.T) {
+	items := []string{`{"id":"i0","type":"CUSTOMER"}`}
+	want := []string{"customer", "legal-entity"}
+	for i := range completionSize - 2 {
+		typ := "TYPE_" + strconv.Itoa(i)
+		items = append(items, `{"id":"i`+strconv.Itoa(i+1)+`","type":"`+typ+`"}`)
+		want = append(want, typ)
+	}
+	tt := completionCase{
+		args: []string{"search", "indexes", "get", ""},
+		routes: map[string]http.HandlerFunc{
+			"/search/acme1/search/indexes": respond(http.StatusOK, "["+strings.Join(items, ",")+"]"),
+		},
+		want:     want,
+		requests: []string{"/search/acme1/search/indexes?pageNumber=1&pageSize=100"},
+		scopes:   []string{searchScope},
+	}
+	tt.check(t)
+}
+
+// TestSiteFlagCompletesAtMostTheLimit checks that --site, which completes
+// apart from arguments, offers at most completionSize site codes too, the
+// first ones listed, where the service sends more.
+func TestSiteFlagCompletesAtMostTheLimit(t *testing.T) {
+	var sites, want []string
+	for i := range completionSize + 1 {
+		code := fmt.Sprintf("Site_%03d", i)
+		sites = append(sites, `{"code":"`+code+`"}`)
+		if i < completionSize {
+			want = append(want, code)
+		}
+	}
+	tt := completionCase{
+		args: []string{"prices", "list", "--site", "Site_"},
+		routes: map[string]http.HandlerFunc{
+			"/site/acme1/sites": respond(http.StatusOK, "["+strings.Join(sites, ",")+"]"),
+		},
+		want:     want,
+		requests: []string{"/site/acme1/sites?pageNumber=1&pageSize=100&totalCount=true"},
+	}
+	tt.check(t)
 }

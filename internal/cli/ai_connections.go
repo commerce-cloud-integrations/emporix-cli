@@ -52,8 +52,8 @@ type aiMCPServer struct {
 // searchToolNeedsReindex says when a search tool, which finds what a reindex job of
 // its type indexed, first finds anything.
 const searchToolNeedsReindex = "The first search tool of an entity type (customer or legal-entity) finds nothing " +
-	"until a\nreindex job of that type (`epx indexing reindex-jobs create --entity-type CUSTOMER` or LEGAL-ENTITY),\n" +
-	"started after the tool is saved, ends."
+	"until a reindex\njob of that type (`epx indexing reindex-jobs create --entity-type CUSTOMER` or\n" +
+	"LEGAL-ENTITY), started after the tool is saved, ends."
 
 // newAIToolsCommand reads and writes the native tools of agents.
 func newAIToolsCommand(a *app) *cobra.Command {

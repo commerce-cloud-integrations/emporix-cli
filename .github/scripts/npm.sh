@@ -263,15 +263,35 @@ check
 smoke
 ls -1 "$out"
 
-# available waits until the registry serves the version at of the package: npm processes a
-# publish for a few minutes before installs can fetch it.
+# bounded runs a command for at most the given seconds where timeout(1) exists; npm's own
+# --fetch-timeout bounds its request otherwise.
+bounded() {
+	local seconds=$1
+	shift
+	if command -v timeout >/dev/null; then
+		timeout "$seconds" "$@"
+	else
+		"$@"
+	fi
+}
+
+# available waits until the registry serves the version at of the package, or fails at
+# deadline (a value of $SECONDS), which all platform versions share: npm processes a
+# publish for a few minutes before installs can fetch it. Each request, and each pause
+# between them, ends by the deadline.
 available() {
-	local at=$1 tries=0
-	until npm view "$pkg@$at" version >/dev/null 2>&1; do
-		tries=$((tries + 1))
-		[[ "$tries" -le 60 ]] || fail "$pkg@$at is still not available after 30 minutes"
-		sleep 30
+	local at=$1 deadline=$2 left
+	while left=$((deadline - SECONDS)) && [[ "$left" -gt 0 ]]; do
+		if bounded "$left" npm view "$pkg@$at" version --fetch-timeout="$((left * 1000))" --fetch-retries=0 \
+			>/dev/null 2>&1; then
+			return 0
+		fi
+		left=$((deadline - SECONDS))
+		if [[ "$left" -gt 0 ]]; then
+			sleep "$((left < 30 ? left : 30))"
+		fi
 	done
+	fail "$pkg@$at is still not available when the wait for the platform versions ends"
 }
 
 if [[ "$mode" = --publish ]]; then
@@ -289,8 +309,10 @@ if [[ "$mode" = --publish ]]; then
 	done
 	# Until every platform version is served, an install of the main version would leave
 	# out the binary of that platform.
+	# 15 minutes for all of them, well within the timeout of the release job (release.yml).
+	deadline=$((SECONDS + 15 * 60))
 	for file in "${archives[@]}"; do
-		available "$version-$(npm_platform "$file")"
+		available "$version-$(npm_platform "$file")" "$deadline"
 	done
 	publish "$version" "$main_tgz" latest
 fi

@@ -43,7 +43,8 @@ matches; its other fields are only in `-o json`. `--body` gives a search of an i
 queries and filters instead. An unknown saved search, or index of `--body`, is not found
 (exit 4).
 TYPE is customer or legal-entity, exactly as written, or a custom entity type,
-whose ID [`epx custom-entities list`](/commands/custom-entities#epx-custom-entities-list) shows; an unknown one has no scope that Emporix grants (exit code 3), and a type created in the last minutes has none yet.
+whose ID [`epx custom-entities list`](/commands/custom-entities#epx-custom-entities-list) shows; an unknown one has no scope that
+Emporix grants (exit code 3), and a type created in the last minutes has none yet.
 Known limitation: for customer or legal-entity, epx requests the read scope that
 finds every document, so a credential that holds only a restricted one, such as
 customer.customer\_read--DE, or only the own-read scope, such as customer.customer\_read\_own,
@@ -51,11 +52,11 @@ fails with exit code 3.
 
 Changes nothing: Emporix serves this read as POST with a JSON body, which the
 flags make or `--body` gives whole.
+In place of custom.&lt;type\>\_read, customer requires customer.customer\_read;
+legal-entity requires customermanagement.legalentity\_read.
 
 Requires the search.search\_read, custom.&lt;type\>\_read scopes.
 &lt;type\> is the custom entity type in lower case (custom.document\_read for DOCUMENT).
-In place of custom.&lt;type\>\_read, customer requires customer.customer\_read;
-legal-entity requires customermanagement.legalentity\_read.
 
 **Command:** `epx search documents TYPE [flags]`
 
@@ -95,6 +96,9 @@ Emporix answers a list's malformed `--query` with an internal error (500 Interna
 Error, exit 1).
 A type is customer or legal-entity, exactly as written, or a custom entity type,
 whose ID [`epx custom-entities list`](/commands/custom-entities#epx-custom-entities-list) shows.
+A search index kept under another spelling of a built-in type, such as CUSTOMER,
+is listed too; [`epx api`](/commands/api#epx-api) reaches it by its path, such as
+[`epx api get /search/{tenant}/search/CUSTOMER/indexes/ID --scope search.search_read`](/commands/api#epx-api-get).
 
 Its reads require different OAuth scopes; the help of each names them.
 Opt-in: epx requests a write-capable scope for a read only when given `--allow-write-scope`.
@@ -132,6 +136,9 @@ A type is customer or legal-entity, exactly as written, or a custom entity type,
 whose ID [`epx custom-entities list`](/commands/custom-entities#epx-custom-entities-list) shows.
 TYPE and ID are a search index's type and ID, as [`epx search indexes list`](/commands/search#epx-search-indexes-list)
 shows them.
+A search index kept under another spelling of a built-in type, such as CUSTOMER,
+is deleted with
+[`epx api delete /search/{tenant}/search/CUSTOMER/indexes/ID --scope search.search_manage`](/commands/api#epx-api-delete).
 
 Deletes data, which cannot be undone.
 On a terminal, epx sends DELETE only once you type ID at its prompt.
@@ -179,6 +186,8 @@ ID that [`epx search indexes list`](/commands/search#epx-search-indexes-list) sh
 Emporix answers an unknown index as not found (exit 4).
 A type is customer or legal-entity, exactly as written, or a custom entity type,
 whose ID [`epx custom-entities list`](/commands/custom-entities#epx-custom-entities-list) shows.
+A search index kept under another spelling of a built-in type, such as CUSTOMER,
+is exported with `--body`.
 Emporix refuses an empty selection (`--body` with \[\], exit 1).
 
 Changes nothing: Emporix serves this read as POST with a JSON body, which the
@@ -219,6 +228,9 @@ Emporix answers a list's malformed `--query` with an internal error (500 Interna
 Error, exit 1).
 A type is customer or legal-entity, exactly as written, or a custom entity type,
 whose ID [`epx custom-entities list`](/commands/custom-entities#epx-custom-entities-list) shows.
+A search index kept under another spelling of a built-in type, such as CUSTOMER,
+is listed too; [`epx api`](/commands/api#epx-api) reaches it by its path, such as
+[`epx api get /search/{tenant}/search/CUSTOMER/indexes/ID --scope search.search_read`](/commands/api#epx-api-get).
 TYPE is the type of search indexes, as [`epx search indexes list`](/commands/search#epx-search-indexes-list) shows it; an
 unknown type lists nothing.
 
@@ -258,6 +270,9 @@ Emporix answers a list's malformed `--query` with an internal error (500 Interna
 Error, exit 1).
 A type is customer or legal-entity, exactly as written, or a custom entity type,
 whose ID [`epx custom-entities list`](/commands/custom-entities#epx-custom-entities-list) shows.
+A search index kept under another spelling of a built-in type, such as CUSTOMER,
+is listed too; [`epx api`](/commands/api#epx-api) reaches it by its path, such as
+[`epx api get /search/{tenant}/search/CUSTOMER/indexes/ID --scope search.search_read`](/commands/api#epx-api-get).
 TYPE and ID are a search index's type and ID, as [`epx search indexes list`](/commands/search#epx-search-indexes-list)
 shows them; an unknown one is not found (exit 4).
 
@@ -353,6 +368,9 @@ Emporix answers a list's malformed `--query` with an internal error (500 Interna
 Error, exit 1).
 A type is customer or legal-entity, exactly as written, or a custom entity type,
 whose ID [`epx custom-entities list`](/commands/custom-entities#epx-custom-entities-list) shows.
+A search index kept under another spelling of a built-in type, such as CUSTOMER,
+is listed too; [`epx api`](/commands/api#epx-api) reaches it by its path, such as
+[`epx api get /search/{tenant}/search/CUSTOMER/indexes/ID --scope search.search_read`](/commands/api#epx-api-get).
 
 Requires the search.search\_read scope.
 
@@ -394,6 +412,9 @@ A type is customer or legal-entity, exactly as written, or a custom entity type,
 whose ID [`epx custom-entities list`](/commands/custom-entities#epx-custom-entities-list) shows.
 TYPE and ID are a search index's type and ID, as [`epx search indexes list`](/commands/search#epx-search-indexes-list)
 shows them, or a new ID.
+A search index kept under another spelling of a built-in type, such as CUSTOMER,
+is upserted with
+[`epx api put /search/{tenant}/search/CUSTOMER/indexes/ID --scope search.search_manage --file FILE`](/commands/api#epx-api-put).
 
 Localized text in the body is a map of translations, e.g. `{"en": "Acme", "de": "Acme"}`,
 as `-o json` of a read prints it, sent with Content-Language: \*. Emporix refuses a string in
@@ -541,6 +562,9 @@ Emporix answers a list's malformed `--query` with an internal error (500 Interna
 Error, exit 1).
 A type is customer or legal-entity, exactly as written, or a custom entity type,
 whose ID [`epx custom-entities list`](/commands/custom-entities#epx-custom-entities-list) shows.
+A saved search kept under another spelling of a built-in type, such as CUSTOMER,
+is listed too; [`epx api`](/commands/api#epx-api) reaches it by its path, such as
+[`epx api get /search/{tenant}/search/CUSTOMER/queries/ID --scope search.search_read`](/commands/api#epx-api-get).
 
 Its reads require the search.search\_read scope.
 Its writes require the search.search\_manage scope.
@@ -571,6 +595,9 @@ A type is customer or legal-entity, exactly as written, or a custom entity type,
 whose ID [`epx custom-entities list`](/commands/custom-entities#epx-custom-entities-list) shows.
 TYPE and ID are a saved search's type and ID, as [`epx search queries list`](/commands/search#epx-search-queries-list)
 shows them.
+A saved search kept under another spelling of a built-in type, such as CUSTOMER,
+is deleted with
+[`epx api delete /search/{tenant}/search/CUSTOMER/queries/ID --scope search.search_manage`](/commands/api#epx-api-delete).
 
 Deletes data, which cannot be undone.
 On a terminal, epx sends DELETE only once you type ID at its prompt.
@@ -602,6 +629,9 @@ Emporix answers a list's malformed `--query` with an internal error (500 Interna
 Error, exit 1).
 A type is customer or legal-entity, exactly as written, or a custom entity type,
 whose ID [`epx custom-entities list`](/commands/custom-entities#epx-custom-entities-list) shows.
+A saved search kept under another spelling of a built-in type, such as CUSTOMER,
+is listed too; [`epx api`](/commands/api#epx-api) reaches it by its path, such as
+[`epx api get /search/{tenant}/search/CUSTOMER/queries/ID --scope search.search_read`](/commands/api#epx-api-get).
 TYPE is the type of saved searches, as [`epx search queries list`](/commands/search#epx-search-queries-list) shows it; an
 unknown type lists nothing.
 
@@ -640,6 +670,9 @@ Emporix answers a list's malformed `--query` with an internal error (500 Interna
 Error, exit 1).
 A type is customer or legal-entity, exactly as written, or a custom entity type,
 whose ID [`epx custom-entities list`](/commands/custom-entities#epx-custom-entities-list) shows.
+A saved search kept under another spelling of a built-in type, such as CUSTOMER,
+is listed too; [`epx api`](/commands/api#epx-api) reaches it by its path, such as
+[`epx api get /search/{tenant}/search/CUSTOMER/queries/ID --scope search.search_read`](/commands/api#epx-api-get).
 TYPE and ID are a saved search's type and ID, as [`epx search queries list`](/commands/search#epx-search-queries-list)
 shows them; an unknown one is not found (exit 4).
 
@@ -670,6 +703,9 @@ Emporix answers a list's malformed `--query` with an internal error (500 Interna
 Error, exit 1).
 A type is customer or legal-entity, exactly as written, or a custom entity type,
 whose ID [`epx custom-entities list`](/commands/custom-entities#epx-custom-entities-list) shows.
+A saved search kept under another spelling of a built-in type, such as CUSTOMER,
+is listed too; [`epx api`](/commands/api#epx-api) reaches it by its path, such as
+[`epx api get /search/{tenant}/search/CUSTOMER/queries/ID --scope search.search_read`](/commands/api#epx-api-get).
 
 Requires the search.search\_read scope.
 
@@ -710,6 +746,9 @@ A type is customer or legal-entity, exactly as written, or a custom entity type,
 whose ID [`epx custom-entities list`](/commands/custom-entities#epx-custom-entities-list) shows.
 TYPE and ID are a saved search's type and ID, as [`epx search queries list`](/commands/search#epx-search-queries-list)
 shows them, or a new ID.
+A saved search kept under another spelling of a built-in type, such as CUSTOMER,
+is upserted with
+[`epx api put /search/{tenant}/search/CUSTOMER/queries/ID --scope search.search_manage --file FILE`](/commands/api#epx-api-put).
 
 Localized text in the body is a map of translations, e.g. `{"en": "Acme", "de": "Acme"}`,
 as `-o json` of a read prints it, sent with Content-Language: \*. Emporix refuses a string in

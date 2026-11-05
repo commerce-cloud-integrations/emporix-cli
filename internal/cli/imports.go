@@ -87,8 +87,8 @@ type importedRecord struct {
 // (newImportFilesCommand), starts, retries and cancels runs and schedules
 // them (importConfigurationWrites, importRunWrites).
 func newImportsCommand(a *app) *cobra.Command {
-	configurations, streamsOf, runsOf := importConfigurations(), configurationStreams(), configurationRuns()
-	streams := importStreams(childListLine(configurations, streamsOf))
+	configurations, runsOf := importConfigurations(), configurationRuns()
+	streams, streamsOf := importStreams(configurations)
 	runs := importRuns(childListLine(configurations, runsOf))
 	job := importRunJob(runs)
 	reads := slices.Concat([]*cobra.Command{
@@ -172,47 +172,56 @@ func newImportConfigurationsCommand(a *app, configurations resource[importConfig
 	}, writes...)...)
 }
 
-// configurationStreams declares the streams of an import configuration.
-func configurationStreams() child[importStream] {
+// configurationStreams declares the streams of an import configuration,
+// shown in v, the table of streams.
+func configurationStreams(v view[importStream]) child[importStream] {
 	return child[importStream]{
-		use:   "streams",
+		use:   streamsUse,
 		short: "List the streams of a configuration",
 		long: "Reads the streams of an import configuration, in their sequence. The service returns them\n" +
 			"whole, so they are read with one request.",
 		fetch:   listing{read: (*emporix.Client).GetUnpaged},
 		unknown: listsNothing,
-		view:    importStreamView(),
+		view:    v,
 	}
 }
 
+// streamsUse names import streams, and the streams of a configuration.
+const streamsUse = "streams"
+
 // importStreams returns import streams, which the service reads one at a time
-// by their own id; the command line listedBy lists them (the streams of a
-// configuration).
-func importStreams(listedBy string) resource[importStream] {
-	streams := resource[importStream]{
-		use:      "streams",
+// by their own id, and the streams of a configuration of configurations
+// (configurationStreams), which list them, both with the table of streams,
+// which names the command of their file queue (queue).
+func importStreams(configurations resource[importConfig]) (resource[importStream], child[importStream]) {
+	queue := "`epx " + strings.Join([]string{importsUse, streamsUse, filesUse}, " ") + "`"
+	v := importStreamView(queue)
+	streamsOf := configurationStreams(v)
+	listedBy := childListLine(configurations, streamsOf)
+	long := "Reads an import stream, which imports one source of a configuration, an entity or files,\n" +
+		"into an Emporix type. A stream's ID is the one that `epx " + listedBy + "` shows."
+	return resource[importStream]{
+		use:      streamsUse,
 		noun:     "import streams",
 		short:    "Read import streams and the records they imported; queue their files",
 		under:    importsUse,
 		listedBy: listedBy,
-		long: "Reads an import stream, which imports one source of a configuration, an entity or files,\n" +
-			"into an Emporix type. A stream's ID is the one that `epx " + listedBy + "` shows.",
-		path:   "/importtool/{tenant}/streams",
-		scopes: importScopes(),
-		view:   importStreamView(),
-	}
-	streams.about = streams.long + "\n`epx " + streams.commandLine(filesUse, request{}) + "` reads and changes the " +
-		"queue of the files that a file-based\nstream imports."
-	return streams
+		long:     long,
+		about:    long + "\n" + queue + " reads and changes the queue of the files that a file-based\nstream imports.",
+		path:     "/importtool/{tenant}/streams",
+		scopes:   importScopes(),
+		view:     v,
+	}, streamsOf
 }
 
-// importStreamView is the table of import streams.
-func importStreamView() view[importStream] {
+// importStreamView is the table of import streams, whose legend names queue,
+// the command of their file queue, as help quotes it.
+func importStreamView(queue string) view[importStream] {
 	return view[importStream]{
 		singular: "stream",
 		header:   []string{columnID, columnName, "SOURCE", "TARGET TYPE", "MODE", columnEnabled},
 		legend: "SOURCE is the stream's source entity, followed for a file-based stream (which may name no\n" +
-			"entity) by SNAPSHOT files or INCREMENTAL files, read as `epx imports streams files` explains.\n" +
+			"entity) by SNAPSHOT files or INCREMENTAL files, read as " + queue + " explains.\n" +
 			"TARGET TYPE is the Emporix type it writes to (a discriminator, in -o json, may route records\n" +
 			"to others), MODE STANDALONE, or COMPOSITE_CHILD or COMPOSITE_MERGE for a stream that adds to\n" +
 			"the records of another. A stream's source dataset (sourceDataset, such as the key column and\n" +

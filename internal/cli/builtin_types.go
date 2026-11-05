@@ -31,12 +31,16 @@ func spelledTypes(types ...builtInType) builtInTypes { return builtInTypes{types
 
 // anyCaseTypes returns built-in types, by their names, that a command takes
 // in any case and that request no scopes of their own.
-func anyCaseTypes(names ...string) builtInTypes {
+func anyCaseTypes(names ...string) builtInTypes { return namedTypes(false, names...) }
+
+// namedTypes returns built-in types, by their names, that request no scopes
+// of their own, taken exactly as written where exact, else in any case.
+func namedTypes(exact bool, names ...string) builtInTypes {
 	types := make([]builtInType, len(names))
 	for i, name := range names {
 		types[i] = builtInType{name: name}
 	}
-	return builtInTypes{types: types}
+	return builtInTypes{types: types, exact: exact}
 }
 
 // names returns the names of b's types, in their order.
@@ -109,47 +113,28 @@ func (b builtInTypes) fill(scopes []string, typ string) []string {
 	return slices.Concat(slices.DeleteFunc(slices.Clone(scopes), namesType), t.scopes)
 }
 
-// builtInSeparator separates, in a token of a scope annotation or of the
-// scopes that a scope sentence names, a built-in type from a scope that it
-// requests in place of those that name a custom entity type, as in
-// customer:customer.customer_read (builtInTypes.tokens, parseScopeTokens).
-const builtInSeparator = ":"
-
-// tokens returns a token for each scope that one of b's types requests,
-// TYPE:SCOPE (builtInSeparator).
-func (b builtInTypes) tokens() []string {
-	var tokens []string
+// inPlaceOf returns a note on typed, the scopes of a command that name a
+// custom entity type (typedScopes), in place of which it requests, for one of
+// b's types, that type's own (fill): a new line naming, one type per line,
+// the scopes that each type with scopes of its own requests in place of
+// typed; nothing where no type of b requests scopes of its own or typed is
+// empty.
+func (b builtInTypes) inPlaceOf(typed []string) string {
+	var each []string
 	for _, t := range b.types {
-		for _, scope := range t.scopes {
-			tokens = append(tokens, t.name+builtInSeparator+scope)
+		if len(t.scopes) > 0 {
+			each = append(each, t.name+" requires "+strings.Join(t.scopes, ", "))
 		}
 	}
-	return tokens
+	if len(typed) == 0 || len(each) == 0 {
+		return ""
+	}
+	return "\nIn place of " + strings.Join(typed, ", ") + ", " + strings.Join(each, ";\n") + "."
 }
 
-// parseScopeTokens returns tokens, the scopes that a command's annotation or
-// scope sentence names, as the scopes that the command requests as declared
-// and, apart, the built-in types whose scopes its tokens hold
-// (builtInTypes.tokens), each once, with each of its scopes once, in their
-// order. Tokens do not say how a command takes the types (builtInTypes.exact).
-func parseScopeTokens(tokens []string) (scopes []string, types []builtInType) {
-	for _, token := range tokens {
-		name, scope, isBuiltIn := strings.Cut(token, builtInSeparator)
-		if !isBuiltIn {
-			scopes = append(scopes, token)
-			continue
-		}
-		at := slices.IndexFunc(types, func(t builtInType) bool { return t.name == name })
-		if at < 0 {
-			at = len(types)
-			types = append(types, builtInType{name: name})
-		}
-		if !slices.Contains(types[at].scopes, scope) {
-			types[at].scopes = append(types[at].scopes, scope)
-		}
-	}
-	return scopes, types
-}
+// withoutScopes returns b's types, as b takes them, without scopes of their
+// own.
+func (b builtInTypes) withoutScopes() builtInTypes { return namedTypes(b.exact, b.names()...) }
 
 // values returns choices, the values that the arguments of a command whose
 // usage is use take by their names, with the names of b's types as values of

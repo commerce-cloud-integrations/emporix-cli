@@ -295,18 +295,21 @@ func TestGroupsStateTheScopesOfTheirReads(t *testing.T) {
 }
 
 // TestReadsAnnotateTheScopesTheyRequest checks that every read command
-// carries the scopes its read cases request (assertScopes) in its annotation,
-// those of a custom entity type with the type of its first argument, or
-// those of the built-in type that it names, as the annotation holds them
-// (typeOfRun), so no read built outside reader.command escapes the group
-// scope sentences.
+// carries in its annotation the scopes that each of its read cases requests
+// (assertScopes), filled in for the case's first argument as the command
+// fills them in (typeOfRun): those of a custom entity type with that type,
+// or those of the built-in type that it names in their place. So no read
+// built outside reader.command escapes the group scope sentences.
 func TestReadsAnnotateTheScopesTheyRequest(t *testing.T) {
 	root := newTestRoot()
-	for path, tt := range casesByCommand(t) {
-		cmd, rest, err := root.Find(tt.args)
-		scopes, isRead := cmd.Annotations[scopesAnnotation]
-		if err != nil || !isRead || !slices.Equal(typeOfRun(cmd, rest)(strings.Fields(scopes)), tt.scopes) {
-			t.Errorf("%s: scopes annotation %q (present %v); its read cases request %q", path, scopes, isRead, tt.scopes)
+	for path, cases := range casesOfCommands(t) {
+		for _, tt := range cases {
+			cmd, rest, err := root.Find(tt.args)
+			scopes, isRead := cmd.Annotations[scopesAnnotation]
+			if err != nil || !isRead || !slices.Equal(typeOfRun(cmd, rest)(strings.Fields(scopes)), tt.scopes) {
+				t.Errorf("%s: scopes annotation %q (present %v); its read case %q requests %q", path, scopes, isRead,
+					tt.args, tt.scopes)
+			}
 		}
 	}
 }

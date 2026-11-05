@@ -60,6 +60,7 @@ type argumentIDs map[string]*idSource
 type idSource struct {
 	req    request  // what it reads: {parent} and {inner} name the arguments before, {site} --site
 	scopes []string // the list's scopes, none write-capable
+	rule   typeRule // the rule of the type argument of the list's read, which fills in its scopes
 	read   readFunc // the glance of the list (glancer)
 	items  shape    // where the items are in the response
 
@@ -112,7 +113,11 @@ func completionValue(c cobra.Completion) string {
 // column, the item's identifier, are described by the item's NAME: the value
 // of another column, such as a TYPE, may name many items. A column that the
 // table lacks is a mistake in the declaration, so it panics while the command
-// tree is built, which every test of the tree does.
+// tree is built, which every test of the tree does. The source keeps the rule
+// of the type argument of rd's read without built-in types: it fills in the
+// scopes of a custom entity type, while the completing command's own rule
+// refuses a built-in type written otherwise before the source is read
+// (completeArguments).
 func listedIDs[T any](rd reader[T], req request, f fetcher, column string) *idSource {
 	at := slices.Index(rd.header, column)
 	if at < 0 {
@@ -128,15 +133,15 @@ func listedIDs[T any](rd reader[T], req request, f fetcher, column string) *idSo
 		name = n
 	}
 	return &idSource{
-		req: req, scopes: rd.scopes, read: read, items: items,
+		req: req, scopes: rd.scopes, rule: newTypeRule(rd.scopes, builtInTypes{}), read: read, items: items,
 		offer: func(found []json.RawMessage, prefix string) []cobra.Completion {
 			return offeredIDs(rd.view, found, at, name, prefix)
 		},
 	}
 }
 
-// offeredIDs returns up to completionSize IDs of items, the values of column
-// of v's table, that start with prefix, each described by the value of the
+// offeredIDs returns the IDs of items, the values of column of v's table,
+// that start with prefix, each described by the value of the
 // column name (none where it is negative or empty), once each and in the
 // order listed. Only a NAME describes an ID, as no other column is known to
 // keep no secret. An item that v cannot show, or an ID that no argument could
@@ -146,9 +151,6 @@ func offeredIDs[T any](v view[T], items []json.RawMessage, column, name int, pre
 	var ids []cobra.Completion
 	seen := map[string]bool{}
 	for _, raw := range items {
-		if len(ids) == completionSize {
-			break
-		}
 		var item T
 		if json.Unmarshal(raw, &item) != nil {
 			continue
@@ -168,21 +170,21 @@ func offeredIDs[T any](v view[T], items []json.RawMessage, column, name int, pre
 }
 
 // completeArguments makes shells complete the arguments of cmd, a read or a
-// write, each with its choices, by its name, and the built-in types of its
-// first argument (builtInTypes.values), which need no read and complete
-// without the opt-in too, then with the IDs that ids list for it, as
-// listedItems reads them, given the site that --site gives, else the default
-// site of the profile in effect. It offers nothing that cmd refuses: no
-// listed value of its first argument that writes a built-in type otherwise
-// (builtInTypes.spelling), and nothing at all, without a read, after such a
-// first argument. Values or a read for an argument that cmd does not take,
+// write, each with its choices, by its name, and its first argument with the
+// built-in types of rule, the rule of what it takes (builtInTypes.values),
+// which need no read and complete without the opt-in too, then with the IDs
+// that ids list for it, as listedItems reads them, given the site that --site
+// gives, else the default site of the profile in effect. It offers nothing
+// that cmd refuses: no listed value of its first argument that rule does not
+// accept (idSource.accepting), and nothing at all, without a read, after such
+// a first argument. Values or a read for an argument that cmd does not take,
 // or a read that needs a site where cmd takes no --site, could never
 // complete: that is a mistake in the declaration of cmd, so it panics while
 // the command tree is built, which every test of the tree does.
 func completeArguments(a *app, cmd *cobra.Command, site *siteCode, ids argumentIDs, choices map[string][]string,
-	builtIn builtInTypes) {
+	rule typeRule) {
 	names := declaredArguments(cmd.Use)
-	fixed := builtIn.values(cmd.Use, choices)
+	fixed := rule.builtIn.values(cmd.Use, choices)
 	completes := slices.Collect(maps.Keys(fixed))
 	for name, src := range ids {
 		if src == nil {
@@ -201,37 +203,55 @@ func completeArguments(a *app, cmd *cobra.Command, site *siteCode, ids argumentI
 	if len(completes) == 0 {
 		return
 	}
+	first := ids[names[0]].accepting(rule)
 	cmd.ValidArgsFunction = func(c *cobra.Command, args []string, toComplete string) (
 		[]cobra.Completion, cobra.ShellCompDirective) {
-		if len(args) >= len(names) || len(args) > 0 && builtIn.spelling(args[0]) != nil {
+		if len(args) >= len(names) || len(args) > 0 && rule.accepts(args[0]) != nil {
 			return nil, cobra.ShellCompDirectiveNoFileComp
 		}
-		name := names[len(args)]
-		src := ids[name]
+		name, src := names[len(args)], first
+		if len(args) > 0 {
+			src = ids[name]
+		}
 		var items []json.RawMessage
 		// Cobra runs no hook while it completes, so the default site of the profile in effect applies
 		// here, as it does where the command runs; only where the user opted in, as it reads the profiles.
 		if src != nil && a.completesIDs() && a.applyProfileDefaults(c) == nil {
 			items = a.listedItems(c.Context(), src, args, *site)
 		}
-		refused := func(value string) bool { return len(args) == 0 && builtIn.spelling(value) != nil }
-		return offerArgument(fixed[name], src, items, toComplete, refused)
+		return offerArgument(fixed[name], src, items, toComplete)
 	}
+}
+
+// accepting returns src for the first argument of a command whose type
+// argument takes what rule says: it offers only the IDs that rule accepts,
+// before completion counts them (offerArgument); nil where src is nil.
+func (src *idSource) accepting(rule typeRule) *idSource {
+	if src == nil {
+		return nil
+	}
+	accepted := *src
+	accepted.offer = func(items []json.RawMessage, typed string) []cobra.Completion {
+		return slices.DeleteFunc(src.offer(items, typed), func(id cobra.Completion) bool {
+			return rule.accepts(completionValue(id)) != nil
+		})
+	}
+	return &accepted
 }
 
 // offerArgument returns what an argument completes with that starts with typed:
 // those of values, which need no read, then the IDs that src offers of items
-// (none where src is nil) that the argument does not refuse, each once, up
-// to completionSize in all; and how shells complete them.
-func offerArgument(values []string, src *idSource, items []json.RawMessage, typed string,
-	refused func(value string) bool) ([]cobra.Completion, cobra.ShellCompDirective) {
+// (none where src is nil), each once, up to completionSize in all; and how
+// shells complete them.
+func offerArgument(values []string, src *idSource, items []json.RawMessage, typed string) (
+	[]cobra.Completion, cobra.ShellCompDirective) {
 	offered := slices.DeleteFunc(slices.Clone(values), func(v string) bool { return !strings.HasPrefix(v, typed) })
 	if src == nil {
 		return offered, cobra.ShellCompDirectiveNoFileComp
 	}
 	for _, id := range src.offer(items, typed) {
 		value := completionValue(id)
-		if len(offered) < completionSize && !slices.Contains(values, value) && !refused(value) {
+		if len(offered) < completionSize && !slices.Contains(values, value) {
 			offered = append(offered, id)
 		}
 	}
@@ -277,13 +297,14 @@ func (a *app) listedItems(ctx context.Context, src *idSource, args []string, sit
 // fillable reports whether args and site fill in every placeholder of src's
 // request, each with a value that addresses a single item, and, where src's
 // scopes name a custom entity type, the first of args is what a custom
-// entity type can be named (typeIDPattern), as typeScopes requires of it.
+// entity type can be named, as the command that lists the items requires of
+// it (typeRule.accepts).
 func (src *idSource) fillable(args []string, site siteCode) bool {
 	n := len(src.req.arguments())
 	if n > len(args) || slices.ContainsFunc(args[:n], func(arg string) bool { return !isPathSegment(arg) }) {
 		return false
 	}
-	if slices.ContainsFunc(src.scopes, namesType) && (n == 0 || !typeIDPattern.MatchString(args[0])) {
+	if src.rule.custom() && (n == 0 || src.rule.accepts(args[0]) != nil) {
 		return false
 	}
 	return site != "" || !src.req.names(placeholderSite)
@@ -291,13 +312,9 @@ func (src *idSource) fillable(args []string, site siteCode) bool {
 
 // scopesFor returns the scopes of src's read for args, which fill it in
 // (fillable): where they name a custom entity type, that of the first
-// argument, as the command that lists the items requests them.
-func (src *idSource) scopesFor(args []string) []string {
-	if !slices.ContainsFunc(src.scopes, namesType) {
-		return src.scopes
-	}
-	return withType(src.scopes, args[0])
-}
+// argument, as the command that lists the items requests them
+// (typeRule.fill).
+func (src *idSource) scopesFor(args []string) []string { return src.rule.fill(args, src.scopes) }
 
 // completesIDs reports whether the user opted in to completion that reads
 // the API: envCompleteIDs is 1 or true.

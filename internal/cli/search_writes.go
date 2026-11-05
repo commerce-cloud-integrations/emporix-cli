@@ -11,8 +11,9 @@ import (
 // the JSON object in --file, whose localized text is sent as maps only
 // (mapsOnly), and delete TYPE ID, both with searchManageScope.
 // Each text field says what its write sends and what Emporix answers; what a
-// type is (builtInTypes.sentence), what TYPE and ID are, how it is sent and
-// the scope sentence follow.
+// type is (builtInTypes.sentence), what TYPE and ID are, how `epx api` sends
+// it to an item kept under another spelling of a built-in type, how it is
+// sent and the scope sentence follow.
 type perTypeWrites struct {
 	update  string   // what update sends
 	example string   // a command line of update, indented by two spaces
@@ -20,24 +21,28 @@ type perTypeWrites struct {
 	answer  answerer // how update and delete end: by following the job that they start; by printing when nil
 }
 
-// commands returns update and delete of one item of a collection, which
-// singular names, sent to item; arguments says what TYPE and ID are, ids
-// lists them for completion, and types are the built-in types that TYPE
-// takes.
-func (p perTypeWrites) commands(a *app, singular string, item request, arguments string,
-	ids argumentIDs, types builtInTypes) []*cobra.Command {
-	manage, typeLine := []string{searchManageScope}, "\n"+types.sentence()
+// commands returns update and delete of target, one item of a collection
+// kept per type, whose TYPE takes types, which also say how to reach an item
+// kept under another spelling of them.
+func (p perTypeWrites) commands(a *app, target perTypeTarget, types exactTypes) []*cobra.Command {
+	manage := []string{searchManageScope}
+	typeAndArguments := "\n" + types.builtIn.sentence() + "\n" + target.arguments
+	viaAPI := func(done, method, flags string) string {
+		return "\n" + types.kept("A "+target.singular) + "is " + done + " with\n" +
+			types.api(method, target.req, manage, flags) + "."
+	}
 	return []*cobra.Command{
 		(&write{
-			use: "update TYPE ID", short: "Upsert a " + singular, method: http.MethodPut,
-			long: p.update + typeLine + "\n" + arguments + ", or a new ID.", example: p.example,
-			req: item, scopes: manage, body: &payload{}, language: mapsOnly, ids: ids, builtIn: types,
-			answer: p.answer,
+			use: "update TYPE ID", short: "Upsert a " + target.singular, method: http.MethodPut,
+			long:    p.update + typeAndArguments + ", or a new ID." + viaAPI("upserted", "put", " --file FILE"),
+			example: p.example,
+			req:     target.req, scopes: manage, body: &payload{}, language: mapsOnly, ids: target.ids,
+			builtIn: types.builtIn, answer: p.answer,
 		}).command(a),
 		(&write{
-			use: "delete TYPE ID", short: "Delete a " + singular, method: http.MethodDelete,
-			long: p.delete + typeLine + "\n" + arguments + ".",
-			req:  item, scopes: manage, body: noBody{}, ids: ids, builtIn: types, answer: p.answer,
+			use: "delete TYPE ID", short: "Delete a " + target.singular, method: http.MethodDelete,
+			long: p.delete + typeAndArguments + "." + viaAPI("deleted", "delete", ""),
+			req:  target.req, scopes: manage, body: noBody{}, ids: target.ids, builtIn: types.builtIn, answer: p.answer,
 		}).command(a),
 	}
 }

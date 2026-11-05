@@ -11,7 +11,8 @@
 #   EPX_INSTALL_DIR     directory for epx.exe (default: %LOCALAPPDATA%\Programs\epx\bin)
 #   EPX_NO_MODIFY_PATH  set to 1 to leave the user's Path alone
 #
-# Everything runs inside Install-Epx, so a download cut off midway runs nothing.
+# Nothing runs until the last line calls Install-Epx; the lines before it only name the
+# repository and define functions, so a download cut off midway installs nothing.
 
 $EpxRepo = "commerce-cloud-integrations/emporix-cli"
 

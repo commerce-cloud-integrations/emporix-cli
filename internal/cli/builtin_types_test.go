@@ -91,10 +91,14 @@ func TestSearchTypesOnlyInTheirSpelling(t *testing.T) {
 	}
 }
 
+// unscopedLines is what typeSentence says an unknown type gives, unscoped
+// on two lines.
+const unscopedLines = unscopedLead + "\n" + unscopedRest + "."
+
 // TestTypedCommandsNameTheirBuiltInTypes checks that a command with built-in
 // types names them where it refuses what no type is, in what its help says
-// TYPE is, and the scopes that each requests in its scope sentence, which
-// its annotation holds too.
+// TYPE is, and the scopes that each requests before its scope sentence,
+// while its annotation holds its own scopes only.
 func TestTypedCommandsNameTheirBuiltInTypes(t *testing.T) {
 	fake := newFakeEmporix(t)
 	code, stdout, stderr := runCLI(t, fake.env(), "search", "documents", "legal entity", "--saved-search", "s1",
@@ -106,23 +110,29 @@ func TestTypedCommandsNameTheirBuiltInTypes(t *testing.T) {
 	}
 	fake.assertNothingSent(t)
 	const sentence = "TYPE is customer or legal-entity, exactly as written, or a custom entity type,\n" +
-		"whose ID `epx custom-entities list` shows; an unknown one " + string(unscoped) + "."
-	if got := typeSentence("TYPE", searchTypes()); got != sentence {
+		"whose ID `epx custom-entities list` shows; an unknown one " + unscopedLines
+	if got := typeSentence(searchTypes()); got != sentence {
 		t.Errorf("type sentence %q; want %q", got, sentence)
 	}
-	if got, want := typeSentence("TYPE", builtInTypes{}), "TYPE is a custom entity type,\nwhose ID "+
-		"`epx custom-entities list` shows; an unknown one "+string(unscoped)+"."; got != want {
+	if got, want := typeSentence(builtInTypes{}), "TYPE is a custom entity type,\nwhose ID "+
+		"`epx custom-entities list` shows; an unknown one "+unscopedLines; got != want {
 		t.Errorf("type sentence without built-in types %q; want %q", got, want)
 	}
-	const scopes = "Requires the search.search_read, custom.<type>_read scopes.\n<type> is the custom entity " +
-		"type in lower case (custom.document_read for DOCUMENT).\nIn place of custom.<type>_read, customer " +
-		"requires customer.customer_read;\nlegal-entity requires customermanagement.legalentity_read."
+	const scopes = "\nIn place of custom.<type>_read, customer requires customer.customer_read;\nlegal-entity " +
+		"requires customermanagement.legalentity_read.\n\nRequires the search.search_read, custom.<type>_read " +
+		"scopes.\n<type> is the custom entity type in lower case (custom.document_read for DOCUMENT)."
 	cmd, _, err := newTestRoot().Find([]string{"search", "documents"})
-	if err != nil || !strings.Contains(cmd.Long, sentence) || !strings.HasSuffix(cmd.Long, "\n\n"+scopes) ||
-		cmd.Annotations[scopesAnnotation] != "search.search_read custom.<type>_read customer:customer.customer_read "+
-			"legal-entity:customermanagement.legalentity_read" {
+	if err != nil || !strings.Contains(cmd.Long, sentence) || !strings.HasSuffix(cmd.Long, scopes) ||
+		cmd.Annotations[scopesAnnotation] != "search.search_read custom.<type>_read" {
 		t.Errorf("help of search documents %q, annotated %q; want %q and to end with %q", cmd.Long,
 			cmd.Annotations[scopesAnnotation], sentence, scopes)
+	}
+	// Nothing to say where no built-in type requests scopes of its own, or no scope names a custom entity type.
+	for _, note := range []string{anyCaseTypes("PRODUCT").inPlaceOf([]string{customTypeReadScope}),
+		searchDocumentTypes().inPlaceOf(nil)} {
+		if note != "" {
+			t.Errorf("note %q; want none", note)
+		}
 	}
 }
 
@@ -132,25 +142,26 @@ func TestTypedCommandsNameTheirBuiltInTypes(t *testing.T) {
 // type is named is checked only where custom.
 func TestBuiltInTypesTakeEveryCaseUnlessExact(t *testing.T) {
 	anyCase, exact := anyCaseTypes("PRODUCT", "ORDER"), searchTypes()
+	custom, other := []string{customTypeReadScope}, []string{searchScope}
 	for _, tt := range []struct {
 		types  builtInTypes
 		arg    string
-		custom bool
-		want   string // in the error; none when empty
+		scopes []string // of the command, which name a custom entity type or not
+		want   string   // in the error; none when empty
 	}{
-		{anyCase, "product", true, ""},
-		{anyCase, "Order", false, ""},
-		{anyCase, "a-b", false, ""},
-		{anyCase, "a-b", true, "the first a letter; a built-in type is PRODUCT or ORDER"},
-		{exact, "customer", true, ""},
-		{exact, "Customer", false, "use customer, as Emporix spells it"},
-		{exact, "LEGAL-ENTITY", true, "use legal-entity, as Emporix spells it"},
-		{exact, "a-b", false, ""},
-		{builtInTypes{}, "a-b", true, "the first a letter"},
+		{anyCase, "product", custom, ""},
+		{anyCase, "Order", other, ""},
+		{anyCase, "a-b", other, ""},
+		{anyCase, "a-b", custom, "the first a letter; a built-in type is PRODUCT or ORDER"},
+		{exact, "customer", custom, ""},
+		{exact, "Customer", other, "use customer, as Emporix spells it"},
+		{exact, "LEGAL-ENTITY", custom, "use legal-entity, as Emporix spells it"},
+		{exact, "a-b", other, ""},
+		{builtInTypes{}, "a-b", custom, "the first a letter"},
 	} {
-		err := typeArgument(tt.arg, tt.custom, tt.types)
+		err := newTypeRule(tt.scopes, tt.types).accepts(tt.arg)
 		if tt.want == "" && err != nil || tt.want != "" && (err == nil || !strings.HasSuffix(err.Error(), tt.want)) {
-			t.Errorf("%v: typeArgument(%q, %v) = %v; want %q", tt.types.names(), tt.arg, tt.custom, err, tt.want)
+			t.Errorf("%v: accepts(%q) with scopes %q = %v; want %q", tt.types.names(), tt.arg, tt.scopes, err, tt.want)
 		}
 	}
 	if got, want := anyCase.kinds(), "PRODUCT or ORDER in any case, or a custom entity type"; got != want {
@@ -166,20 +177,25 @@ func TestBuiltInTypesTakeEveryCaseUnlessExact(t *testing.T) {
 
 // TestBuiltInTypesAreDeclaredOnAnArgumentWithReadScopes checks that a read
 // with built-in types is refused while the command tree is built where its
-// request takes no argument, whose value they would be, or where one of them
+// request takes no argument, whose value they would be, where one of them
 // requests a write-capable scope, which the read would request without its
-// opt-in.
+// opt-in, or where one requests scopes but no scope of the read names a
+// custom entity type, which they would replace.
 func TestBuiltInTypesAreDeclaredOnAnArgumentWithReadScopes(t *testing.T) {
+	typed := []string{"search.search_read", customTypeReadScope}
 	for _, tt := range []struct {
 		name    string
 		path    string
+		scopes  []string
 		builtIn builtInTypes
 		want    string
 	}{
-		{"no argument", "/things", anyCaseTypes("PRODUCT"),
+		{"no argument", "/things", typed, anyCaseTypes("PRODUCT"),
 			"(a scope that names <type>, or built-in types) is the command's first argument, which its request lacks"},
-		{"write-capable", "/things/{id}", spelledTypes(builtInType{name: "customer",
+		{"write-capable", "/things/{id}", typed, spelledTypes(builtInType{name: "customer",
 			scopes: []string{"customer.customer_manage"}}), "the built-in type customer requests a write-capable scope"},
+		{"nothing to replace", "/things/{id}", []string{"search.search_read"}, searchDocumentTypes(),
+			"the built-in type customer requests scopes in place of none that names <type>"},
 	} {
 		t.Run(tt.name, func(t *testing.T) {
 			defer func() {
@@ -187,7 +203,7 @@ func TestBuiltInTypesAreDeclaredOnAnArgumentWithReadScopes(t *testing.T) {
 					t.Fatalf("panic %q; want the declaration refused with %q", recovered, tt.want)
 				}
 			}()
-			rd := reader[thing]{view: thingView(), scopes: []string{"search.search_read", customTypeReadScope}}
+			rd := reader[thing]{view: thingView(), scopes: tt.scopes}
 			rd.command(&app{}, &command{use: "documents TYPE", req: request{path: tt.path}, fetch: listing{},
 				builtIn: tt.builtIn})
 		})

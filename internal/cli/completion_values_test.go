@@ -25,7 +25,7 @@ func TestCompletionOffersTheBuiltInRAGTypesAndTheCustomOnes(t *testing.T) {
 	for _, tt := range []completionCase{
 		{ // the built-in types first, then the custom ones, with the scopes of `custom-entities list` (none)
 			args: []string{"ai", "rag", "fields", ""}, routes: custom,
-			want:     append(predefinedTypeNames(), "CUSTOM_DOCUMENT|Document", "OFFER"), // ORDER once
+			want:     append(entityBuiltInTypeNames(), "CUSTOM_DOCUMENT|Document", "OFFER"), // ORDER once
 			requests: []string{customEntitiesPage},
 		},
 		{ // only those that start with what is typed
@@ -41,12 +41,12 @@ func TestCompletionOffersTheBuiltInRAGTypesAndTheCustomOnes(t *testing.T) {
 		{ // the built-in types where the list cannot be read
 			args:     []string{"ai", "rag", "fields", ""},
 			routes:   map[string]http.HandlerFunc{customEntitiesPath: respond(http.StatusInternalServerError, `{}`)},
-			want:     predefinedTypeNames(),
+			want:     entityBuiltInTypeNames(),
 			requests: []string{customEntitiesPage},
 		},
 		{ // up to 100 in all: the built-in types, then the first 96 custom ones
 			args: []string{"ai", "rag", "fields", ""}, routes: many,
-			want:     append(predefinedTypeNames(), keys("T", 96)...),
+			want:     append(entityBuiltInTypeNames(), keys("T", 96)...),
 			requests: []string{customEntitiesPage},
 		},
 	} {

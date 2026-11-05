@@ -193,27 +193,28 @@ func (j *reindexJob) state() jobState {
 	return s
 }
 
-// predefinedEntityTypes returns the entity types that reindex jobs and the AI
+// entityBuiltInTypes returns the entity types that reindex jobs and the AI
 // RAG Indexer take besides the custom ones, in any case.
-func predefinedEntityTypes() builtInTypes {
+func entityBuiltInTypes() builtInTypes {
 	return anyCaseTypes("PRODUCT", "ORDER", "CUSTOMER", "LEGAL-ENTITY")
 }
 
 // entityTypeSentences say, for help, what TYPE, an entity type, is: one of
-// predefinedEntityTypes, LEGAL-ENTITY with a hyphen, or a custom one.
-func entityTypeSentences() string {
-	return predefinedEntityTypes().clause("TYPE") + ".\nLEGAL-ENTITY takes a hyphen, not an underscore."
+// builtIn, the entityBuiltInTypes that its caller declares a command with,
+// LEGAL-ENTITY with a hyphen, or a custom one.
+func entityTypeSentences(builtIn builtInTypes) string {
+	return builtIn.clause("TYPE") + ".\nLEGAL-ENTITY takes a hyphen, not an underscore."
 }
 
 // reindexJobCreate starts a reindex job in jobs, which --wait follows as
 // the get of jobs reads it.
 func reindexJobCreate(jobs resource[reindexJob]) *write {
-	types := predefinedEntityTypes()
+	types := entityBuiltInTypes()
 	return &write{
 		use:   createUse,
 		short: "Start a reindex job",
 		long: "Starts a job that indexes every entity of TYPE again; with --rag, it also embeds products for\n" +
-			"RAG search.\n" + entityTypeSentences() + "\n" +
+			"RAG search.\n" + entityTypeSentences(types) + "\n" +
 			"Searches of customers and legal entities, in the Search Service and by the tools of agents,\n" +
 			"read what a CUSTOMER or LEGAL-ENTITY job indexes.\n" +
 			"Emporix answers with the job, or with the job of that type that is IN_PROGRESS already.\n" +

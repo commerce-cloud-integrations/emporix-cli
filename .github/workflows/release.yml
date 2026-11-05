@@ -19,7 +19,7 @@ jobs:
   release:
     name: Release
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 45
     # The npm trusted publisher names this environment.
     environment: release
     permissions:
@@ -32,6 +32,12 @@ jobs:
         with:
           fetch-depth: 0
           persist-credentials: false
+
+      # Checkout may leave the pushed annotated tag as a lightweight ref; release.sh takes
+      # the release notes from the annotated tag's message. The repository is public, so
+      # the fetch needs no credentials.
+      - name: Fetch the annotated tag
+        run: git fetch --force origin "refs/tags/${GITHUB_REF_NAME}:refs/tags/${GITHUB_REF_NAME}"
 
       - name: Setup Go
         uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0

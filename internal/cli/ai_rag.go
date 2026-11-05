@@ -27,12 +27,12 @@ func newAIRAGCommand(a *app) *cobra.Command {
 	const path = "/ai-rag-indexer/{tenant}/" + placeholderID // the metadata of the entity type TYPE
 	// The entity types that the RAG reference names besides the custom ones, the same as reindex jobs
 	// take, in any case (live: product, order, customer and legal-entity are served too).
-	builtIn := predefinedEntityTypes()
+	builtIn := entityBuiltInTypes()
 	types := argumentIDs{columnType: customEntities().ids()}
-	fieldsTypeHelp := "\n" + entityTypeSentences() +
+	fieldsTypeHelp := "\n" + entityTypeSentences(builtIn) +
 		"\nAn unknown TYPE, such as LEGAL_ENTITY, gets 400 Bad Request (exit 1).\n" +
 		"The fields come whole, so they are read with one request."
-	reindexTypeHelp := "\n" + entityTypeSentences() +
+	reindexTypeHelp := "\n" + entityTypeSentences(builtIn) +
 		"\nEmporix has answered an unknown TYPE with 204 No Content (exit 0), not the\n" +
 		"400 Bad Request its reference gives, so check the TYPE first."
 	whole := listing{read: (*emporix.Client).GetUnpaged}
@@ -48,8 +48,8 @@ func newAIRAGCommand(a *app) *cobra.Command {
 		short: "Embed every entity of a type again for RAG search (deprecated by Emporix)",
 		long: "Embeds every entity of a type again in the vector database, replacing its records there;\n" +
 			"it sends no body. Emporix has deprecated this endpoint in favor of a reindex job:\n" +
-			"`epx indexing reindex-jobs create`, which --wait follows. Give it --rag for PRODUCT; for the\n" +
-			"other types, such as CUSTOMER and LEGAL-ENTITY, the job updates their embeddings without it." +
+			"`epx indexing reindex-jobs create`, which --wait follows. Give it --rag for PRODUCT; for\n" +
+			"CUSTOMER and LEGAL-ENTITY, the job updates their embeddings without it." +
 			reindexTypeHelp,
 		example: "  epx ai rag reindex PRODUCT --dry-run",
 		method:  http.MethodPost,

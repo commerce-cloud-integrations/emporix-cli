@@ -39,7 +39,7 @@ type customerAddress struct {
 const customersCommand = "customers"
 
 // customerReadScope reads every customer profile, as customers and a search of
-// the customer documents of the Search Service (searchTypes) request it.
+// the customer documents of the Search Service (searchDocumentTypes) request it.
 const customerReadScope = "customer.customer_read"
 
 // customers declares the customer profiles, whose numbers the

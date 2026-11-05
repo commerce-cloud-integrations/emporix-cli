@@ -70,17 +70,21 @@ const (
 	searchManageScope = "search.search_manage"
 )
 
-// searchTypes returns the types that Emporix defines whose documents the
-// Search Service searches besides the instances of custom entity types,
-// exactly as written, as Emporix keeps indexes and saved searches under a
-// type as written (live: CUSTOMER addresses other indexes than customer),
-// each with the read scope that finds all of them, which a search of their
-// documents requires in place of the read scope of a custom entity type
-// (documentsCommand).
-func searchTypes() builtInTypes {
+// searchDocumentTypes returns the types that Emporix defines whose
+// documents the Search Service searches besides the instances of custom
+// entity types, exactly as written, as Emporix keeps indexes and saved
+// searches under a type as written (live: CUSTOMER addresses other indexes
+// than customer), each with the read scope that finds all of its documents,
+// which a search of them requires in place of the read scope of a custom
+// entity type (documentsCommand).
+func searchDocumentTypes() builtInTypes {
 	return spelledTypes(builtInType{name: "customer", scopes: []string{customerReadScope}},
 		builtInType{name: "legal-entity", scopes: []string{legalEntityReadScope}})
 }
+
+// searchTypes returns searchDocumentTypes without their scopes, as the
+// commands of indexes and saved searches take them.
+func searchTypes() builtInTypes { return searchDocumentTypes().withoutScopes() }
 
 // badQuery says how the Search Service answers a malformed --query (live).
 const badQuery = "\nEmporix answers a list's malformed --query with an internal error (500 Internal Server\n" +
@@ -91,7 +95,7 @@ const badQuery = "\nEmporix answers a list's malformed --query with an internal 
 // searches, kept per type, and the jobs that create, update and delete the
 // indexes.
 func newSearchCommand(a *app) *cobra.Command {
-	types := searchTypes()
+	types := newExactTypes(searchTypes(), searchUse)
 	queries := resource[savedSearch]{
 		use:   "queries",
 		noun:  "saved searches",
@@ -116,8 +120,8 @@ func newSearchCommand(a *app) *cobra.Command {
 		"Reads the Search Service (a preview at Emporix), which searches customers, legal entities\n"+
 			"and the instances of custom entity types: the documents a search finds, its indexes and\n"+
 			"saved searches, kept per type, and the jobs that create, update and delete the indexes;\n"+
-			"changes the indexes and saved searches.\n"+types.sentence(),
-		documentsCommand(a, types),
+			"changes the indexes and saved searches.\n"+types.builtIn.sentence(),
+		documentsCommand(a, searchDocumentTypes()),
 		indexesCommand(a, indexJobWait(jobs), types),
 		perTypeCommand(a, queries, savedSearchWrites(), types),
 		newResourceCommand(a, jobs))
@@ -126,7 +130,7 @@ func newSearchCommand(a *app) *cobra.Command {
 // indexesCommand returns the group of search indexes, whose TYPE is one of
 // types or a custom entity type, whose writes start the index jobs that job
 // follows.
-func indexesCommand(a *app, job *jobWait, types builtInTypes) *cobra.Command {
+func indexesCommand(a *app, job *jobWait, types exactTypes) *cobra.Command {
 	indexes := resource[searchIndex]{
 		use:   "indexes",
 		noun:  "search indexes",
@@ -152,10 +156,11 @@ func indexesCommand(a *app, job *jobWait, types builtInTypes) *cobra.Command {
 		short: "Export search indexes",
 		long: "Reads an export package of the search indexes that --index names, as TYPE/ID (the TYPE and\n" +
 			"ID that `epx search indexes list` shows): their configuration, without status or metadata.\n" +
-			"Emporix answers an unknown index as not found (exit 4).\n" + types.sentence(),
+			"Emporix answers an unknown index as not found (exit 4).\n" + types.builtIn.sentence() + "\n" +
+			types.kept("A search index") + "is exported with --body.",
 		scopes: []string{searchManageScope},
 		selection: objectsValue("index", "a search index to export, as `TYPE/ID` (repeatable)",
-			indexSelection(types)),
+			indexSelection(newTypeRule(indexes.scopes, types.builtIn))),
 	})
 	return perTypeCommand(a, indexes, searchIndexWrites(job), types, indexExport,
 		searchIndexImport(a, indexes, job))
@@ -213,7 +218,7 @@ func documentsCommand(a *app, types builtInTypes) *cobra.Command {
 			"instances of a custom entity type, as a search index holds them. SCORE is how well a document\n" +
 			"matches; its other fields are only in -o json. --body gives a search of an index by its own\n" +
 			"queries and filters instead. An unknown saved search, or index of --body, is not found\n" +
-			"(exit 4).\n" + typeSentence("TYPE", types) + "\n" +
+			"(exit 4).\n" + typeSentence(types) + "\n" +
 			"Known limitation: for customer or legal-entity, epx requests the read scope that\n" +
 			"finds every document, so a credential that holds only a restricted one, such as\n" +
 			"customer.customer_read--DE, or only the own-read scope, such as customer.customer_read_own,\n" +
@@ -235,16 +240,16 @@ type indexRef struct {
 }
 
 // indexSelection returns how one search index given as TYPE/ID is read as
-// its indexRef. Its ID holds no slash; its type may. A type that writes one
-// of types otherwise is refused, as the TYPE argument of the commands that
-// take types refuses it (builtInTypes.spelling).
-func indexSelection(types builtInTypes) func(value string) (indexRef, error) {
+// its indexRef. Its ID holds no slash; its type may. A type that rule, that
+// of the TYPE argument of the commands of search indexes, does not accept is
+// refused, as that argument refuses it (typeRule.accepts).
+func indexSelection(rule typeRule) func(value string) (indexRef, error) {
 	return func(value string) (indexRef, error) {
 		slash := strings.LastIndex(value, "/")
 		if slash <= 0 || slash == len(value)-1 {
 			return indexRef{}, errors.New("use TYPE/ID")
 		}
-		if err := types.spelling(value[:slash]); err != nil {
+		if err := rule.accepts(value[:slash]); err != nil {
 			return indexRef{}, err
 		}
 		return indexRef{Type: value[:slash], ID: value[slash+1:]}, nil
@@ -254,19 +259,24 @@ func indexSelection(types builtInTypes) func(value string) (indexRef, error) {
 // perTypeCommand returns the group of a Search Service collection kept per
 // type: list (of every type, at r.path), for-type TYPE, get TYPE ID and the
 // writes of one item, update TYPE ID and delete TYPE ID, whose paths name the
-// type before the collection, and extra commands. TYPE is one of types or one
-// that list shows, and completes with those, ID one that for-type shows; the
-// help of the group and of its reads ends r.long with what a type is
-// (builtInTypes.sentence), as the writes add it to theirs.
-func perTypeCommand[T any](a *app, r resource[T], writes perTypeWrites, types builtInTypes,
+// type before the collection, and extra commands. TYPE is one of types or
+// one that list shows, and completes with those, ID one that for-type shows;
+// the help of the group and of its reads ends r.long with what a type is
+// (builtInTypes.sentence), as the writes add it to theirs, and with how to
+// reach an item kept under another spelling of one of types (exactTypes).
+func perTypeCommand[T any](a *app, r resource[T], writes perTypeWrites, types exactTypes,
 	extra ...*cobra.Command) *cobra.Command {
-	r.long += "\n" + types.sentence()
 	ofType := request{path: searchPerType + placeholderID + "/" + r.use}
-	item := request{path: searchPerType + placeholderParent + "/" + r.use + "/" + placeholderID}
-	arguments := "TYPE and ID are a " + r.singular + "'s type and ID, as `epx " + r.under + " " + r.use +
-		" list`\nshows them"
 	rd, listed, listedTypes := r.reader(), r.listing(), r.idsIn(columnType)
-	ids := argumentIDs{columnType: listedTypes, columnID: listedIDs(rd, ofType, listed, columnID)}
+	target := perTypeTarget{
+		singular: r.singular,
+		req:      request{path: searchPerType + placeholderParent + "/" + r.use + "/" + placeholderID},
+		arguments: "TYPE and ID are a " + r.singular + "'s type and ID, as `epx " + r.under + " " + r.use +
+			" list`\nshows them",
+		ids: argumentIDs{columnType: listedTypes, columnID: listedIDs(rd, ofType, listed, columnID)},
+	}
+	r.long += "\n" + types.builtIn.sentence() + "\n" + types.kept("A "+r.singular) + "is listed too; `epx api` " +
+		"reaches it by its path, such as\n" + types.api("get", target.req, r.scopes, "") + "."
 	return newGroup(r.use, r.summary(), r.long, slices.Concat([]*cobra.Command{
 		r.listCommand(a),
 		rd.command(a, &command{
@@ -277,16 +287,73 @@ func perTypeCommand[T any](a *app, r resource[T], writes perTypeWrites, types bu
 			req:     ofType,
 			fetch:   listed,
 			ids:     argumentIDs{columnType: listedTypes},
-			builtIn: types,
+			builtIn: types.builtIn,
 		}),
 		rd.command(a, &command{
 			use:     "get TYPE ID",
 			short:   "Show one " + r.singular,
-			long:    r.long + "\n" + arguments + "; an unknown one is not found (exit 4).",
-			req:     item,
+			long:    r.long + "\n" + target.arguments + "; an unknown one is not found (exit 4).",
+			req:     target.req,
 			fetch:   single{items: oneItem},
-			ids:     ids,
-			builtIn: types,
+			ids:     target.ids,
+			builtIn: types.builtIn,
 		}),
-	}, writes.commands(a, r.singular, item, arguments, ids, types), extra)...)
+	}, writes.commands(a, target, types), extra)...)
+}
+
+// perTypeTarget is one item of a Search Service collection kept per type,
+// which get, update and delete address: singular names it, req is its
+// request, whose path names its type ({parent}) and ID, arguments says what
+// TYPE and ID are, and ids lists them for completion.
+type perTypeTarget struct {
+	singular  string
+	req       request
+	arguments string
+	ids       argumentIDs
+}
+
+// exactTypes are the built-in types that the TYPE of the collections kept per
+// type of a service takes exactly as written, such as those of the Search
+// Service, which keeps items under another spelling too, although TYPE
+// refuses it; the help says how to reach such an item. otherSpelling is the
+// first of builtIn in upper case, such a spelling (newExactTypes checks that
+// TYPE refuses it).
+type exactTypes struct {
+	builtIn       builtInTypes
+	otherSpelling string
+}
+
+// newExactTypes returns builtIn as the exactTypes of the collections of use.
+// Where TYPE does not refuse the other spelling, as without built-in types,
+// with types taken in any case or with a first one named in upper case,
+// saying how to reach an item under it is a mistake in the declaration of
+// use, which panics while the command tree is built, which every test of the
+// tree does.
+func newExactTypes(builtIn builtInTypes, use string) exactTypes {
+	other := ""
+	if len(builtIn.types) > 0 {
+		other = strings.ToUpper(builtIn.types[0].name)
+	}
+	if builtIn.spelling(other) == nil {
+		panic(use + ": says how to reach an item under another spelling of a built-in type, but TYPE does not " +
+			"refuse the upper-case spelling of its first built-in type, if it has one")
+	}
+	return exactTypes{builtIn: builtIn, otherSpelling: other}
+}
+
+// kept returns, for help, subject, such as "A saved search", kept under
+// another spelling of one of t, ending the line, so that its caller's
+// sentence goes on from a new one: "A saved search kept under another
+// spelling of a built-in type, such as CUSTOMER,\n".
+func (t exactTypes) kept(subject string) string {
+	return subject + " kept under another spelling of a built-in type, such as " + t.otherSpelling + ",\n"
+}
+
+// api returns, quoted, the `epx api` command line that sends method to the
+// item of item, the request of one item of the collection, with another
+// spelling of one of t as its type ({parent}) and the ID ID, with scopes and
+// flags (none when empty).
+func (t exactTypes) api(method string, item request, scopes []string, flags string) string {
+	path := strings.NewReplacer(placeholderParent, t.otherSpelling, placeholderID, "ID").Replace(item.path)
+	return "`epx api " + method + " " + path + " --scope " + strings.Join(scopes, " --scope ") + flags + "`"
 }
