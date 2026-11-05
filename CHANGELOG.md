@@ -25,6 +25,9 @@ change or remove commands, columns or flags, and its notes list each such change
 
 ### Changed
 
+- `epx iam groups delete` says that Emporix never deletes a system group (CUSTOMER, BO_USER,
+  BO_MANAGER, BO_ADMIN, SUPPORT_USER), not even with `--force-delete`.
+- epx is checked against the Emporix API reference of 2026-11-05.
 - Command help wraps its paragraphs and flag descriptions to 95 columns and never splits a
   short literal, such as `-o json`, across lines. The words of every help are unchanged.
 

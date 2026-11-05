@@ -229,7 +229,7 @@ epx iam groups delete ID [flags]
 .fi
 .RE
 .PP
-Deletes the group ID. Emporix refuses to delete a group that users belong to (400 Bad Request, exit 1; \fBepx iam groups users list ID\fR lists them) unless \fB\-\-force\-delete\fR is given, which removes every user from it too. It changes who may do what in the tenant.
+Deletes the group ID. Emporix refuses to delete a group that users belong to (400 Bad Request, exit 1; \fBepx iam groups users list ID\fR lists them) unless \fB\-\-force\-delete\fR is given, which removes every user from it too. A system group, whose code is CUSTOMER, BO_USER, BO_MANAGER, BO_ADMIN or SUPPORT_USER in any letter case, is never deleted, not even with \fB\-\-force\-delete\fR (400 Bad Request, exit 1). It changes who may do what in the tenant.
 .PP
 Deletes data, which cannot be undone. With \fB\-\-force\-delete\fR, it deletes the group and the membership of every user of it with one request. On a terminal, epx sends DELETE only once you type ID at its prompt. \fB\-\-yes\fR sends without asking (required without a terminal); \fB\-\-dry\-run\fR prints the request instead of sending it.
 .PP

@@ -241,7 +241,7 @@ Also takes the [global flags](/commands#global-flags).
 
 Delete a group.
 
-Deletes the group ID. Emporix refuses to delete a group that users belong to (400 Bad Request, exit 1; [`epx iam groups users list ID`](/commands/iam#epx-iam-groups-users-list) lists them) unless `--force-delete` is given, which removes every user from it too. It changes who may do what in the tenant.
+Deletes the group ID. Emporix refuses to delete a group that users belong to (400 Bad Request, exit 1; [`epx iam groups users list ID`](/commands/iam#epx-iam-groups-users-list) lists them) unless `--force-delete` is given, which removes every user from it too. A system group, whose code is CUSTOMER, BO\_USER, BO\_MANAGER, BO\_ADMIN or SUPPORT\_USER in any letter case, is never deleted, not even with `--force-delete` (400 Bad Request, exit 1). It changes who may do what in the tenant.
 
 Deletes data, which cannot be undone. With `--force-delete`, it deletes the group and the membership of every user of it with one request. On a terminal, epx sends DELETE only once you type ID at its prompt. `--yes` sends without asking (required without a terminal); `--dry-run` prints the request instead of sending it.
 

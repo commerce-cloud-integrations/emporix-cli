@@ -114,6 +114,7 @@ def site_config(config: dict, reference: dict) -> dict:
         "header": FOOTER_HEADER,
         "items": [
             {"label": "Source on GitHub", "href": GITHUB},
+            {"label": "Changelog", "href": GITHUB + "/blob/main/CHANGELOG.md"},
             {
                 "label": f"Emporix API reference {reference['commit'][:7]} ({reference['date']})",
                 "href": REFERENCE_COMMITS + reference["commit"],

@@ -47,9 +47,9 @@ powershell -ExecutionPolicy ByPass -c "irm https://github.com/commerce-cloud-int
 
 The script downloads the latest release for your platform, checks it against the release's
 checksums and installs `epx` into `~/.local/bin` (on Windows `%LOCALAPPDATA%\Programs\epx\bin`)
-and its man pages into `~/.local/share/man/man1`, without sudo, adding that directory to your `PATH` if needed. Set `EPX_VERSION` (such as
-`v0.1.2`) to pin a release, `EPX_INSTALL_DIR` to choose the directory, or `EPX_NO_MODIFY_PATH=1`
-to leave your shell profile alone.
+without sudo, adding that directory to your `PATH` if needed. On macOS and Linux, it installs
+the man pages into `~/.local/share/man/man1`. Set `EPX_VERSION` (such as `v0.3.0`) to pin a release, `EPX_INSTALL_DIR` to
+choose the directory, or `EPX_NO_MODIFY_PATH=1` to leave your shell profile alone.
 
 ### Homebrew
 
@@ -91,7 +91,7 @@ Each [release](https://github.com/commerce-cloud-integrations/emporix-cli/releas
 archive per platform and a checksums file. For example, on Linux x64:
 
 ```sh
-version=v0.1.3
+version=v0.3.0
 base=https://github.com/commerce-cloud-integrations/emporix-cli/releases/download/$version
 curl -fsSLO "$base/epx_${version}_linux_amd64.tar.gz" &&
   curl -fsSLO "$base/epx_${version}_checksums.txt" &&

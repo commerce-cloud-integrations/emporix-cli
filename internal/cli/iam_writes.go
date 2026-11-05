@@ -135,7 +135,9 @@ func iamGroupWrites(a *app, groups resource[iamGroup]) []*cobra.Command {
 			use: groups.itemUse("delete"), short: "Delete a group", method: http.MethodDelete,
 			long: "Deletes the group ID. Emporix refuses to delete a group that users belong to (400 Bad " +
 				"Request, exit 1; `epx iam groups users list ID` lists them) unless --force-delete is " +
-				"given, which removes every user from it too.",
+				"given, which removes every user from it too. A system group, whose code is CUSTOMER, " +
+				"BO_USER, BO_MANAGER, BO_ADMIN or SUPPORT_USER in any letter case, is never deleted, " +
+				"not even with --force-delete (400 Bad Request, exit 1).",
 			req: request{path: groups.itemPath()}, scopes: scopes, body: noBody{}, ids: groups.itemIDs(),
 			choice: queryChoice{param: forceDeleteParam, options: []choiceOption{{
 				flag: "force-delete", value: queryTrue, scopes: []string{iamAssignmentManage},
