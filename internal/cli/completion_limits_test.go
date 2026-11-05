@@ -108,12 +108,12 @@ func TestCompletionOfWritesAndOtherReadsReadsTheirLists(t *testing.T) {
 			want:     []string{"AcmeStore_NL|Acme NL", "AcmeStore_DE|Acme DE"},
 			requests: []string{"/site/acme1/sites?pageNumber=1&pageSize=100&totalCount=true"},
 		},
-		{ // the type of a write per type, as the list of its collection shows it
+		{ // the type of a write per type: the built-in search types, then those the list of its collection shows
 			args: []string{"search", "queries", "delete", ""},
 			routes: map[string]http.HandlerFunc{
 				"/search/acme1/search/queries": respond(http.StatusOK, `[{"id":"q1","type":"vehicle","name":"By make"}]`),
 			},
-			want:     []string{"vehicle"},
+			want:     []string{"customer", "legal-entity", "vehicle"},
 			requests: []string{"/search/acme1/search/queries?pageNumber=1&pageSize=100"},
 			scopes:   []string{searchScope},
 		},
@@ -233,7 +233,7 @@ func TestCompletionThatCouldNeverReadPanics(t *testing.T) {
 			ids: argumentIDs{"THING_ID": listedIDs(things, request{path: "/things"}, listing{}, columnID)},
 		},
 		"a list of a site, without --site":        {ids: argumentIDs{columnID: ofSite}},
-		"values of an argument the command lacks": {predefined: map[string][]string{"THING_ID": {"T1"}}},
+		"values of an argument the command lacks": {choices: map[string][]string{"THING_ID": {"T1"}}},
 	} {
 		func() {
 			defer func() {

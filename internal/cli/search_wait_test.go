@@ -28,7 +28,7 @@ func indexWaitRoot(fake *fakeEmporix) *cobra.Command {
 	job.shortest = time.Millisecond
 	a := &app{getenv: func(key string) string { return fake.env()[key] }, timeout: defaultTimeout}
 	root := &cobra.Command{Use: "epx", SilenceErrors: true, SilenceUsage: true}
-	root.AddCommand(indexesCommand(a, job))
+	root.AddCommand(indexesCommand(a, job, searchTypes()))
 	applyExitPolicy(root)
 	return root
 }

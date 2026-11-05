@@ -43,33 +43,83 @@ var typeIDPattern = regexp.MustCompile(`^[A-Za-z][A-Za-z0-9_]*$`)
 // namesType reports whether scope names a custom entity type (placeholderType).
 func namesType(scope string) bool { return strings.Contains(scope, placeholderType) }
 
-// typeScopes binds scopes, every scope that cmd, a command that sends req,
-// may request, and returns how a run fills in the scopes that it requests
-// for its arguments: as declared, or, where scopes name a custom entity type
-// (placeholderType), with the type that the first argument names filled in,
-// in lower case. cmd then accepts as its first argument only an ID that a
-// custom entity type can have (customType), so that a scope holds nothing
-// else: it wraps the argument rule that cmd has, so it is called after
-// everything that sets one (request.bind). A command whose scopes name a type
-// but whose request takes no argument is a mistake in its declaration, so it
-// panics while the command tree is built, which every test of the tree does.
-func typeScopes(cmd *cobra.Command, req request, scopes []string) func(args, requested []string) []string {
-	if !slices.ContainsFunc(scopes, namesType) {
-		return func(_, requested []string) []string { return requested }
+// typeScopes makes the first argument of cmd, a command that sends req and
+// may request scopes, a type where scopes name a custom entity type or
+// builtIn holds types. It returns, where scopes name a custom entity type,
+// the tokens of builtIn's scopes (builtInTypes.tokens), which the scope
+// annotation and sentence of cmd hold after its own, none otherwise; and how
+// a run with the arguments args fills in the scopes that it requests: where
+// scopes name a custom entity type, for the type that args[0] names
+// (builtInTypes.fill); as requested otherwise.
+//
+// A run fails as a usage error, before anything is sent, for a first
+// argument that writes a type of an exact builtIn otherwise
+// (builtInTypes.spelling), and, where scopes name a custom entity type, for
+// one that is none of builtIn and that no custom entity type can be named
+// (typeIDPattern), as it would become part of a scope (typeArgument).
+// typeScopes wraps the argument rule that cmd has, so it is called after
+// request.bind, which sets that rule.
+//
+// A command with a type but no argument, or with built-in types that request
+// a write-capable scope, which a read would request without its opt-in, is a
+// mistake in its declaration, so it panics while the command tree is built,
+// which every test of the tree does.
+func typeScopes(cmd *cobra.Command, req request, scopes []string, builtIn builtInTypes) (
+	tokens []string, fill func(args, requested []string) []string) {
+	custom := slices.ContainsFunc(scopes, namesType)
+	asRequested := func(_, requested []string) []string { return requested }
+	if !custom && len(builtIn.types) == 0 {
+		return nil, asRequested
 	}
 	if len(req.arguments()) == 0 {
-		panic(fmt.Sprintf("%s: a scope that names %s takes the type from the command's first argument, "+
-			"which its request lacks", cmd.Use, placeholderType))
+		panic(fmt.Sprintf("%s: its type (a scope that names %s, or built-in types) is the command's first "+
+			"argument, which its request lacks", cmd.Use, placeholderType))
 	}
-	cmd.Args = customType(cmd.Args)
-	return func(args, requested []string) []string { return withType(requested, args[0]) }
+	for _, t := range builtIn.types {
+		if writeCapable(t.scopes) {
+			panic(fmt.Sprintf("%s: the built-in type %s requests a write-capable scope", cmd.Use, t.name))
+		}
+	}
+	accept := cmd.Args
+	cmd.Args = func(cmd *cobra.Command, args []string) error {
+		if err := accept(cmd, args); err != nil {
+			return err
+		}
+		if err := typeArgument(args[0], custom, builtIn); err != nil {
+			return fmt.Errorf("invalid %s %q: %w", argumentNames(cmd.Use, 1)[0], args[0], err)
+		}
+		return nil
+	}
+	if !custom {
+		return nil, asRequested
+	}
+	return builtIn.tokens(), func(args, requested []string) []string { return builtIn.fill(requested, args[0]) }
+}
+
+// typeArgument returns why arg cannot be the type that a command's first
+// argument names (typeScopes): it writes a type of builtIn otherwise
+// (builtInTypes.spelling); or, where custom, it is none of builtIn and no
+// custom entity type can be named so.
+func typeArgument(arg string, custom bool, builtIn builtInTypes) error {
+	if err := builtIn.spelling(arg); err != nil {
+		return err
+	}
+	if _, found := builtIn.find(arg); !custom || found || typeIDPattern.MatchString(arg) {
+		return nil
+	}
+	others := ""
+	if len(builtIn.types) > 0 {
+		others = "; a built-in type is " + alternatives(builtIn.names())
+	}
+	return fmt.Errorf("a custom entity type has letters, digits and underscores, the first a letter%s", others)
 }
 
 // refuseTypeScopes refuses scopes that use, a command, requests as declared,
-// without passing them to typeScopes, such as those of a write's body, of
-// its choice's flags or of the job it starts: one that names a custom entity type would be sent with
-// the placeholder, so it is a mistake in the declaration of use, which
-// panics while the command tree is built, which every test of the tree does.
+// without passing them to typeScopes, such as those of a write's body,
+// of its choice's flags or of the job it starts: one that names a custom
+// entity type would be sent with the placeholder, so it is a mistake in the
+// declaration of use, which panics while the command tree is built, which
+// every test of the tree does.
 func refuseTypeScopes(use string, scopes []string) {
 	if slices.ContainsFunc(scopes, namesType) {
 		panic(fmt.Sprintf("%s: only the scopes that the command itself requests may name %s", use, placeholderType))
@@ -86,22 +136,6 @@ func withType(scopes []string, typ string) []string {
 	return filled
 }
 
-// customType returns accept, which takes the arguments of a command, refusing
-// also a first argument that no custom entity type has as its ID
-// (typeIDPattern).
-func customType(accept cobra.PositionalArgs) cobra.PositionalArgs {
-	return func(cmd *cobra.Command, args []string) error {
-		if err := accept(cmd, args); err != nil {
-			return err
-		}
-		if !typeIDPattern.MatchString(args[0]) {
-			return fmt.Errorf("invalid %s %q: a custom entity type has letters, digits and underscores, "+
-				"the first a letter", argumentNames(cmd.Use, 1)[0], args[0])
-		}
-		return nil
-	}
-}
-
 // unknownFor returns what a command with scopes gives for an unknown parent
 // item: unscoped where one of them names a custom entity type, which the
 // parent is (its first argument, typeScopes), otherwise otherwise.
@@ -113,21 +147,35 @@ func unknownFor(scopes []string, otherwise unknownParent) unknownParent {
 }
 
 // typeSentence says that arg, the first argument of a command whose scopes
-// name a custom entity type, is the ID of one, and what an unknown one gives.
-func typeSentence(arg string) string {
-	return fmt.Sprintf("%s is a custom entity type, as `epx custom-entities list` shows its ID; an unknown one %s.",
-		arg, unscoped)
+// name a custom entity type, is one of builtIn or the ID of a custom entity
+// type (builtInTypes.clause), and what an unknown one gives.
+func typeSentence(arg string, builtIn builtInTypes) string {
+	return builtIn.clause(arg) + "; an unknown one " + string(unscoped) + "."
 }
 
-// typeNote returns what follows a scope sentence naming scopes: where they
-// name a custom entity type (placeholderType), a new line saying what it
-// stands for, with those scopes of an example type; else nothing.
-func typeNote(scopes []string) string {
+// typeNote returns what follows a scope sentence naming scopes where they
+// name a custom entity type (placeholderType): a new line saying what it
+// stands for, with those scopes of an example type, then, where some of
+// types, the built-in types of the scope sentence (parseScopeTokens), request
+// scopes of their own, a sentence on a new line, one built-in type per line,
+// naming those that each requests in their place; else nothing.
+func typeNote(scopes []string, types []builtInType) string {
 	typed := slices.DeleteFunc(slices.Clone(scopes), func(scope string) bool { return !namesType(scope) })
 	if len(typed) == 0 {
 		return ""
 	}
 	slices.Sort(typed)
-	return fmt.Sprintf("\n%s is the custom entity type in lower case (%s for %s).", placeholderType,
-		strings.Join(slices.Compact(withType(typed, exampleType)), ", "), exampleType)
+	typed = slices.Compact(typed)
+	note := fmt.Sprintf("\n%s is the custom entity type in lower case (%s for %s).", placeholderType,
+		strings.Join(withType(typed, exampleType), ", "), exampleType)
+	var each []string
+	for _, t := range types {
+		if len(t.scopes) > 0 {
+			each = append(each, t.name+" requires "+strings.Join(t.scopes, ", "))
+		}
+	}
+	if len(each) > 0 {
+		note += "\nIn place of " + strings.Join(typed, ", ") + ", " + strings.Join(each, ";\n") + "."
+	}
+	return note
 }

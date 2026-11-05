@@ -80,6 +80,26 @@ func searchReads() []readCase {
 			want: "ID        TYPE     NAME      INDEX     VERSION\n" +
 				"red-cars  vehicle  Red cars  vehicles  2\n",
 		},
+		{
+			// customer and legal-entity are types too, sent as given.
+			args:    []string{"search", "indexes", "for-type", "legal-entity", "--language", "en"},
+			path:    "/search/acme1/search/legal-entity/indexes",
+			scopes:  []string{scope},
+			filters: listFilters{kinds: filterable},
+			body: `[{"id":"companies","type":"legal-entity","name":{"en":"Companies"},"status":"ready",
+				"fields":[{"path":"name","text":true}]}]`,
+			want: "ID         TYPE          NAME       STATUS  FIELDS  VERSION\n" +
+				"companies  legal-entity  Companies  ready   name    \n",
+		},
+		{
+			args:   []string{"search", "queries", "get", "customer", "by-city", "--language", "en"},
+			path:   "/search/acme1/search/customer/queries/by-city",
+			scopes: []string{scope},
+			mode:   getWhole,
+			body:   `{"id":"by-city","type":"customer","name":{"en":"By city"},"indexId":"customers"}`,
+			want: "ID       TYPE      NAME     INDEX      VERSION\n" +
+				"by-city  customer  By city  customers  \n",
+		},
 	}
 }
 
@@ -203,5 +223,31 @@ func TestSearchListHelpNamesTheFilterValues(t *testing.T) {
 				t.Errorf("%q: help lacks %q:\n%s", tt.args, want, text)
 			}
 		}
+	}
+}
+
+// TestSearchHelpNamesTheBuiltInTypes checks that the help of the search group,
+// of documents, and of indexes and queries and their commands per type names
+// customer and legal-entity as types beside the custom entity types, and that
+// the help of documents names the limitation of the scopes that it requests.
+func TestSearchHelpNamesTheBuiltInTypes(t *testing.T) {
+	const types = "customer or legal-entity, exactly as written, or a custom entity type"
+	for _, args := range [][]string{
+		{"search"}, {"search", "documents"},
+		{"search", "indexes"}, {"search", "indexes", "for-type"}, {"search", "indexes", "get"},
+		{"search", "indexes", "export"},
+		{"search", "indexes", "update"}, {"search", "indexes", "delete"},
+		{"search", "queries"}, {"search", "queries", "for-type"}, {"search", "queries", "get"},
+		{"search", "queries", "update"}, {"search", "queries", "delete"},
+	} {
+		if text := helpText(t, args...); !strings.Contains(text, types) {
+			t.Errorf("%q: help lacks %q:\n%s", args, types, text)
+		}
+	}
+	const limitation = "Known limitation: for customer or legal-entity, epx requests the read scope that finds " +
+		"every document, so a credential that holds only a restricted one, such as customer.customer_read--DE, or " +
+		"only the own-read scope, such as customer.customer_read_own, fails with exit code 3."
+	if text := helpText(t, "search", "documents"); !strings.Contains(text, limitation) {
+		t.Errorf("search documents: help lacks %q:\n%s", limitation, text)
 	}
 }

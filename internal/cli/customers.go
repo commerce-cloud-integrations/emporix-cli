@@ -38,6 +38,10 @@ type customerAddress struct {
 // and of the shipping groups of a site.
 const customersCommand = "customers"
 
+// customerReadScope reads every customer profile, as customers and a search of
+// the customer documents of the Search Service (searchTypes) request it.
+const customerReadScope = "customer.customer_read"
+
 // customers declares the customer profiles, whose numbers the
 // CUSTOMER_NUMBER of another read completes with too.
 func customers() resource[customer] {
@@ -54,7 +58,7 @@ func customers() resource[customer] {
 			"out a profile's addresses, accounts and mixins unless asked to expand them, which epx\n" +
 			"does not: `epx customers addresses list` lists the addresses.",
 		path:    "/customer/{tenant}/customers",
-		scopes:  []string{"customer.customer_read"},
+		scopes:  []string{customerReadScope},
 		filters: listFilters{kinds: filterable},
 		read:    (*emporix.Client).GetAllHybrisCounted, // the total, as filtered, comes only as hybris-count
 		view: view[customer]{

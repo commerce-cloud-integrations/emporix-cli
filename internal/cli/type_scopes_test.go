@@ -136,6 +136,13 @@ func TestTypeScopeSentences(t *testing.T) {
 		{groupScopeSentence(scopedGroup(map[string]string{scopesAnnotation: ""},
 			map[string]string{writeScopesAnnotation: manage})),
 			"Its reads need no OAuth scope.\nIts writes require the custom.<type>_manage scope." + manageNote},
+		// The scopes that built-in types request in place of a custom entity type's follow its note.
+		{groupScopeSentence(scopedGroup(
+			map[string]string{scopesAnnotation: "search.search_read " + read + " customer:customer.customer_read"},
+			map[string]string{writeScopesAnnotation: "search.search_manage"})),
+			"Its reads require the custom.<type>_read, search.search_read scopes.\nIts writes require the " +
+				"search.search_manage scope." + typeScopeNote + "\nIn place of custom.<type>_read, customer requires " +
+				"customer.customer_read."},
 	} {
 		if tt.got != tt.want {
 			t.Errorf("got %q, want %q", tt.got, tt.want)

@@ -6,10 +6,12 @@ description: "Search documents; read and change search indexes and saved searche
 
 ## epx search
 
-Reads the Search Service, which searches the instances of custom entity types (a preview
-at Emporix): the documents a search finds, its indexes and saved searches, kept per type
-([`epx custom-entities list`](/commands/custom-entities#epx-custom-entities-list) shows the types), and the jobs that create, update and delete
-the indexes; changes the indexes and saved searches.
+Reads the Search Service (a preview at Emporix), which searches customers, legal entities
+and the instances of custom entity types: the documents a search finds, its indexes and
+saved searches, kept per type, and the jobs that create, update and delete the indexes;
+changes the indexes and saved searches.
+A type is customer or legal-entity, exactly as written, or a custom entity type,
+whose ID [`epx custom-entities list`](/commands/custom-entities#epx-custom-entities-list) shows.
 
 Its reads require different OAuth scopes; the help of each names them.
 Opt-in: epx requests a write-capable scope for a read only when given `--allow-write-scope`.
@@ -22,7 +24,7 @@ Its writes require the search.search\_manage scope.
 **Subcommands**
 
 - [`epx search documents`](#epx-search-documents)\
-  Search the documents of a custom entity type.
+  Search customers, legal entities or the instances of a custom entity type.
 - [`epx search indexes`](#epx-search-indexes)\
   Read, upsert, delete, export and import search indexes.
 - [`epx search jobs`](#epx-search-jobs)\
@@ -32,19 +34,28 @@ Its writes require the search.search\_manage scope.
 
 ## epx search documents
 
-Search the documents of a custom entity type.
+Search customers, legal entities or the instances of a custom entity type.
 
-Reads the documents of a custom entity type, its instances as a search index holds them,
-that the saved search `--saved-search` finds with the text of `--text` ([`epx search queries for-type TYPE`](/commands/search#epx-search-queries-for-type) lists them). SCORE is how well a document matches; its other fields are
-only in `-o json`. `--body` gives a search of an index by its own queries and filters
-instead.
-TYPE is a custom entity type, as [`epx custom-entities list`](/commands/custom-entities#epx-custom-entities-list) shows its ID; an unknown one has no scope that Emporix grants (exit code 3), and a type created in the last minutes has none yet.
+Reads the documents of a type that the saved search `--saved-search` finds with the text of
+`--text` ([`epx search queries for-type TYPE`](/commands/search#epx-search-queries-for-type) lists them): customers, legal entities or the
+instances of a custom entity type, as a search index holds them. SCORE is how well a document
+matches; its other fields are only in `-o json`. `--body` gives a search of an index by its own
+queries and filters instead. An unknown saved search, or index of `--body`, is not found
+(exit 4).
+TYPE is customer or legal-entity, exactly as written, or a custom entity type,
+whose ID [`epx custom-entities list`](/commands/custom-entities#epx-custom-entities-list) shows; an unknown one has no scope that Emporix grants (exit code 3), and a type created in the last minutes has none yet.
+Known limitation: for customer or legal-entity, epx requests the read scope that
+finds every document, so a credential that holds only a restricted one, such as
+customer.customer\_read--DE, or only the own-read scope, such as customer.customer\_read\_own,
+fails with exit code 3.
 
 Changes nothing: Emporix serves this read as POST with a JSON body, which the
 flags make or `--body` gives whole.
 
 Requires the search.search\_read, custom.&lt;type\>\_read scopes.
 &lt;type\> is the custom entity type in lower case (custom.document\_read for DOCUMENT).
+In place of custom.&lt;type\>\_read, customer requires customer.customer\_read;
+legal-entity requires customermanagement.legalentity\_read.
 
 **Command:** `epx search documents TYPE [flags]`
 
@@ -77,11 +88,13 @@ Also takes the [global flags](/commands#global-flags).
 
 Read, upsert, delete, export and import search indexes.
 
-Reads search indexes: which fields of a custom entity type's instances can be searched.
+Reads search indexes: which fields of the documents of a type can be searched.
 STATUS is building, ready or failed and FIELDS the indexed fields (`-o json` shows how each is
 searched). `--query` matches STATUS in upper case (`status:READY`; `status:ready` matches no index).
 Emporix answers a list's malformed `--query` with an internal error (500 Internal Server
 Error, exit 1).
+A type is customer or legal-entity, exactly as written, or a custom entity type,
+whose ID [`epx custom-entities list`](/commands/custom-entities#epx-custom-entities-list) shows.
 
 Its reads require different OAuth scopes; the help of each names them.
 Opt-in: epx requests a write-capable scope for a read only when given `--allow-write-scope`.
@@ -98,7 +111,7 @@ Its writes require the search.search\_manage scope.
 - [`epx search indexes export`](#epx-search-indexes-export)\
   Export search indexes.
 - [`epx search indexes for-type`](#epx-search-indexes-for-type)\
-  List the search indexes of a custom entity type.
+  List the search indexes of a type.
 - [`epx search indexes get`](#epx-search-indexes-get)\
   Show one search index.
 - [`epx search indexes import`](#epx-search-indexes-import)\
@@ -112,10 +125,12 @@ Its writes require the search.search\_manage scope.
 
 Delete a search index.
 
-Starts the job that deletes the search index ID of the custom entity type TYPE: Emporix
-answers with the job's id ([`epx search jobs get ID`](/commands/search#epx-search-jobs-get) reads the job), and with 409 Conflict
-(exit 5) while another job of the index is running.
-TYPE and ID are a search index's custom entity type and ID, as [`epx search indexes list`](/commands/search#epx-search-indexes-list)
+Starts the job that deletes the search index ID of the type TYPE: Emporix answers with
+the job's id ([`epx search jobs get ID`](/commands/search#epx-search-jobs-get) reads the job), and with 409 Conflict (exit 5) while
+another job of the index is running.
+A type is customer or legal-entity, exactly as written, or a custom entity type,
+whose ID [`epx custom-entities list`](/commands/custom-entities#epx-custom-entities-list) shows.
+TYPE and ID are a search index's type and ID, as [`epx search indexes list`](/commands/search#epx-search-indexes-list)
 shows them.
 
 Deletes data, which cannot be undone.
@@ -162,6 +177,8 @@ Export search indexes.
 Reads an export package of the search indexes that `--index` names, as TYPE/ID (the TYPE and
 ID that [`epx search indexes list`](/commands/search#epx-search-indexes-list) shows): their configuration, without status or metadata.
 Emporix answers an unknown index as not found (exit 4).
+A type is customer or legal-entity, exactly as written, or a custom entity type,
+whose ID [`epx custom-entities list`](/commands/custom-entities#epx-custom-entities-list) shows.
 Emporix refuses an empty selection (`--body` with \[\], exit 1).
 
 Changes nothing: Emporix serves this read as POST with a JSON body, which the
@@ -193,14 +210,16 @@ Also takes the [global flags](/commands#global-flags).
 
 ## epx search indexes for-type
 
-List the search indexes of a custom entity type.
+List the search indexes of a type.
 
-Reads search indexes: which fields of a custom entity type's instances can be searched.
+Reads search indexes: which fields of the documents of a type can be searched.
 STATUS is building, ready or failed and FIELDS the indexed fields (`-o json` shows how each is
 searched). `--query` matches STATUS in upper case (`status:READY`; `status:ready` matches no index).
 Emporix answers a list's malformed `--query` with an internal error (500 Internal Server
 Error, exit 1).
-TYPE is the custom entity type of search indexes, as [`epx search indexes list`](/commands/search#epx-search-indexes-list) shows it; an
+A type is customer or legal-entity, exactly as written, or a custom entity type,
+whose ID [`epx custom-entities list`](/commands/custom-entities#epx-custom-entities-list) shows.
+TYPE is the type of search indexes, as [`epx search indexes list`](/commands/search#epx-search-indexes-list) shows it; an
 unknown type lists nothing.
 
 Requires the search.search\_read scope.
@@ -232,12 +251,14 @@ Also takes the [global flags](/commands#global-flags).
 
 Show one search index.
 
-Reads search indexes: which fields of a custom entity type's instances can be searched.
+Reads search indexes: which fields of the documents of a type can be searched.
 STATUS is building, ready or failed and FIELDS the indexed fields (`-o json` shows how each is
 searched). `--query` matches STATUS in upper case (`status:READY`; `status:ready` matches no index).
 Emporix answers a list's malformed `--query` with an internal error (500 Internal Server
 Error, exit 1).
-TYPE and ID are a search index's custom entity type and ID, as [`epx search indexes list`](/commands/search#epx-search-indexes-list)
+A type is customer or legal-entity, exactly as written, or a custom entity type,
+whose ID [`epx custom-entities list`](/commands/custom-entities#epx-custom-entities-list) shows.
+TYPE and ID are a search index's type and ID, as [`epx search indexes list`](/commands/search#epx-search-indexes-list)
 shows them; an unknown one is not found (exit 4).
 
 Requires the search.search\_read scope.
@@ -325,11 +346,13 @@ epx search indexes import --file indexes.json --wait --yes
 
 List search indexes.
 
-Reads search indexes: which fields of a custom entity type's instances can be searched.
+Reads search indexes: which fields of the documents of a type can be searched.
 STATUS is building, ready or failed and FIELDS the indexed fields (`-o json` shows how each is
 searched). `--query` matches STATUS in upper case (`status:READY`; `status:ready` matches no index).
 Emporix answers a list's malformed `--query` with an internal error (500 Internal Server
 Error, exit 1).
+A type is customer or legal-entity, exactly as written, or a custom entity type,
+whose ID [`epx custom-entities list`](/commands/custom-entities#epx-custom-entities-list) shows.
 
 Requires the search.search\_read scope.
 
@@ -360,15 +383,16 @@ Also takes the [global flags](/commands#global-flags).
 
 Upsert a search index.
 
-Creates the search index ID of the custom entity type TYPE, or replaces it (an upsert),
-with the one in `--file`, a JSON object with its fields (each with its path and how it is
-searched) and optionally name and description. A job builds a new index, and one whose
-fields changed or that is building or failed: Emporix then answers 202 Accepted with the
-job's id ([`epx search jobs get ID`](/commands/search#epx-search-jobs-get) reads the job), else 204 No Content. With
-metadata.version, as [`epx search indexes get TYPE ID -o json`](/commands/search#epx-search-indexes-get) prints it, Emporix replaces
-only that version; another, or a job of the index that is still running, is a conflict
-(exit 5).
-TYPE and ID are a search index's custom entity type and ID, as [`epx search indexes list`](/commands/search#epx-search-indexes-list)
+Creates the search index ID of the type TYPE, or replaces it (an upsert), with the one
+in `--file`, a JSON object with its fields (each with its path and how it is searched) and
+optionally name and description. A job builds a new index, and one whose fields changed or
+that is building or failed: Emporix then answers 202 Accepted with the job's id
+([`epx search jobs get ID`](/commands/search#epx-search-jobs-get) reads the job), else 204 No Content. With metadata.version, as
+[`epx search indexes get TYPE ID -o json`](/commands/search#epx-search-indexes-get) prints it, Emporix replaces only that version;
+another, or a job of the index that is still running, is a conflict (exit 5).
+A type is customer or legal-entity, exactly as written, or a custom entity type,
+whose ID [`epx custom-entities list`](/commands/custom-entities#epx-custom-entities-list) shows.
+TYPE and ID are a search index's type and ID, as [`epx search indexes list`](/commands/search#epx-search-indexes-list)
 shows them, or a new ID.
 
 Localized text in the body is a map of translations, e.g. `{"en": "Acme", "de": "Acme"}`,
@@ -416,8 +440,8 @@ Also takes the [global flags](/commands#global-flags).
 **Examples**
 
 ```sh
-epx search indexes update vehicle vehicles --file index.json --dry-run
-epx search indexes update vehicle vehicles --file index.json --wait --yes
+epx search indexes update VEHICLE vehicles --file index.json --dry-run
+epx search indexes update VEHICLE vehicles --file index.json --wait --yes
 ```
 
 ## epx search jobs
@@ -511,10 +535,12 @@ Also takes the [global flags](/commands#global-flags).
 
 Read, upsert and delete saved searches.
 
-Reads saved searches: queries and filters (only in `-o json`) stored to run against the
-search INDEX of a custom entity type.
+Reads saved searches: queries and filters (only in `-o json`) stored to run against a search
+INDEX of a type.
 Emporix answers a list's malformed `--query` with an internal error (500 Internal Server
 Error, exit 1).
+A type is customer or legal-entity, exactly as written, or a custom entity type,
+whose ID [`epx custom-entities list`](/commands/custom-entities#epx-custom-entities-list) shows.
 
 Its reads require the search.search\_read scope.
 Its writes require the search.search\_manage scope.
@@ -528,7 +554,7 @@ Its writes require the search.search\_manage scope.
 - [`epx search queries delete`](#epx-search-queries-delete)\
   Delete a saved search.
 - [`epx search queries for-type`](#epx-search-queries-for-type)\
-  List the saved searches of a custom entity type.
+  List the saved searches of a type.
 - [`epx search queries get`](#epx-search-queries-get)\
   Show one saved search.
 - [`epx search queries list`](#epx-search-queries-list)\
@@ -540,9 +566,10 @@ Its writes require the search.search\_manage scope.
 
 Delete a saved search.
 
-Deletes the saved search ID of the custom entity type TYPE; an unknown one is not found
-(exit 4).
-TYPE and ID are a saved search's custom entity type and ID, as [`epx search queries list`](/commands/search#epx-search-queries-list)
+Deletes the saved search ID of the type TYPE; an unknown one is not found (exit 4).
+A type is customer or legal-entity, exactly as written, or a custom entity type,
+whose ID [`epx custom-entities list`](/commands/custom-entities#epx-custom-entities-list) shows.
+TYPE and ID are a saved search's type and ID, as [`epx search queries list`](/commands/search#epx-search-queries-list)
 shows them.
 
 Deletes data, which cannot be undone.
@@ -567,13 +594,15 @@ Also takes the [global flags](/commands#global-flags).
 
 ## epx search queries for-type
 
-List the saved searches of a custom entity type.
+List the saved searches of a type.
 
-Reads saved searches: queries and filters (only in `-o json`) stored to run against the
-search INDEX of a custom entity type.
+Reads saved searches: queries and filters (only in `-o json`) stored to run against a search
+INDEX of a type.
 Emporix answers a list's malformed `--query` with an internal error (500 Internal Server
 Error, exit 1).
-TYPE is the custom entity type of saved searches, as [`epx search queries list`](/commands/search#epx-search-queries-list) shows it; an
+A type is customer or legal-entity, exactly as written, or a custom entity type,
+whose ID [`epx custom-entities list`](/commands/custom-entities#epx-custom-entities-list) shows.
+TYPE is the type of saved searches, as [`epx search queries list`](/commands/search#epx-search-queries-list) shows it; an
 unknown type lists nothing.
 
 Requires the search.search\_read scope.
@@ -605,11 +634,13 @@ Also takes the [global flags](/commands#global-flags).
 
 Show one saved search.
 
-Reads saved searches: queries and filters (only in `-o json`) stored to run against the
-search INDEX of a custom entity type.
+Reads saved searches: queries and filters (only in `-o json`) stored to run against a search
+INDEX of a type.
 Emporix answers a list's malformed `--query` with an internal error (500 Internal Server
 Error, exit 1).
-TYPE and ID are a saved search's custom entity type and ID, as [`epx search queries list`](/commands/search#epx-search-queries-list)
+A type is customer or legal-entity, exactly as written, or a custom entity type,
+whose ID [`epx custom-entities list`](/commands/custom-entities#epx-custom-entities-list) shows.
+TYPE and ID are a saved search's type and ID, as [`epx search queries list`](/commands/search#epx-search-queries-list)
 shows them; an unknown one is not found (exit 4).
 
 Requires the search.search\_read scope.
@@ -633,10 +664,12 @@ Also takes the [global flags](/commands#global-flags).
 
 List saved searches.
 
-Reads saved searches: queries and filters (only in `-o json`) stored to run against the
-search INDEX of a custom entity type.
+Reads saved searches: queries and filters (only in `-o json`) stored to run against a search
+INDEX of a type.
 Emporix answers a list's malformed `--query` with an internal error (500 Internal Server
 Error, exit 1).
+A type is customer or legal-entity, exactly as written, or a custom entity type,
+whose ID [`epx custom-entities list`](/commands/custom-entities#epx-custom-entities-list) shows.
 
 Requires the search.search\_read scope.
 
@@ -667,13 +700,15 @@ Also takes the [global flags](/commands#global-flags).
 
 Upsert a saved search.
 
-Creates the saved search ID of the custom entity type TYPE, or replaces it (an upsert),
-with the one in `--file`, a JSON object with index (the ID of a search index of TYPE),
-queries, filters or both, and optionally name and description. Emporix answers a new
-one with its id (201 Created), and a replaced one with 204 No Content. Replacing one
-needs its metadata.version, as [`epx search queries get TYPE ID -o json`](/commands/search#epx-search-queries-get) prints it; a
-stale one is a conflict (exit 5). An unknown index is not found (exit 4).
-TYPE and ID are a saved search's custom entity type and ID, as [`epx search queries list`](/commands/search#epx-search-queries-list)
+Creates the saved search ID of the type TYPE, or replaces it (an upsert), with the one in
+`--file`, a JSON object with index (the ID of a search index of TYPE), queries, filters or
+both, and optionally name and description. Emporix answers a new one with its id (201
+Created), and a replaced one with 204 No Content. Replacing one needs its metadata.version,
+as [`epx search queries get TYPE ID -o json`](/commands/search#epx-search-queries-get) prints it; a stale one is a conflict (exit 5).
+An unknown index is not found (exit 4).
+A type is customer or legal-entity, exactly as written, or a custom entity type,
+whose ID [`epx custom-entities list`](/commands/custom-entities#epx-custom-entities-list) shows.
+TYPE and ID are a saved search's type and ID, as [`epx search queries list`](/commands/search#epx-search-queries-list)
 shows them, or a new ID.
 
 Localized text in the body is a map of translations, e.g. `{"en": "Acme", "de": "Acme"}`,
@@ -704,5 +739,5 @@ Also takes the [global flags](/commands#global-flags).
 **Examples**
 
 ```sh
-epx search queries update vehicle by-make --file by-make.json --dry-run
+epx search queries update VEHICLE by-make --file by-make.json --dry-run
 ```

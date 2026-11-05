@@ -21,6 +21,11 @@ type legalEntity struct {
 	} `json:"legalInfo"`
 }
 
+// legalEntityReadScope reads every legal entity, as legal-entities and a
+// search of the legal-entity documents of the Search Service (searchTypes)
+// request it.
+const legalEntityReadScope = "customermanagement.legalentity_read"
+
 // newLegalEntitiesCommand reads legal entities, the companies of B2B
 // customers and their subsidiaries, also those a search finds, and the
 // parents of one; and creates, upserts and deletes them.
@@ -35,7 +40,7 @@ func newLegalEntitiesCommand(a *app) *cobra.Command {
 			"entity a subsidiary belongs to, COUNTRY the country of registration. Registration details,\n" +
 			"addresses, customer groups, approval groups and restrictions are only in -o json.",
 		path:    "/customer-management/{tenant}/legal-entities",
-		scopes:  []string{"customermanagement.legalentity_read"},
+		scopes:  []string{legalEntityReadScope},
 		filters: listFilters{kinds: filterable},
 		view:    legalEntityView(),
 	}

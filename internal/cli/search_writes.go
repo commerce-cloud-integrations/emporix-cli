@@ -7,11 +7,12 @@ import (
 )
 
 // perTypeWrites declares the writes of one item of a Search Service
-// collection kept per custom entity type (perTypeCommand): update TYPE ID,
-// an upsert of the JSON object in --file, whose localized text is sent
-// as maps only (mapsOnly), and delete TYPE ID, both with searchManageScope.
-// Each text field says what its write sends and what Emporix answers; what
-// TYPE and ID are, how it is sent and the scope sentence follow.
+// collection kept per type (perTypeCommand): update TYPE ID, an upsert of
+// the JSON object in --file, whose localized text is sent as maps only
+// (mapsOnly), and delete TYPE ID, both with searchManageScope.
+// Each text field says what its write sends and what Emporix answers; what a
+// type is (builtInTypes.sentence), what TYPE and ID are, how it is sent and
+// the scope sentence follow.
 type perTypeWrites struct {
 	update  string   // what update sends
 	example string   // a command line of update, indented by two spaces
@@ -20,21 +21,23 @@ type perTypeWrites struct {
 }
 
 // commands returns update and delete of one item of a collection, which
-// singular names, sent to item; arguments says what TYPE and ID are, and ids
-// lists them for completion.
+// singular names, sent to item; arguments says what TYPE and ID are, ids
+// lists them for completion, and types are the built-in types that TYPE
+// takes.
 func (p perTypeWrites) commands(a *app, singular string, item request, arguments string,
-	ids argumentIDs) []*cobra.Command {
-	manage := []string{searchManageScope}
+	ids argumentIDs, types builtInTypes) []*cobra.Command {
+	manage, typeLine := []string{searchManageScope}, "\n"+types.sentence()
 	return []*cobra.Command{
 		(&write{
 			use: "update TYPE ID", short: "Upsert a " + singular, method: http.MethodPut,
-			long: p.update + "\n" + arguments + ", or a new ID.", example: p.example,
-			req: item, scopes: manage, body: &payload{}, language: mapsOnly, ids: ids, answer: p.answer,
+			long: p.update + typeLine + "\n" + arguments + ", or a new ID.", example: p.example,
+			req: item, scopes: manage, body: &payload{}, language: mapsOnly, ids: ids, builtIn: types,
+			answer: p.answer,
 		}).command(a),
 		(&write{
 			use: "delete TYPE ID", short: "Delete a " + singular, method: http.MethodDelete,
-			long: p.delete + "\n" + arguments + ".",
-			req:  item, scopes: manage, body: noBody{}, ids: ids, answer: p.answer,
+			long: p.delete + typeLine + "\n" + arguments + ".",
+			req:  item, scopes: manage, body: noBody{}, ids: ids, builtIn: types, answer: p.answer,
 		}).command(a),
 	}
 }
@@ -58,19 +61,18 @@ func (j *indexJob) state() jobState {
 // job's id alone, or with nothing where it starts none.
 func searchIndexWrites(job *jobWait) perTypeWrites {
 	return perTypeWrites{
-		update: "Creates the search index ID of the custom entity type TYPE, or replaces it (an upsert),\n" +
-			"with the one in --file, a JSON object with its fields (each with its path and how it is\n" +
-			"searched) and optionally name and description. A job builds a new index, and one whose\n" +
-			"fields changed or that is building or failed: Emporix then answers 202 Accepted with the\n" +
-			"job's id (`epx search jobs get ID` reads the job), else 204 No Content. With\n" +
-			"metadata.version, as `epx search indexes get TYPE ID -o json` prints it, Emporix replaces\n" +
-			"only that version; another, or a job of the index that is still running, is a conflict\n" +
-			"(exit 5).",
-		example: "  epx search indexes update vehicle vehicles --file index.json --dry-run\n" +
-			"  epx search indexes update vehicle vehicles --file index.json --wait --yes",
-		delete: "Starts the job that deletes the search index ID of the custom entity type TYPE: Emporix\n" +
-			"answers with the job's id (`epx search jobs get ID` reads the job), and with 409 Conflict\n" +
-			"(exit 5) while another job of the index is running.",
+		update: "Creates the search index ID of the type TYPE, or replaces it (an upsert), with the one\n" +
+			"in --file, a JSON object with its fields (each with its path and how it is searched) and\n" +
+			"optionally name and description. A job builds a new index, and one whose fields changed or\n" +
+			"that is building or failed: Emporix then answers 202 Accepted with the job's id\n" +
+			"(`epx search jobs get ID` reads the job), else 204 No Content. With metadata.version, as\n" +
+			"`epx search indexes get TYPE ID -o json` prints it, Emporix replaces only that version;\n" +
+			"another, or a job of the index that is still running, is a conflict (exit 5).",
+		example: "  epx search indexes update VEHICLE vehicles --file index.json --dry-run\n" +
+			"  epx search indexes update VEHICLE vehicles --file index.json --wait --yes",
+		delete: "Starts the job that deletes the search index ID of the type TYPE: Emporix answers with\n" +
+			"the job's id (`epx search jobs get ID` reads the job), and with 409 Conflict (exit 5) while\n" +
+			"another job of the index is running.",
 		answer: job.answering(jobIDs{field: "id"}),
 	}
 }
@@ -78,15 +80,14 @@ func searchIndexWrites(job *jobWait) perTypeWrites {
 // savedSearchWrites declares the writes of one saved search.
 func savedSearchWrites() perTypeWrites {
 	return perTypeWrites{
-		update: "Creates the saved search ID of the custom entity type TYPE, or replaces it (an upsert),\n" +
-			"with the one in --file, a JSON object with index (the ID of a search index of TYPE),\n" +
-			"queries, filters or both, and optionally name and description. Emporix answers a new\n" +
-			"one with its id (201 Created), and a replaced one with 204 No Content. Replacing one\n" +
-			"needs its metadata.version, as `epx search queries get TYPE ID -o json` prints it; a\n" +
-			"stale one is a conflict (exit 5). An unknown index is not found (exit 4).",
-		example: "  epx search queries update vehicle by-make --file by-make.json --dry-run",
-		delete: "Deletes the saved search ID of the custom entity type TYPE; an unknown one is not found\n" +
-			"(exit 4).",
+		update: "Creates the saved search ID of the type TYPE, or replaces it (an upsert), with the one in\n" +
+			"--file, a JSON object with index (the ID of a search index of TYPE), queries, filters or\n" +
+			"both, and optionally name and description. Emporix answers a new one with its id (201\n" +
+			"Created), and a replaced one with 204 No Content. Replacing one needs its metadata.version,\n" +
+			"as `epx search queries get TYPE ID -o json` prints it; a stale one is a conflict (exit 5).\n" +
+			"An unknown index is not found (exit 4).",
+		example: "  epx search queries update VEHICLE by-make --file by-make.json --dry-run",
+		delete:  "Deletes the saved search ID of the type TYPE; an unknown one is not found (exit 4).",
 	}
 }
 

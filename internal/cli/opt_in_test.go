@@ -122,7 +122,8 @@ func TestEveryWriteCapableReadIsOptIn(t *testing.T) {
 		if !isRead {
 			return
 		}
-		writes, hasFlag := writeCapable(strings.Fields(scopes)), cmd.Flags().Lookup(writeScopeFlag) != nil
+		declared, _ := parseScopeTokens(strings.Fields(scopes))
+		writes, hasFlag := writeCapable(declared), cmd.Flags().Lookup(writeScopeFlag) != nil
 		if writes != hasFlag {
 			t.Errorf("%s: scopes %q, --%s %v; want it exactly for a write-capable scope",
 				cmd.CommandPath(), scopes, writeScopeFlag, hasFlag)

@@ -79,15 +79,23 @@ func checkFileFlag(t *testing.T, cmd *cobra.Command, withFile, typed bool) {
 	}
 }
 
-// typeOfRun returns how scopes are filled in for a run of cmd with rest, its
-// arguments and flags: those of a custom entity type with the type of its
-// first argument (withType), as typeScopes fills them in.
-func typeOfRun(cmd *cobra.Command, rest []string) func(scopes []string) []string {
+// typeOfRun returns how the scopes that tokens name, a scope annotation
+// (parseScopeTokens), are filled in for a run of cmd with rest, its
+// arguments and flags, as typeScopes fills them in: for the type that its
+// first argument names (builtInTypes.fill), where the built-in types that
+// tokens hold are taken as written, as the cases name them.
+func typeOfRun(cmd *cobra.Command, rest []string) func(tokens []string) []string {
+	typ := ""
 	if cmd.ParseFlags(rest) == nil && cmd.Flags().NArg() > 0 {
-		typ := cmd.Flags().Arg(0)
-		return func(scopes []string) []string { return withType(scopes, typ) }
+		typ = cmd.Flags().Arg(0)
 	}
-	return func(scopes []string) []string { return scopes }
+	return func(tokens []string) []string {
+		scopes, types := parseScopeTokens(tokens)
+		if typ == "" {
+			return scopes
+		}
+		return spelledTypes(types...).fill(scopes, typ)
+	}
 }
 
 // flagScope returns whether a scope is one that a flag of cmd adds, given or

@@ -46,7 +46,7 @@ func (rd reader[T]) fileCommand(a *app, f *fileRead) *cobra.Command {
 		", which epx saves to the file that --" + outFlag + " names (readable by\nits owner only; a file there is " +
 		"replaced, but not a directory, device or link), or writes to\nstandard output with --" + outFlag +
 		" -, unless that is a terminal. An answer that is no " + f.noun + " fails\n(exit 1), and nothing is " +
-		"saved.\n\n" + scopeSentence(rd.scopes)
+		"saved.\n\n" + scopeSentence(target.tokens)
 	cmd.RunE = func(cc *cobra.Command, args []string) error {
 		client, path, query, err := target.open(cc.Context(), args)
 		if err != nil {

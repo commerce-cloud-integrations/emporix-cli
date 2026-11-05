@@ -185,13 +185,16 @@ func TestCompletionOffersTheIDsOfOnePageOfTheList(t *testing.T) {
 			requests: []string{"/category/acme1/category-trees?showUnpublished=true"},
 			scopes:   []string{"category.category_read_unpublished"},
 		},
-		{ // a column other than the first: the types of the search indexes, each once, without the NAME of an index
+		{ // a column other than the first: the built-in search types, then the types of the search indexes,
+			// each once, without the NAME of an index, nor a built-in type written otherwise, which get refuses
+			// (Emporix keeps an index under its type as written)
 			args: []string{"search", "indexes", "get", ""},
 			routes: map[string]http.HandlerFunc{
 				"/search/acme1/search/indexes": respond(http.StatusOK, `[{"id":"i1","type":"BRAND","name":"Brands"},`+
-					`{"id":"i2","type":"BRAND","name":"Labels"},{"id":"i3","type":"COLOR","name":"Colors"}]`),
+					`{"id":"i2","type":"BRAND","name":"Labels"},{"id":"i3","type":"COLOR","name":"Colors"},`+
+					`{"id":"i4","type":"customer","name":"Customers"},{"id":"i5","type":"CUSTOMER"}]`),
 			},
-			want:     []string{"BRAND", "COLOR"},
+			want:     []string{"customer", "legal-entity", "BRAND", "COLOR"},
 			requests: []string{"/search/acme1/search/indexes?pageNumber=1&pageSize=100"},
 			scopes:   []string{searchScope},
 		},
@@ -232,6 +235,8 @@ func TestCompletionReadsNothingUnlessItCan(t *testing.T) {
 			return env
 		}},
 		{name: "a list of a site without --site", env: completionEnv, args: []string{"shipping", "zones", "get", ""}},
+		{name: "an argument after a type that the command refuses", env: completionEnv,
+			args: []string{"search", "indexes", "get", "CUSTOMER", ""}},
 		{name: "a list of a site that the read does not take", env: completionEnv, args: []string{"prices", "get", ""}},
 		{name: "a list of a site that the read does not take", env: completionEnv, args: []string{"fees", "get", ""}},
 		{name: "a parent that names no item", env: completionEnv, args: []string{"price-lists", "prices", "get", "..", ""}},
@@ -247,15 +252,15 @@ func TestCompletionReadsNothingUnlessItCan(t *testing.T) {
 			args: []string{"ai", "analytics", "executions", "a"}},
 		{name: "several IDs, after a comma, not opted in", env: (*fakeEmporix).env,
 			args: []string{"ai", "analytics", "executions", "a1,"}},
-		{name: "predefined values, not opted in", env: (*fakeEmporix).env, args: []string{"ai", "rag", "fields", ""},
+		{name: "built-in types, not opted in", env: (*fakeEmporix).env, args: []string{"ai", "rag", "fields", ""},
 			want: []string{"PRODUCT", "ORDER"}},
-		{name: "predefined values that start with what is typed", env: (*fakeEmporix).env,
+		{name: "built-in types that start with what is typed", env: (*fakeEmporix).env,
 			args: []string{"ai", "rag", "reindex", "P"}, want: []string{"PRODUCT"}},
-		{name: "no predefined value that starts with what is typed", env: (*fakeEmporix).env,
+		{name: "no built-in type that starts with what is typed", env: (*fakeEmporix).env,
 			args: []string{"ai", "rag", "filter-fields", "X"}},
 		{name: "a profile that cannot be read", env: completionEnv,
 			args: []string{"ai", "rag", "fields", "--profile", "missing", ""}, want: []string{"PRODUCT", "ORDER"}},
-		{name: "an argument beyond the predefined values", env: completionEnv,
+		{name: "an argument beyond the built-in types", env: completionEnv,
 			args: []string{"ai", "rag", "fields", "ORDER", ""}},
 		{name: "the choices of an argument, which no list holds", env: completionEnv,
 			args: []string{"segments", "items", "get", "S1", ""}, want: []string{"PRODUCT", "CATEGORY"}},

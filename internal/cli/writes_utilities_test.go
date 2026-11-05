@@ -97,6 +97,18 @@ func searchWrites() []writeCase {
 			path: "/search/acme1/search/vehicle/queries/by-make", scopes: manage, confirmBy: "by-make",
 			status: http.StatusNoContent,
 		},
+		{
+			// customer and legal-entity are types too, whose writes request the manage scope alone.
+			args: []string{"search", "indexes", "update", "legal-entity", "companies"}, method: http.MethodPut,
+			file: `{"name":{"en":"Companies"},"fields":[{"path":"name","text":true}]}`,
+			path: "/search/acme1/search/legal-entity/indexes/companies", scopes: manage, lang: "*",
+			status: http.StatusAccepted, body: `{"id":"job4"}`, want: "{\n  \"id\": \"job4\"\n}\n",
+		},
+		{
+			args: []string{"search", "queries", "delete", "customer", "by-city"}, method: http.MethodDelete,
+			path: "/search/acme1/search/customer/queries/by-city", scopes: manage, confirmBy: "by-city",
+			status: http.StatusNoContent,
+		},
 	}
 }
 

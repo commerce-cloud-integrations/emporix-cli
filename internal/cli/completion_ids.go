@@ -168,17 +168,21 @@ func offeredIDs[T any](v view[T], items []json.RawMessage, column, name int, pre
 }
 
 // completeArguments makes shells complete the arguments of cmd, a read or a
-// write, each with the values that values give it, by its name, such as its
-// choices, which need no read and complete without the opt-in too, then with
-// the IDs that ids list for it, as listedItems reads them, given the site
-// that --site gives, else the default site of the profile in effect. Values
-// or a read for an argument that cmd does not take, or a read that needs a
-// site where cmd takes no --site, could never complete: that is a mistake in
-// the declaration of cmd, so it panics while the command tree is built,
-// which every test of the tree does.
-func completeArguments(a *app, cmd *cobra.Command, site *siteCode, ids argumentIDs, values ...map[string][]string) {
+// write, each with its choices, by its name, and the built-in types of its
+// first argument (builtInTypes.values), which need no read and complete
+// without the opt-in too, then with the IDs that ids list for it, as
+// listedItems reads them, given the site that --site gives, else the default
+// site of the profile in effect. It offers nothing that cmd refuses: no
+// listed value of its first argument that writes a built-in type otherwise
+// (builtInTypes.spelling), and nothing at all, without a read, after such a
+// first argument. Values or a read for an argument that cmd does not take,
+// or a read that needs a site where cmd takes no --site, could never
+// complete: that is a mistake in the declaration of cmd, so it panics while
+// the command tree is built, which every test of the tree does.
+func completeArguments(a *app, cmd *cobra.Command, site *siteCode, ids argumentIDs, choices map[string][]string,
+	builtIn builtInTypes) {
 	names := declaredArguments(cmd.Use)
-	fixed := argumentValues(values)
+	fixed := builtIn.values(cmd.Use, choices)
 	completes := slices.Collect(maps.Keys(fixed))
 	for name, src := range ids {
 		if src == nil {
@@ -199,7 +203,7 @@ func completeArguments(a *app, cmd *cobra.Command, site *siteCode, ids argumentI
 	}
 	cmd.ValidArgsFunction = func(c *cobra.Command, args []string, toComplete string) (
 		[]cobra.Completion, cobra.ShellCompDirective) {
-		if len(args) >= len(names) {
+		if len(args) >= len(names) || len(args) > 0 && builtIn.spelling(args[0]) != nil {
 			return nil, cobra.ShellCompDirectiveNoFileComp
 		}
 		name := names[len(args)]
@@ -210,34 +214,24 @@ func completeArguments(a *app, cmd *cobra.Command, site *siteCode, ids argumentI
 		if src != nil && a.completesIDs() && a.applyProfileDefaults(c) == nil {
 			items = a.listedItems(c.Context(), src, args, *site)
 		}
-		return offerArgument(fixed[name], src, items, toComplete)
+		refused := func(value string) bool { return len(args) == 0 && builtIn.spelling(value) != nil }
+		return offerArgument(fixed[name], src, items, toComplete, refused)
 	}
-}
-
-// argumentValues returns values, each the values that arguments take by
-// their names, together by name.
-func argumentValues(values []map[string][]string) map[string][]string {
-	all := map[string][]string{}
-	for _, byName := range values {
-		for name, given := range byName {
-			all[name] = append(all[name], given...)
-		}
-	}
-	return all
 }
 
 // offerArgument returns what an argument completes with that starts with typed:
 // those of values, which need no read, then the IDs that src offers of items
-// (none where src is nil), each once, up to completionSize in all; and how
-// shells complete them.
-func offerArgument(values []string, src *idSource, items []json.RawMessage, typed string) (
-	[]cobra.Completion, cobra.ShellCompDirective) {
+// (none where src is nil) that the argument does not refuse, each once, up
+// to completionSize in all; and how shells complete them.
+func offerArgument(values []string, src *idSource, items []json.RawMessage, typed string,
+	refused func(value string) bool) ([]cobra.Completion, cobra.ShellCompDirective) {
 	offered := slices.DeleteFunc(slices.Clone(values), func(v string) bool { return !strings.HasPrefix(v, typed) })
 	if src == nil {
 		return offered, cobra.ShellCompDirectiveNoFileComp
 	}
 	for _, id := range src.offer(items, typed) {
-		if len(offered) < completionSize && !slices.Contains(values, completionValue(id)) {
+		value := completionValue(id)
+		if len(offered) < completionSize && !slices.Contains(values, value) && !refused(value) {
 			offered = append(offered, id)
 		}
 	}
@@ -282,7 +276,8 @@ func (a *app) listedItems(ctx context.Context, src *idSource, args []string, sit
 
 // fillable reports whether args and site fill in every placeholder of src's
 // request, each with a value that addresses a single item, and, where src's
-// scopes name a custom entity type, args name one first (typeScopes).
+// scopes name a custom entity type, the first of args is what a custom
+// entity type can be named (typeIDPattern), as typeScopes requires of it.
 func (src *idSource) fillable(args []string, site siteCode) bool {
 	n := len(src.req.arguments())
 	if n > len(args) || slices.ContainsFunc(args[:n], func(arg string) bool { return !isPathSegment(arg) }) {

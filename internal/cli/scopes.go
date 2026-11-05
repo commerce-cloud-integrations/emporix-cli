@@ -12,7 +12,9 @@ import (
 
 // Annotations that hold the scopes of a read command (scopesAnnotation) and
 // of a write command, separated by spaces, so that a group can say which
-// scopes its reads and its writes request.
+// scopes its reads and its writes request; where a command's scopes name a
+// custom entity type, they also hold the TYPE:SCOPE tokens of its built-in
+// types' scopes (builtInSeparator).
 const (
 	scopesAnnotation      = "scopes"
 	writeScopesAnnotation = "writeScopes"
@@ -43,8 +45,8 @@ type scopeKind struct {
 // their scopes agree, the scope sentence of one of them; otherwise a line per
 // kind, its reads first, that names their scopes where they agree and says
 // that they differ otherwise, followed by optInSentence where reads are
-// opt-in, and by one typeNote for the scopes the lines name. Without reads or
-// writes, nothing.
+// opt-in, and by the note on the scopes the lines name (typeNote). Without
+// reads or writes, nothing.
 func groupScopeSentence(group *cobra.Command) string {
 	kinds := slices.DeleteFunc([]scopeKind{
 		{name: "reads", sets: scopeSets(group, scopesAnnotation), sentence: scopeSentence, optIn: true},
@@ -58,13 +60,15 @@ func groupScopeSentence(group *cobra.Command) string {
 	for i, kind := range kinds {
 		lines[i] = "Its " + kind.name + " " + groupRequirement(kind.sets)
 		if kind.optIn {
-			lines[i] += optInNote(strings.Fields(strings.Join(kind.sets, " ")))
+			scopes, _ := parseScopeTokens(strings.Fields(strings.Join(kind.sets, " ")))
+			lines[i] += optInNote(scopes)
 		}
 		if len(kind.sets) == 1 {
 			named = append(named, strings.Fields(kind.sets[0])...)
 		}
 	}
-	return strings.Join(lines, "\n") + typeNote(named)
+	scopes, types := parseScopeTokens(named)
+	return strings.Join(lines, "\n") + typeNote(scopes, types)
 }
 
 // groupRequirement says what the commands of one or more scope sets require,
@@ -76,7 +80,8 @@ func groupRequirement(sets []string) string {
 	case sets[0] == "":
 		return "need no OAuth scope."
 	default:
-		return "require " + theScopes(strings.Fields(sets[0])) + "."
+		scopes, _ := parseScopeTokens(strings.Fields(sets[0]))
+		return "require " + theScopes(scopes) + "."
 	}
 }
 
@@ -96,24 +101,32 @@ func scopeSets(cmd *cobra.Command, annotation string) []string {
 	return slices.Compact(all)
 }
 
-// scopeSentence says which OAuth scopes a read requests, followed by
-// typeNote where they name a custom entity type and optInSentence when one
-// of them is write-capable.
-func scopeSentence(scopes []string) string {
-	return writeScopeSentence(scopes) + optInNote(scopes)
+// scopeSentence says which OAuth scopes a read requests, as tokens name
+// them, those of its built-in types too (parseScopeTokens): their
+// requirement, followed by optInSentence when one of them is write-capable
+// (none of a built-in type is, typeScopes).
+func scopeSentence(tokens []string) string {
+	scopes, types := parseScopeTokens(tokens)
+	return requirement(scopes, types) + optInNote(scopes)
 }
 
 // noScopeSentence ends the help of a command that requests no scope.
 const noScopeSentence = "No OAuth scope is needed."
 
-// writeScopeSentence says which OAuth scopes a write requests, followed by
-// typeNote where they name a custom entity type; noScopeSentence where it
-// requests none. A read's scope sentence (scopeSentence) builds on it.
-func writeScopeSentence(scopes []string) string {
+// writeScopeSentence says which OAuth scopes a write requests, as tokens
+// name them, those of its built-in types too (parseScopeTokens): their
+// requirement.
+func writeScopeSentence(tokens []string) string { return requirement(parseScopeTokens(tokens)) }
+
+// requirement says which OAuth scopes a command requests, followed by
+// typeNote where they name a custom entity type, with the scopes that the
+// built-in types request in their place; noScopeSentence where it requests
+// none.
+func requirement(scopes []string, types []builtInType) string {
 	if len(scopes) == 0 {
 		return noScopeSentence
 	}
-	return "Requires " + theScopes(scopes) + "." + typeNote(scopes)
+	return "Requires " + theScopes(scopes) + "." + typeNote(scopes, types)
 }
 
 // theScopes names one or more scopes, e.g. "the a.read scope" or "the

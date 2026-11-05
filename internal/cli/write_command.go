@@ -44,9 +44,9 @@ type write struct {
 	// choices holds the only values that an argument of req takes, by its
 	// name in use, e.g. TYPE: PRODUCT and CATEGORY; any when nil.
 	choices map[string][]string
-	// predefined holds values that an argument takes besides others, by its
-	// name in use; they complete as its choices do (command.predefined).
-	predefined map[string][]string
+	// builtIn holds the types that Emporix defines that its first argument
+	// takes besides the custom entity types, as command.builtIn does.
+	builtIn builtInTypes
 	// answer is how a run ends once Emporix answered it (answerer), such as
 	// following the job that it starts (--wait); by printing the response
 	// when nil.
@@ -80,40 +80,32 @@ type write struct {
 // query parameters and headers, a flag per query switch and those of its
 // choice; it sends with a token of w's scopes, with those of its parameter
 // where its query needs them (paramScopes), those of the custom entity type
-// that its first argument names where they name one (typeScopes), and those
-// of the choice's flag given, if any, after any read of its body with the
-// body's own, and says which scopes in its help and its annotation, the body's
-// first (the help names those of the choice's flags and of its parameter
-// apart); it takes the flags
-// of its answer, if any: --wait, which follows the job that it starts with the
-// scopes of reading it too (jobWait); and it is confirmed as w.confirmation
-// says. A write without a write-capable scope that is not declared readScoped,
-// one declared so with a write-capable scope, one whose choice sets a
-// parameter that its request sends already, one that reserves values of an ID
-// it does not take, one with a languageHelp that would not say how it sends
-// its localized text (bindLanguage), or one whose deletion is not that of a delete
-// (checkDeletion) is a mistake in its declaration (the first would be sent
-// with scopes that cannot change data), so it panics while the command tree
-// is built, which every test of the tree does.
+// or built-in type that its first argument names where they name one
+// (typeScopes), and those of the choice's flag given, if any, after
+// any read of its body with the body's own, and says which scopes in its help
+// and its annotation, the body's first (the help names those of the choice's
+// flags and of its parameter apart); it takes the flags of its answer, if
+// any: --wait, which follows the job that it starts with the scopes of
+// reading it too (jobWait); and it is confirmed as w.confirmation says. A
+// write without a write-capable scope that is not declared readScoped, one
+// declared so with a write-capable scope, one whose choice sets a parameter
+// that its request sends already, one that reserves values of an ID it does
+// not take, one with a languageHelp that would not say how it sends its
+// localized text (bindLanguage), or one whose deletion is not that of a
+// delete (checkDeletion) is a mistake in its declaration (the first would be
+// sent with scopes that cannot change data), so it panics while the command
+// tree is built, which every test of the tree does.
 func (w *write) command(a *app) *cobra.Command {
 	w.checkDeclaration()
-	requested := w.requested()
 	cmd := &cobra.Command{
-		Use: w.use, Short: w.short, Long: w.what(), Example: w.example,
-		Annotations: map[string]string{writeScopesAnnotation: strings.Join(requested, " ")},
+		Use: w.use, Short: w.short, Long: w.what(), Example: w.example, Annotations: map[string]string{},
 	}
 	if w.answers.ForbiddenIsRefusal {
 		checkRefusalHelp(cmd)
 	}
-	site := w.bindArguments(a, cmd)
-	if len(w.reserved) > 0 {
-		if !w.req.names(placeholderID) {
-			panic(w.use + ": a write reserves values of an ID only where its request names " + placeholderID)
-		}
-		cmd.Args = refuseReserved(cmd.Args, w.reserved)
-	}
-	// after bind and refuseReserved, whose argument rules it wraps; every scope that it may request
-	fillType := typeScopes(cmd, w.req, slices.Concat(w.scopes, w.paramScopes.scopes))
+	site, typeTokens, fillType := w.bindArguments(a, cmd)
+	tokens := slices.Concat(w.requested(), typeTokens)
+	cmd.Annotations[writeScopesAnnotation] = strings.Join(tokens, " ")
 	lang := w.bindLanguage(cmd)
 	if w.answers.ReportsOutcome {
 		cmd.Long += "\n\n" + outcomeHelp
@@ -132,7 +124,7 @@ func (w *write) command(a *app) *cobra.Command {
 	if w.answer != nil {
 		end = w.answer.bind(a, cmd)
 	}
-	cmd.Long += w.choice.scopeNote() + w.paramScopes.note() + "\n\n" + writeScopeSentence(requested)
+	cmd.Long += w.choice.scopeNote() + w.paramScopes.note() + "\n\n" + writeScopeSentence(tokens)
 	n := len(w.req.arguments())
 	cmd.RunE = func(c *cobra.Command, args []string) error {
 		path, query := w.req.fill(args, *site)
@@ -155,13 +147,27 @@ func (w *write) command(a *app) *cobra.Command {
 }
 
 // bindArguments binds the arguments of w's request, and --site where it
-// names the site, to cmd, which completes them with their choices and
-// predefined values and as w.ids lists them (completeArguments), and
-// returns the site that --site gives.
-func (w *write) bindArguments(a *app, cmd *cobra.Command) *siteCode {
-	site := w.req.bind(cmd, w.choices)
-	completeArguments(a, cmd, site, w.ids, w.choices, w.predefined)
-	return site
+// names the site, to cmd: they refuse the values of its ID that w reserves
+// (refuseReserved) and, where the first is a type, what no type is
+// (typeScopes), and complete with their choices and built-in types
+// and as w.ids lists them (completeArguments). It returns the site that
+// --site gives; where w's scopes name a custom entity type, the tokens of the
+// scopes of its built-in types (builtInTypes.tokens), none otherwise; and how
+// a run fills in the scopes that it requests (typeScopes).
+func (w *write) bindArguments(a *app, cmd *cobra.Command) (
+	site *siteCode, typeTokens []string, fill func(args, requested []string) []string) {
+	site = w.req.bind(cmd, w.choices)
+	if len(w.reserved) > 0 {
+		if !w.req.names(placeholderID) {
+			panic(w.use + ": a write reserves values of an ID only where its request names " + placeholderID)
+		}
+		cmd.Args = refuseReserved(cmd.Args, w.reserved)
+	}
+	// After request.bind and refuseReserved, whose argument rules it wraps; every scope that may name a
+	// custom entity type.
+	typeTokens, fill = typeScopes(cmd, w.req, slices.Concat(w.scopes, w.paramScopes.scopes), w.builtIn)
+	completeArguments(a, cmd, site, w.ids, w.choices, w.builtIn)
+	return site, typeTokens, fill
 }
 
 // requested returns the scopes that w's help and annotation name: those of

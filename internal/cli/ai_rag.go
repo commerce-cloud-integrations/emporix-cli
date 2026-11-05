@@ -2,7 +2,6 @@ package cli
 
 import (
 	"net/http"
-	"slices"
 
 	"github.com/spf13/cobra"
 
@@ -24,14 +23,13 @@ type ragFilterField struct {
 // embeds the entities of a type again.
 func newAIRAGCommand(a *app) *cobra.Command {
 	const path = "/ai-rag-indexer/{tenant}/" + placeholderID // the metadata of the entity type TYPE
-	// The predefined entity types, besides the custom ones, which the RAG reference names.
-	predefined := []string{"PRODUCT", "ORDER"}
-	typeList := "\nTYPE is " + alternatives(append(slices.Clone(predefined),
-		"a custom entity type (`epx custom-entities list`)")) + "."
+	// The entity types that the RAG reference names besides the custom ones, which the indexer takes in
+	// any case (live: product and order are served too).
+	builtIn := anyCaseTypes("PRODUCT", "ORDER")
+	typeList := "\nTYPE is " + builtIn.kinds() + " (`epx custom-entities list`)."
 	reindexSentence := typeList + " Emporix answers an unknown TYPE with 204 No Content (exit 0),\n" +
 		"so check the TYPE first."
 	types := argumentIDs{columnType: customEntities().ids()}
-	typeValues := map[string][]string{columnType: predefined}
 	fieldsSentence := typeList + " The fields come whole, so they are read with one\nrequest."
 	whole := listing{read: (*emporix.Client).GetUnpaged}
 	fields := reader[string]{view: stringsView("RAG field", "FIELD"), scopes: []string{aiScope}}
@@ -51,7 +49,7 @@ func newAIRAGCommand(a *app) *cobra.Command {
 		req:     request{path: path + "/reindex"},
 		scopes:  []string{aiManageScope},
 		body:    noBody{},
-		ids:     types, predefined: typeValues,
+		ids:     types, builtIn: builtIn,
 	}
 	return newGroup("rag", "Read which fields the AI RAG Indexer embeds and filters by; reindex",
 		"Reads the AI RAG Indexer, which embeds the entities of a type in a vector database for the\n"+
@@ -64,7 +62,7 @@ func newAIRAGCommand(a *app) *cobra.Command {
 			long:  "Reads the fields of an entity type, by path, that the AI RAG Indexer can embed." + fieldsSentence,
 			req:   request{path: path + "/rag-metadata"},
 			fetch: whole,
-			ids:   types, predefined: typeValues,
+			ids:   types, builtIn: builtIn,
 		}),
 		filters.command(a, &command{
 			use:   "filter-fields TYPE",
@@ -74,7 +72,7 @@ func newAIRAGCommand(a *app) *cobra.Command {
 				"dictionary, list or object)." + fieldsSentence,
 			req:   request{path: path + "/filter-metadata"},
 			fetch: whole,
-			ids:   types, predefined: typeValues,
+			ids:   types, builtIn: builtIn,
 		}),
 	)
 }

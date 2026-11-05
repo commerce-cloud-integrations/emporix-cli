@@ -223,10 +223,11 @@ func scopesLine(cmd *cobra.Command) string {
 		}
 		sentence = writeScopeSentence
 	}
-	scopes := strings.Fields(value)
-	if strings.HasSuffix(strings.TrimSpace(cmd.Long), sentence(scopes)) {
+	tokens := strings.Fields(value)
+	if strings.HasSuffix(strings.TrimSpace(cmd.Long), sentence(tokens)) {
 		return ""
 	}
+	scopes, _ := parseScopeTokens(tokens)
 	if len(scopes) == 0 {
 		return "**OAuth scopes:** none"
 	}

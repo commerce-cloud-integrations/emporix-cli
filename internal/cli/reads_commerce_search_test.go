@@ -190,6 +190,29 @@ func instanceAndDocumentSearchReads() []readCase {
 				{"id":"d2","name":{"en":"Diesel generator"},"_score":3.10}]`,
 			want: "ID  NAME                   SCORE\nd1  Dieselmotor            4.2\nd2  Diesel generator (en)  3.10\n",
 		},
+		{
+			// Customers, with the scope that reads every customer in place of a custom entity type's;
+			// a customer document has no name.
+			args:    []string{"search", "documents", "customer", "--saved-search", "by-city", "--text", "Utrecht"},
+			path:    "/search/acme1/search/customer",
+			scopes:  []string{"search.search_read", "customer.customer_read"},
+			filters: listFilters{kinds: sortable},
+			method:  http.MethodPost,
+			sent:    `{"query":"Utrecht","searchQueryId":"by-city"}`,
+			body:    `[{"id":"c1","contactEmail":"jane@example.com","_score":2.5}]`,
+			want:    "ID  NAME  SCORE\nc1        2.5\n",
+		},
+		{
+			// Legal entities, with the scope that reads every legal entity; their name is plain text.
+			args:    []string{"search", "documents", "legal-entity", "--saved-search", "by-name", "--text", "acme"},
+			path:    "/search/acme1/search/legal-entity",
+			scopes:  []string{"search.search_read", "customermanagement.legalentity_read"},
+			filters: listFilters{kinds: sortable},
+			method:  http.MethodPost,
+			sent:    `{"query":"acme","searchQueryId":"by-name"}`,
+			body:    `[{"id":"le1","name":"Acme B.V.","_score":1.5}]`,
+			want:    "ID   NAME       SCORE\nle1  Acme B.V.  1.5\n",
+		},
 	}
 }
 
