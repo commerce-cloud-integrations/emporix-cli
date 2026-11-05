@@ -1,0 +1,137 @@
+.TH "EPX\-CATEGORY\-TREES" "1" "" "epx" "epx manual"
+.SH "NAME"
+epx\-category\-trees \- read and rebuild category trees
+.SH "SYNOPSIS"
+.RS "4"
+.nf
+epx category\-trees [flags]
+epx category\-trees [command]
+.fi
+.RE
+.SH "DESCRIPTION"
+Reads category trees, published and unpublished: each root category followed by its subcategories, depth first, in the order Emporix sends them; NAME is indented by the category\(aqs level. get takes the id of a root category: Emporix answers another category\(aqs id as not found. list\(aqs \fB\-\-limit\fR counts trees, each shown whole. list\(aqs \fB\-\-type\fR lists only the trees of one category type: STANDARD (regular categories) or CLASSIFICATION (categories that define classification mixins, the attributes that the products in them take). A move of a category shows in its tree a few seconds later; a root category moved below another may keep its old tree until it is deleted.
+.PP
+Its reads require the category.category_read_unpublished scope. Its writes require the category.category_manage, category.category_read_unpublished scopes.
+.SH "COMMANDS"
+.SS "epx category\-trees get"
+Show one category tree.
+.PP
+.RS "4"
+.nf
+epx category\-trees get ID [flags]
+.fi
+.RE
+.PP
+Reads category trees, published and unpublished: each root category followed by its subcategories, depth first, in the order Emporix sends them; NAME is indented by the category\(aqs level. get takes the id of a root category: Emporix answers another category\(aqs id as not found. list\(aqs \fB\-\-limit\fR counts trees, each shown whole. list\(aqs \fB\-\-type\fR lists only the trees of one category type: STANDARD (regular categories) or CLASSIFICATION (categories that define classification mixins, the attributes that the products in them take). A move of a category shows in its tree a few seconds later; a root category moved below another may keep its old tree until it is deleted.
+.PP
+Requires the category.category_read_unpublished scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, CODE, PUBLISHED, NAME.
+.TP
+\fB\-\-language <language>\fR
+Language of localized table text; a missing translation shows another, labeled (\fB\-o json\fR prints all). Default: \fBen\fR.
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.SS "epx category\-trees list"
+List category trees.
+.PP
+.RS "4"
+.nf
+epx category\-trees list [flags]
+.fi
+.RE
+.PP
+Reads category trees, published and unpublished: each root category followed by its subcategories, depth first, in the order Emporix sends them; NAME is indented by the category\(aqs level. get takes the id of a root category: Emporix answers another category\(aqs id as not found. list\(aqs \fB\-\-limit\fR counts trees, each shown whole. list\(aqs \fB\-\-type\fR lists only the trees of one category type: STANDARD (regular categories) or CLASSIFICATION (categories that define classification mixins, the attributes that the products in them take). A move of a category shows in its tree a few seconds later; a root category moved below another may keep its old tree until it is deleted.
+.PP
+Requires the category.category_read_unpublished scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, CODE, PUBLISHED, NAME.
+.TP
+\fB\-\-language <language>\fR
+Language of localized table text; a missing translation shows another, labeled (\fB\-o json\fR prints all). Default: \fBen\fR.
+.TP
+\fB\-\-limit <n>\fR
+Print at most n items; paged reads stop early where they safely can (0: every item).
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-type <TYPE>\fR
+List only the trees of this category TYPE: STANDARD or CLASSIFICATION.
+.SS "epx category\-trees rebuild"
+Rebuild a category tree.
+.PP
+.RS "4"
+.nf
+epx category\-trees rebuild ID [flags]
+.fi
+.RE
+.PP
+Rebuilds the category tree of the root category ID (an unindented row of \fBepx category\-trees list\fR) and prints the rebuilt tree as JSON, published and unpublished categories. It sends no body; another category\(aqs id is not found (exit 4).
+.PP
+Changes data: on a terminal, epx asks before it sends POST. \fB\-\-yes\fR sends without asking (required without a terminal); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the category.category_manage, category.category_read_unpublished scopes.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal).
+.SS "epx category\-trees search"
+Search category trees.
+.PP
+.RS "4"
+.nf
+epx category\-trees search [flags]
+.fi
+.RE
+.PP
+Reads the category trees, published and unpublished, that hold any of the categories \fB\-\-category\fR names, each whole; without \fB\-\-category\fR, every tree. \fB\-\-limit\fR counts trees. It reads and shows them as \fBepx category\-trees list\fR does.
+.PP
+Changes nothing: Emporix serves this read as POST with a JSON body, which the flags make or \fB\-\-body\fR gives whole.
+.PP
+Requires the category.category_read_unpublished scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-body <FILE>\fR
+Send the JSON request body in FILE as given (\- reads standard input) instead of the one the other flags make.
+.TP
+\fB\-\-category <ID>\fR
+A category ID whose tree to read (repeatable).
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, CODE, PUBLISHED, NAME.
+.TP
+\fB\-\-language <language>\fR
+Language of localized table text; a missing translation shows another, labeled (\fB\-o json\fR prints all). Default: \fBen\fR.
+.TP
+\fB\-\-limit <n>\fR
+Print at most n items; paged reads stop early where they safely can (0: every item).
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.SH "SEE ALSO"
+\fBepx\fR(1) for the global options, the credentials epx reads and its exit codes; https://commerce-cloud-integrations.github.io/emporix-cli/commands/category-trees

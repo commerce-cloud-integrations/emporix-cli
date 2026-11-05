@@ -1,0 +1,431 @@
+.TH "EPX\-SCHEMAS" "1" "" "epx" "epx manual"
+.SH "NAME"
+epx\-schemas \- read, create, change and delete custom schemas and schema references
+.SH "SYNOPSIS"
+.RS "4"
+.nf
+epx schemas [flags]
+epx schemas [command]
+.fi
+.RE
+.SH "DESCRIPTION"
+Reads custom schemas, the attribute sets that extend Emporix entities. TYPES lists the entity types a schema applies to and ATTRIBUTES counts its top\-level attributes (\fB\-o json\fR prints their definitions). \fBepx schemas references\fR reads schema references and \fBepx schemas types\fR the entity types that have schemas.
+.PP
+Its reads require different OAuth scopes; the help of each names them. Opt\-in: epx requests a write\-capable scope for a read only when given \fB\-\-allow\-write\-scope\fR. Its writes require the schema.schema_manage scope.
+.SH "COMMANDS"
+.SS "epx schemas create"
+Create a schema.
+.PP
+.RS "4"
+.nf
+epx schemas create [flags]
+.fi
+.RE
+.PP
+Creates a schema from the JSON in \fB\-\-file\fR: its name (translations), the entity types it extends and its attributes, such as \fBepx schemas parse \-o json\fR prints them once a name and types are added. It prints the id that Emporix answers with; one that exists already is a conflict. Name entity types by their ids, with _, such as VENDOR_LOCATION.
+.PP
+Localized text in the body is a map of translations, e.g. \fB{"en": "Acme", "de": "Acme"}\fR, as \fB\-o json\fR of a read prints it, sent with Content\-Language: *. Emporix refuses a string in its place.
+.PP
+Changes data: on a terminal, epx asks before it sends POST. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the schema.schema_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SS "epx schemas delete"
+Delete a schema.
+.PP
+.RS "4"
+.nf
+epx schemas delete ID [flags]
+.fi
+.RE
+.PP
+Deletes the schema ID, every version of it. Emporix answers an unknown ID as a deleted one (204), so epx exits with 0.
+.PP
+Deletes data, which cannot be undone. On a terminal, epx sends DELETE only once you type ID at its prompt. \fB\-\-yes\fR sends without asking (required without a terminal); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the schema.schema_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal).
+.SS "epx schemas get"
+Show one schema.
+.PP
+.RS "4"
+.nf
+epx schemas get ID [flags]
+.fi
+.RE
+.PP
+Reads custom schemas, the attribute sets that extend Emporix entities. TYPES lists the entity types a schema applies to and ATTRIBUTES counts its top\-level attributes (\fB\-o json\fR prints their definitions). \fBepx schemas references\fR reads schema references and \fBepx schemas types\fR the entity types that have schemas.
+.PP
+No OAuth scope is needed.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, NAME, TYPES, ATTRIBUTES, VERSION.
+.TP
+\fB\-\-language <language>\fR
+Language of localized table text; a missing translation shows another, labeled (\fB\-o json\fR prints all). Default: \fBen\fR.
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.SS "epx schemas list"
+List schemas.
+.PP
+.RS "4"
+.nf
+epx schemas list [flags]
+.fi
+.RE
+.PP
+Reads custom schemas, the attribute sets that extend Emporix entities. TYPES lists the entity types a schema applies to and ATTRIBUTES counts its top\-level attributes (\fB\-o json\fR prints their definitions). \fBepx schemas references\fR reads schema references and \fBepx schemas types\fR the entity types that have schemas.
+.PP
+No OAuth scope is needed.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, NAME, TYPES, ATTRIBUTES, VERSION.
+.TP
+\fB\-\-language <language>\fR
+Language of localized table text; a missing translation shows another, labeled (\fB\-o json\fR prints all). Default: \fBen\fR.
+.TP
+\fB\-\-limit <n>\fR
+Print at most n items; paged reads stop early where they safely can (0: every item).
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-query <filter>\fR
+Emporix q filter, passed as given, e.g. code:(A1,A2); space\-separated conditions must all match (fields mostly as in \fB\-o json\fR).
+.TP
+\fB\-\-sort <order>\fR
+Emporix sort order, passed as given, e.g. code or name.en:desc,code; fields mostly as in \fB\-o json\fR (Emporix may ignore an unknown one).
+.TP
+\fB\-\-stream\fR
+Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes \fB\-o\fR, \fB\-\-columns\fR and \fB\-\-no\-headers\fR).
+.SS "epx schemas parse"
+Parse a JSON schema file into a schema.
+.PP
+.RS "4"
+.nf
+epx schemas parse [flags]
+.fi
+.RE
+.PP
+Parses the JSON schema file of \fB\-\-json\-schema\fR into the schema that Emporix makes of it, and stores nothing: the table lists its attributes; \fB\-o json\fR prints the schema, which \fBepx schemas create\fR takes once its missing members, such as its name and types, are added, or, with \fB\-\-id\fR, \fBepx schemas update ID\fR.
+.PP
+Changes nothing: Emporix serves this read as POST with a multipart/form\-data body, which the flags make.
+.PP
+Requires the schema.schema_manage scope. Opt\-in: epx requests a write\-capable scope for a read only when given \fB\-\-allow\-write\-scope\fR.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-allow\-write\-scope\fR
+Opt in to requesting schema.schema_manage, which can also change data (required).
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among KEY, TYPE, REQUIRED, LOCALIZED, READ ONLY.
+.TP
+\fB\-\-id <ID>\fR
+ID of the schema that the file updates.
+.TP
+\fB\-\-json\-schema <PATH>\fR
+JSON schema file in PATH to parse (required).
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.SS "epx schemas references"
+Read, create, change and delete schema references.
+.PP
+.RS "4"
+.nf
+epx schemas references [flags]
+epx schemas references [command]
+.fi
+.RE
+.PP
+Reads schema references: schemas uploaded as a JSON schema file, for attribute types that schemas cannot define. TYPES lists the entity types a reference applies to; the file\(aqs URL is only in \fB\-o json\fR.
+.PP
+Its reads need no OAuth scope. Its writes require the schema.schema_manage scope.
+.SS "epx schemas references create"
+Create a schema reference.
+.PP
+.RS "4"
+.nf
+epx schemas references create [flags]
+.fi
+.RE
+.PP
+Creates a schema reference: the JSON schema file of \fB\-\-json\-schema\fR with the JSON in \fB\-\-file\fR, which names the reference and the entity types it applies to, such as \fB{"name": {"en": "Specifications"}, "types": ["PRODUCT"]}\fR. It prints the id that Emporix answers with; one that exists already is a conflict. It sends both as a multipart/form\-data body, the file as its file field. Name entity types by their ids, with _, such as VENDOR_LOCATION. A read of a reference shows that type as VENDOR.LOCATION; a write that sends it so makes Emporix answer reads of references with 500.
+.PP
+Localized text in the body is a map of translations, e.g. \fB{"en": "Acme", "de": "Acme"}\fR, as \fB\-o json\fR of a read prints it, sent with Content\-Language: *. Emporix refuses a string in its place.
+.PP
+Changes data: on a terminal, epx asks before it sends POST. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the schema.schema_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON in PATH, sent byte for byte as the body field of the form (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-\-json\-schema <PATH>\fR
+JSON schema file in PATH that the reference holds (required).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SS "epx schemas references delete"
+Delete a schema reference.
+.PP
+.RS "4"
+.nf
+epx schemas references delete ID [flags]
+.fi
+.RE
+.PP
+Deletes the schema reference ID. The JSON schema file that it holds stays where Emporix stored it. Emporix answers an unknown ID as a deleted one (204), so epx exits with 0.
+.PP
+Deletes data, which cannot be undone. On a terminal, epx sends DELETE only once you type ID at its prompt. \fB\-\-yes\fR sends without asking (required without a terminal); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the schema.schema_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal).
+.SS "epx schemas references get"
+Show one reference.
+.PP
+.RS "4"
+.nf
+epx schemas references get ID [flags]
+.fi
+.RE
+.PP
+Reads schema references: schemas uploaded as a JSON schema file, for attribute types that schemas cannot define. TYPES lists the entity types a reference applies to; the file\(aqs URL is only in \fB\-o json\fR.
+.PP
+No OAuth scope is needed.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, NAME, TYPES, VERSION.
+.TP
+\fB\-\-language <language>\fR
+Language of localized table text; a missing translation shows another, labeled (\fB\-o json\fR prints all). Default: \fBen\fR.
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.SS "epx schemas references list"
+List schema references.
+.PP
+.RS "4"
+.nf
+epx schemas references list [flags]
+.fi
+.RE
+.PP
+Reads schema references: schemas uploaded as a JSON schema file, for attribute types that schemas cannot define. TYPES lists the entity types a reference applies to; the file\(aqs URL is only in \fB\-o json\fR.
+.PP
+No OAuth scope is needed.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, NAME, TYPES, VERSION.
+.TP
+\fB\-\-language <language>\fR
+Language of localized table text; a missing translation shows another, labeled (\fB\-o json\fR prints all). Default: \fBen\fR.
+.TP
+\fB\-\-limit <n>\fR
+Print at most n items; paged reads stop early where they safely can (0: every item).
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-query <filter>\fR
+Emporix q filter, passed as given, e.g. code:(A1,A2); space\-separated conditions must all match (fields mostly as in \fB\-o json\fR).
+.TP
+\fB\-\-sort <order>\fR
+Emporix sort order, passed as given, e.g. code or name.en:desc,code; fields mostly as in \fB\-o json\fR (Emporix may ignore an unknown one).
+.TP
+\fB\-\-stream\fR
+Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes \fB\-o\fR, \fB\-\-columns\fR and \fB\-\-no\-headers\fR).
+.SS "epx schemas references update"
+Replace a schema reference.
+.PP
+.RS "4"
+.nf
+epx schemas references update ID [flags]
+.fi
+.RE
+.PP
+Replaces the schema reference ID: the JSON schema file of \fB\-\-json\-schema\fR with the JSON in \fB\-\-file\fR, which names the reference, its types and, as metadata.version, the version that it replaces (VERSION in \fBepx schemas references get ID\fR). An unknown ID is not found. It sends both as a multipart/form\-data body, the file as its file field. Name entity types by their ids, with _, such as VENDOR_LOCATION. A read of a reference shows that type as VENDOR.LOCATION; a write that sends it so makes Emporix answer reads of references with 500.
+.PP
+Localized text in the body is a map of translations, e.g. \fB{"en": "Acme", "de": "Acme"}\fR, as \fB\-o json\fR of a read prints it, sent with Content\-Language: *. Emporix refuses a string in its place.
+.PP
+Changes data: on a terminal, epx asks before it sends PUT. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the schema.schema_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON in PATH, sent byte for byte as the body field of the form (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-\-json\-schema <PATH>\fR
+JSON schema file in PATH that the reference holds (required).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SS "epx schemas types"
+List the entity types that have schemas.
+.PP
+.RS "4"
+.nf
+epx schemas types [flags]
+.fi
+.RE
+.PP
+Reads the entity types that have at least one schema, such as PRODUCT or CUSTOM_ENTITY.
+.PP
+No OAuth scope is needed.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among TYPE.
+.TP
+\fB\-\-limit <n>\fR
+Print at most n items; paged reads stop early where they safely can (0: every item).
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-stream\fR
+Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes \fB\-o\fR, \fB\-\-columns\fR and \fB\-\-no\-headers\fR).
+.SS "epx schemas update"
+Replace a schema.
+.PP
+.RS "4"
+.nf
+epx schemas update ID [flags]
+.fi
+.RE
+.PP
+Replaces the schema ID with the JSON in \fB\-\-file\fR: its name, types and attributes and, optionally, as metadata.version, the version that it replaces (VERSION in \fBepx schemas get ID\fR; an older one is a conflict). Every update, with a version or without, releases a new version of the schema. An unknown ID is not found. Name entity types by their ids, with _, such as VENDOR_LOCATION.
+.PP
+Localized text in the body is a map of translations, e.g. \fB{"en": "Acme", "de": "Acme"}\fR, as \fB\-o json\fR of a read prints it, sent with Content\-Language: *. Emporix refuses a string in its place.
+.PP
+Changes data: on a terminal, epx asks before it sends PUT. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the schema.schema_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SS "epx schemas update\-types"
+Change the entity types of a schema.
+.PP
+.RS "4"
+.nf
+epx schemas update\-types ID [flags]
+.fi
+.RE
+.PP
+Sets the entity types of the schema ID to those of the JSON array in \fB\-\-file\fR, such as \fB["PRODUCT", "ORDER"]\fR, in the version that \fB\-\-version\fR names: the latest is VERSION in \fBepx schemas get ID\fR, and an earlier one may be named too. \fB\-\-mode\fR ADD adds the types instead, REMOVE removes them. It releases no new version of the schema. An unknown ID is not found. Name entity types by their ids, with _, such as VENDOR_LOCATION.
+.PP
+Changes data: on a terminal, epx asks before it sends PUT. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the schema.schema_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-\-mode <MODE>\fR
+MODE in which the types given change the schema\(aqs (REPLACE without it): REPLACE, ADD or REMOVE.
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-version <VERSION>\fR
+VERSION of the schema whose types change, a whole number (required).
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SH "SEE ALSO"
+\fBepx\fR(1) for the global options, the credentials epx reads and its exit codes; https://commerce-cloud-integrations.github.io/emporix-cli/commands/schemas

@@ -1,0 +1,171 @@
+.TH "EPX\-COMPLETION" "1" "" "epx" "epx manual"
+.SH "NAME"
+epx\-completion \- generate the autocompletion script for the specified shell
+.SH "SYNOPSIS"
+.RS "4"
+.nf
+epx completion [flags]
+epx completion [command]
+.fi
+.RE
+.SH "DESCRIPTION"
+Generate the autocompletion script for epx for the specified shell. See each sub\-command\(aqs help for details on how to use the generated script.
+.PP
+With EPX_COMPLETE_IDS=1 in the environment, the arguments that name items (such as ID of \fBepx products get ID\fR) and \fB\-\-site\fR complete too, with up to 100 of the IDs and site codes that the first page of their list shows (the whole list where Emporix sends it in one response), read with the API key in effect and the scopes of that list within 3s. Without it, completion never calls the API; when the API cannot be read, it offers no IDs and prints nothing.
+.SH "COMMANDS"
+.SS "epx completion bash"
+Generate the autocompletion script for bash.
+.PP
+.RS "4"
+.nf
+epx completion bash
+.fi
+.RE
+.PP
+Generate the autocompletion script for the bash shell.
+.PP
+This script depends on the \fB\(aqbash\-completion\(aq\fR package. If it is not installed already, you can install it via your OS\(aqs package manager.
+.PP
+To load completions in your current shell session:
+.PP
+.RS "4"
+.nf
+source <(epx completion bash)
+.fi
+.RE
+.PP
+To load completions for every new session, execute once:
+.PP
+\fBLinux:\fR
+.PP
+.RS "4"
+.nf
+epx completion bash > /etc/bash_completion.d/epx
+.fi
+.RE
+.PP
+\fBmacOS:\fR
+.PP
+.RS "4"
+.nf
+epx completion bash > $(brew \-\-prefix)/etc/bash_completion.d/epx
+.fi
+.RE
+.PP
+You will need to start a new shell for this setup to take effect.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-no\-descriptions\fR
+Disable completion descriptions.
+.SS "epx completion fish"
+Generate the autocompletion script for fish.
+.PP
+.RS "4"
+.nf
+epx completion fish [flags]
+.fi
+.RE
+.PP
+Generate the autocompletion script for the fish shell.
+.PP
+To load completions in your current shell session:
+.PP
+.RS "4"
+.nf
+epx completion fish | source
+.fi
+.RE
+.PP
+To load completions for every new session, execute once:
+.PP
+.RS "4"
+.nf
+epx completion fish > ~/.config/fish/completions/epx.fish
+.fi
+.RE
+.PP
+You will need to start a new shell for this setup to take effect.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-no\-descriptions\fR
+Disable completion descriptions.
+.SS "epx completion powershell"
+Generate the autocompletion script for powershell.
+.PP
+.RS "4"
+.nf
+epx completion powershell [flags]
+.fi
+.RE
+.PP
+Generate the autocompletion script for powershell.
+.PP
+To load completions in your current shell session:
+.PP
+.RS "4"
+.nf
+epx completion powershell | Out\-String | Invoke\-Expression
+.fi
+.RE
+.PP
+To load completions for every new session, add the output of the above command to your powershell profile.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-no\-descriptions\fR
+Disable completion descriptions.
+.SS "epx completion zsh"
+Generate the autocompletion script for zsh.
+.PP
+.RS "4"
+.nf
+epx completion zsh [flags]
+.fi
+.RE
+.PP
+Generate the autocompletion script for the zsh shell.
+.PP
+If shell completion is not already enabled in your environment you will need to enable it. You can execute the following once:
+.PP
+.RS "4"
+.nf
+echo "autoload \-U compinit; compinit" >> ~/.zshrc
+.fi
+.RE
+.PP
+To load completions in your current shell session:
+.PP
+.RS "4"
+.nf
+source <(epx completion zsh)
+.fi
+.RE
+.PP
+To load completions for every new session, execute once:
+.PP
+\fBLinux:\fR
+.PP
+.RS "4"
+.nf
+epx completion zsh > "${fpath[1]}/_epx"
+.fi
+.RE
+.PP
+\fBmacOS:\fR
+.PP
+.RS "4"
+.nf
+epx completion zsh > $(brew \-\-prefix)/share/zsh/site\-functions/_epx
+.fi
+.RE
+.PP
+You will need to start a new shell for this setup to take effect.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-no\-descriptions\fR
+Disable completion descriptions.
+.SH "SEE ALSO"
+\fBepx\fR(1) for the global options, the credentials epx reads and its exit codes; https://commerce-cloud-integrations.github.io/emporix-cli/commands/completion

@@ -1,0 +1,341 @@
+.TH "EPX\-CONFIGURATIONS" "1" "" "epx" "epx manual"
+.SH "NAME"
+epx\-configurations \- read and change tenant configurations
+.SH "SYNOPSIS"
+.RS "4"
+.nf
+epx configurations [flags]
+epx configurations [command]
+.fi
+.RE
+.SH "DESCRIPTION"
+Reads tenant configurations (settings such as project_lang). Tables show values as sent, secured ones included, and cut long ones (\fB\-o json\fR prints them whole). A setting that was never set is not found (exit 4): Emporix then applies its default. \fBepx configurations global\fR, \fBclients\fR, \fBfor\-client\fR and \fBclient\-setting\fR read global settings and those of clients. \fBepx configurations create\fR, \fBupdate\fR and \fBdelete\fR change settings, and \fBclient\-create\fR, \fBclient\-update\fR and \fBclient\-delete\fR those of a client.
+.PP
+Its reads require different OAuth scopes; the help of each names them. Its writes require the configuration.configuration_manage scope.
+.SH "COMMANDS"
+.SS "epx configurations client\-create"
+Create configurations of a client.
+.PP
+.RS "4"
+.nf
+epx configurations client\-create CLIENT [flags]
+.fi
+.RE
+.PP
+Creates configurations of the client CLIENT from the JSON array of settings that \fB\-\-file\fR gives, each with its key and value (and optionally secured, description, readOnly, restricted and schemaUrl), and prints the settings created. Emporix answers 409 Conflict (exit 5) when one of the keys exists already (the other keys of the request may be created then): change it with \fBepx configurations client\-update\fR.
+.PP
+Changes data: on a terminal, epx asks before it sends POST. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the configuration.configuration_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SS "epx configurations client\-delete"
+Delete a configuration of a client.
+.PP
+.RS "4"
+.nf
+epx configurations client\-delete CLIENT KEY [flags]
+.fi
+.RE
+.PP
+Deletes the configuration KEY of the client CLIENT, as \fBepx configurations client\-setting CLIENT KEY\fR shows it; Emporix then applies its default, if it has one. A key that is not set is not found (exit 4).
+.PP
+Deletes data, which cannot be undone. On a terminal, epx sends DELETE only once you type KEY at its prompt. \fB\-\-yes\fR sends without asking (required without a terminal); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the configuration.configuration_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal).
+.SS "epx configurations client\-setting"
+Show one configuration of a client.
+.PP
+.RS "4"
+.nf
+epx configurations client\-setting CLIENT KEY [flags]
+.fi
+.RE
+.PP
+Reads one setting of a client. Tables show values as sent, secured ones included, and cut long ones (\fB\-o json\fR prints them whole). CLIENT is a name that \fBepx configurations clients\fR shows and KEY a key that \fBepx configurations for\-client CLIENT\fR shows; an unknown one is not found (exit 4).
+.PP
+Requires the configuration.configuration_view scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among KEY, VALUE, VERSION, SECURED, READ ONLY.
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.SS "epx configurations client\-update"
+Replace a configuration of a client.
+.PP
+.RS "4"
+.nf
+epx configurations client\-update CLIENT KEY [flags]
+.fi
+.RE
+.PP
+Replaces the configuration KEY of the client CLIENT with the setting that \fB\-\-file\fR gives, a JSON object with the key KEY (Emporix refuses another) and its value, and prints the setting. Give every member to keep, such as secured, description and version, as \fBepx configurations client\-setting CLIENT KEY \-o json\fR shows them. Emporix refuses a key that was never set (404 Not Found, exit 4): create it with \fBepx configurations client\-create\fR.
+.PP
+Changes data: on a terminal, epx asks before it sends PUT. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the configuration.configuration_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SS "epx configurations clients"
+List the clients that have configurations.
+.PP
+.RS "4"
+.nf
+epx configurations clients [flags]
+.fi
+.RE
+.PP
+Reads the clients (such as a storefront or an extension) that keep their own settings.
+.PP
+Requires the configuration.configuration_view scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among CLIENT.
+.TP
+\fB\-\-limit <n>\fR
+Print at most n items; paged reads stop early where they safely can (0: every item).
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-stream\fR
+Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes \fB\-o\fR, \fB\-\-columns\fR and \fB\-\-no\-headers\fR).
+.SS "epx configurations create"
+Create tenant configurations.
+.PP
+.RS "4"
+.nf
+epx configurations create [flags]
+.fi
+.RE
+.PP
+Creates tenant configurations from the JSON array of settings that \fB\-\-file\fR gives, each with its key and value (and optionally secured, description, readOnly, restricted and schemaUrl), and prints the settings created. Emporix answers 409 Conflict (exit 5) when one of the keys exists already (the other keys of the request may be created then): change it with \fBepx configurations update\fR.
+.PP
+Changes data: on a terminal, epx asks before it sends POST. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the configuration.configuration_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SS "epx configurations delete"
+Delete a tenant configuration.
+.PP
+.RS "4"
+.nf
+epx configurations delete KEY [flags]
+.fi
+.RE
+.PP
+Deletes the tenant configuration KEY, as \fBepx configurations get KEY\fR shows it; Emporix then applies its default, if it has one. A key that is not set is not found (exit 4).
+.PP
+Deletes data, which cannot be undone. On a terminal, epx sends DELETE only once you type KEY at its prompt. \fB\-\-yes\fR sends without asking (required without a terminal); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the configuration.configuration_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal).
+.SS "epx configurations for\-client"
+List the configurations of a client.
+.PP
+.RS "4"
+.nf
+epx configurations for\-client CLIENT [flags]
+.fi
+.RE
+.PP
+Reads the settings of a client. Tables show values as sent, secured ones included, and cut long ones (\fB\-o json\fR prints them whole). CLIENT is a name that \fBepx configurations clients\fR shows; an unknown one lists nothing.
+.PP
+Requires the configuration.configuration_view scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among KEY, VALUE, VERSION, SECURED, READ ONLY.
+.TP
+\fB\-\-limit <n>\fR
+Print at most n items; paged reads stop early where they safely can (0: every item).
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-stream\fR
+Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes \fB\-o\fR, \fB\-\-columns\fR and \fB\-\-no\-headers\fR).
+.SS "epx configurations get"
+Show one configuration.
+.PP
+.RS "4"
+.nf
+epx configurations get KEY [flags]
+.fi
+.RE
+.PP
+Reads tenant configurations (settings such as project_lang). Tables show values as sent, secured ones included, and cut long ones (\fB\-o json\fR prints them whole). A setting that was never set is not found (exit 4): Emporix then applies its default. \fBepx configurations global\fR, \fBclients\fR, \fBfor\-client\fR and \fBclient\-setting\fR read global settings and those of clients. \fBepx configurations create\fR, \fBupdate\fR and \fBdelete\fR change settings, and \fBclient\-create\fR, \fBclient\-update\fR and \fBclient\-delete\fR those of a client.
+.PP
+Requires the configuration.configuration_view scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among KEY, VALUE, VERSION, SECURED, READ ONLY.
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.SS "epx configurations global"
+List global configurations.
+.PP
+.RS "4"
+.nf
+epx configurations global [flags]
+.fi
+.RE
+.PP
+Reads global configurations, which hold for every tenant. Tables show values as sent, secured ones included, and cut long ones (\fB\-o json\fR prints them whole).
+.PP
+No OAuth scope is needed.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among KEY, VALUE, VERSION, SECURED, READ ONLY.
+.TP
+\fB\-\-limit <n>\fR
+Print at most n items; paged reads stop early where they safely can (0: every item).
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-stream\fR
+Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes \fB\-o\fR, \fB\-\-columns\fR and \fB\-\-no\-headers\fR).
+.SS "epx configurations list"
+List configurations.
+.PP
+.RS "4"
+.nf
+epx configurations list [flags]
+.fi
+.RE
+.PP
+Reads tenant configurations (settings such as project_lang). Tables show values as sent, secured ones included, and cut long ones (\fB\-o json\fR prints them whole). A setting that was never set is not found (exit 4): Emporix then applies its default. \fBepx configurations global\fR, \fBclients\fR, \fBfor\-client\fR and \fBclient\-setting\fR read global settings and those of clients. \fBepx configurations create\fR, \fBupdate\fR and \fBdelete\fR change settings, and \fBclient\-create\fR, \fBclient\-update\fR and \fBclient\-delete\fR those of a client.
+.PP
+Requires the configuration.configuration_view scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among KEY, VALUE, VERSION, SECURED, READ ONLY.
+.TP
+\fB\-\-limit <n>\fR
+Print at most n items; paged reads stop early where they safely can (0: every item).
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-stream\fR
+Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes \fB\-o\fR, \fB\-\-columns\fR and \fB\-\-no\-headers\fR).
+.SS "epx configurations update"
+Replace a tenant configuration.
+.PP
+.RS "4"
+.nf
+epx configurations update KEY [flags]
+.fi
+.RE
+.PP
+Replaces the tenant configuration KEY with the setting that \fB\-\-file\fR gives, a JSON object with the key KEY (Emporix refuses another) and its value, and prints the setting. Give every member to keep, such as secured, description and version, as \fBepx configurations get KEY \-o json\fR shows them. Emporix refuses a key that was never set (404 Not Found, exit 4): create it with \fBepx configurations create\fR.
+.PP
+Changes data: on a terminal, epx asks before it sends PUT. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the configuration.configuration_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SH "SEE ALSO"
+\fBepx\fR(1) for the global options, the credentials epx reads and its exit codes; https://commerce-cloud-integrations.github.io/emporix-cli/commands/configurations

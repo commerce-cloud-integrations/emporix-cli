@@ -46,8 +46,8 @@ powershell -ExecutionPolicy ByPass -c "irm https://github.com/commerce-cloud-int
 ```
 
 The script downloads the latest release for your platform, checks it against the release's
-checksums and installs `epx` into `~/.local/bin` (on Windows `%LOCALAPPDATA%\Programs\epx\bin`),
-without sudo, adding that directory to your `PATH` if needed. Set `EPX_VERSION` (such as
+checksums and installs `epx` into `~/.local/bin` (on Windows `%LOCALAPPDATA%\Programs\epx\bin`)
+and its man pages into `~/.local/share/man/man1`, without sudo, adding that directory to your `PATH` if needed. Set `EPX_VERSION` (such as
 `v0.1.2`) to pin a release, `EPX_INSTALL_DIR` to choose the directory, or `EPX_NO_MODIFY_PATH=1`
 to leave your shell profile alone.
 
@@ -156,6 +156,10 @@ epx [command]
 
 # Run `--help` for detailed information about a command, its flags, and its scopes
 epx [command] --help
+
+# Or read the manual: epx, and each top-level command (installed by the script and npm)
+man epx
+man epx-products
 ```
 
 ## Commands

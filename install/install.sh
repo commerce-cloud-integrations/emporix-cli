@@ -4,12 +4,14 @@
 #   curl -fsSL https://github.com/commerce-cloud-integrations/emporix-cli/releases/latest/download/install.sh | sh
 #
 # It downloads the release archive of this machine from GitHub, checks it against the
-# release's checksums file and puts the epx binary into ~/.local/bin, without sudo.
+# release's checksums file and puts the epx binary into ~/.local/bin and its man pages
+# into ~/.local/share/man/man1, without sudo.
 #
 # Settings (environment variables; when piping into sh, put them after the pipe:
 # `| EPX_VERSION=v0.1.2 sh`):
 #   EPX_VERSION         release tag to install, such as v0.1.2 (default: the latest release)
-#   EPX_INSTALL_DIR     directory for the binary (default: ~/.local/bin)
+#   EPX_INSTALL_DIR     directory for the binary (default: ~/.local/bin); when it is named
+#                       bin, the man pages go into ../share/man/man1
 #   EPX_NO_MODIFY_PATH  set to 1 to leave the shell profile alone when that directory is
 #                       not on PATH
 #
@@ -148,12 +150,26 @@ main() {
 	reported=$("$dir/epx" version) || fail "the installed $dir/epx does not run"
 	case $reported in "epx $version "*) ;; *) fail "$dir/epx reports '$reported', not $version" ;; esac
 	say "installed $reported to $dir/epx"
+	install_man "$tmp/$name/man" "$(cd "$dir" && pwd -P)"
 
 	add_to_path "$dir"
 	found=$(command -v epx 2>/dev/null || true)
 	if [ -n "$found" ] && [ "$found" != "$dir/epx" ]; then
 		say "note: another epx comes first on your PATH: $found"
 	fi
+}
+
+# install_man copies the man pages of a release (from v0.3.0) into share/man/man1 beside
+# the bin directory of the binary, where man finds them for a directory on PATH:
+# install_man PAGES_DIR BIN_DIR (absolute, without a trailing slash). Nothing is copied for
+# a directory not named bin.
+install_man() {
+	pages=$1
+	case $2 in */bin) man_dir=${2%/bin}/share/man/man1 ;; *) return 0 ;; esac
+	[ -d "$pages" ] || return 0
+	mkdir -p "$man_dir"
+	cp "$pages"/*.1 "$man_dir/"
+	say "installed the man pages to $man_dir (man epx)"
 }
 
 main "$@"

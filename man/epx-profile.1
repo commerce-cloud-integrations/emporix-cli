@@ -1,0 +1,120 @@
+.TH "EPX\-PROFILE" "1" "" "epx" "epx manual"
+.SH "NAME"
+epx\-profile \- manage profiles: named settings and credentials of a tenant
+.SH "SYNOPSIS"
+.RS "4"
+.nf
+epx profile [flags]
+epx profile [command]
+.fi
+.RE
+.SH "DESCRIPTION"
+A profile keeps the settings of one API key: its tenant, API URL and client ID, and a default site and language. Profiles are in epx/config.json in your configuration directory (~/.config on Linux, ~/Library/Application Support on macOS, %AppData% on Windows), which only you may read; the client secret of each is in the OS keychain (the macOS Keychain, the Windows Credential Manager or a Secret Service on Linux), never in that file.
+.PP
+A command uses the profile that \fB\-\-profile\fR names, else the one EPX_PROFILE names, else the default (\fBepx profile use\fR), but only where no EMPORIX_ variable is set: those give the whole API key, never mixed with a profile\(aqs. \fB\-\-tenant\fR overrides the profile\(aqs tenant. These commands change only the configuration file and the keychain: they send nothing to Emporix.
+.SH "COMMANDS"
+.SS "epx profile add"
+Add a profile, or replace one, with its client secret in the OS keychain.
+.PP
+.RS "4"
+.nf
+epx profile add NAME [flags]
+.fi
+.RE
+.PP
+Adds the profile NAME, or replaces the profile of that name, and stores its client secret in the OS keychain. On a terminal, epx asks for the secret without showing it; otherwise it reads the first line of standard input. It never takes the secret from a flag. Where no profile is the default, as for the first one, it becomes the default. Nothing is sent to Emporix: \fBepx auth status\fR with \fB\-\-profile\fR NAME checks the API key.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-api\-url <string>\fR
+API host (default https://api.emporix.io).
+.TP
+\fB\-\-client\-id <string>\fR
+Client ID of the API key (required).
+.TP
+\fB\-\-language <language>\fR
+Default language of localized table text, for commands that take \fB\-\-language\fR.
+.TP
+\fB\-\-site <site>\fR
+Default site code, for commands that need a site.
+.TP
+\fB\-\-tenant <string>\fR
+Emporix tenant of the API key (required).
+.PP
+\fBExamples:\fR
+.PP
+.RS "4"
+.nf
+epx profile add dev \-\-tenant acme1 \-\-client\-id CLIENT_ID \-\-site AcmeStore_NL \-\-language nl
+printf \(aq%s\en\(aq "$CLIENT_SECRET" | epx profile add ci \-\-tenant acme1 \-\-client\-id CLIENT_ID
+.fi
+.RE
+.SS "epx profile list"
+List the profiles.
+.PP
+.RS "4"
+.nf
+epx profile list [flags]
+.fi
+.RE
+.PP
+Lists the profiles and which one is the default. Client secrets are never shown.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among NAME, DEFAULT, TENANT, CLIENT ID, API URL, SITE, LANGUAGE.
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.SS "epx profile remove"
+Remove a profile and its client secret.
+.PP
+.RS "4"
+.nf
+epx profile remove NAME [flags]
+.fi
+.RE
+.PP
+Removes the profile NAME and deletes its client secret from the OS keychain. On a terminal, epx asks first; \fB\-\-yes\fR removes it without asking, as scripts must. Removing the default profile leaves no default. Where the keychain cannot delete the secret, the profile is removed all the same, and the error names the keychain entry (service epx, account NAME) that still holds it.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-yes\fR
+Remove without asking (required without a terminal).
+.SS "epx profile show"
+Show a profile and whether its client secret is stored.
+.PP
+.RS "4"
+.nf
+epx profile show NAME [flags]
+.fi
+.RE
+.PP
+Shows the settings of the profile NAME and whether the OS keychain holds its client secret. The secret itself is never shown.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among NAME, DEFAULT, TENANT, CLIENT ID, API URL, SITE, LANGUAGE, CLIENT SECRET.
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.SS "epx profile use"
+Make a profile the default.
+.PP
+.RS "4"
+.nf
+epx profile use NAME [flags]
+.fi
+.RE
+.PP
+Makes the profile NAME the default: the one a command uses without \fB\-\-profile\fR and EPX_PROFILE.
+.SH "SEE ALSO"
+\fBepx\fR(1) for the global options, the credentials epx reads and its exit codes; https://commerce-cloud-integrations.github.io/emporix-cli/commands/profile

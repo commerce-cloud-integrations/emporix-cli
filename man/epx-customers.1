@@ -1,0 +1,597 @@
+.TH "EPX\-CUSTOMERS" "1" "" "epx" "epx manual"
+.SH "NAME"
+epx\-customers \- read and change customers and their addresses
+.SH "SYNOPSIS"
+.RS "4"
+.nf
+epx customers [flags]
+epx customers [command]
+.fi
+.RE
+.SH "DESCRIPTION"
+Reads and changes customer profiles, personal data included, and their addresses, imports customers with their passwords and sets until when imported passwords are migrated.
+.PP
+Its reads require different OAuth scopes; the help of each names them. Its writes require different OAuth scopes; the help of each names them.
+.SH "COMMANDS"
+.SS "epx customers addresses"
+Read and change the addresses of a customer.
+.PP
+.RS "4"
+.nf
+epx customers addresses [flags]
+epx customers addresses [command]
+.fi
+.RE
+.PP
+Reads and changes the addresses of a customer, personal data included, and their tags.
+.PP
+Its reads require the customer.customer_read scope. Its writes require the customer.customer_manage scope.
+.SS "epx customers addresses add\-tags"
+Tag an address of a customer.
+.PP
+.RS "4"
+.nf
+epx customers addresses add\-tags CUSTOMER_NUMBER ID [flags]
+.fi
+.RE
+.PP
+Adds the tags that \fB\-\-tags\fR names, such as BILLING or SHIPPING, to the address ID of the customer CUSTOMER_NUMBER. CUSTOMER_NUMBER is the NUMBER that \fBepx customers list\fR shows, and ID the ID that \fBepx customers addresses list CUSTOMER_NUMBER\fR shows.
+.PP
+Changes data: on a terminal, epx asks before it sends POST. \fB\-\-yes\fR sends without asking (required without a terminal); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the customer.customer_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-tags <TAGS>\fR
+The TAGS to add, separated by commas, e.g. BILLING,SHIPPING (required).
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal).
+.SS "epx customers addresses create"
+Add an address to a customer.
+.PP
+.RS "4"
+.nf
+epx customers addresses create CUSTOMER_NUMBER [flags]
+.fi
+.RE
+.PP
+Adds the address in \fB\-\-file\fR, a JSON object with at least contactName, to the customer CUSTOMER_NUMBER; Emporix makes its id unless the body gives one, and answers with it. CUSTOMER_NUMBER is the NUMBER that \fBepx customers list\fR shows.
+.PP
+Changes data: on a terminal, epx asks before it sends POST. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the customer.customer_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SS "epx customers addresses delete"
+Delete an address of a customer.
+.PP
+.RS "4"
+.nf
+epx customers addresses delete CUSTOMER_NUMBER ID [flags]
+.fi
+.RE
+.PP
+Deletes the address ID of the customer CUSTOMER_NUMBER. CUSTOMER_NUMBER is the NUMBER that \fBepx customers list\fR shows, and ID the ID that \fBepx customers addresses list CUSTOMER_NUMBER\fR shows.
+.PP
+Deletes data, which cannot be undone. On a terminal, epx sends DELETE only once you type ID at its prompt. \fB\-\-yes\fR sends without asking (required without a terminal); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the customer.customer_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal).
+.SS "epx customers addresses get"
+Show one address of a customer.
+.PP
+.RS "4"
+.nf
+epx customers addresses get CUSTOMER_NUMBER ID [flags]
+.fi
+.RE
+.PP
+Reads one address of a customer, personal data included. CUSTOMER_NUMBER is the NUMBER that \fBepx customers list\fR shows; an unknown one is not found. ID is the ID that \fBepx customers addresses list CUSTOMER_NUMBER\fR shows; an unknown one is not found. DEFAULT marks the default address; TAGS are labels such as BILLING or SHIPPING. Phone numbers, states and extra address lines are only in \fB\-o json\fR.
+.PP
+Requires the customer.customer_read scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, CONTACT, COMPANY, STREET, ZIP, CITY, COUNTRY, DEFAULT, TAGS.
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.SS "epx customers addresses list"
+List the addresses of a customer.
+.PP
+.RS "4"
+.nf
+epx customers addresses list CUSTOMER_NUMBER [flags]
+.fi
+.RE
+.PP
+Reads the addresses of a customer, personal data included. CUSTOMER_NUMBER is the NUMBER that \fBepx customers list\fR shows; an unknown one is not found. DEFAULT marks the default address; TAGS are labels such as BILLING or SHIPPING. Phone numbers, states and extra address lines are only in \fB\-o json\fR.
+.PP
+Requires the customer.customer_read scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, CONTACT, COMPANY, STREET, ZIP, CITY, COUNTRY, DEFAULT, TAGS.
+.TP
+\fB\-\-limit <n>\fR
+Print at most n items; paged reads stop early where they safely can (0: every item).
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-stream\fR
+Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes \fB\-o\fR, \fB\-\-columns\fR and \fB\-\-no\-headers\fR).
+.SS "epx customers addresses patch"
+Change an address of a customer.
+.PP
+.RS "4"
+.nf
+epx customers addresses patch CUSTOMER_NUMBER ID [flags]
+.fi
+.RE
+.PP
+Changes the members of the address ID of the customer CUSTOMER_NUMBER that \fB\-\-file\fR gives, a JSON object such as \fB{"isDefault": true}\fR; Emporix keeps the others. CUSTOMER_NUMBER is the NUMBER that \fBepx customers list\fR shows, and ID the ID that \fBepx customers addresses list CUSTOMER_NUMBER\fR shows.
+.PP
+Changes data: on a terminal, epx asks before it sends PATCH. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the customer.customer_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SS "epx customers addresses remove\-tags"
+Remove tags from an address of a customer.
+.PP
+.RS "4"
+.nf
+epx customers addresses remove\-tags CUSTOMER_NUMBER ID [flags]
+.fi
+.RE
+.PP
+Removes the tags that \fB\-\-tags\fR names from the address ID of the customer CUSTOMER_NUMBER. CUSTOMER_NUMBER is the NUMBER that \fBepx customers list\fR shows, and ID the ID that \fBepx customers addresses list CUSTOMER_NUMBER\fR shows.
+.PP
+Deletes data, which cannot be undone. On a terminal, epx sends DELETE only once you type ID at its prompt. \fB\-\-yes\fR sends without asking (required without a terminal); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the customer.customer_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-tags <TAGS>\fR
+The TAGS to remove, separated by commas, e.g. BILLING,SHIPPING (required).
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal).
+.SS "epx customers addresses update"
+Upsert an address of a customer.
+.PP
+.RS "4"
+.nf
+epx customers addresses update CUSTOMER_NUMBER ID [flags]
+.fi
+.RE
+.PP
+Changes the members of the address ID of the customer CUSTOMER_NUMBER that \fB\-\-file\fR gives, a JSON object as \fBepx customers addresses get CUSTOMER_NUMBER ID \-o json\fR prints it, keeping those it leaves out, such as its tags, or creates the address with that id where none exists (an upsert). CUSTOMER_NUMBER is the NUMBER that \fBepx customers list\fR shows, and ID the ID that \fBepx customers addresses list CUSTOMER_NUMBER\fR shows.
+.PP
+Changes data: on a terminal, epx asks before it sends PUT. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the customer.customer_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SS "epx customers create"
+Create a customer.
+.PP
+.RS "4"
+.nf
+epx customers create [flags]
+.fi
+.RE
+.PP
+Creates the customer profile in \fB\-\-file\fR, a JSON object with at least contactEmail, such as \fBepx customers get NUMBER \-o json\fR prints one; Emporix makes the customer number unless the body gives it as id, and answers with it. An account with that email that exists already is a conflict (exit 5). Emporix ignores a customerNumber that a profile gives (no error). Emporix emails a new customer a link to set a password only with \fB\-\-password\-reset\-email\fR (without it, epx sends sendPasswordResetNotifications=false, where Emporix\(aqs default is true).
+.PP
+Changes data: on a terminal, epx asks before it sends POST. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the customer.customer_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-password\-reset\-email\fR
+Email the customer a link to set a password once the account is created.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SS "epx customers delete"
+Delete a customer.
+.PP
+.RS "4"
+.nf
+epx customers delete NUMBER [flags]
+.fi
+.RE
+.PP
+Deletes the customer profile NUMBER and its accounts. Emporix answers 202 Accepted, and the profile is not found from then on. NUMBER is the NUMBER that \fBepx customers list\fR shows.
+.PP
+Deletes data, which cannot be undone. On a terminal, epx sends DELETE only once you type NUMBER at its prompt. \fB\-\-yes\fR sends without asking (required without a terminal); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the customer.customer_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal).
+.SS "epx customers get"
+Show one customer.
+.PP
+.RS "4"
+.nf
+epx customers get NUMBER [flags]
+.fi
+.RE
+.PP
+Reads customer profiles, personal data included. NUMBER is the customer number that get takes, EMAIL the contact email (that of the account, with which the customer signs in, may differ), BUSINESS MODEL is B2B (assigned to a company) or B2C, and ON HOLD marks a suspended profile. B2B data and the default address are only in \fB\-o json\fR; Emporix leaves out a profile\(aqs addresses, accounts and mixins unless asked to expand them, which epx does not: \fBepx customers addresses list\fR lists the addresses.
+.PP
+Requires the customer.customer_read scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among NUMBER, NAME, EMAIL, COMPANY, BUSINESS MODEL, ACTIVE, ON HOLD.
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.SS "epx customers import"
+Import customers with their passwords.
+.PP
+.RS "4"
+.nf
+epx customers import [flags]
+.fi
+.RE
+.PP
+Imports the customer profiles in \fB\-\-file\fR, a JSON array of profiles as create takes them, each with an account that holds its email and exactly one of passwordHash, a hash that Emporix checks as its own, or legacyAuth, the hash of another system and its algorithm, which Emporix replaces with its own as the customer signs in. Customers with legacyAuth need a password migration retention: \fBepx customers password\-migration update\fR sets it. Emporix ignores a customerNumber that a profile gives (no error).
+.PP
+Emporix takes up to 200 items in one request (epx refuses more), carries out each on its own and answers with the result of each: when one failed, epx prints the response, lists the items that failed on standard error (one that failed with 500, 502, 503 or 504 may have been carried out all the same) and exits with the code that their failures share (for example 5 for a 409 Conflict, 4 for a 404), else 1.
+.PP
+Changes data: on a terminal, epx asks before it sends POST. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the customer.import_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SS "epx customers list"
+List customers.
+.PP
+.RS "4"
+.nf
+epx customers list [flags]
+.fi
+.RE
+.PP
+Reads customer profiles, personal data included. NUMBER is the customer number that get takes, EMAIL the contact email (that of the account, with which the customer signs in, may differ), BUSINESS MODEL is B2B (assigned to a company) or B2C, and ON HOLD marks a suspended profile. B2B data and the default address are only in \fB\-o json\fR; Emporix leaves out a profile\(aqs addresses, accounts and mixins unless asked to expand them, which epx does not: \fBepx customers addresses list\fR lists the addresses.
+.PP
+Requires the customer.customer_read scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among NUMBER, NAME, EMAIL, COMPANY, BUSINESS MODEL, ACTIVE, ON HOLD.
+.TP
+\fB\-\-limit <n>\fR
+Print at most n items; paged reads stop early where they safely can (0: every item).
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-query <filter>\fR
+Emporix q filter, passed as given, e.g. code:(A1,A2); space\-separated conditions must all match (fields mostly as in \fB\-o json\fR).
+.TP
+\fB\-\-sort <order>\fR
+Emporix sort order, passed as given, e.g. code or name.en:desc,code; fields mostly as in \fB\-o json\fR (Emporix may ignore an unknown one).
+.TP
+\fB\-\-stream\fR
+Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes \fB\-o\fR, \fB\-\-columns\fR and \fB\-\-no\-headers\fR).
+.SS "epx customers password\-migration"
+Read and set until when imported customers\(aq passwords are migrated.
+.PP
+.RS "4"
+.nf
+epx customers password\-migration [flags]
+epx customers password\-migration [command]
+.fi
+.RE
+.PP
+Reads, sets and removes the password migration retention of customer imports, until when customers imported with a password hash from another system get an Emporix one.
+.PP
+Its reads require the customer.import_read scope. Its writes require the customer.import_manage scope.
+.SS "epx customers password\-migration delete"
+Remove the password migration retention.
+.PP
+.RS "4"
+.nf
+epx customers password\-migration delete [flags]
+.fi
+.RE
+.PP
+Removes the password migration retention. Emporix refuses it (400 Bad Request, exit 1) while a customer still has a legacy password hash to migrate: move \fB\-\-ends\fR of update earlier instead to end the migration sooner. update sets the whole retention, so give \fB\-\-reminder\fR and \fB\-\-emails\fR again where it should keep them.
+.PP
+Deletes the password migration retention of the tenant with one request, which cannot be undone. On a terminal, epx sends DELETE only once you type the tenant at its prompt. \fB\-\-yes\fR sends without asking (required without a terminal); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the customer.import_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal).
+.SS "epx customers password\-migration get"
+Show until when imported customers\(aq passwords are migrated.
+.PP
+.RS "4"
+.nf
+epx customers password\-migration get [flags]
+.fi
+.RE
+.PP
+Reads the password migration retention of customer imports: a customer imported with a password hash from another system gets an Emporix one on signing in until ENDS; after that, the customers not yet migrated must reset their password. REMINDER is when Emporix asks them by email to sign in once, and EMAILS whether customers get these reminder and reset emails. A tenant without this setting is not found (exit 4).
+.PP
+Requires the customer.import_read scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ENDS, REMINDER, EMAILS.
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.SS "epx customers password\-migration update"
+Set until when imported customers\(aq passwords are migrated.
+.PP
+.RS "4"
+.nf
+epx customers password\-migration update [flags]
+.fi
+.RE
+.PP
+Sets the whole password migration retention, or creates it where the tenant has none (an upsert), from its flags or the JSON object of \fB\-\-file\fR: until when customers imported with legacyAuth get an Emporix password on signing in (\fB\-\-ends\fR), when Emporix asks those not yet migrated by email to sign in once (\fB\-\-reminder\fR; without it, 7 days before \fB\-\-ends\fR, or tomorrow if that has passed, also where the retention it replaces had another date) and whether customers get these reminder and reset emails (\fB\-\-emails\fR: without it, epx sends emailNotificationsEnabled=false; a \fB\-\-file\fR without it gets Emporix\(aqs default, true). Emporix answers with the retention.
+.PP
+Changes data: on a terminal, epx asks before it sends POST. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the customer.import_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-emails\fR
+Email customers the reminder and the password reset.
+.TP
+\fB\-\-ends <DATE>\fR
+The DATE the migration ends, e.g. 2027\-01\-31 (required without \fB\-\-file\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte instead of the one that epx makes (\- reads standard input; sending it then needs \fB\-\-yes\fR).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-reminder <DATE>\fR
+The DATE of the reminder email, before \fB\-\-ends\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.PP
+\fBExamples:\fR
+.PP
+.RS "4"
+.nf
+epx customers password\-migration update \-\-ends 2027\-01\-31 \-\-reminder 2027\-01\-24 \-\-emails
+epx customers password\-migration update \-\-ends 2027\-01\-31 \-\-yes
+.fi
+.RE
+.SS "epx customers patch"
+Change a customer.
+.PP
+.RS "4"
+.nf
+epx customers patch NUMBER [flags]
+.fi
+.RE
+.PP
+Changes the members of the customer profile NUMBER that \fB\-\-file\fR gives, a JSON object such as \fB{"active": false}\fR; Emporix keeps the others. NUMBER is the NUMBER that \fBepx customers list\fR shows. Emporix ignores a customerNumber that a profile gives (no error). Send its metadata.version as read to change it only if nobody changed it since: Emporix answers 409 Conflict (exit 5) otherwise. On an existing profile, a contactEmail changes its contact email only, never the email with which the customer signs in (that of its account).
+.PP
+Changes data: on a terminal, epx asks before it sends PATCH. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the customer.customer_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SS "epx customers search"
+Search customers.
+.PP
+.RS "4"
+.nf
+epx customers search [flags]
+.fi
+.RE
+.PP
+Reads the customer profiles, personal data included, that an Emporix q filter finds (\fB\-\-query\fR; without it, every profile). It reads and shows them as \fBepx customers list\fR does.
+.PP
+Changes nothing: Emporix serves this read as POST with a JSON body, which the flags make or \fB\-\-body\fR gives whole.
+.PP
+Requires the customer.customer_read scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-body <FILE>\fR
+Send the JSON request body in FILE as given (\- reads standard input) instead of the one the other flags make.
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among NUMBER, NAME, EMAIL, COMPANY, BUSINESS MODEL, ACTIVE, ON HOLD.
+.TP
+\fB\-\-limit <n>\fR
+Print at most n items; paged reads stop early where they safely can (0: every item).
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-query <filter>\fR
+Emporix q filter, sent as given in the request body, not in the URL (empty: no filter), e.g. code:(A1,A2); space\-separated conditions must all match (fields mostly as in \fB\-o json\fR).
+.TP
+\fB\-\-sort <order>\fR
+Emporix sort order, passed as given, e.g. code or name.en:desc,code; fields mostly as in \fB\-o json\fR (Emporix may ignore an unknown one).
+.TP
+\fB\-\-stream\fR
+Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes \fB\-o\fR, \fB\-\-columns\fR and \fB\-\-no\-headers\fR).
+.SS "epx customers update"
+Upsert a customer.
+.PP
+.RS "4"
+.nf
+epx customers update NUMBER [flags]
+.fi
+.RE
+.PP
+Changes the members of the customer profile NUMBER that \fB\-\-file\fR gives, a JSON object as \fBepx customers get NUMBER \-o json\fR prints it, keeping those it leaves out, or creates the profile with that number where none exists (an upsert), as create does: with the email of an existing account, that is a conflict (exit 5). NUMBER is the NUMBER that \fBepx customers list\fR shows. Emporix ignores a customerNumber that a profile gives (no error). Send its metadata.version as read to change it only if nobody changed it since: Emporix answers 409 Conflict (exit 5) otherwise. On an existing profile, a contactEmail changes its contact email only, never the email with which the customer signs in (that of its account). Emporix emails a new customer a link to set a password only with \fB\-\-password\-reset\-email\fR (without it, epx sends sendPasswordResetNotifications=false, where Emporix\(aqs default is true).
+.PP
+Changes data: on a terminal, epx asks before it sends PUT. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the customer.customer_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-password\-reset\-email\fR
+Email the customer a link to set a password once the account is created.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SH "SEE ALSO"
+\fBepx\fR(1) for the global options, the credentials epx reads and its exit codes; https://commerce-cloud-integrations.github.io/emporix-cli/commands/customers

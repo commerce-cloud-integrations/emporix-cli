@@ -1,0 +1,383 @@
+.TH "EPX\-QUOTES" "1" "" "epx" "epx manual"
+.SH "NAME"
+epx\-quotes \- read, create and change quotes, their PDF, history and reasons
+.SH "SYNOPSIS"
+.RS "4"
+.nf
+epx quotes [flags]
+epx quotes [command]
+.fi
+.RE
+.SH "DESCRIPTION"
+Reads quotes, personal data included. STATUS is CREATING, AWAITING, OPEN, IN_PROGRESS, ACCEPTED, DECLINED, DECLINED_BY_MERCHANT or EXPIRED, CUSTOMER the customer it is for (email, name or customer id), and TOTAL the gross total in the quote\(aqs currency. Items, prices, addresses and comments are only in \fB\-o json\fR. \fBepx quotes reasons\fR lists the reasons for changing or declining a quote. \fBepx quotes create\fR, \fBpatch\fR and \fBdelete\fR change quotes; \fBpdf\fR saves a quote\(aqs PDF.
+.PP
+Its reads require the quote.quote_read scope. Its writes require the quote.quote_manage scope.
+.SH "COMMANDS"
+.SS "epx quotes create"
+Create a quote.
+.PP
+.RS "4"
+.nf
+epx quotes create [flags]
+.fi
+.RE
+.PP
+Creates a quote from the JSON object in \fB\-\-file\fR: a whole quote, with customerId (or customerEmail), siteCode, currency, billingAddressId, shippingAddressId and items (each with its product, price and quantity), or a cart\(aqs, with its cartId and optionally the addresses and shipping. Without an id, Emporix makes one; it answers with the quote\(aqs id. A quote made from a cart closes the cart (status CLOSED, with the quoteId): Emporix then answers its reads and its delete as not found (exit 4), while \fBepx carts search\fR lists it. Without \fB\-\-allow\-external\-prices\fR, Emporix refuses an item with price type EXTERNAL with 400 Bad Request (exit 1). It fails with 500 Internal Server Error (exit 1) on a cart without items, and answers a product that is not published as not found (exit 4).
+.PP
+Changes data: on a terminal, epx asks before it sends POST. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+\fB\-\-allow\-external\-prices\fR also requests the cart.cart_manage_external_prices scope.
+.PP
+Requires the quote.quote_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-allow\-external\-prices\fR
+Allow a body with external prices (price type EXTERNAL) (requests cart.cart_manage_external_prices too).
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SS "epx quotes delete"
+Delete one quote.
+.PP
+.RS "4"
+.nf
+epx quotes delete ID [flags]
+.fi
+.RE
+.PP
+Deletes the quote ID; it sends no body. Emporix answers an unknown ID as one that it deleted (204 No Content). ID is the ID that \fBepx quotes list\fR shows.
+.PP
+Deletes data, which cannot be undone. On a terminal, epx sends DELETE only once you type ID at its prompt. \fB\-\-yes\fR sends without asking (required without a terminal); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the quote.quote_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal).
+.SS "epx quotes get"
+Show one quote.
+.PP
+.RS "4"
+.nf
+epx quotes get ID [flags]
+.fi
+.RE
+.PP
+Reads quotes, personal data included. STATUS is CREATING, AWAITING, OPEN, IN_PROGRESS, ACCEPTED, DECLINED, DECLINED_BY_MERCHANT or EXPIRED, CUSTOMER the customer it is for (email, name or customer id), and TOTAL the gross total in the quote\(aqs currency. Items, prices, addresses and comments are only in \fB\-o json\fR. \fBepx quotes reasons\fR lists the reasons for changing or declining a quote. \fBepx quotes create\fR, \fBpatch\fR and \fBdelete\fR change quotes; \fBpdf\fR saves a quote\(aqs PDF.
+.PP
+Requires the quote.quote_read scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, STATUS, CUSTOMER, COMPANY, SITE, VALID TO, TOTAL.
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.SS "epx quotes history"
+List the changes of a quote.
+.PP
+.RS "4"
+.nf
+epx quotes history QUOTE_ID [flags]
+.fi
+.RE
+.PP
+Reads the history of a quote, personal data included: when (MODIFIED), by whom (BY: user type and name) and what changed (CHANGE: the operation and the changed part). Old and new values are only in \fB\-o json\fR. Emporix sends the whole history in one response. QUOTE_ID is the ID that \fBepx quotes list\fR shows; an unknown one is not found.
+.PP
+Requires the quote.quote_read scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, MODIFIED, BY, CHANGE.
+.TP
+\fB\-\-limit <n>\fR
+Print at most n items; paged reads stop early where they safely can (0: every item).
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-stream\fR
+Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes \fB\-o\fR, \fB\-\-columns\fR and \fB\-\-no\-headers\fR).
+.SS "epx quotes list"
+List quotes.
+.PP
+.RS "4"
+.nf
+epx quotes list [flags]
+.fi
+.RE
+.PP
+Reads quotes, personal data included. STATUS is CREATING, AWAITING, OPEN, IN_PROGRESS, ACCEPTED, DECLINED, DECLINED_BY_MERCHANT or EXPIRED, CUSTOMER the customer it is for (email, name or customer id), and TOTAL the gross total in the quote\(aqs currency. Items, prices, addresses and comments are only in \fB\-o json\fR. \fBepx quotes reasons\fR lists the reasons for changing or declining a quote. \fBepx quotes create\fR, \fBpatch\fR and \fBdelete\fR change quotes; \fBpdf\fR saves a quote\(aqs PDF.
+.PP
+Requires the quote.quote_read scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, STATUS, CUSTOMER, COMPANY, SITE, VALID TO, TOTAL.
+.TP
+\fB\-\-limit <n>\fR
+Print at most n items; paged reads stop early where they safely can (0: every item).
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-query <filter>\fR
+Emporix q filter, passed as given, e.g. code:(A1,A2); space\-separated conditions must all match (fields mostly as in \fB\-o json\fR).
+.TP
+\fB\-\-sort <order>\fR
+Emporix sort order, passed as given, e.g. code or name.en:desc,code; fields mostly as in \fB\-o json\fR (Emporix may ignore an unknown one).
+.TP
+\fB\-\-stream\fR
+Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes \fB\-o\fR, \fB\-\-columns\fR and \fB\-\-no\-headers\fR).
+.SS "epx quotes patch"
+Change a quote.
+.PP
+.RS "4"
+.nf
+epx quotes patch ID [flags]
+.fi
+.RE
+.PP
+Changes the quote ID with the operations in \fB\-\-file\fR: a JSON array of operations, each with op (ADD, REMOVE or REPLACE), path (such as /status, /validTo, /items or /items/ITEM_ID) and value, e.g. \fB[{"op": "REPLACE", "path": "/status", "value": {"value": "OPEN"}}]\fR. Emporix completes the prices and product names of items from their ids afterwards. Emporix refuses to add or replace an item with price type EXTERNAL with 400 Bad Request (exit 1), also with cart.cart_manage_external_prices (create accepts one). ID is the ID that \fBepx quotes list\fR shows.
+.PP
+Changes data: on a terminal, epx asks before it sends PATCH. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the quote.quote_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SS "epx quotes pdf"
+Save the PDF of a quote.
+.PP
+.RS "4"
+.nf
+epx quotes pdf QUOTE_ID [flags]
+.fi
+.RE
+.PP
+Reads the PDF of the quote QUOTE_ID; an unknown quote is not found (exit 4). QUOTE_ID is the ID that \fBepx quotes list\fR shows. In a \fB\-\-language\fR for which a product has no name, the PDF shows the template variable $quoteitem.productName in its place; a language that the tenant does not configure is answered in English, not refused.
+.PP
+Changes nothing: Emporix serves this read as POST with no body. Emporix answers with the PDF, which epx saves to the file that \fB\-\-out\fR names (readable by its owner only; a file there is replaced, but not a directory, device or link), or writes to standard output with \fB\-\-out\fR \-, unless that is a terminal. An answer that is no PDF fails (exit 1), and nothing is saved.
+.PP
+Requires the quote.quote_read scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-language <LANGUAGE>\fR
+The LANGUAGE of the PDF\(aqs text, e.g. de, as the tenant configures it (default: the tenant\(aqs default language).
+.TP
+\fB\-\-out <PATH>\fR
+Save the PDF to the file PATH, or with \- write it to standard output (required).
+.PP
+\fBExamples:\fR
+.PP
+.RS "4"
+.nf
+epx quotes pdf Q1001 \-\-out Q1001.pdf \-\-language de
+epx quotes pdf Q1001 \-\-out \- | lpr
+.fi
+.RE
+.SS "epx quotes reasons"
+Read, create, change and delete quote reasons.
+.PP
+.RS "4"
+.nf
+epx quotes reasons [flags]
+epx quotes reasons [command]
+.fi
+.RE
+.PP
+Reads the reasons a customer or employee can give when asking for changes to a quote (TYPE CHANGE) or declining it (DECLINE), and their MESSAGE. \fBepx quotes reasons create\fR, \fBupdate\fR and \fBdelete\fR change them.
+.PP
+Its reads require the quote.quote_read scope. Its writes require the quote.quote_manage scope.
+.SS "epx quotes reasons create"
+Create a quote reason.
+.PP
+.RS "4"
+.nf
+epx quotes reasons create [flags]
+.fi
+.RE
+.PP
+Creates the quote reason in \fB\-\-file\fR: its type (CHANGE or DECLINE), code and message, and optionally an id, which Emporix makes otherwise; it answers with the id. A reason with the id exists already: a conflict (exit 5).
+.PP
+Localized text in the body is a map of translations, e.g. \fB{"en": "Acme", "de": "Acme"}\fR, as \fB\-o json\fR of a read prints it, sent with Content\-Language: *. Emporix refuses a string in its place.
+.PP
+Changes data: on a terminal, epx asks before it sends POST. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the quote.quote_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SS "epx quotes reasons delete"
+Delete one quote reason.
+.PP
+.RS "4"
+.nf
+epx quotes reasons delete ID [flags]
+.fi
+.RE
+.PP
+Deletes the quote reason ID; it sends no body. Emporix answers an unknown ID as one that it deleted (204 No Content). ID is the ID that \fBepx quotes reasons list\fR shows.
+.PP
+Deletes data, which cannot be undone. On a terminal, epx sends DELETE only once you type ID at its prompt. \fB\-\-yes\fR sends without asking (required without a terminal); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the quote.quote_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal).
+.SS "epx quotes reasons get"
+Show one quote reason.
+.PP
+.RS "4"
+.nf
+epx quotes reasons get ID [flags]
+.fi
+.RE
+.PP
+Reads the reasons a customer or employee can give when asking for changes to a quote (TYPE CHANGE) or declining it (DECLINE), and their MESSAGE. \fBepx quotes reasons create\fR, \fBupdate\fR and \fBdelete\fR change them.
+.PP
+Requires the quote.quote_read scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, CODE, TYPE, MESSAGE.
+.TP
+\fB\-\-language <language>\fR
+Language of localized table text; a missing translation shows another, labeled (\fB\-o json\fR prints all). Default: \fBen\fR.
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.SS "epx quotes reasons list"
+List quote reasons.
+.PP
+.RS "4"
+.nf
+epx quotes reasons list [flags]
+.fi
+.RE
+.PP
+Reads the reasons a customer or employee can give when asking for changes to a quote (TYPE CHANGE) or declining it (DECLINE), and their MESSAGE. \fBepx quotes reasons create\fR, \fBupdate\fR and \fBdelete\fR change them.
+.PP
+Requires the quote.quote_read scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, CODE, TYPE, MESSAGE.
+.TP
+\fB\-\-language <language>\fR
+Language of localized table text; a missing translation shows another, labeled (\fB\-o json\fR prints all). Default: \fBen\fR.
+.TP
+\fB\-\-limit <n>\fR
+Print at most n items; paged reads stop early where they safely can (0: every item).
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-query <filter>\fR
+Emporix q filter, passed as given, e.g. code:(A1,A2); space\-separated conditions must all match (fields mostly as in \fB\-o json\fR).
+.TP
+\fB\-\-sort <order>\fR
+Emporix sort order, passed as given, e.g. code or name.en:desc,code; fields mostly as in \fB\-o json\fR (Emporix may ignore an unknown one).
+.TP
+\fB\-\-stream\fR
+Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes \fB\-o\fR, \fB\-\-columns\fR and \fB\-\-no\-headers\fR).
+.SS "epx quotes reasons update"
+Replace a quote reason.
+.PP
+.RS "4"
+.nf
+epx quotes reasons update ID [flags]
+.fi
+.RE
+.PP
+Replaces the quote reason ID with the one in \fB\-\-file\fR: its type, code, message and metadata.version, as \fBepx quotes reasons get ID \-o json\fR prints it. Emporix changes only that version of the reason and answers an older one with 409 Conflict (exit 5); an unknown reason is not found (exit 4). ID is the ID that \fBepx quotes reasons list\fR shows.
+.PP
+Localized text in the body is a map of translations, e.g. \fB{"en": "Acme", "de": "Acme"}\fR, as \fB\-o json\fR of a read prints it, sent with Content\-Language: *. Emporix refuses a string in its place.
+.PP
+Changes data: on a terminal, epx asks before it sends PUT. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the quote.quote_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SH "SEE ALSO"
+\fBepx\fR(1) for the global options, the credentials epx reads and its exit codes; https://commerce-cloud-integrations.github.io/emporix-cli/commands/quotes

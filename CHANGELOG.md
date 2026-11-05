@@ -7,6 +7,12 @@ change or remove commands, columns or flags, and its notes list each such change
 
 ## Unreleased
 
+### New
+
+- Man pages: `man epx` and one page per top-level command, such as `man epx-products`, with
+  the same text as `--help`. The install script and npm install them; the release archives
+  for macOS and Linux hold them in `man/`.
+
 ### Fixed
 
 - `epx iam groups list` sorts groups by ID unless you pass `--sort`: Emporix orders groups

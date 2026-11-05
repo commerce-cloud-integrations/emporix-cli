@@ -1,0 +1,78 @@
+.TH "EPX\-REGIONS" "1" "" "epx" "epx manual"
+.SH "NAME"
+epx\-regions \- read regions
+.SH "SYNOPSIS"
+.RS "4"
+.nf
+epx regions [flags]
+epx regions [command]
+.fi
+.RE
+.SH "DESCRIPTION"
+Reads the regions that group countries.
+.PP
+No OAuth scope is needed.
+.SH "COMMANDS"
+.SS "epx regions get"
+Show one region.
+.PP
+.RS "4"
+.nf
+epx regions get CODE [flags]
+.fi
+.RE
+.PP
+Reads the regions that group countries.
+.PP
+No OAuth scope is needed.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among CODE, NAME.
+.TP
+\fB\-\-language <language>\fR
+Language of localized table text; a missing translation shows another, labeled (\fB\-o json\fR prints all). Default: \fBen\fR.
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.SS "epx regions list"
+List regions.
+.PP
+.RS "4"
+.nf
+epx regions list [flags]
+.fi
+.RE
+.PP
+Reads the regions that group countries.
+.PP
+No OAuth scope is needed.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among CODE, NAME.
+.TP
+\fB\-\-language <language>\fR
+Language of localized table text; a missing translation shows another, labeled (\fB\-o json\fR prints all). Default: \fBen\fR.
+.TP
+\fB\-\-limit <n>\fR
+Print at most n items; paged reads stop early where they safely can (0: every item).
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-sort <order>\fR
+Emporix sort order, passed as given, e.g. code or name.en:desc,code; fields mostly as in \fB\-o json\fR (Emporix may ignore an unknown one).
+.TP
+\fB\-\-stream\fR
+Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes \fB\-o\fR, \fB\-\-columns\fR and \fB\-\-no\-headers\fR).
+.SH "SEE ALSO"
+\fBepx\fR(1) for the global options, the credentials epx reads and its exit codes; https://commerce-cloud-integrations.github.io/emporix-cli/commands/regions

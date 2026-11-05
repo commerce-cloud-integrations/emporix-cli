@@ -1,0 +1,568 @@
+.TH "EPX\-DELIVERY\-TIMES" "1" "" "epx" "epx manual"
+.SH "NAME"
+epx\-delivery\-times \- read and change delivery times and their time slots; read the delivery windows of a cart
+.SH "SYNOPSIS"
+.RS "4"
+.nf
+epx delivery\-times [flags]
+epx delivery\-times [command]
+.fi
+.RE
+.SH "DESCRIPTION"
+Reads and changes delivery times, the days on which a site delivers to a zone, and their time slots; reads the delivery windows open to a cart, checks and counts the orders of a delivery window and names its delivery cycle.
+.PP
+Its reads require different OAuth scopes; the help of each names them. Its writes require the shipping.shipping_manage scope.
+.SH "COMMANDS"
+.SS "epx delivery\-times bulk\-create"
+Create delivery times in bulk.
+.PP
+.RS "4"
+.nf
+epx delivery\-times bulk\-create [flags]
+.fi
+.RE
+.PP
+Creates the delivery times in \fB\-\-file\fR, a JSON array of delivery times, each as create takes it.
+.PP
+Emporix takes up to 50 items in one request (epx refuses more), carries out each on its own and answers with the result of each: when one failed, epx prints the response, lists the items that failed on standard error (one that failed with 500, 502, 503 or 504 may have been carried out all the same) and exits with the code that their failures share (for example 5 for a 409 Conflict, 4 for a 404), else 1.
+.PP
+Changes data: on a terminal, epx asks before it sends POST. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the shipping.shipping_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-validate\-overlap <string>\fR
+Whether Emporix refuses slots of one shipping method whose time ranges overlap (it does unless given false): true or false.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SS "epx delivery\-times create"
+Create a delivery time.
+.PP
+.RS "4"
+.nf
+epx delivery\-times create [flags]
+.fi
+.RE
+.PP
+Creates a delivery time from the JSON in \fB\-\-file\fR: its siteCode and zoneId (or isForAllZones, for a day without delivery on every zone of the site), its day (a weekday, singleDate or datePeriod), isDeliveryDay, timeZoneId and deliveryDayShift, the slots of a delivery day and optionally the delivery time\(aqs id and name, as \fBepx delivery\-times get ID \-o json\fR prints one; a slot with a cutOffDayShift needs a delivery time without deliveryDayShift. Emporix answers with its id, and refuses a delivery time that overlaps another of its zone, or is not valid otherwise, with 400 Bad Request (exit 1).
+.PP
+Changes data: on a terminal, epx asks before it sends POST. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the shipping.shipping_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-validate\-overlap <string>\fR
+Whether Emporix refuses slots of one shipping method whose time ranges overlap (it does unless given false): true or false.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SS "epx delivery\-times delete"
+Delete a delivery time.
+.PP
+.RS "4"
+.nf
+epx delivery\-times delete ID [flags]
+.fi
+.RE
+.PP
+Deletes the delivery time ID with its time slots. Emporix answers an unknown ID as one that it deleted (204 No Content).
+.PP
+Deletes data, which cannot be undone. On a terminal, epx sends DELETE only once you type ID at its prompt. \fB\-\-yes\fR sends without asking (required without a terminal); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the shipping.shipping_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal).
+.SS "epx delivery\-times generate\-cycle"
+Name the delivery cycle of a delivery window.
+.PP
+.RS "4"
+.nf
+epx delivery\-times generate\-cycle [flags]
+.fi
+.RE
+.PP
+Prints the name of the delivery cycle of a delivery window, as Emporix names it in the delivery windows of a cart and in orders (deliveryCycle in \fBepx delivery\-times windows CART_ID \-o json\fR): the delivery date, the hour (UTC) of the slot\(aqs cut\-off time and the deliveryCycleName of its cutOffTime, such as 2026\-06\-20\-6morning. The delivery window is the delivery time \fB\-\-delivery\-time\fR on \fB\-\-date\fR, an ISO 8601 date and time such as 2026\-11\-02T12:00:00.000Z, in its \fB\-\-slot\fR: \fBepx delivery\-times list\fR and \fBepx delivery\-times slots list\fR show their IDs. Emporix answers an unknown delivery time with 403 Forbidden (exit 3), not as not found.
+.PP
+Changes nothing: Emporix serves this read as POST with a JSON body, which the flags make or \fB\-\-body\fR gives whole.
+.PP
+No OAuth scope is needed.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-body <FILE>\fR
+Send the JSON request body in FILE as given (\- reads standard input) instead of the one the other flags make.
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among CYCLE.
+.TP
+\fB\-\-date <DATE>\fR
+The delivery DATE and time, ISO 8601 (required without \fB\-\-body\fR).
+.TP
+\fB\-\-delivery\-time <ID>\fR
+The delivery time\(aqs ID (required without \fB\-\-body\fR).
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-slot <ID>\fR
+The ID of the delivery time\(aqs slot (required without \fB\-\-body\fR).
+.SS "epx delivery\-times get"
+Show one delivery time.
+.PP
+.RS "4"
+.nf
+epx delivery\-times get ID [flags]
+.fi
+.RE
+.PP
+Reads delivery times, the days on which a site delivers to a zone. ZONE is a zone id (\fBepx shipping zones list \-\-site S\fR), or \fB"all zones"\fR for a day without delivery on every zone; DAY is a weekday, a date or a date period (from/to); DELIVERS is false for a day without delivery; DAY SHIFT is how many days the delivery follows an order placed before the cut\-off, when the delivery time sets it (a weekday\(aqs slots may set their own); SLOTS counts the time slots, which \fBepx delivery\-times slots list DELIVERY_TIME_ID\fR lists.
+.PP
+Requires the shipping.shipping_read scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, NAME, SITE, ZONE, DAY, DELIVERS, TIME ZONE, DAY SHIFT, SLOTS.
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.SS "epx delivery\-times increment\-counter"
+Count one more order in a delivery window.
+.PP
+.RS "4"
+.nf
+epx delivery\-times increment\-counter [flags]
+.fi
+.RE
+.PP
+Counts one more order in a delivery window that has capacity left. The delivery window is the delivery time \fB\-\-delivery\-time\fR on \fB\-\-date\fR, an ISO 8601 date and time such as 2026\-11\-02T12:00:00.000Z, in its \fB\-\-slot\fR: \fBepx delivery\-times list\fR and \fBepx delivery\-times slots list\fR show their IDs. The Checkout Service counts each order that it places with a delivery window; only a checkout of your own needs this. Emporix answers true once it counted the order, and a window that is full or not offered that day, or a date in the past or in another format, with 400 Bad Request (exit 1). The body may also come whole from \fB\-\-file\fR.
+.PP
+Changes data: on a terminal, epx asks before it sends POST. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the shipping.shipping_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-date <DATE>\fR
+The delivery DATE and time, ISO 8601 (required without \fB\-\-file\fR).
+.TP
+\fB\-\-delivery\-time <ID>\fR
+The delivery time\(aqs ID (required without \fB\-\-file\fR).
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte instead of the one that epx makes (\- reads standard input; sending it then needs \fB\-\-yes\fR).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-slot <ID>\fR
+The ID of the delivery time\(aqs slot (required without \fB\-\-file\fR).
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SS "epx delivery\-times list"
+List delivery times.
+.PP
+.RS "4"
+.nf
+epx delivery\-times list [flags]
+.fi
+.RE
+.PP
+Reads delivery times, the days on which a site delivers to a zone. ZONE is a zone id (\fBepx shipping zones list \-\-site S\fR), or \fB"all zones"\fR for a day without delivery on every zone; DAY is a weekday, a date or a date period (from/to); DELIVERS is false for a day without delivery; DAY SHIFT is how many days the delivery follows an order placed before the cut\-off, when the delivery time sets it (a weekday\(aqs slots may set their own); SLOTS counts the time slots, which \fBepx delivery\-times slots list DELIVERY_TIME_ID\fR lists.
+.PP
+Requires the shipping.shipping_read scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, NAME, SITE, ZONE, DAY, DELIVERS, TIME ZONE, DAY SHIFT, SLOTS.
+.TP
+\fB\-\-limit <n>\fR
+Print at most n items; paged reads stop early where they safely can (0: every item).
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-stream\fR
+Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes \fB\-o\fR, \fB\-\-columns\fR and \fB\-\-no\-headers\fR).
+.SS "epx delivery\-times patch"
+Change a delivery time.
+.PP
+.RS "4"
+.nf
+epx delivery\-times patch ID [flags]
+.fi
+.RE
+.PP
+Changes the delivery time ID with the JSON Patch (RFC 6902) in \fB\-\-file\fR: an array of operations whose op is add, remove or replace, such as \fB[{"op": "replace", "path": "/name", "value": "Mondays"}]\fR. An unknown ID is not found (exit 4).
+.PP
+Changes data: on a terminal, epx asks before it sends PATCH. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the shipping.shipping_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-validate\-overlap <string>\fR
+Whether Emporix refuses slots of one shipping method whose time ranges overlap (it does unless given false): true or false.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SS "epx delivery\-times slots"
+Read and change the time slots of a delivery time.
+.PP
+.RS "4"
+.nf
+epx delivery\-times slots [flags]
+epx delivery\-times slots [command]
+.fi
+.RE
+.PP
+Reads and changes the time slots of a delivery time.
+.PP
+Its reads require the shipping.shipping_read scope. Its writes require the shipping.shipping_manage scope.
+.SS "epx delivery\-times slots create"
+Create a time slot of a delivery time.
+.PP
+.RS "4"
+.nf
+epx delivery\-times slots create DELIVERY_TIME_ID [flags]
+.fi
+.RE
+.PP
+Creates a time slot of a delivery day from the JSON in \fB\-\-file\fR: its shippingMethod (a method of the delivery time\(aqs zone), deliveryTimeRange (timeFrom and timeTo, local times such as 08:00), cutOffTime (its time, an ISO 8601 timestamp whose time of day counts, and for a weekday its cutOffDayShift, which the delivery time must not combine with a deliveryDayShift), capacity (the orders it takes) and optionally its id, as \fBepx delivery\-times slots get DELIVERY_TIME_ID ID \-o json\fR prints one. Emporix answers with its id, and a slot id that exists already with 400 Bad Request (exit 1), not as a conflict. DELIVERY_TIME_ID is the ID that \fBepx delivery\-times list\fR shows; an unknown one is not found.
+.PP
+Changes data: on a terminal, epx asks before it sends POST. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the shipping.shipping_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-validate\-overlap <string>\fR
+Whether Emporix refuses slots of one shipping method whose time ranges overlap (it does unless given false): true or false.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SS "epx delivery\-times slots delete"
+Delete a time slot of a delivery time.
+.PP
+.RS "4"
+.nf
+epx delivery\-times slots delete DELIVERY_TIME_ID ID [flags]
+.fi
+.RE
+.PP
+Deletes the time slot ID of a delivery time. DELIVERY_TIME_ID is the ID that \fBepx delivery\-times list\fR shows; an unknown one is not found. ID is the ID that \fBepx delivery\-times slots list DELIVERY_TIME_ID\fR shows; an unknown one is answered as one that Emporix deleted (204 No Content).
+.PP
+Deletes data, which cannot be undone. On a terminal, epx sends DELETE only once you type ID at its prompt. \fB\-\-yes\fR sends without asking (required without a terminal); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the shipping.shipping_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal).
+.SS "epx delivery\-times slots delete\-all"
+Delete every time slot of a delivery time.
+.PP
+.RS "4"
+.nf
+epx delivery\-times slots delete\-all DELIVERY_TIME_ID [flags]
+.fi
+.RE
+.PP
+Deletes every time slot of a delivery time. DELIVERY_TIME_ID is the ID that \fBepx delivery\-times list\fR shows; an unknown one is not found.
+.PP
+Deletes every time slot of the delivery time with one request, which cannot be undone. On a terminal, epx sends DELETE only once you type DELIVERY_TIME_ID at its prompt. \fB\-\-yes\fR sends without asking (required without a terminal); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the shipping.shipping_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal).
+.SS "epx delivery\-times slots get"
+Show one time slot of a delivery time.
+.PP
+.RS "4"
+.nf
+epx delivery\-times slots get DELIVERY_TIME_ID ID [flags]
+.fi
+.RE
+.PP
+Reads one time slot of a delivery time. DELIVERY_TIME_ID is the ID that \fBepx delivery\-times list\fR shows; an unknown one is not found. ID is the ID that \fBepx delivery\-times slots list DELIVERY_TIME_ID\fR shows; an unknown one is not found. METHOD is the shipping method of the slot (\fBepx shipping zones methods list\fR), FROM and TO its delivery window in the delivery time\(aqs TIME ZONE, CUT\-OFF the latest time of day to order for the slot (sent as an ISO 8601 timestamp whose date Emporix ignores), CUT\-OFF DAYS how many days the delivery follows such an order (weekday delivery times only; otherwise see DAY SHIFT in \fBepx delivery\-times list\fR), and CAPACITY how many orders the slot takes.
+.PP
+Requires the shipping.shipping_read scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, METHOD, FROM, TO, CUT\-OFF, CUT\-OFF DAYS, CAPACITY.
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.SS "epx delivery\-times slots list"
+List the time slots of a delivery time.
+.PP
+.RS "4"
+.nf
+epx delivery\-times slots list DELIVERY_TIME_ID [flags]
+.fi
+.RE
+.PP
+Reads the time slots of a delivery time. DELIVERY_TIME_ID is the ID that \fBepx delivery\-times list\fR shows; an unknown one is not found. METHOD is the shipping method of the slot (\fBepx shipping zones methods list\fR), FROM and TO its delivery window in the delivery time\(aqs TIME ZONE, CUT\-OFF the latest time of day to order for the slot (sent as an ISO 8601 timestamp whose date Emporix ignores), CUT\-OFF DAYS how many days the delivery follows such an order (weekday delivery times only; otherwise see DAY SHIFT in \fBepx delivery\-times list\fR), and CAPACITY how many orders the slot takes.
+.PP
+Requires the shipping.shipping_read scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, METHOD, FROM, TO, CUT\-OFF, CUT\-OFF DAYS, CAPACITY.
+.TP
+\fB\-\-limit <n>\fR
+Print at most n items; paged reads stop early where they safely can (0: every item).
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-stream\fR
+Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes \fB\-o\fR, \fB\-\-columns\fR and \fB\-\-no\-headers\fR).
+.SS "epx delivery\-times slots patch"
+Change a time slot of a delivery time.
+.PP
+.RS "4"
+.nf
+epx delivery\-times slots patch DELIVERY_TIME_ID ID [flags]
+.fi
+.RE
+.PP
+Changes the time slot ID of a delivery time with the JSON Patch (RFC 6902) in \fB\-\-file\fR: an array of operations whose op is add, remove or replace, such as \fB[{"op": "replace", "path": "/capacity", "value": 50}]\fR. DELIVERY_TIME_ID is the ID that \fBepx delivery\-times list\fR shows; an unknown one is not found. ID is the ID that \fBepx delivery\-times slots list DELIVERY_TIME_ID\fR shows; an unknown one is not found.
+.PP
+Changes data: on a terminal, epx asks before it sends PATCH. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the shipping.shipping_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-validate\-overlap <string>\fR
+Whether Emporix refuses slots of one shipping method whose time ranges overlap (it does unless given false): true or false.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SS "epx delivery\-times slots update"
+Replace a time slot of a delivery time.
+.PP
+.RS "4"
+.nf
+epx delivery\-times slots update DELIVERY_TIME_ID ID [flags]
+.fi
+.RE
+.PP
+Replaces the time slot ID of a delivery time with the one in \fB\-\-file\fR, as create takes it. DELIVERY_TIME_ID is the ID that \fBepx delivery\-times list\fR shows; an unknown one is not found. ID is the ID that \fBepx delivery\-times slots list DELIVERY_TIME_ID\fR shows; an unknown one is not found.
+.PP
+Changes data: on a terminal, epx asks before it sends PUT. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the shipping.shipping_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-validate\-overlap <string>\fR
+Whether Emporix refuses slots of one shipping method whose time ranges overlap (it does unless given false): true or false.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SS "epx delivery\-times update"
+Replace a delivery time.
+.PP
+.RS "4"
+.nf
+epx delivery\-times update ID [flags]
+.fi
+.RE
+.PP
+Replaces the delivery time ID with the one in \fB\-\-file\fR, as create takes it. With metadata.version in the body, as \fBepx delivery\-times get ID \-o json\fR prints it, Emporix refuses the write as a conflict (exit 5) when the delivery time changed since it was read; without it, Emporix replaces it whatever its version. An unknown ID is not found (exit 4).
+.PP
+Changes data: on a terminal, epx asks before it sends PUT. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the shipping.shipping_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-validate\-overlap <string>\fR
+Whether Emporix refuses slots of one shipping method whose time ranges overlap (it does unless given false): true or false.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SS "epx delivery\-times validate"
+Check whether a delivery window can take an order.
+.PP
+.RS "4"
+.nf
+epx delivery\-times validate [flags]
+.fi
+.RE
+.PP
+Checks whether a delivery window can take an order. The delivery window is the delivery time \fB\-\-delivery\-time\fR on \fB\-\-date\fR, an ISO 8601 date and time such as 2026\-11\-02T12:00:00.000Z, in its \fB\-\-slot\fR: \fBepx delivery\-times list\fR and \fBepx delivery\-times slots list\fR show their IDs. VALID is true when it can; Emporix answers a date in the past or in another format, or a window that is full or not offered that day, with 400 Bad Request (exit 1), and an unknown delivery time as not found (exit 4).
+.PP
+Changes nothing: Emporix serves this read as POST with a JSON body, which the flags make or \fB\-\-body\fR gives whole.
+.PP
+No OAuth scope is needed.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-body <FILE>\fR
+Send the JSON request body in FILE as given (\- reads standard input) instead of the one the other flags make.
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among VALID.
+.TP
+\fB\-\-date <DATE>\fR
+The delivery DATE and time, ISO 8601 (required without \fB\-\-body\fR).
+.TP
+\fB\-\-delivery\-time <ID>\fR
+The delivery time\(aqs ID (required without \fB\-\-body\fR).
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-slot <ID>\fR
+The ID of the delivery time\(aqs slot (required without \fB\-\-body\fR).
+.SS "epx delivery\-times windows"
+List the delivery windows open to a cart.
+.PP
+.RS "4"
+.nf
+epx delivery\-times windows CART_ID [flags]
+.fi
+.RE
+.PP
+Reads the delivery windows in which a cart can be delivered to the country and postal code set on the cart. DATE is the delivery day, FROM and TO the delivery time range on it, METHOD the shipping method, ZONE the shipping zone, CUT\-OFF the latest time to order for the window, SLOT the time slot of its delivery time, which \fBepx delivery\-times slots list DELIVERY_TIME_ID\fR lists, and ID the id of that delivery time (\fBepx delivery\-times get ID\fR); the delivery cycle is only in \fB\-o json\fR. For another postal code than the cart\(aqs, run \fBepx api get /shipping/{tenant}/actualDeliveryWindows/CART_ID \-p postalCode=CODE\fR. CART_ID is the id of a cart; an unknown one is not found (exit 4).
+.PP
+No OAuth scope is needed.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among DATE, FROM, TO, METHOD, ZONE, CUT\-OFF, SLOT, ID.
+.TP
+\fB\-\-limit <n>\fR
+Print at most n items; paged reads stop early where they safely can (0: every item).
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-stream\fR
+Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes \fB\-o\fR, \fB\-\-columns\fR and \fB\-\-no\-headers\fR).
+.SH "SEE ALSO"
+\fBepx\fR(1) for the global options, the credentials epx reads and its exit codes; https://commerce-cloud-integrations.github.io/emporix-cli/commands/delivery-times

@@ -1,0 +1,212 @@
+.TH "EPX\-API" "1" "" "epx" "epx manual"
+.SH "NAME"
+epx\-api \- send requests to any Emporix API path
+.SH "SYNOPSIS"
+.RS "4"
+.nf
+epx api [flags]
+epx api [command]
+.fi
+.RE
+.SH "DESCRIPTION"
+.SH "COMMANDS"
+.SS "epx api delete"
+Send DELETE to an API path and print the JSON response.
+.PP
+.RS "4"
+.nf
+epx api delete PATH [flags]
+.fi
+.RE
+.PP
+Sends DELETE to PATH on the configured API host, with the JSON body that \fB\-\-file\fR gives (none without it), and prints the response body as JSON (YAML with \fB\-o yaml\fR) with sorted keys and every value as sent (nothing for an empty one). {tenant} in PATH is replaced with the tenant; query values given with \fB\-p\fR replace inline ones. It sends no other header, such as the Content\-Language that the Unit Service requires to create or update a unit.
+.PP
+Deletes data, which cannot be undone. On a terminal, epx sends DELETE only once you type PATH at its prompt. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requests only the scopes given with \fB\-\-scope\fR besides the tenant: name every write scope that the endpoint needs, as Emporix grants only requested scopes.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-p, \-\-param <key=value>\fR
+Query parameter as key=value (repeatable).
+.TP
+\fB\-\-scope <strings>\fR
+OAuth scope to request besides the tenant (repeatable).
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.PP
+\fBExamples:\fR
+.PP
+.RS "4"
+.nf
+epx api delete /product/{tenant}/products/100200 \-\-scope product.product_manage \-\-yes
+.fi
+.RE
+.SS "epx api get"
+GET an API path and print the JSON response.
+.PP
+.RS "4"
+.nf
+epx api get PATH [flags]
+.fi
+.RE
+.PP
+Sends GET to PATH on the configured API host and prints the response body as JSON (YAML with \fB\-o yaml\fR) with sorted keys and every value as sent. {tenant} in PATH is replaced with the tenant; Accept\-Language: * requests every translation. Query values given with \fB\-p\fR replace inline ones. Request every scope the endpoint needs with \fB\-\-scope\fR: Emporix grants only requested scopes and may silently omit data otherwise.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-p, \-\-param <key=value>\fR
+Query parameter as key=value (repeatable).
+.TP
+\fB\-\-scope <strings>\fR
+OAuth scope to request besides the tenant (repeatable).
+.PP
+\fBExamples:\fR
+.PP
+.RS "4"
+.nf
+epx api get /site/{tenant}/sites
+epx api get /product/{tenant}/products \-p pageSize=5 \-\-scope product.product_read_unpublished
+.fi
+.RE
+.SS "epx api patch"
+Send PATCH to an API path and print the JSON response.
+.PP
+.RS "4"
+.nf
+epx api patch PATH [flags]
+.fi
+.RE
+.PP
+Sends PATCH to PATH on the configured API host, with the JSON body that \fB\-\-file\fR gives (none without it), and prints the response body as JSON (YAML with \fB\-o yaml\fR) with sorted keys and every value as sent (nothing for an empty one). {tenant} in PATH is replaced with the tenant; query values given with \fB\-p\fR replace inline ones. It sends no other header, such as the Content\-Language that the Unit Service requires to create or update a unit.
+.PP
+Changes data: on a terminal, epx asks before it sends PATCH. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requests only the scopes given with \fB\-\-scope\fR besides the tenant: name every write scope that the endpoint needs, as Emporix grants only requested scopes.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-p, \-\-param <key=value>\fR
+Query parameter as key=value (repeatable).
+.TP
+\fB\-\-scope <strings>\fR
+OAuth scope to request besides the tenant (repeatable).
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.PP
+\fBExamples:\fR
+.PP
+.RS "4"
+.nf
+epx api patch /site/{tenant}/sites/AcmeStore_NL \-\-scope site.site_manage \-\-file site.json
+.fi
+.RE
+.SS "epx api post"
+Send POST to an API path and print the JSON response.
+.PP
+.RS "4"
+.nf
+epx api post PATH [flags]
+.fi
+.RE
+.PP
+Sends POST to PATH on the configured API host, with the JSON body that \fB\-\-file\fR gives (none without it), and prints the response body as JSON (YAML with \fB\-o yaml\fR) with sorted keys and every value as sent (nothing for an empty one). {tenant} in PATH is replaced with the tenant; query values given with \fB\-p\fR replace inline ones. It sends no other header, such as the Content\-Language that the Unit Service requires to create or update a unit.
+.PP
+Changes data: on a terminal, epx asks before it sends POST. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requests only the scopes given with \fB\-\-scope\fR besides the tenant: name every write scope that the endpoint needs, as Emporix grants only requested scopes.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-p, \-\-param <key=value>\fR
+Query parameter as key=value (repeatable).
+.TP
+\fB\-\-scope <strings>\fR
+OAuth scope to request besides the tenant (repeatable).
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.PP
+\fBExamples:\fR
+.PP
+.RS "4"
+.nf
+epx api post /brand/brands \-\-scope brand.brand_manage \-\-file brand.json
+.fi
+.RE
+.SS "epx api put"
+Send PUT to an API path and print the JSON response.
+.PP
+.RS "4"
+.nf
+epx api put PATH [flags]
+.fi
+.RE
+.PP
+Sends PUT to PATH on the configured API host, with the JSON body that \fB\-\-file\fR gives (none without it), and prints the response body as JSON (YAML with \fB\-o yaml\fR) with sorted keys and every value as sent (nothing for an empty one). {tenant} in PATH is replaced with the tenant; query values given with \fB\-p\fR replace inline ones. It sends no other header, such as the Content\-Language that the Unit Service requires to create or update a unit.
+.PP
+Changes data: on a terminal, epx asks before it sends PUT. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requests only the scopes given with \fB\-\-scope\fR besides the tenant: name every write scope that the endpoint needs, as Emporix grants only requested scopes.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-p, \-\-param <key=value>\fR
+Query parameter as key=value (repeatable).
+.TP
+\fB\-\-scope <strings>\fR
+OAuth scope to request besides the tenant (repeatable).
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.PP
+\fBExamples:\fR
+.PP
+.RS "4"
+.nf
+epx api put /product/{tenant}/products/100200 \-\-scope product.product_manage \-\-file product.json \-\-dry\-run
+.fi
+.RE
+.SH "SEE ALSO"
+\fBepx\fR(1) for the global options, the credentials epx reads and its exit codes; https://commerce-cloud-integrations.github.io/emporix-cli/commands/api

@@ -1,0 +1,46 @@
+.TH "EPX\-AUTH" "1" "" "epx" "epx manual"
+.SH "NAME"
+epx\-auth \- check Emporix credentials
+.SH "SYNOPSIS"
+.RS "4"
+.nf
+epx auth [flags]
+epx auth [command]
+.fi
+.RE
+.SH "DESCRIPTION"
+.SH "COMMANDS"
+.SS "epx auth status"
+Request a token and show the tenant and scopes it grants.
+.PP
+.RS "4"
+.nf
+epx auth status [flags]
+.fi
+.RE
+.PP
+Requests a service token for the tenant plus the given scopes and shows what was granted. Emporix grants only requested scopes, so pass \fB\-\-scope\fR to check specific permissions; a missing scope fails with exit code 3. The token itself is never printed.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among TENANT, EXPIRES IN, SCOPES.
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-scope <strings>\fR
+Scope the credential must grant (repeatable).
+.PP
+\fBExamples:\fR
+.PP
+.RS "4"
+.nf
+epx auth status \-\-scope product.product_read_unpublished \-\-scope indexing.search_view
+.fi
+.RE
+.SH "SEE ALSO"
+\fBepx\fR(1) for the global options, the credentials epx reads and its exit codes; https://commerce-cloud-integrations.github.io/emporix-cli/commands/auth

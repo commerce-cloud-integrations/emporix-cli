@@ -24,6 +24,7 @@
 # in a fixed order, and gzip stores no time, so a rebuild of the same commit on the same
 # kind of builder, by any account and umask, has the same checksums. Tarballs need GNU tar
 # (gtar where tar is another one, as on macOS: brew install gnu-tar).
+# The tarballs (macOS and Linux) also hold the man pages, in man/.
 # Output: dist/<version>/epx_<version>_<os>_<arch>.{tar.gz,zip} and a checksums file.
 set -euo pipefail
 
@@ -72,6 +73,17 @@ tar --version 2>/dev/null | grep -q 'GNU tar' || gnu_tar=gtar
 stamp=$(TZ=UTC git show -s --date=format-local:%Y%m%d%H%M.%S --format=%cd HEAD)
 export TZ=UTC
 
+# The man pages (man/*.1, generated from the command tree) go into the tarballs, their
+# title lines dated with the commit's day and naming the version, as man shows in the footer.
+day=$(git show -s --date=format-local:%Y-%m-%d --format=%cd HEAD)
+mkdir "$stage/man"
+for page in man/*.1; do
+	sed "1s/^\(\.TH \"[^\"]*\" \"1\"\) \"\" \"epx\"/\1 \"$day\" \"epx $version\"/" "$page" >"$stage/man/${page#man/}"
+	grep -q "^\.TH .* \"$day\" \"epx $version\"" "$stage/man/${page#man/}" || fail "$page has no title line to date"
+done
+pages=("$stage"/man/*.1)
+[[ ${#pages[@]} -gt 1 ]] || fail "man/ holds no man pages"
+
 for target in darwin/amd64 darwin/arm64 linux/amd64 linux/arm64 windows/amd64 windows/arm64; do
 	os=${target%/*}
 	arch=${target#*/}
@@ -84,8 +96,17 @@ for target in darwin/amd64 darwin/arm64 linux/amd64 linux/arm64 windows/amd64 wi
 	check_binary "$stage/$name/$exe"
 	cp LICENSE README.md "$stage/$name/"
 	files=("$name" "$name/$exe" "$name/LICENSE" "$name/README.md")
-	(cd "$stage" && chmod 755 "$name" "$name/$exe" && chmod 644 "$name/LICENSE" "$name/README.md" &&
-		touch -t "$stamp" "${files[@]}")
+	(cd "$stage" && chmod 755 "$name" "$name/$exe" && chmod 644 "$name/LICENSE" "$name/README.md")
+	if [[ "$os" != windows ]]; then
+		cp -R "$stage/man" "$stage/$name/man"
+		chmod 755 "$stage/$name/man"
+		files+=("$name/man")
+		for page in "${pages[@]}"; do
+			chmod 644 "$stage/$name/man/${page##*/}"
+			files+=("$name/man/${page##*/}")
+		done
+	fi
+	(cd "$stage" && touch -t "$stamp" "${files[@]}")
 	if [[ "$os" = windows ]]; then
 		# -X: no extra fields, such as the owner's UID and GID.
 		(cd "$stage" && zip -qX "$OLDPWD/$out/$name.zip" "${files[@]}")

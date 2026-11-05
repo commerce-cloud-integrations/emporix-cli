@@ -1,0 +1,227 @@
+.TH "EPX\-PAYMENT\-MODES" "1" "" "epx" "epx manual"
+.SH "NAME"
+epx\-payment\-modes \- read, create, update and delete payment modes
+.SH "SYNOPSIS"
+.RS "4"
+.nf
+epx payment\-modes [flags]
+epx payment\-modes [command]
+.fi
+.RE
+.SH "DESCRIPTION"
+Reads the tenant\(aqs payment modes, and creates, updates and deletes them (create and update send the JSON of \fB\-\-file\fR). Provider configurations hold credentials, which the reads show only in \fB\-o json\fR and the writes send and print as given. \fBepx payment\-modes public\fR shows what a storefront sees and needs no scope.
+.PP
+Its reads require different OAuth scopes; the help of each names them. Its writes require the payment\-gateway.paymentmodes_manage scope.
+.SH "COMMANDS"
+.SS "epx payment\-modes create"
+Create a payment mode.
+.PP
+.RS "4"
+.nf
+epx payment\-modes create [flags]
+.fi
+.RE
+.PP
+Creates the payment mode in \fB\-\-file\fR, a JSON object with its code and provider (both required; PROVIDER as list shows it), active, and the provider\(aqs configuration: a map of string values such as Spreedly/GatewayToken, credentials included. Emporix answers with the payment mode, its configuration included, or, for a code that another mode has, with 400 Bad Request (exit 1); the reference documents 409 Conflict (exit 5) for that case instead.
+.PP
+Changes data: on a terminal, epx asks before it sends POST. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the payment\-gateway.paymentmodes_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.PP
+\fBExamples:\fR
+.PP
+.RS "4"
+.nf
+epx payment\-modes create \-\-file invoice.json \-\-dry\-run
+.fi
+.RE
+.SS "epx payment\-modes delete"
+Delete a payment mode.
+.PP
+.RS "4"
+.nf
+epx payment\-modes delete ID [flags]
+.fi
+.RE
+.PP
+Deletes the payment mode ID, which storefronts then no longer offer.
+.PP
+ID is the ID that \fBepx payment\-modes list\fR shows; an unknown one is not found (exit 4).
+.PP
+Deletes data, which cannot be undone. On a terminal, epx sends DELETE only once you type ID at its prompt. \fB\-\-yes\fR sends without asking (required without a terminal); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the payment\-gateway.paymentmodes_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal).
+.SS "epx payment\-modes get"
+Show one payment mode.
+.PP
+.RS "4"
+.nf
+epx payment\-modes get ID [flags]
+.fi
+.RE
+.PP
+Reads the tenant\(aqs payment modes. PROVIDER is INVOICE, CASH_ON_DELIVERY, SPREEDLY, SPREEDLY_SAFERPAY or UNZER. The provider configuration, credentials included (such as Spreedly/AccessSecret or Saferpay/BasicAuth), is only in \fB\-o json\fR. \fBepx payment\-modes public\fR shows what a storefront sees and needs no scope.
+.PP
+Requires the payment\-gateway.paymentmodes_read scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, CODE, PROVIDER, ACTIVE.
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.SS "epx payment\-modes list"
+List payment modes.
+.PP
+.RS "4"
+.nf
+epx payment\-modes list [flags]
+.fi
+.RE
+.PP
+Reads the tenant\(aqs payment modes. PROVIDER is INVOICE, CASH_ON_DELIVERY, SPREEDLY, SPREEDLY_SAFERPAY or UNZER. The provider configuration, credentials included (such as Spreedly/AccessSecret or Saferpay/BasicAuth), is only in \fB\-o json\fR. \fBepx payment\-modes public\fR shows what a storefront sees and needs no scope.
+.PP
+Requires the payment\-gateway.paymentmodes_read scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, CODE, PROVIDER, ACTIVE.
+.TP
+\fB\-\-limit <n>\fR
+Print at most n items; paged reads stop early where they safely can (0: every item).
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-stream\fR
+Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes \fB\-o\fR, \fB\-\-columns\fR and \fB\-\-no\-headers\fR).
+.SS "epx payment\-modes public"
+Read payment modes as a storefront sees them.
+.PP
+.RS "4"
+.nf
+epx payment\-modes public [flags]
+epx payment\-modes public [command]
+.fi
+.RE
+.PP
+Reads payment modes as a storefront sees them, without provider secrets. INTEGRATION is OFFSITE, EXTERNAL, SEPA or TOKENIZED and METHOD the payment method type, e.g. paypal; public keys, tokens and script URLs are only in \fB\-o json\fR.
+.PP
+No OAuth scope is needed.
+.SS "epx payment\-modes public get"
+Show one storefront payment mode.
+.PP
+.RS "4"
+.nf
+epx payment\-modes public get ID [flags]
+.fi
+.RE
+.PP
+Reads payment modes as a storefront sees them, without provider secrets. INTEGRATION is OFFSITE, EXTERNAL, SEPA or TOKENIZED and METHOD the payment method type, e.g. paypal; public keys, tokens and script URLs are only in \fB\-o json\fR.
+.PP
+No OAuth scope is needed.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, CODE, INTEGRATION, METHOD.
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.SS "epx payment\-modes public list"
+List payment modes as a storefront sees them.
+.PP
+.RS "4"
+.nf
+epx payment\-modes public list [flags]
+.fi
+.RE
+.PP
+Reads payment modes as a storefront sees them, without provider secrets. INTEGRATION is OFFSITE, EXTERNAL, SEPA or TOKENIZED and METHOD the payment method type, e.g. paypal; public keys, tokens and script URLs are only in \fB\-o json\fR.
+.PP
+No OAuth scope is needed.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, CODE, INTEGRATION, METHOD.
+.TP
+\fB\-\-limit <n>\fR
+Print at most n items; paged reads stop early where they safely can (0: every item).
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-stream\fR
+Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes \fB\-o\fR, \fB\-\-columns\fR and \fB\-\-no\-headers\fR).
+.SS "epx payment\-modes update"
+Update a payment mode.
+.PP
+.RS "4"
+.nf
+epx payment\-modes update ID [flags]
+.fi
+.RE
+.PP
+Sets active and the configuration of the payment mode ID to those in \fB\-\-file\fR, a JSON object with active and configuration, the map of the provider\(aqs values that create takes; the code and provider stay as created. Emporix answers with the payment mode, its configuration included, and creates no missing mode.
+.PP
+ID is the ID that \fBepx payment\-modes list\fR shows; an unknown one is not found (exit 4).
+.PP
+Changes data: on a terminal, epx asks before it sends PUT. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the payment\-gateway.paymentmodes_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SH "SEE ALSO"
+\fBepx\fR(1) for the global options, the credentials epx reads and its exit codes; https://commerce-cloud-integrations.github.io/emporix-cli/commands/payment-modes

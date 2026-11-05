@@ -1,0 +1,174 @@
+.TH "EPX\-PRICE\-MODELS" "1" "" "epx" "epx manual"
+.SH "NAME"
+epx\-price\-models \- read and change price models
+.SH "SYNOPSIS"
+.RS "4"
+.nf
+epx price\-models [flags]
+epx price\-models [command]
+.fi
+.RE
+.SH "DESCRIPTION"
+Reads and changes price models, the tier structure that prices follow. create, update and delete change one; delete \fB\-\-force\fR also deletes a model that prices use, with its prices.
+.PP
+Its reads require the price.pricemodel_read scope. Its writes require the price.pricemodel_manage scope.
+.SH "COMMANDS"
+.SS "epx price\-models create"
+Create a price model.
+.PP
+.RS "4"
+.nf
+epx price\-models create [flags]
+.fi
+.RE
+.PP
+Creates the price model in \fB\-\-file\fR, a JSON object with name, includesTax, includesMarkup, measurementUnit and tierDefinition: tierType (BASIC, TIERED or VOLUME) and the minQuantity of each tier, e.g. \fB{"name": {"en": "Per kilogram"}, "includesTax": true, "includesMarkup": false, "measurementUnit": {"quantity": 1, "unitCode": "kg"}, "tierDefinition": {"tierType": "BASIC", "tiers": [{"minQuantity": {"quantity": 0, "unitCode": "kg"}}]}}\fR. Without an id, Emporix makes one, which the response gives.
+.PP
+Localized text in the body, such as a name, is a map of translations, e.g. \fB{"en": "gram", "de": "Gramm"}\fR, as \fB\-o json\fR of a read prints it, or with \fB\-\-content\-language\fR LANGUAGE a string in that language, e.g. \fB"gram"\fR with \fB\-\-content\-language\fR en.
+.PP
+Changes data: on a terminal, epx asks before it sends POST. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the price.pricemodel_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-content\-language <LANGUAGE>\fR
+The LANGUAGE of localized text in the body, or * for maps of translations. Default: \fB*\fR.
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SS "epx price\-models delete"
+Delete a price model.
+.PP
+.RS "4"
+.nf
+epx price\-models delete ID [flags]
+.fi
+.RE
+.PP
+Deletes the price model ID. Emporix refuses a model that prices use (400 Bad Request, exit 1) unless \fB\-\-force\fR is given, which needs both scopes below and deletes those prices too: Emporix deletes them after the model, in the background. Emporix answers an unknown ID as one that it deleted (204 No Content).
+.PP
+Deletes data, which cannot be undone. With \fB\-\-force\fR, it deletes the price model and every price that uses it with one request. On a terminal, epx sends DELETE only once you type ID at its prompt. \fB\-\-yes\fR sends without asking (required without a terminal); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+\fB\-\-force\fR also requests the price.pricemodel_manage_admin scope.
+.PP
+Requires the price.pricemodel_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-force\fR
+Delete a model that prices use, with its prices: sends forceDelete=true (requests price.pricemodel_manage_admin too).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal).
+.SS "epx price\-models get"
+Show one price model.
+.PP
+.RS "4"
+.nf
+epx price\-models get ID [flags]
+.fi
+.RE
+.PP
+Reads price models, the tier structure that prices follow. DEFAULT marks the tenant\(aqs default model, TYPE is the tier type (BASIC, TIERED or VOLUME), TIERS the minimum quantity of each tier, UNIT the quantity a price applies to, and TAX and MARKUP whether prices of the model include them (\fB\-o json\fR adds descriptions and the tier ids that price tier values refer to).
+.PP
+Requires the price.pricemodel_read scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, NAME, DEFAULT, TYPE, TIERS, UNIT, TAX, MARKUP.
+.TP
+\fB\-\-language <language>\fR
+Language of localized table text; a missing translation shows another, labeled (\fB\-o json\fR prints all). Default: \fBen\fR.
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.SS "epx price\-models list"
+List price models.
+.PP
+.RS "4"
+.nf
+epx price\-models list [flags]
+.fi
+.RE
+.PP
+Reads price models, the tier structure that prices follow. DEFAULT marks the tenant\(aqs default model, TYPE is the tier type (BASIC, TIERED or VOLUME), TIERS the minimum quantity of each tier, UNIT the quantity a price applies to, and TAX and MARKUP whether prices of the model include them (\fB\-o json\fR adds descriptions and the tier ids that price tier values refer to).
+.PP
+Requires the price.pricemodel_read scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, NAME, DEFAULT, TYPE, TIERS, UNIT, TAX, MARKUP.
+.TP
+\fB\-\-language <language>\fR
+Language of localized table text; a missing translation shows another, labeled (\fB\-o json\fR prints all). Default: \fBen\fR.
+.TP
+\fB\-\-limit <n>\fR
+Print at most n items; paged reads stop early where they safely can (0: every item).
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-sort <order>\fR
+Emporix sort order, passed as given, e.g. code or name.en:desc,code; fields mostly as in \fB\-o json\fR (Emporix may ignore an unknown one).
+.TP
+\fB\-\-stream\fR
+Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes \fB\-o\fR, \fB\-\-columns\fR and \fB\-\-no\-headers\fR).
+.SS "epx price\-models update"
+Upsert a price model.
+.PP
+.RS "4"
+.nf
+epx price\-models update ID [flags]
+.fi
+.RE
+.PP
+Replaces the price model ID with the one in \fB\-\-file\fR, a JSON object as \fBepx price\-models get ID \-o json\fR prints it, or creates it with that id where none exists (an upsert).
+.PP
+Localized text in the body, such as a name, is a map of translations, e.g. \fB{"en": "gram", "de": "Gramm"}\fR, as \fB\-o json\fR of a read prints it, or with \fB\-\-content\-language\fR LANGUAGE a string in that language, e.g. \fB"gram"\fR with \fB\-\-content\-language\fR en.
+.PP
+Changes data: on a terminal, epx asks before it sends PUT. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the price.pricemodel_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-content\-language <LANGUAGE>\fR
+The LANGUAGE of localized text in the body, or * for maps of translations. Default: \fB*\fR.
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SH "SEE ALSO"
+\fBepx\fR(1) for the global options, the credentials epx reads and its exit codes; https://commerce-cloud-integrations.github.io/emporix-cli/commands/price-models

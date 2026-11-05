@@ -1,0 +1,497 @@
+.TH "EPX\-PRICE\-LISTS" "1" "" "epx" "epx manual"
+.SH "NAME"
+epx\-price\-lists \- read and change price lists and their prices
+.SH "SYNOPSIS"
+.RS "4"
+.nf
+epx price\-lists [flags]
+epx price\-lists [command]
+.fi
+.RE
+.SH "DESCRIPTION"
+Reads and changes price lists and, in \fBprices\fR, the prices of one. A price list holds prices in one currency for one site that apply between their validity dates to its countries or regions, and to its customer groups or to one legal entity.
+.PP
+Its reads require the price.pricelist_read scope. Its writes require the price.pricelist_manage scope.
+.SH "COMMANDS"
+.SS "epx price\-lists create"
+Create a price list.
+.PP
+.RS "4"
+.nf
+epx price\-lists create [flags]
+.fi
+.RE
+.PP
+Creates the price list in \fB\-\-file\fR, a JSON object with name, currency, siteCode and validity (from and to), and optionally countries or regions, and customerGroups or legalEntityId, e.g. \fB{"name": {"en": "Wholesale"}, "currency": "EUR", "siteCode": "AcmeStore_NL", "countries": ["NL"], "validity": {"from": "2026\-01\-01T00:00:00.000Z"}}\fR. Without an id, Emporix makes one, which the response gives.
+.PP
+Localized text in the body, such as a name, is a map of translations, e.g. \fB{"en": "Wholesale", "nl": "Groothandel"}\fR, as \fB\-o json\fR of a read prints it, also with \fB\-\-content\-language\fR LANGUAGE: then a map of that language only, e.g. \fB{"en": "Wholesale"}\fR with \fB\-\-content\-language\fR en.
+.PP
+Changes data: on a terminal, epx asks before it sends POST. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the price.pricelist_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-content\-language <LANGUAGE>\fR
+The LANGUAGE of localized text in the body, or * for maps of translations. Default: \fB*\fR.
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SS "epx price\-lists delete"
+Delete a price list.
+.PP
+.RS "4"
+.nf
+epx price\-lists delete ID [flags]
+.fi
+.RE
+.PP
+Deletes the price list ID and the prices in it, which Emporix deletes after it, in the background. Emporix answers an unknown ID as one that it deleted (204 No Content).
+.PP
+Deletes the price list and every price in it with one request, which cannot be undone. On a terminal, epx sends DELETE only once you type ID at its prompt. \fB\-\-yes\fR sends without asking (required without a terminal); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the price.pricelist_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal).
+.SS "epx price\-lists get"
+Show one price list.
+.PP
+.RS "4"
+.nf
+epx price\-lists get ID [flags]
+.fi
+.RE
+.PP
+Reads price lists. A price list holds prices in one currency for one site that apply between FROM and TO to its countries or regions, and to its customer groups (a preview feature of Emporix) or to one legal entity and its subsidiaries. Empty COUNTRIES and REGIONS apply everywhere; empty CUSTOMER GROUPS and LEGAL ENTITY apply to every customer.
+.PP
+Requires the price.pricelist_read scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, NAME, CURRENCY, SITE, COUNTRIES, REGIONS, CUSTOMER GROUPS, LEGAL ENTITY, FROM, TO.
+.TP
+\fB\-\-language <language>\fR
+Language of localized table text; a missing translation shows another, labeled (\fB\-o json\fR prints all). Default: \fBen\fR.
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.SS "epx price\-lists list"
+List price lists.
+.PP
+.RS "4"
+.nf
+epx price\-lists list [flags]
+.fi
+.RE
+.PP
+Reads price lists. A price list holds prices in one currency for one site that apply between FROM and TO to its countries or regions, and to its customer groups (a preview feature of Emporix) or to one legal entity and its subsidiaries. Empty COUNTRIES and REGIONS apply everywhere; empty CUSTOMER GROUPS and LEGAL ENTITY apply to every customer.
+.PP
+Requires the price.pricelist_read scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, NAME, CURRENCY, SITE, COUNTRIES, REGIONS, CUSTOMER GROUPS, LEGAL ENTITY, FROM, TO.
+.TP
+\fB\-\-language <language>\fR
+Language of localized table text; a missing translation shows another, labeled (\fB\-o json\fR prints all). Default: \fBen\fR.
+.TP
+\fB\-\-limit <n>\fR
+Print at most n items; paged reads stop early where they safely can (0: every item).
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-query <filter>\fR
+Emporix q filter, passed as given, e.g. code:(A1,A2); space\-separated conditions must all match (fields mostly as in \fB\-o json\fR).
+.TP
+\fB\-\-sort <order>\fR
+Emporix sort order, passed as given, e.g. code or name.en:desc,code; fields mostly as in \fB\-o json\fR (Emporix may ignore an unknown one).
+.TP
+\fB\-\-stream\fR
+Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes \fB\-o\fR, \fB\-\-columns\fR and \fB\-\-no\-headers\fR).
+.SS "epx price\-lists prices"
+Read and change the prices of a price list.
+.PP
+.RS "4"
+.nf
+epx price\-lists prices [flags]
+epx price\-lists prices [command]
+.fi
+.RE
+.PP
+Reads and changes the prices of a price list, in its currency. PRICE_LIST_ID is the ID that \fBepx price\-lists list\fR shows.
+.PP
+Its reads require the price.pricelist_read scope. Its writes require the price.pricelist_manage scope.
+.SS "epx price\-lists prices bulk\-create"
+Create prices of a price list in bulk.
+.PP
+.RS "4"
+.nf
+epx price\-lists prices bulk\-create PRICE_LIST_ID [flags]
+.fi
+.RE
+.PP
+Adds the prices in \fB\-\-file\fR to the price list PRICE_LIST_ID: a JSON array of prices, each as create takes it. PRICE_LIST_ID is the ID that \fBepx price\-lists list\fR shows.
+.PP
+Emporix takes up to 200 items in one request (epx refuses more), carries out each on its own and answers with the result of each: when one failed, epx prints the response, lists the items that failed on standard error (one that failed with 500, 502, 503 or 504 may have been carried out all the same) and exits with the code that their failures share (for example 5 for a 409 Conflict, 4 for a 404), else 1.
+.PP
+Changes data: on a terminal, epx asks before it sends POST. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the price.pricelist_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SS "epx price\-lists prices bulk\-delete"
+Delete prices of a price list in bulk.
+.PP
+.RS "4"
+.nf
+epx price\-lists prices bulk\-delete PRICE_LIST_ID [flags]
+.fi
+.RE
+.PP
+Deletes the prices of the price list PRICE_LIST_ID whose ids \fB\-\-file\fR gives, a JSON array of ids, e.g. \fB["p1", "p2"]\fR. PRICE_LIST_ID is the ID that \fBepx price\-lists list\fR shows.
+.PP
+Emporix takes up to 200 items in one request (epx refuses more) and answers for all of them at once, not item by item.
+.PP
+Deletes the prices of a price list that \fB\-\-file\fR names with one request, which cannot be undone. On a terminal, epx sends DELETE only once you type PRICE_LIST_ID at its prompt. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the price.pricelist_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SS "epx price\-lists prices bulk\-update"
+Upsert prices of a price list in bulk.
+.PP
+.RS "4"
+.nf
+epx price\-lists prices bulk\-update PRICE_LIST_ID [flags]
+.fi
+.RE
+.PP
+Replaces the prices in \fB\-\-file\fR in the price list PRICE_LIST_ID, a JSON array of prices, each with its id, or creates those that do not exist (an upsert). An item that failed with 500 may be one whose metadata.version is stale: Emporix reports it so, not as 409 Conflict. Read it again before you retry it. PRICE_LIST_ID is the ID that \fBepx price\-lists list\fR shows.
+.PP
+Emporix takes up to 200 items in one request (epx refuses more), carries out each on its own and answers with the result of each: when one failed, epx prints the response, lists the items that failed on standard error (one that failed with 500, 502, 503 or 504 may have been carried out all the same) and exits with the code that their failures share (for example 5 for a 409 Conflict, 4 for a 404), else 1.
+.PP
+Changes data: on a terminal, epx asks before it sends PUT. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the price.pricelist_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SS "epx price\-lists prices create"
+Create a price of a price list.
+.PP
+.RS "4"
+.nf
+epx price\-lists prices create PRICE_LIST_ID [flags]
+.fi
+.RE
+.PP
+Adds the price in \fB\-\-file\fR to the price list PRICE_LIST_ID, in its currency: a JSON object with itemId (itemType and id) and tierValues: the id of each tier of the price model that priceModelId names, as \fBepx price\-models get ID \-o json\fR prints it, with a priceValue, e.g. \fB{"itemId": {"itemType": "PRODUCT", "id": "100200"}, "priceModelId": "pm1", "tierValues": [{"id": "t1", "priceValue": 15.90}]}\fR. Without an id, Emporix makes one, which the response gives. PRICE_LIST_ID is the ID that \fBepx price\-lists list\fR shows.
+.PP
+Changes data: on a terminal, epx asks before it sends POST. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the price.pricelist_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SS "epx price\-lists prices delete"
+Delete a price of a price list.
+.PP
+.RS "4"
+.nf
+epx price\-lists prices delete PRICE_LIST_ID ID [flags]
+.fi
+.RE
+.PP
+Deletes the price ID of the price list PRICE_LIST_ID. Emporix answers an unknown ID as one that it deleted (204 No Content). PRICE_LIST_ID is the ID that \fBepx price\-lists list\fR shows. ID is the ID that \fBepx price\-lists prices list PRICE_LIST_ID\fR shows.
+.PP
+Deletes data, which cannot be undone. On a terminal, epx sends DELETE only once you type ID at its prompt. \fB\-\-yes\fR sends without asking (required without a terminal); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the price.pricelist_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal).
+.SS "epx price\-lists prices get"
+Show one price of a price list.
+.PP
+.RS "4"
+.nf
+epx price\-lists prices get PRICE_LIST_ID ID [flags]
+.fi
+.RE
+.PP
+Reads one price of a price list, in its currency. PRICE_LIST_ID is the ID that \fBepx price\-lists list\fR shows; an unknown one is not found. ID is the ID that \fBepx price\-lists prices list PRICE_LIST_ID\fR shows; an unknown one is not found. TIERS lists each tier value as sent; \fB\-o json\fR pairs it with the id of its tier in the price model MODEL (\fBepx price\-models get MODEL\fR; an empty MODEL is the default model).
+.PP
+Requires the price.pricelist_read scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, ITEM, TYPE, MODEL, TIERS.
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.SS "epx price\-lists prices list"
+List the prices of a price list.
+.PP
+.RS "4"
+.nf
+epx price\-lists prices list PRICE_LIST_ID [flags]
+.fi
+.RE
+.PP
+Reads the prices of a price list, in its currency. PRICE_LIST_ID is the ID that \fBepx price\-lists list\fR shows; an unknown one lists nothing. TIERS lists each tier value as sent; \fB\-o json\fR pairs it with the id of its tier in the price model MODEL (\fBepx price\-models get MODEL\fR; an empty MODEL is the default model).
+.PP
+Requires the price.pricelist_read scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, ITEM, TYPE, MODEL, TIERS.
+.TP
+\fB\-\-limit <n>\fR
+Print at most n items; paged reads stop early where they safely can (0: every item).
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-query <filter>\fR
+Emporix q filter, passed as given, e.g. code:(A1,A2); space\-separated conditions must all match (fields mostly as in \fB\-o json\fR).
+.TP
+\fB\-\-sort <order>\fR
+Emporix sort order, passed as given, e.g. code or name.en:desc,code; fields mostly as in \fB\-o json\fR (Emporix may ignore an unknown one).
+.TP
+\fB\-\-stream\fR
+Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes \fB\-o\fR, \fB\-\-columns\fR and \fB\-\-no\-headers\fR).
+.SS "epx price\-lists prices search"
+Search the prices of a price list.
+.PP
+.RS "4"
+.nf
+epx price\-lists prices search PRICE_LIST_ID [flags]
+.fi
+.RE
+.PP
+Reads the prices of a price list, in its currency, that an Emporix q filter finds (\fB\-\-query\fR; without it, every one). It reads and shows them as \fBepx price\-lists prices list PRICE_LIST_ID\fR does. PRICE_LIST_ID is the ID that \fBepx price\-lists list\fR shows; an unknown one lists nothing.
+.PP
+Changes nothing: Emporix serves this read as POST with a JSON body, which the flags make or \fB\-\-body\fR gives whole. TIERS lists each tier value as sent; \fB\-o json\fR pairs it with the id of its tier in the price model MODEL (\fBepx price\-models get MODEL\fR; an empty MODEL is the default model).
+.PP
+Requires the price.pricelist_read scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-body <FILE>\fR
+Send the JSON request body in FILE as given (\- reads standard input) instead of the one the other flags make.
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, ITEM, TYPE, MODEL, TIERS.
+.TP
+\fB\-\-limit <n>\fR
+Print at most n items; paged reads stop early where they safely can (0: every item).
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-query <filter>\fR
+Emporix q filter, sent as given in the request body, not in the URL (empty: no filter), e.g. code:(A1,A2); space\-separated conditions must all match (fields mostly as in \fB\-o json\fR).
+.TP
+\fB\-\-sort <order>\fR
+Emporix sort order, passed as given, e.g. code or name.en:desc,code; fields mostly as in \fB\-o json\fR (Emporix may ignore an unknown one).
+.TP
+\fB\-\-stream\fR
+Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes \fB\-o\fR, \fB\-\-columns\fR and \fB\-\-no\-headers\fR).
+.SS "epx price\-lists prices update"
+Upsert a price of a price list.
+.PP
+.RS "4"
+.nf
+epx price\-lists prices update PRICE_LIST_ID ID [flags]
+.fi
+.RE
+.PP
+Replaces the price ID of the price list PRICE_LIST_ID with the one in \fB\-\-file\fR, a JSON object as \fBepx price\-lists prices get PRICE_LIST_ID ID \-o json\fR prints it, or creates it with that id where none exists (an upsert). PRICE_LIST_ID is the ID that \fBepx price\-lists list\fR shows. ID is the ID that \fBepx price\-lists prices list PRICE_LIST_ID\fR shows.
+.PP
+Changes data: on a terminal, epx asks before it sends PUT. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the price.pricelist_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SS "epx price\-lists search"
+Search price lists.
+.PP
+.RS "4"
+.nf
+epx price\-lists search [flags]
+.fi
+.RE
+.PP
+Reads the price lists that an Emporix q filter finds (\fB\-\-query\fR; without it, every one). It reads and shows them as \fBepx price\-lists list\fR does.
+.PP
+Changes nothing: Emporix serves this read as POST with a JSON body, which the flags make or \fB\-\-body\fR gives whole.
+.PP
+Requires the price.pricelist_read scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-body <FILE>\fR
+Send the JSON request body in FILE as given (\- reads standard input) instead of the one the other flags make.
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, NAME, CURRENCY, SITE, COUNTRIES, REGIONS, CUSTOMER GROUPS, LEGAL ENTITY, FROM, TO.
+.TP
+\fB\-\-language <language>\fR
+Language of localized table text; a missing translation shows another, labeled (\fB\-o json\fR prints all). Default: \fBen\fR.
+.TP
+\fB\-\-limit <n>\fR
+Print at most n items; paged reads stop early where they safely can (0: every item).
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-query <filter>\fR
+Emporix q filter, sent as given in the request body, not in the URL (empty: no filter), e.g. code:(A1,A2); space\-separated conditions must all match (fields mostly as in \fB\-o json\fR).
+.TP
+\fB\-\-sort <order>\fR
+Emporix sort order, passed as given, e.g. code or name.en:desc,code; fields mostly as in \fB\-o json\fR (Emporix may ignore an unknown one).
+.TP
+\fB\-\-stream\fR
+Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes \fB\-o\fR, \fB\-\-columns\fR and \fB\-\-no\-headers\fR).
+.SS "epx price\-lists update"
+Upsert a price list.
+.PP
+.RS "4"
+.nf
+epx price\-lists update ID [flags]
+.fi
+.RE
+.PP
+Replaces the price list ID with the one in \fB\-\-file\fR, a JSON object as \fBepx price\-lists get ID \-o json\fR prints it, or creates it with that id where none exists (an upsert).
+.PP
+Localized text in the body, such as a name, is a map of translations, e.g. \fB{"en": "Wholesale", "nl": "Groothandel"}\fR, as \fB\-o json\fR of a read prints it, also with \fB\-\-content\-language\fR LANGUAGE: then a map of that language only, e.g. \fB{"en": "Wholesale"}\fR with \fB\-\-content\-language\fR en.
+.PP
+Changes data: on a terminal, epx asks before it sends PUT. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the price.pricelist_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-content\-language <LANGUAGE>\fR
+The LANGUAGE of localized text in the body, or * for maps of translations. Default: \fB*\fR.
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SH "SEE ALSO"
+\fBepx\fR(1) for the global options, the credentials epx reads and its exit codes; https://commerce-cloud-integrations.github.io/emporix-cli/commands/price-lists

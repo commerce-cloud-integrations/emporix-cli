@@ -1,0 +1,190 @@
+.TH "EPX\-LABELS" "1" "" "epx" "epx manual"
+.SH "NAME"
+epx\-labels \- read, create, change and delete labels
+.SH "SYNOPSIS"
+.RS "4"
+.nf
+epx labels [flags]
+epx labels [command]
+.fi
+.RE
+.SH "DESCRIPTION"
+Reads labels, the badges shown on products. OVERLAY is the label\(aqs overlay flag and POSITION its overlay position, as sent; MEDIA is the id of its image (image URLs are only in \fB\-o json\fR), and DESCRIPTION is often HTML.
+.PP
+Its reads need no OAuth scope. Its writes require different OAuth scopes; the help of each names them.
+.SH "COMMANDS"
+.SS "epx labels create"
+Create a label.
+.PP
+.RS "4"
+.nf
+epx labels create [flags]
+.fi
+.RE
+.PP
+Creates a label from the JSON in \fB\-\-file\fR, such as \fB{"name": "Free shipping", "description": "<p>Ships free</p>", "overlay": {"isTrue": true, "position": 1}}\fR, and prints the label that Emporix answers with. Emporix generates its id unless the JSON names one; an id that exists already is a conflict.
+.PP
+Changes data: on a terminal, epx asks before it sends POST. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the label.label_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SS "epx labels delete"
+Delete a label.
+.PP
+.RS "4"
+.nf
+epx labels delete ID [flags]
+.fi
+.RE
+.PP
+Deletes the label ID.
+.PP
+Deletes data, which cannot be undone. On a terminal, epx sends DELETE only once you type ID at its prompt. \fB\-\-yes\fR sends without asking (required without a terminal); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the label.label_delete scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal).
+.SS "epx labels get"
+Show one label.
+.PP
+.RS "4"
+.nf
+epx labels get ID [flags]
+.fi
+.RE
+.PP
+Reads labels, the badges shown on products. OVERLAY is the label\(aqs overlay flag and POSITION its overlay position, as sent; MEDIA is the id of its image (image URLs are only in \fB\-o json\fR), and DESCRIPTION is often HTML.
+.PP
+No OAuth scope is needed.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, NAME, OVERLAY, POSITION, MEDIA, DESCRIPTION.
+.TP
+\fB\-\-language <language>\fR
+Language of localized table text; a missing translation shows another, labeled (\fB\-o json\fR prints all). Default: \fBen\fR.
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.SS "epx labels list"
+List labels.
+.PP
+.RS "4"
+.nf
+epx labels list [flags]
+.fi
+.RE
+.PP
+Reads labels, the badges shown on products. OVERLAY is the label\(aqs overlay flag and POSITION its overlay position, as sent; MEDIA is the id of its image (image URLs are only in \fB\-o json\fR), and DESCRIPTION is often HTML.
+.PP
+No OAuth scope is needed.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, NAME, OVERLAY, POSITION, MEDIA, DESCRIPTION.
+.TP
+\fB\-\-language <language>\fR
+Language of localized table text; a missing translation shows another, labeled (\fB\-o json\fR prints all). Default: \fBen\fR.
+.TP
+\fB\-\-limit <n>\fR
+Print at most n items; paged reads stop early where they safely can (0: every item).
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-query <filter>\fR
+Emporix q filter, passed as given, e.g. code:(A1,A2); space\-separated conditions must all match (fields mostly as in \fB\-o json\fR).
+.TP
+\fB\-\-sort <order>\fR
+Emporix sort order, passed as given, e.g. code or name.en:desc,code; fields mostly as in \fB\-o json\fR (Emporix may ignore an unknown one).
+.TP
+\fB\-\-stream\fR
+Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes \fB\-o\fR, \fB\-\-columns\fR and \fB\-\-no\-headers\fR).
+.SS "epx labels patch"
+Change members of a label.
+.PP
+.RS "4"
+.nf
+epx labels patch ID [flags]
+.fi
+.RE
+.PP
+Changes the members of the label ID that the JSON in \fB\-\-file\fR names, which may be only overlay; the others, such as name and description, keep their values. Unlike update, Emporix does not check a metadata.version in it. An unknown ID is not found. It prints the label that Emporix answers with.
+.PP
+Changes data: on a terminal, epx asks before it sends PATCH. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the label.label_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SS "epx labels update"
+Replace a label.
+.PP
+.RS "4"
+.nf
+epx labels update ID [flags]
+.fi
+.RE
+.PP
+Replaces the label ID with the JSON in \fB\-\-file\fR, which must name its name and description. An unknown ID is not found. It prints the label that Emporix answers with.
+.PP
+Changes data: on a terminal, epx asks before it sends PUT. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the label.label_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SH "SEE ALSO"
+\fBepx\fR(1) for the global options, the credentials epx reads and its exit codes; https://commerce-cloud-integrations.github.io/emporix-cli/commands/labels

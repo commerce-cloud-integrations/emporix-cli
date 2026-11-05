@@ -1,0 +1,959 @@
+.TH "EPX\-SHIPPING" "1" "" "epx" "epx manual"
+.SH "NAME"
+epx\-shipping \- read and change shipping zones, methods and groups, and calculate shipping fees
+.SH "SYNOPSIS"
+.RS "4"
+.nf
+epx shipping [flags]
+epx shipping [command]
+.fi
+.RE
+.SH "DESCRIPTION"
+Reads and changes a site\(aqs shipping configuration, calculates its shipping fees and finds the sites that ship to a postal code. Every command but find\-sites requires \fB\-\-site\fR; for an unknown site, the lists show nothing and the quotes fail.
+.PP
+Its reads need no OAuth scope. Its writes require the shipping.shipping_manage scope.
+.SH "COMMANDS"
+.SS "epx shipping customers"
+Read and change which shipping group each customer belongs to.
+.PP
+.RS "4"
+.nf
+epx shipping customers [flags]
+epx shipping customers [command]
+.fi
+.RE
+.PP
+Reads and changes which shipping group each customer of a site belongs to.
+.PP
+Its reads need no OAuth scope. Its writes require the shipping.shipping_manage scope.
+.SS "epx shipping customers create"
+Assign a customer to a shipping group.
+.PP
+.RS "4"
+.nf
+epx shipping customers create [flags]
+.fi
+.RE
+.PP
+Assigns a customer to a shipping group of the site \fB\-\-site\fR names: the JSON in \fB\-\-file\fR names the customer id and the group\(aqs, as in \fB{"customerId": "C001", "groupId": "vip"}\fR. A customer that belongs to a group already is a conflict (exit 5): change its group with update. Emporix checks neither the customer nor the group: unknown ids are assigned too.
+.PP
+Changes data: on a terminal, epx asks before it sends POST. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the shipping.shipping_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-site <site>\fR
+Site code, e.g. main (required).
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SS "epx shipping customers delete"
+Remove a customer from its shipping group.
+.PP
+.RS "4"
+.nf
+epx shipping customers delete CUSTOMER [flags]
+.fi
+.RE
+.PP
+Removes the customer CUSTOMER (the customer id) from its shipping group on the site \fB\-\-site\fR names. Emporix answers a CUSTOMER without a shipping group, or an unknown one, as one that it removed (204 No Content).
+.PP
+Deletes data, which cannot be undone. On a terminal, epx sends DELETE only once you type CUSTOMER at its prompt. \fB\-\-yes\fR sends without asking (required without a terminal); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the shipping.shipping_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-site <site>\fR
+Site code, e.g. main (required).
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal).
+.SS "epx shipping customers get"
+Show one customer\(aqs shipping group.
+.PP
+.RS "4"
+.nf
+epx shipping customers get CUSTOMER [flags]
+.fi
+.RE
+.PP
+Reads which shipping group each customer of a site belongs to. CUSTOMER is the customer id. Emporix answers a customer without a shipping group with an empty response, so get reports it as not found.
+.PP
+No OAuth scope is needed.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among CUSTOMER, GROUP.
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-site <site>\fR
+Site code, e.g. main (required).
+.SS "epx shipping customers list"
+List the shipping groups of customers of a site.
+.PP
+.RS "4"
+.nf
+epx shipping customers list [flags]
+.fi
+.RE
+.PP
+Reads which shipping group each customer of a site belongs to. CUSTOMER is the customer id. Emporix answers a customer without a shipping group with an empty response, so get reports it as not found.
+.PP
+No OAuth scope is needed.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among CUSTOMER, GROUP.
+.TP
+\fB\-\-limit <n>\fR
+Print at most n items; paged reads stop early where they safely can (0: every item).
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-site <site>\fR
+Site code, e.g. main (required).
+.TP
+\fB\-\-stream\fR
+Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes \fB\-o\fR, \fB\-\-columns\fR and \fB\-\-no\-headers\fR).
+.SS "epx shipping customers update"
+Change the shipping group of a customer.
+.PP
+.RS "4"
+.nf
+epx shipping customers update CUSTOMER [flags]
+.fi
+.RE
+.PP
+Assigns the customer CUSTOMER (the customer id) to the shipping group that the JSON in \fB\-\-file\fR names, as create takes it, in place of the group it belongs to on the site \fB\-\-site\fR names; a customerId in the JSON is ignored. Emporix answers a customer without a shipping group with 409 Conflict (exit 5): the customer has no shipping group on the site: assign it one with \fBepx shipping customers create\fR.
+.PP
+Changes data: on a terminal, epx asks before it sends PUT. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the shipping.shipping_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-site <site>\fR
+Site code, e.g. main (required).
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SS "epx shipping find\-sites"
+List the sites that ship to a postal code.
+.PP
+.RS "4"
+.nf
+epx shipping find\-sites [flags]
+.fi
+.RE
+.PP
+Lists the sites with a shipping zone that ships to a postal code: ZONES lists the zones that Emporix returns with each site, and METHODS their shipping methods (\fB\-o json\fR adds the zones\(aq destinations and fees). Emporix matched no site without \fB\-\-country\fR on the tenant tested.
+.PP
+Changes nothing: Emporix serves this read as POST with a JSON body, which the flags make or \fB\-\-body\fR gives whole.
+.PP
+No OAuth scope is needed.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-body <FILE>\fR
+Send the JSON request body in FILE as given (\- reads standard input) instead of the one the other flags make.
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among SITE, ZONES, METHODS.
+.TP
+\fB\-\-country <COUNTRY>\fR
+The COUNTRY to ship to, a country code such as DE.
+.TP
+\fB\-\-limit <n>\fR
+Print at most n items; paged reads stop early where they safely can (0: every item).
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-postal\-code <POSTAL_CODE>\fR
+The POSTAL_CODE to ship to (required without \fB\-\-body\fR).
+.TP
+\fB\-\-stream\fR
+Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes \fB\-o\fR, \fB\-\-columns\fR and \fB\-\-no\-headers\fR).
+.SS "epx shipping groups"
+Read and change shipping groups.
+.PP
+.RS "4"
+.nf
+epx shipping groups [flags]
+epx shipping groups [command]
+.fi
+.RE
+.PP
+Reads and changes the shipping groups of a site, which limit shipping fees to the customers assigned to them (\fBepx shipping customers\fR).
+.PP
+Its reads need no OAuth scope. Its writes require the shipping.shipping_manage scope.
+.SS "epx shipping groups create"
+Create a shipping group.
+.PP
+.RS "4"
+.nf
+epx shipping groups create [flags]
+.fi
+.RE
+.PP
+Creates a shipping group of the site \fB\-\-site\fR names from the JSON in \fB\-\-file\fR: its id and description, as in \fB{"id": "vip", "description": {"en": "Free shipping"}}\fR. A fee of a shipping method applies to the customers of a group (\fBepx shipping customers create\fR) when it names the group as its shippingGroupId. Emporix answers with the group\(aqs id; a group with that id exists already: a conflict (exit 5).
+.PP
+Localized text in the body, such as a name, is a map of translations, e.g. \fB{"en": "Netherlands", "nl": "Nederland"}\fR, as \fB\-o json\fR of a read prints it, sent without a Content\-Language header (\fB\-\-content\-language\fR *, the default), or with \fB\-\-content\-language\fR LANGUAGE a string in that language, sent with that Content\-Language, e.g. \fB"Netherlands"\fR with \fB\-\-content\-language\fR en.
+.PP
+Changes data: on a terminal, epx asks before it sends POST. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the shipping.shipping_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-content\-language <LANGUAGE>\fR
+The LANGUAGE of localized text in the body, or * for maps of translations, sent without Content\-Language. Default: \fB*\fR.
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-site <site>\fR
+Site code, e.g. main (required).
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SS "epx shipping groups delete"
+Delete a shipping group.
+.PP
+.RS "4"
+.nf
+epx shipping groups delete ID [flags]
+.fi
+.RE
+.PP
+Deletes the shipping group ID of the site \fB\-\-site\fR names. Fees of shipping methods that name it as their shippingGroupId stay and still name it, and customers assigned to it stay assigned to it (\fBepx shipping customers\fR). Emporix answers an unknown ID as one that it deleted (204 No Content).
+.PP
+Deletes data, which cannot be undone. On a terminal, epx sends DELETE only once you type ID at its prompt. \fB\-\-yes\fR sends without asking (required without a terminal); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the shipping.shipping_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-site <site>\fR
+Site code, e.g. main (required).
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal).
+.SS "epx shipping groups get"
+Show one shipping group.
+.PP
+.RS "4"
+.nf
+epx shipping groups get ID [flags]
+.fi
+.RE
+.PP
+Reads the shipping groups of a site, which limit shipping fees to the customers assigned to them (\fBepx shipping customers\fR). Emporix answers an unknown group with 409 Conflict, so get fails with exit code 1.
+.PP
+No OAuth scope is needed.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, DESCRIPTION.
+.TP
+\fB\-\-language <language>\fR
+Language of localized table text; a missing translation shows another, labeled (\fB\-o json\fR prints all). Default: \fBen\fR.
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-site <site>\fR
+Site code, e.g. main (required).
+.SS "epx shipping groups list"
+List the shipping groups of a site.
+.PP
+.RS "4"
+.nf
+epx shipping groups list [flags]
+.fi
+.RE
+.PP
+Reads the shipping groups of a site, which limit shipping fees to the customers assigned to them (\fBepx shipping customers\fR). Emporix answers an unknown group with 409 Conflict, so get fails with exit code 1.
+.PP
+No OAuth scope is needed.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, DESCRIPTION.
+.TP
+\fB\-\-language <language>\fR
+Language of localized table text; a missing translation shows another, labeled (\fB\-o json\fR prints all). Default: \fBen\fR.
+.TP
+\fB\-\-limit <n>\fR
+Print at most n items; paged reads stop early where they safely can (0: every item).
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-site <site>\fR
+Site code, e.g. main (required).
+.TP
+\fB\-\-stream\fR
+Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes \fB\-o\fR, \fB\-\-columns\fR and \fB\-\-no\-headers\fR).
+.SS "epx shipping groups update"
+Replace a shipping group.
+.PP
+.RS "4"
+.nf
+epx shipping groups update ID [flags]
+.fi
+.RE
+.PP
+Replaces the shipping group ID of the site \fB\-\-site\fR names with the group in \fB\-\-file\fR, as create takes it. Emporix answers an unknown ID with 409 Conflict (exit 5): the site has no shipping group with this ID: \fBepx shipping groups list \-\-site S\fR lists them.
+.PP
+Localized text in the body, such as a name, is a map of translations, e.g. \fB{"en": "Netherlands", "nl": "Nederland"}\fR, as \fB\-o json\fR of a read prints it, sent without a Content\-Language header (\fB\-\-content\-language\fR *, the default), or with \fB\-\-content\-language\fR LANGUAGE a string in that language, sent with that Content\-Language, e.g. \fB"Netherlands"\fR with \fB\-\-content\-language\fR en.
+.PP
+Changes data: on a terminal, epx asks before it sends PUT. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the shipping.shipping_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-content\-language <LANGUAGE>\fR
+The LANGUAGE of localized text in the body, or * for maps of translations, sent without Content\-Language. Default: \fB*\fR.
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-site <site>\fR
+Site code, e.g. main (required).
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SS "epx shipping quote"
+Calculate the shipping fee of each method to a destination.
+.PP
+.RS "4"
+.nf
+epx shipping quote [flags]
+.fi
+.RE
+.PP
+Calculates what each shipping method of a site\(aqs zones that ship to a destination costs for a cart total: one row per method, with its zone, its FEE and its shipping TAX CODE. With \fB\-\-customer\fR, the fees of the customer\(aqs shipping group apply (\fBepx shipping customers\fR). Emporix answers a destination or cart total that no method serves, or an unknown site, with 400 Bad Request (exit 1).
+.PP
+Changes nothing: Emporix serves this read as POST with a JSON body, which the flags make or \fB\-\-body\fR gives whole.
+.PP
+No OAuth scope is needed.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-body <FILE>\fR
+Send the JSON request body in FILE as given (\- reads standard input) instead of the one the other flags make.
+.TP
+\fB\-\-cart\-total <AMOUNT CURRENCY>\fR
+The cart\(aqs total as AMOUNT CURRENCY, e.g. \fB"100 EUR"\fR (required without \fB\-\-body\fR).
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ZONE, METHOD, NAME, FEE, TAX CODE.
+.TP
+\fB\-\-country <COUNTRY>\fR
+The destination COUNTRY, a country code such as DE (required without \fB\-\-body\fR).
+.TP
+\fB\-\-customer <CUSTOMER>\fR
+The CUSTOMER id, whose shipping group\(aqs fees apply.
+.TP
+\fB\-\-language <language>\fR
+Language of localized table text; a missing translation shows another, labeled (\fB\-o json\fR prints all). Default: \fBen\fR.
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-postal\-code <POSTAL_CODE>\fR
+The destination POSTAL_CODE (required without \fB\-\-body\fR).
+.TP
+\fB\-\-site <site>\fR
+Site code, e.g. main (required).
+.SS "epx shipping quote\-minimum"
+Calculate the lowest shipping fee to a destination.
+.PP
+.RS "4"
+.nf
+epx shipping quote\-minimum [flags]
+.fi
+.RE
+.PP
+Calculates the lowest shipping fee of a site to a destination for a cart total, as a cart shows it before a delivery window is chosen. TAX CODE is the method\(aqs shipping tax code. Emporix answers a destination or cart total that no method serves, or an unknown site, with 400 Bad Request (exit 1).
+.PP
+Changes nothing: Emporix serves this read as POST with a JSON body, which the flags make or \fB\-\-body\fR gives whole.
+.PP
+No OAuth scope is needed.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-body <FILE>\fR
+Send the JSON request body in FILE as given (\- reads standard input) instead of the one the other flags make.
+.TP
+\fB\-\-cart\-total <AMOUNT CURRENCY>\fR
+The cart\(aqs total as AMOUNT CURRENCY, e.g. \fB"100 EUR"\fR (required without \fB\-\-body\fR).
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among FEE, TAX CODE.
+.TP
+\fB\-\-country <COUNTRY>\fR
+The destination COUNTRY, a country code such as DE (required without \fB\-\-body\fR).
+.TP
+\fB\-\-customer <CUSTOMER>\fR
+The CUSTOMER id, whose shipping group\(aqs fees apply.
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-postal\-code <POSTAL_CODE>\fR
+The destination POSTAL_CODE (required without \fB\-\-body\fR).
+.TP
+\fB\-\-site <site>\fR
+Site code, e.g. main (required).
+.SS "epx shipping quote\-slot"
+Calculate the shipping fee of a delivery time slot.
+.PP
+.RS "4"
+.nf
+epx shipping quote\-slot [flags]
+.fi
+.RE
+.PP
+Calculates the shipping fee of a delivery time slot for a cart total: \fB\-\-delivery\-time\fR and \fB\-\-slot\fR are the IDs that \fBepx delivery\-times list\fR and \fBepx delivery\-times slots list\fR show. The destination is optional; \fB\-\-country\fR and \fB\-\-postal\-code\fR go together. An unknown delivery time is not found (exit 4).
+.PP
+Changes nothing: Emporix serves this read as POST with a JSON body, which the flags make or \fB\-\-body\fR gives whole.
+.PP
+No OAuth scope is needed.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-body <FILE>\fR
+Send the JSON request body in FILE as given (\- reads standard input) instead of the one the other flags make.
+.TP
+\fB\-\-cart\-total <AMOUNT CURRENCY>\fR
+The cart\(aqs total as AMOUNT CURRENCY, e.g. \fB"100 EUR"\fR (required without \fB\-\-body\fR).
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among FEE, TAX CODE.
+.TP
+\fB\-\-country <COUNTRY>\fR
+The destination COUNTRY, a country code such as DE.
+.TP
+\fB\-\-customer <CUSTOMER>\fR
+The CUSTOMER id, whose shipping group\(aqs fees apply.
+.TP
+\fB\-\-delivery\-time <ID>\fR
+The delivery time\(aqs ID (required without \fB\-\-body\fR).
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-postal\-code <POSTAL_CODE>\fR
+The destination POSTAL_CODE.
+.TP
+\fB\-\-site <site>\fR
+Site code, e.g. main (required).
+.TP
+\fB\-\-slot <ID>\fR
+The ID of the delivery time\(aqs slot (required without \fB\-\-body\fR).
+.SS "epx shipping zones"
+Read and change shipping zones and their methods.
+.PP
+.RS "4"
+.nf
+epx shipping zones [flags]
+epx shipping zones [command]
+.fi
+.RE
+.PP
+Reads and changes the shipping zones of a site and the shipping methods of a zone.
+.PP
+Its reads need no OAuth scope. Its writes require the shipping.shipping_manage scope.
+.SS "epx shipping zones create"
+Create a shipping zone.
+.PP
+.RS "4"
+.nf
+epx shipping zones create [flags]
+.fi
+.RE
+.PP
+Creates a shipping zone of the site \fB\-\-site\fR names from the JSON in \fB\-\-file\fR: its id, name, shipTo (the countries it ships to, each with a postal code, or a prefix followed by *, where it ships to some only) and whether it is the site\(aqs default zone, as in \fB{"id": "nl", "name": {"en": "Netherlands"}, "shipTo": [{"country": "NL"}], "default": true}\fR. The first zone of a site becomes its default zone whatever default says. Emporix answers with the zone\(aqs id; a zone with that id exists already: a conflict (exit 5).
+.PP
+Localized text in the body, such as a name, is a map of translations, e.g. \fB{"en": "Netherlands", "nl": "Nederland"}\fR, as \fB\-o json\fR of a read prints it, sent without a Content\-Language header (\fB\-\-content\-language\fR *, the default), or with \fB\-\-content\-language\fR LANGUAGE a string in that language, sent with that Content\-Language, e.g. \fB"Netherlands"\fR with \fB\-\-content\-language\fR en.
+.PP
+Changes data: on a terminal, epx asks before it sends POST. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the shipping.shipping_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-content\-language <LANGUAGE>\fR
+The LANGUAGE of localized text in the body, or * for maps of translations, sent without Content\-Language. Default: \fB*\fR.
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-site <site>\fR
+Site code, e.g. main (required).
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SS "epx shipping zones delete"
+Delete a shipping zone.
+.PP
+.RS "4"
+.nf
+epx shipping zones delete ID [flags]
+.fi
+.RE
+.PP
+Deletes the shipping zone ID of the site \fB\-\-site\fR names with its shipping methods. Delivery times of the zone stay and still name it: delete them with \fBepx delivery\-times delete ID\fR. An unknown ID is not found (exit 4).
+.PP
+Deletes data, which cannot be undone. On a terminal, epx sends DELETE only once you type ID at its prompt. \fB\-\-yes\fR sends without asking (required without a terminal); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the shipping.shipping_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-site <site>\fR
+Site code, e.g. main (required).
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal).
+.SS "epx shipping zones get"
+Show one shipping zone.
+.PP
+.RS "4"
+.nf
+epx shipping zones get ID [flags]
+.fi
+.RE
+.PP
+Reads the shipping zones of a site. SHIPS TO lists the countries of the zone, each with its postal codes when they are limited (a trailing * matches every code that starts that way).
+.PP
+No OAuth scope is needed.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, NAME, DEFAULT, SHIPS TO.
+.TP
+\fB\-\-language <language>\fR
+Language of localized table text; a missing translation shows another, labeled (\fB\-o json\fR prints all). Default: \fBen\fR.
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-site <site>\fR
+Site code, e.g. main (required).
+.SS "epx shipping zones list"
+List the shipping zones of a site.
+.PP
+.RS "4"
+.nf
+epx shipping zones list [flags]
+.fi
+.RE
+.PP
+Reads the shipping zones of a site. SHIPS TO lists the countries of the zone, each with its postal codes when they are limited (a trailing * matches every code that starts that way).
+.PP
+No OAuth scope is needed.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, NAME, DEFAULT, SHIPS TO.
+.TP
+\fB\-\-language <language>\fR
+Language of localized table text; a missing translation shows another, labeled (\fB\-o json\fR prints all). Default: \fBen\fR.
+.TP
+\fB\-\-limit <n>\fR
+Print at most n items; paged reads stop early where they safely can (0: every item).
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-site <site>\fR
+Site code, e.g. main (required).
+.TP
+\fB\-\-stream\fR
+Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes \fB\-o\fR, \fB\-\-columns\fR and \fB\-\-no\-headers\fR).
+.SS "epx shipping zones methods"
+Read and change the shipping methods of a zone.
+.PP
+.RS "4"
+.nf
+epx shipping zones methods [flags]
+epx shipping zones methods [command]
+.fi
+.RE
+.PP
+Reads and changes the shipping methods of a zone of a site.
+.PP
+Its reads need no OAuth scope. Its writes require the shipping.shipping_manage scope.
+.SS "epx shipping zones methods create"
+Create a shipping method of a zone.
+.PP
+.RS "4"
+.nf
+epx shipping zones methods create SHIPPING_ZONE_ID [flags]
+.fi
+.RE
+.PP
+Creates a shipping method of a zone from the JSON in \fB\-\-file\fR: its id, name, active, fees (each a cost from a minOrderValue, optionally for the customers of a shippingGroupId), maxOrderValue and shippingTaxCode, as \fBepx shipping zones methods get SHIPPING_ZONE_ID ID \-o json\fR prints one. Emporix answers with the method\(aqs id; a method with that id exists already: a conflict (exit 5). SHIPPING_ZONE_ID is the ID that \fBepx shipping zones list \-\-site S\fR shows; an unknown one is not found.
+.PP
+Localized text in the body, such as a name, is a map of translations, e.g. \fB{"en": "Netherlands", "nl": "Nederland"}\fR, as \fB\-o json\fR of a read prints it, sent without a Content\-Language header (\fB\-\-content\-language\fR *, the default), or with \fB\-\-content\-language\fR LANGUAGE a string in that language, sent with that Content\-Language, e.g. \fB"Netherlands"\fR with \fB\-\-content\-language\fR en.
+.PP
+Changes data: on a terminal, epx asks before it sends POST. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the shipping.shipping_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-content\-language <LANGUAGE>\fR
+The LANGUAGE of localized text in the body, or * for maps of translations, sent without Content\-Language. Default: \fB*\fR.
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-site <site>\fR
+Site code, e.g. main (required).
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SS "epx shipping zones methods delete"
+Delete a shipping method of a zone.
+.PP
+.RS "4"
+.nf
+epx shipping zones methods delete SHIPPING_ZONE_ID ID [flags]
+.fi
+.RE
+.PP
+Deletes the shipping method ID of a zone. The time slots of delivery times that name it stay and still name it. SHIPPING_ZONE_ID is the ID that \fBepx shipping zones list \-\-site S\fR shows; an unknown one is not found. ID is the ID that \fBepx shipping zones methods list SHIPPING_ZONE_ID \-\-site S\fR shows; an unknown one is not found.
+.PP
+Deletes data, which cannot be undone. On a terminal, epx sends DELETE only once you type ID at its prompt. \fB\-\-yes\fR sends without asking (required without a terminal); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the shipping.shipping_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-site <site>\fR
+Site code, e.g. main (required).
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal).
+.SS "epx shipping zones methods get"
+Show one shipping method of a zone.
+.PP
+.RS "4"
+.nf
+epx shipping zones methods get SHIPPING_ZONE_ID ID [flags]
+.fi
+.RE
+.PP
+Reads one shipping method of a zone. SHIPPING_ZONE_ID is the ID that \fBepx shipping zones list \-\-site S\fR shows; an unknown one is not found. ID is the ID that \fBepx shipping zones methods list SHIPPING_ZONE_ID \-\-site S\fR shows; an unknown one is not found. FEES lists each fee as its cost from a minimum order value, with the shipping group it is limited to in parentheses; MAX ORDER is the highest order value the method accepts.
+.PP
+No OAuth scope is needed.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, NAME, ACTIVE, FEES, MAX ORDER, TAX CODE, GROUP.
+.TP
+\fB\-\-language <language>\fR
+Language of localized table text; a missing translation shows another, labeled (\fB\-o json\fR prints all). Default: \fBen\fR.
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-site <site>\fR
+Site code, e.g. main (required).
+.SS "epx shipping zones methods list"
+List the shipping methods of a zone.
+.PP
+.RS "4"
+.nf
+epx shipping zones methods list SHIPPING_ZONE_ID [flags]
+.fi
+.RE
+.PP
+Reads the shipping methods of a zone. SHIPPING_ZONE_ID is the ID that \fBepx shipping zones list \-\-site S\fR shows; an unknown one is not found. FEES lists each fee as its cost from a minimum order value, with the shipping group it is limited to in parentheses; MAX ORDER is the highest order value the method accepts.
+.PP
+No OAuth scope is needed.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, NAME, ACTIVE, FEES, MAX ORDER, TAX CODE, GROUP.
+.TP
+\fB\-\-language <language>\fR
+Language of localized table text; a missing translation shows another, labeled (\fB\-o json\fR prints all). Default: \fBen\fR.
+.TP
+\fB\-\-limit <n>\fR
+Print at most n items; paged reads stop early where they safely can (0: every item).
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-site <site>\fR
+Site code, e.g. main (required).
+.TP
+\fB\-\-stream\fR
+Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes \fB\-o\fR, \fB\-\-columns\fR and \fB\-\-no\-headers\fR).
+.SS "epx shipping zones methods patch"
+Change members of a shipping method of a zone.
+.PP
+.RS "4"
+.nf
+epx shipping zones methods patch SHIPPING_ZONE_ID ID [flags]
+.fi
+.RE
+.PP
+Changes the members of the shipping method ID of a zone that the JSON in \fB\-\-file\fR names, such as active or fees; the others keep their values. SHIPPING_ZONE_ID is the ID that \fBepx shipping zones list \-\-site S\fR shows; an unknown one is not found. ID is the ID that \fBepx shipping zones methods list SHIPPING_ZONE_ID \-\-site S\fR shows; an unknown one is not found.
+.PP
+Localized text in the body, such as a name, is a map of translations, e.g. \fB{"en": "Netherlands", "nl": "Nederland"}\fR, as \fB\-o json\fR of a read prints it, sent without a Content\-Language header (\fB\-\-content\-language\fR *, the default), or with \fB\-\-content\-language\fR LANGUAGE a string in that language, sent with that Content\-Language, e.g. \fB"Netherlands"\fR with \fB\-\-content\-language\fR en.
+.PP
+Changes data: on a terminal, epx asks before it sends PATCH. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the shipping.shipping_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-content\-language <LANGUAGE>\fR
+The LANGUAGE of localized text in the body, or * for maps of translations, sent without Content\-Language. Default: \fB*\fR.
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-site <site>\fR
+Site code, e.g. main (required).
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SS "epx shipping zones methods update"
+Replace a shipping method of a zone.
+.PP
+.RS "4"
+.nf
+epx shipping zones methods update SHIPPING_ZONE_ID ID [flags]
+.fi
+.RE
+.PP
+Replaces the shipping method ID of a zone with the method in \fB\-\-file\fR, as create takes it: a member that it leaves out is removed. SHIPPING_ZONE_ID is the ID that \fBepx shipping zones list \-\-site S\fR shows; an unknown one is not found. ID is the ID that \fBepx shipping zones methods list SHIPPING_ZONE_ID \-\-site S\fR shows; an unknown one is not found.
+.PP
+Localized text in the body, such as a name, is a map of translations, e.g. \fB{"en": "Netherlands", "nl": "Nederland"}\fR, as \fB\-o json\fR of a read prints it, sent without a Content\-Language header (\fB\-\-content\-language\fR *, the default), or with \fB\-\-content\-language\fR LANGUAGE a string in that language, sent with that Content\-Language, e.g. \fB"Netherlands"\fR with \fB\-\-content\-language\fR en.
+.PP
+Changes data: on a terminal, epx asks before it sends PUT. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the shipping.shipping_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-content\-language <LANGUAGE>\fR
+The LANGUAGE of localized text in the body, or * for maps of translations, sent without Content\-Language. Default: \fB*\fR.
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-site <site>\fR
+Site code, e.g. main (required).
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SS "epx shipping zones patch"
+Change members of a shipping zone.
+.PP
+.RS "4"
+.nf
+epx shipping zones patch ID [flags]
+.fi
+.RE
+.PP
+Changes the members of the shipping zone ID of the site \fB\-\-site\fR names that the JSON in \fB\-\-file\fR names, such as name or shipTo; the others keep their values, and a name merges into the zone\(aqs translations, per language. An unknown ID is not found (exit 4).
+.PP
+Localized text in the body, such as a name, is a map of translations, e.g. \fB{"en": "Netherlands", "nl": "Nederland"}\fR, as \fB\-o json\fR of a read prints it, sent without a Content\-Language header (\fB\-\-content\-language\fR *, the default), or with \fB\-\-content\-language\fR LANGUAGE a string in that language, sent with that Content\-Language, e.g. \fB"Netherlands"\fR with \fB\-\-content\-language\fR en.
+.PP
+Changes data: on a terminal, epx asks before it sends PATCH. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the shipping.shipping_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-content\-language <LANGUAGE>\fR
+The LANGUAGE of localized text in the body, or * for maps of translations, sent without Content\-Language. Default: \fB*\fR.
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-site <site>\fR
+Site code, e.g. main (required).
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SS "epx shipping zones update"
+Replace a shipping zone.
+.PP
+.RS "4"
+.nf
+epx shipping zones update ID [flags]
+.fi
+.RE
+.PP
+Replaces the shipping zone ID of the site \fB\-\-site\fR names with the zone in \fB\-\-file\fR, as create takes it: a member that it leaves out is removed, and a name given as a string in one language (\fB\-\-content\-language\fR LANGUAGE) replaces every translation of it. Emporix refuses to make the default zone of a site not default (400 Bad Request, exit 1). An unknown ID is not found (exit 4).
+.PP
+Localized text in the body, such as a name, is a map of translations, e.g. \fB{"en": "Netherlands", "nl": "Nederland"}\fR, as \fB\-o json\fR of a read prints it, sent without a Content\-Language header (\fB\-\-content\-language\fR *, the default), or with \fB\-\-content\-language\fR LANGUAGE a string in that language, sent with that Content\-Language, e.g. \fB"Netherlands"\fR with \fB\-\-content\-language\fR en.
+.PP
+Changes data: on a terminal, epx asks before it sends PUT. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the shipping.shipping_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-content\-language <LANGUAGE>\fR
+The LANGUAGE of localized text in the body, or * for maps of translations, sent without Content\-Language. Default: \fB*\fR.
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-site <site>\fR
+Site code, e.g. main (required).
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SH "SEE ALSO"
+\fBepx\fR(1) for the global options, the credentials epx reads and its exit codes; https://commerce-cloud-integrations.github.io/emporix-cli/commands/shipping

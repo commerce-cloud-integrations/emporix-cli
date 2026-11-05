@@ -1,0 +1,297 @@
+.TH "EPX\-UNITS" "1" "" "epx" "epx manual"
+.SH "NAME"
+epx\-units \- read and change units of measurement; read unit types and convert between units
+.SH "SYNOPSIS"
+.RS "4"
+.nf
+epx units [flags]
+epx units [command]
+.fi
+.RE
+.SH "DESCRIPTION"
+Reads units of measurement. TYPE groups units that convert into each other, BASE marks the base unit of a type, and FACTOR converts a unit into its type\(aqs base unit, as sent by Emporix (g: 0.001 when kg is the base). \fBepx units types\fR lists the types; \fBepx units convert\fR and \fBconversion\-factor\fR convert between units of a type. \fBepx units create\fR, \fBupdate\fR, \fBdelete\fR and \fBbulk\-delete\fR change the units.
+.PP
+Its reads need no OAuth scope. Its writes require the unithandling.unit_manage scope.
+.SH "COMMANDS"
+.SS "epx units bulk\-delete"
+Delete units by their codes.
+.PP
+.RS "4"
+.nf
+epx units bulk\-delete [flags]
+.fi
+.RE
+.PP
+Deletes the units whose codes the JSON array of \fB\-\-file\fR names, such as \fB["g", "kg"]\fR. Other services see the change after up to 5 minutes.
+.PP
+Deletes the units whose codes \fB\-\-file\fR names with one request, which cannot be undone. On a terminal, epx sends DELETE only once you type the tenant at its prompt. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the unithandling.unit_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SS "epx units conversion\-factor"
+Calculate the factor that converts one unit into another.
+.PP
+.RS "4"
+.nf
+epx units conversion\-factor [flags]
+.fi
+.RE
+.PP
+Calculates the FACTOR that converts one unit into another of the same type (\fBepx units list\fR shows their codes and types): an amount in FROM units times FACTOR is the amount in TO units. An unknown unit is not found (exit 4); Emporix answers units of different types with 400 Bad Request (exit 1).
+.PP
+Changes nothing: Emporix serves this read as PUT with a JSON body, which the flags make or \fB\-\-body\fR gives whole.
+.PP
+No OAuth scope is needed.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-body <FILE>\fR
+Send the JSON request body in FILE as given (\- reads standard input) instead of the one the other flags make.
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among FROM, TO, FACTOR.
+.TP
+\fB\-\-from <CODE>\fR
+The CODE of the unit to convert from (required without \fB\-\-body\fR).
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-to <CODE>\fR
+The CODE of the unit to convert to (required without \fB\-\-body\fR).
+.SS "epx units convert"
+Convert an amount from one unit into another.
+.PP
+.RS "4"
+.nf
+epx units convert [flags]
+.fi
+.RE
+.PP
+Converts an \fB\-\-amount\fR of one unit into another of the same type (\fBepx units list\fR shows their codes and types): FROM is the amount given, TO what it converts to. An unknown unit is not found (exit 4); Emporix answers units of different types with 400 Bad Request (exit 1).
+.PP
+Changes nothing: Emporix serves this read as PUT with a JSON body, which the flags make or \fB\-\-body\fR gives whole.
+.PP
+No OAuth scope is needed.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-amount <AMOUNT>\fR
+The AMOUNT to convert, in \fB\-\-from\fR units (required without \fB\-\-body\fR).
+.TP
+\fB\-\-body <FILE>\fR
+Send the JSON request body in FILE as given (\- reads standard input) instead of the one the other flags make.
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among FROM, TO.
+.TP
+\fB\-\-from <CODE>\fR
+The CODE of the unit to convert from (required without \fB\-\-body\fR).
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-to <CODE>\fR
+The CODE of the unit to convert to (required without \fB\-\-body\fR).
+.SS "epx units create"
+Create a unit.
+.PP
+.RS "4"
+.nf
+epx units create [flags]
+.fi
+.RE
+.PP
+Creates the unit that the JSON body of \fB\-\-file\fR describes: its code, name, type, baseUnit (whether it is the base unit of its type) and factor (what converts it into the base unit, greater than zero), and its symbol if any. Emporix answers with the unit\(aqs code; a unit with the code exists already: a conflict (exit 5). Other services see the change after up to 5 minutes.
+.PP
+Localized text in the body, such as a name, is a map of translations, e.g. \fB{"en": "gram", "de": "Gramm"}\fR, as \fB\-o json\fR of a read prints it, or with \fB\-\-content\-language\fR LANGUAGE a string in that language, e.g. \fB"gram"\fR with \fB\-\-content\-language\fR en.
+.PP
+Changes data: on a terminal, epx asks before it sends POST. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the unithandling.unit_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-content\-language <LANGUAGE>\fR
+The LANGUAGE of localized text in the body, or * for maps of translations. Default: \fB*\fR.
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SS "epx units delete"
+Delete a unit.
+.PP
+.RS "4"
+.nf
+epx units delete CODE [flags]
+.fi
+.RE
+.PP
+Deletes the unit CODE, as \fBepx units list\fR shows it. Other services see the change after up to 5 minutes.
+.PP
+Deletes data, which cannot be undone. On a terminal, epx sends DELETE only once you type CODE at its prompt. \fB\-\-yes\fR sends without asking (required without a terminal); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the unithandling.unit_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal).
+.SS "epx units get"
+Show one unit.
+.PP
+.RS "4"
+.nf
+epx units get CODE [flags]
+.fi
+.RE
+.PP
+Reads units of measurement. TYPE groups units that convert into each other, BASE marks the base unit of a type, and FACTOR converts a unit into its type\(aqs base unit, as sent by Emporix (g: 0.001 when kg is the base). \fBepx units types\fR lists the types; \fBepx units convert\fR and \fBconversion\-factor\fR convert between units of a type. \fBepx units create\fR, \fBupdate\fR, \fBdelete\fR and \fBbulk\-delete\fR change the units.
+.PP
+No OAuth scope is needed.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among CODE, NAME, TYPE, SYMBOL, BASE, FACTOR.
+.TP
+\fB\-\-language <language>\fR
+Language of localized table text; a missing translation shows another, labeled (\fB\-o json\fR prints all). Default: \fBen\fR.
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.SS "epx units list"
+List units.
+.PP
+.RS "4"
+.nf
+epx units list [flags]
+.fi
+.RE
+.PP
+Reads units of measurement. TYPE groups units that convert into each other, BASE marks the base unit of a type, and FACTOR converts a unit into its type\(aqs base unit, as sent by Emporix (g: 0.001 when kg is the base). \fBepx units types\fR lists the types; \fBepx units convert\fR and \fBconversion\-factor\fR convert between units of a type. \fBepx units create\fR, \fBupdate\fR, \fBdelete\fR and \fBbulk\-delete\fR change the units.
+.PP
+No OAuth scope is needed.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among CODE, NAME, TYPE, SYMBOL, BASE, FACTOR.
+.TP
+\fB\-\-language <language>\fR
+Language of localized table text; a missing translation shows another, labeled (\fB\-o json\fR prints all). Default: \fBen\fR.
+.TP
+\fB\-\-limit <n>\fR
+Print at most n items; paged reads stop early where they safely can (0: every item).
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-sort <order>\fR
+Emporix sort order, passed as given, e.g. code or name.en:desc,code; fields mostly as in \fB\-o json\fR (Emporix may ignore an unknown one).
+.TP
+\fB\-\-stream\fR
+Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes \fB\-o\fR, \fB\-\-columns\fR and \fB\-\-no\-headers\fR).
+.SS "epx units types"
+List unit types.
+.PP
+.RS "4"
+.nf
+epx units types [flags]
+.fi
+.RE
+.PP
+Reads the unit types: the values that the TYPE of a unit takes.
+.PP
+No OAuth scope is needed.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among TYPE.
+.TP
+\fB\-\-limit <n>\fR
+Print at most n items; paged reads stop early where they safely can (0: every item).
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-stream\fR
+Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes \fB\-o\fR, \fB\-\-columns\fR and \fB\-\-no\-headers\fR).
+.SS "epx units update"
+Update a unit.
+.PP
+.RS "4"
+.nf
+epx units update CODE [flags]
+.fi
+.RE
+.PP
+Replaces the unit CODE (the CODE that \fBepx units list\fR shows) with the unit that the JSON body of \fB\-\-file\fR describes, as create does, with the same code; Emporix creates no missing unit. With metadata.version in the body, as \fBepx units get CODE \-o json\fR prints it, Emporix replaces only that version of the unit, and answers an older one as it answers an unknown unit, with 404 Not Found: epx then exits with 5, a conflict (read the unit again before you retry), and without a version with 4, not found. Other services see the change after up to 5 minutes.
+.PP
+Localized text in the body, such as a name, is a map of translations, e.g. \fB{"en": "gram", "de": "Gramm"}\fR, as \fB\-o json\fR of a read prints it, or with \fB\-\-content\-language\fR LANGUAGE a string in that language, e.g. \fB"gram"\fR with \fB\-\-content\-language\fR en. Such a string replaces the unit\(aqs other translations of that text; send the map to keep them.
+.PP
+Changes data: on a terminal, epx asks before it sends PUT. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the unithandling.unit_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-content\-language <LANGUAGE>\fR
+The LANGUAGE of localized text in the body, or * for maps of translations. Default: \fB*\fR.
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SH "SEE ALSO"
+\fBepx\fR(1) for the global options, the credentials epx reads and its exit codes; https://commerce-cloud-integrations.github.io/emporix-cli/commands/units

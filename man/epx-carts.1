@@ -1,0 +1,831 @@
+.TH "EPX\-CARTS" "1" "" "epx" "epx manual"
+.SH "NAME"
+epx\-carts \- read and change carts and their items and discounts
+.SH "SYNOPSIS"
+.RS "4"
+.nf
+epx carts [flags]
+epx carts [command]
+.fi
+.RE
+.SH "DESCRIPTION"
+Reads shopping carts, personal data included, with their items, discounts, delivery restrictions and validation; creates, changes and deletes carts, their items and discounts.
+.PP
+Its reads require the cart.cart_manage scope. Opt\-in: epx requests a write\-capable scope for a read only when given \fB\-\-allow\-write\-scope\fR. Its writes require the cart.cart_manage scope.
+.SH "COMMANDS"
+.SS "epx carts change\-currency"
+Change the currency of a cart.
+.PP
+.RS "4"
+.nf
+epx carts change\-currency CART_ID [flags]
+.fi
+.RE
+.PP
+Changes the currency of the cart CART_ID to the one that \fB\-\-currency\fR names; Emporix matches the prices of the cart\(aqs items in it. CART_ID is the ID that \fBepx carts search\fR shows; an unknown one is not found.
+.PP
+Changes data: on a terminal, epx asks before it sends POST. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the cart.cart_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-currency <code>\fR
+The three\-letter code of the currency, e.g. USD (required without \fB\-\-file\fR).
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte instead of the one that epx makes (\- reads standard input; sending it then needs \fB\-\-yes\fR).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SS "epx carts change\-site"
+Move a cart to another site.
+.PP
+.RS "4"
+.nf
+epx carts change\-site CART_ID [flags]
+.fi
+.RE
+.PP
+Moves the cart CART_ID to the site that \fB\-\-site\fR names, whose language, currency, shipping, tax and payment the cart then takes; where the site\(aqs currency differs, Emporix matches the prices of the cart\(aqs items in it. CART_ID is the ID that \fBepx carts search\fR shows; an unknown one is not found.
+.PP
+Changes data: on a terminal, epx asks before it sends POST. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the cart.cart_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte instead of the one that epx makes (\- reads standard input; sending it then needs \fB\-\-yes\fR).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-site <code>\fR
+The code of the site to move the cart to (required without \fB\-\-file\fR).
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SS "epx carts create"
+Create a customer\(aqs cart.
+.PP
+.RS "4"
+.nf
+epx carts create [flags]
+.fi
+.RE
+.PP
+Creates a customer\(aqs cart from the JSON object of \fB\-\-file\fR: its customerId, siteCode, currency and type (such as shopping or wishlist; a customer may hold one open cart of each type: another is a conflict, exit 5), and optionally legalEntityId, channel, deliveryWindow, addresses and mixins. Emporix answers with the cartId. A cart of an anonymous customer needs, instead of a customerId, the session\-id header of the customer\(aqs session, which epx does not send: without either, Emporix answers 400 Bad Request.
+.PP
+Changes data: on a terminal, epx asks before it sends POST. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the cart.cart_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SS "epx carts delete"
+Delete a cart.
+.PP
+.RS "4"
+.nf
+epx carts delete CART_ID [flags]
+.fi
+.RE
+.PP
+Deletes the cart CART_ID with its items. A CLOSED cart, such as one merged into another, is not found. CART_ID is the ID that \fBepx carts search\fR shows; an unknown one is not found.
+.PP
+Deletes data, which cannot be undone. On a terminal, epx sends DELETE only once you type CART_ID at its prompt. \fB\-\-yes\fR sends without asking (required without a terminal); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the cart.cart_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal).
+.SS "epx carts delivery\-restrictions"
+Show the lead time and non\-delivery days of a cart.
+.PP
+.RS "4"
+.nf
+epx carts delivery\-restrictions CART_ID [flags]
+.fi
+.RE
+.PP
+Reads what limits the delivery of a cart\(aqs items: LEAD HOURS is the time needed to prepare them for delivery, the longest leadTime of the items\(aq own mixins.productCustomAttributes, and NON\-DELIVERY DAYS the days on which they cannot be delivered, the union of their nonDelivery days, as numbers from 0 (Monday). An item gets these mixins where it is added (\fBepx carts items create\fR takes them); Emporix ignores those of the item\(aqs product and of its product member. The cart itself also carries leadTime and nonDelivery. CART_ID is the ID that \fBepx carts search\fR shows; an unknown one is not found.
+.PP
+Requires the cart.cart_manage scope. Opt\-in: epx requests a write\-capable scope for a read only when given \fB\-\-allow\-write\-scope\fR.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-allow\-write\-scope\fR
+Opt in to requesting cart.cart_manage, which can also change data (required).
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among LEAD HOURS, NON\-DELIVERY DAYS.
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.SS "epx carts discounts"
+Read, apply and remove the discounts of a cart.
+.PP
+.RS "4"
+.nf
+epx carts discounts [flags]
+epx carts discounts [command]
+.fi
+.RE
+.PP
+Reads the discounts (coupons) applied to a cart; applies and removes them.
+.PP
+Its reads require the cart.cart_manage scope. Opt\-in: epx requests a write\-capable scope for a read only when given \fB\-\-allow\-write\-scope\fR. Its writes require the cart.cart_manage scope.
+.SS "epx carts discounts create"
+Apply a discount to a cart.
+.PP
+.RS "4"
+.nf
+epx carts discounts create CART_ID [flags]
+.fi
+.RE
+.PP
+Applies a discount to the cart CART_ID: the coupon that \fB\-\-code\fR names, or the JSON object of \fB\-\-file\fR, with the coupon\(aqs code and optionally its name, amount or discountRate, currency and discountCalculationType (SUBTOTAL or TOTAL). One discount per request. Emporix may limit the coupons per cart (a tenant setting; one tenant allows one: a second is refused with 400 Bad Request, exit 1). It refuses a coupon restricted to customers (restrictions.validFor), even to the cart\(aqs own customer, with 403 Forbidden (exit 1), \fB"User not authorized."\fR, when an API key credential such as epx\(aqs applies it. CART_ID is the ID that \fBepx carts search\fR shows; an unknown one is not found.
+.PP
+Changes data: on a terminal, epx asks before it sends POST. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the cart.cart_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-code <code>\fR
+The code of the coupon to apply (required without \fB\-\-file\fR).
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte instead of the one that epx makes (\- reads standard input; sending it then needs \fB\-\-yes\fR).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SS "epx carts discounts delete"
+Remove a discount from a cart.
+.PP
+.RS "4"
+.nf
+epx carts discounts delete CART_ID INDEX [flags]
+.fi
+.RE
+.PP
+Removes the discount at INDEX from the cart CART_ID. The discounts after it then move up by one: list them again before you remove another by INDEX, or remove discounts by code with delete\-all \fB\-\-codes\fR. CART_ID is the ID that \fBepx carts search\fR shows; an unknown one is not found. INDEX is the INDEX that \fBepx carts discounts list CART_ID\fR shows; an unknown one is not found.
+.PP
+Deletes data, which cannot be undone. On a terminal, epx sends DELETE only once you type INDEX at its prompt. \fB\-\-yes\fR sends without asking (required without a terminal); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the cart.cart_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal).
+.SS "epx carts discounts delete\-all"
+Remove the discounts of a cart.
+.PP
+.RS "4"
+.nf
+epx carts discounts delete\-all CART_ID [flags]
+.fi
+.RE
+.PP
+Removes every discount from the cart CART_ID, or with \fB\-\-codes\fR only those with the codes it names. CART_ID is the ID that \fBepx carts search\fR shows; an unknown one is not found.
+.PP
+Deletes every discount of the cart (or those that \fB\-\-codes\fR names) with one request, which cannot be undone. On a terminal, epx sends DELETE only once you type CART_ID at its prompt. \fB\-\-yes\fR sends without asking (required without a terminal); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the cart.cart_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-codes <CODES>\fR
+Remove only the discounts with these CODES, separated by commas.
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal).
+.SS "epx carts discounts list"
+List the discounts of a cart.
+.PP
+.RS "4"
+.nf
+epx carts discounts list CART_ID [flags]
+.fi
+.RE
+.PP
+Reads the discounts (coupons) applied to a cart: AMOUNT is a fixed amount, RATE a percentage of the price, APPLIES TO is SUBTOTAL or TOTAL, and INDEX its position among the cart\(aqs discounts. Whether Emporix counts a discount when it calculates the cart (valid) is not sent here, only with the cart\(aqs own discounts: \fBepx carts get CART_ID \-o json\fR. CART_ID is the ID that \fBepx carts search\fR shows; an unknown one is not found.
+.PP
+Requires the cart.cart_manage scope. Opt\-in: epx requests a write\-capable scope for a read only when given \fB\-\-allow\-write\-scope\fR.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-allow\-write\-scope\fR
+Opt in to requesting cart.cart_manage, which can also change data (required).
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among CODE, NAME, AMOUNT, RATE, APPLIES TO, INDEX.
+.TP
+\fB\-\-limit <n>\fR
+Print at most n items; paged reads stop early where they safely can (0: every item).
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-stream\fR
+Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes \fB\-o\fR, \fB\-\-columns\fR and \fB\-\-no\-headers\fR).
+.SS "epx carts execute"
+Run a chain of cart commands.
+.PP
+.RS "4"
+.nf
+epx carts execute CART_ID [flags]
+.fi
+.RE
+.PP
+Runs a chain of commands on the cart CART_ID in one request, from the JSON object of \fB\-\-file\fR: \fB{"commands": [...]}\fR, each with its type (AddCartItem, UpdateCartItem, DeleteCartItem, DeleteCartItems, GetCart, AddCartItemsBatch, UpdateCartItemsBatch, UpdateCart, ApplyCartDiscount, GetCartDiscounts, DeleteCartDiscounts, DeleteCartDiscount, RefreshCart or ValidateCart), the body of that operation as data, and the rest of its request as options (itemId, partial, expandCalculation, resourceVersion, codes, discountIndex, \[u2026]). epx prints the result of each command that ran, the data of each as its operation answers. Without \fB\-\-on\-error\fR resume, Emporix runs no command after one that failed, but keeps what those before it changed. With \fB\-\-versioning\fR explicit, Emporix answers a stale resourceVersion as a failed command with code 500 (its message names 409 CONFLICT), so epx exits 1 and says it may have been carried out; it was not. CART_ID is the ID that \fBepx carts search\fR shows; an unknown one is not found.
+.PP
+Emporix takes up to 10 commands in one request (epx refuses more), runs them in order and answers with the result of each that ran: when one failed, epx prints the response, lists the commands that failed on standard error (of a command that adds or updates items in a batch, the items that failed; Emporix carried out the others) and exits with the code that their failures share (for example 5 for a 409 Conflict, 4 for a 404), else 1.
+.PP
+Changes data: on a terminal, epx asks before it sends POST. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+\fB\-\-allow\-external\-prices\fR also requests the cart.cart_manage_external_prices scope.
+.PP
+Requires the cart.cart_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-allow\-external\-prices\fR
+Allow a command with an external price, product, fee or discount (requests cart.cart_manage_external_prices too).
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-\-on\-error <string>\fR
+Whether Emporix stops after a command that failed (fail, the default) or runs the rest (resume): fail or resume.
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-versioning <string>\fR
+How the writes check the cart\(aqs version (default skip): skip checks none, explicit each command\(aqs options.resourceVersion, follow the first\(aqs, then the version each write makes: skip, explicit or follow.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.PP
+\fBExamples:\fR
+.PP
+.RS "4"
+.nf
+epx carts execute 6a86b20c2f5961330a8b3eb6 \-\-file add\-then\-get.json \-\-dry\-run
+epx carts execute 6a86b20c2f5961330a8b3eb6 \-\-file chain.json \-\-on\-error resume \-\-yes
+.fi
+.RE
+.SS "epx carts find"
+Show the cart of a customer or of an anonymous session on a site.
+.PP
+.RS "4"
+.nf
+epx carts find [flags]
+.fi
+.RE
+.PP
+Reads the one cart of a site that the criteria identify, personal data included: a customer\(aqs (\fB\-\-customer\fR) or an anonymous session\(aqs (\fB\-\-session\fR). Without \fB\-\-legal\-entity\fR, it is the cart without a legal entity, and without \fB\-\-type\fR the cart without a type. epx never asks Emporix to create a missing cart; when none matches, Emporix answers not found (exit 4). STATUS is OPEN or CLOSED (sent by search only), CUSTOMER the customer id (empty for an anonymous cart, whose sessionId \fB\-o json\fR shows), ITEMS the number of items and TOTAL the gross final price (items, shipping and payment fee) in the cart\(aqs currency. A CLOSED cart, such as one merged into another, is listed by search but not found by get.
+.PP
+Requires the cart.cart_manage scope. Opt\-in: epx requests a write\-capable scope for a read only when given \fB\-\-allow\-write\-scope\fR.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-allow\-write\-scope\fR
+Opt in to requesting cart.cart_manage, which can also change data (required).
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, STATUS, SITE, TYPE, CUSTOMER, LEGAL ENTITY, ITEMS, TOTAL, MODIFIED.
+.TP
+\fB\-\-customer <ID>\fR
+The customer ID whose cart to read.
+.TP
+\fB\-\-legal\-entity <ID>\fR
+The legal entity ID of the cart.
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-session <ID>\fR
+The ID of the anonymous session whose cart to read.
+.TP
+\fB\-\-site <site>\fR
+Site code, e.g. main (required).
+.TP
+\fB\-\-type <type>\fR
+The cart\(aqs type.
+.SS "epx carts get"
+Show one cart.
+.PP
+.RS "4"
+.nf
+epx carts get ID [flags]
+.fi
+.RE
+.PP
+Reads shopping carts, personal data included. ID is the ID that \fBepx carts search\fR shows; an unknown one is not found. STATUS is OPEN or CLOSED (sent by search only), CUSTOMER the customer id (empty for an anonymous cart, whose sessionId \fB\-o json\fR shows), ITEMS the number of items and TOTAL the gross final price (items, shipping and payment fee) in the cart\(aqs currency. A CLOSED cart, such as one merged into another, is listed by search but not found by get.
+.PP
+Requires the cart.cart_manage scope. Opt\-in: epx requests a write\-capable scope for a read only when given \fB\-\-allow\-write\-scope\fR.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-allow\-write\-scope\fR
+Opt in to requesting cart.cart_manage, which can also change data (required).
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, STATUS, SITE, TYPE, CUSTOMER, LEGAL ENTITY, ITEMS, TOTAL, MODIFIED.
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.SS "epx carts items"
+Read and change the items of a cart.
+.PP
+.RS "4"
+.nf
+epx carts items [flags]
+epx carts items [command]
+.fi
+.RE
+.PP
+Reads the items of a cart; adds items to it, changes and removes them.
+.PP
+Its reads require the cart.cart_manage scope. Opt\-in: epx requests a write\-capable scope for a read only when given \fB\-\-allow\-write\-scope\fR. Its writes require the cart.cart_manage scope.
+.SS "epx carts items bulk\-create"
+Add products to a cart.
+.PP
+.RS "4"
+.nf
+epx carts items bulk\-create CART_ID [flags]
+.fi
+.RE
+.PP
+Adds the items in \fB\-\-file\fR, a JSON array of items, each as create takes it, to the cart CART_ID. CART_ID is the ID that \fBepx carts search\fR shows; an unknown one is not found.
+.PP
+Emporix takes up to 200 items in one request (epx refuses more), carries out each on its own and answers with the result of each: when one failed, epx prints the response, lists the items that failed on standard error (one that failed with 500, 502, 503 or 504 may have been carried out all the same) and exits with the code that their failures share (for example 5 for a 409 Conflict, 4 for a 404), else 1.
+.PP
+Changes data: on a terminal, epx asks before it sends POST. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+\fB\-\-allow\-external\-prices\fR also requests the cart.cart_manage_external_prices scope.
+.PP
+Requires the cart.cart_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-allow\-external\-prices\fR
+Allow an item with an external price, product, fee or discount (requests cart.cart_manage_external_prices too).
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SS "epx carts items bulk\-update"
+Update items of a cart.
+.PP
+.RS "4"
+.nf
+epx carts items bulk\-update CART_ID [flags]
+.fi
+.RE
+.PP
+Updates the items in \fB\-\-file\fR, a JSON array of items, each with the id of an item of the cart CART_ID and the whole item, as update takes it without \fB\-\-partial\fR. Emporix refuses an entry with only quantity for that item (400 \fB"The Price must be defined."\fR). \fBepx carts execute\fR changes some members of several items (UpdateCartItemsBatch with options.partial). CART_ID is the ID that \fBepx carts search\fR shows; an unknown one is not found.
+.PP
+Emporix takes up to 50 items in one request (epx refuses more), carries out each on its own and answers with the result of each: when one failed, epx prints the response, lists the items that failed on standard error (one that failed with 500, 502, 503 or 504 may have been carried out all the same) and exits with the code that their failures share (for example 5 for a 409 Conflict, 4 for a 404), else 1.
+.PP
+Changes data: on a terminal, epx asks before it sends PUT. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+\fB\-\-allow\-external\-prices\fR also requests the cart.cart_manage_external_prices scope.
+.PP
+Requires the cart.cart_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-allow\-external\-prices\fR
+Allow an item with an external price, product, fee or discount (requests cart.cart_manage_external_prices too).
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SS "epx carts items create"
+Add a product to a cart.
+.PP
+.RS "4"
+.nf
+epx carts items create CART_ID [flags]
+.fi
+.RE
+.PP
+Adds a product to the cart CART_ID as a new item, from the JSON object of \fB\-\-file\fR: its product (its id) or itemYrn, quantity and price (priceId, originalAmount, effectiveAmount and currency, as \fBepx prices match\fR finds them), and optionally keepAsSeparateLineItem, externalFees, externalDiscounts and mixins. \fB\-\-site\fR names the cart\(aqs site. Emporix answers 201 with the itemId (e.g. 0 for the first item) and yrn. A product that the cart holds already, added without keepAsSeparateLineItem, raises the quantity of its item (the same itemId), so a create sent twice adds twice. A product object in the body is stored as sent, in place of the one Emporix would store. The item\(aqs mixins.productCustomAttributes (leadTime, nonDelivery) feed \fBepx carts delivery\-restrictions\fR. Emporix refuses a product that is not published with 400 Bad Request (exit 1), and an item with an external price without \fB\-\-allow\-external\-prices\fR with 403 Forbidden (exit 3). CART_ID is the ID that \fBepx carts search\fR shows; an unknown one is not found.
+.PP
+Changes data: on a terminal, epx asks before it sends POST. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+\fB\-\-allow\-external\-prices\fR also requests the cart.cart_manage_external_prices scope.
+.PP
+Requires the cart.cart_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-allow\-external\-prices\fR
+Allow an item with an external price, product, fee or discount (requests cart.cart_manage_external_prices too).
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-site <site>\fR
+Site code, e.g. main (required).
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SS "epx carts items delete"
+Remove an item from a cart.
+.PP
+.RS "4"
+.nf
+epx carts items delete CART_ID ID [flags]
+.fi
+.RE
+.PP
+Removes an item from the cart CART_ID. CART_ID is the ID that \fBepx carts search\fR shows; an unknown one is not found. ID is the ID that \fBepx carts items list CART_ID\fR shows; an unknown one is not found.
+.PP
+Deletes data, which cannot be undone. On a terminal, epx sends DELETE only once you type ID at its prompt. \fB\-\-yes\fR sends without asking (required without a terminal); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the cart.cart_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal).
+.SS "epx carts items delete\-all"
+Remove every item from a cart.
+.PP
+.RS "4"
+.nf
+epx carts items delete\-all CART_ID [flags]
+.fi
+.RE
+.PP
+Removes every item from the cart CART_ID. CART_ID is the ID that \fBepx carts search\fR shows; an unknown one is not found.
+.PP
+Deletes every item of the cart with one request, which cannot be undone. On a terminal, epx sends DELETE only once you type CART_ID at its prompt. \fB\-\-yes\fR sends without asking (required without a terminal); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the cart.cart_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal).
+.SS "epx carts items get"
+Show one item of a cart.
+.PP
+.RS "4"
+.nf
+epx carts items get CART_ID ID [flags]
+.fi
+.RE
+.PP
+Reads one item of a cart. CART_ID is the ID that \fBepx carts search\fR shows; an unknown one is not found. ID is the ID that \fBepx carts items list CART_ID\fR shows; an unknown one is not found. PRODUCT is the product id, NAME the product\(aqs name, PRICE the price that matched the item, per unit and as the price states it (net or gross), and GROSS the gross value of the item\(aqs quantity before discounts, one per tax line. Emporix does not always send an item\(aqs gross unit price and total (after discounts, with fees) here: only for the items that the cart held when it was last calculated (by a read of the cart or a discount, for example), not for those added since. The cart always has them: \fBepx carts get CART_ID \-o json\fR.
+.PP
+Requires the cart.cart_manage scope. Opt\-in: epx requests a write\-capable scope for a read only when given \fB\-\-allow\-write\-scope\fR.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-allow\-write\-scope\fR
+Opt in to requesting cart.cart_manage, which can also change data (required).
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, PRODUCT, NAME, QUANTITY, PRICE, GROSS.
+.TP
+\fB\-\-language <language>\fR
+Language of localized table text; a missing translation shows another, labeled (\fB\-o json\fR prints all). Default: \fBen\fR.
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.SS "epx carts items list"
+List the items of a cart.
+.PP
+.RS "4"
+.nf
+epx carts items list CART_ID [flags]
+.fi
+.RE
+.PP
+Reads the items of a cart. CART_ID is the ID that \fBepx carts search\fR shows; an unknown one is not found. PRODUCT is the product id, NAME the product\(aqs name, PRICE the price that matched the item, per unit and as the price states it (net or gross), and GROSS the gross value of the item\(aqs quantity before discounts, one per tax line. Emporix does not always send an item\(aqs gross unit price and total (after discounts, with fees) here: only for the items that the cart held when it was last calculated (by a read of the cart or a discount, for example), not for those added since. The cart always has them: \fBepx carts get CART_ID \-o json\fR.
+.PP
+Requires the cart.cart_manage scope. Opt\-in: epx requests a write\-capable scope for a read only when given \fB\-\-allow\-write\-scope\fR.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-allow\-write\-scope\fR
+Opt in to requesting cart.cart_manage, which can also change data (required).
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, PRODUCT, NAME, QUANTITY, PRICE, GROSS.
+.TP
+\fB\-\-language <language>\fR
+Language of localized table text; a missing translation shows another, labeled (\fB\-o json\fR prints all). Default: \fBen\fR.
+.TP
+\fB\-\-limit <n>\fR
+Print at most n items; paged reads stop early where they safely can (0: every item).
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-stream\fR
+Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes \fB\-o\fR, \fB\-\-columns\fR and \fB\-\-no\-headers\fR).
+.SS "epx carts items update"
+Update an item of a cart.
+.PP
+.RS "4"
+.nf
+epx carts items update CART_ID ID [flags]
+.fi
+.RE
+.PP
+Replaces an item of the cart CART_ID with the JSON object of \fB\-\-file\fR, whose members are those that create takes, or with \fB\-\-partial\fR changes only the members it gives. CART_ID is the ID that \fBepx carts search\fR shows; an unknown one is not found. ID is the ID that \fBepx carts items list CART_ID\fR shows; an unknown one is not found.
+.PP
+Changes data: on a terminal, epx asks before it sends PUT. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+\fB\-\-allow\-external\-prices\fR also requests the cart.cart_manage_external_prices scope.
+.PP
+Requires the cart.cart_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-allow\-external\-prices\fR
+Allow an item with an external price, product, fee or discount (requests cart.cart_manage_external_prices too).
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-partial\fR
+Change only the members that the body gives; without it, the body replaces the whole item.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SS "epx carts merge"
+Merge anonymous carts into a customer\(aqs cart.
+.PP
+.RS "4"
+.nf
+epx carts merge CART_ID [flags]
+.fi
+.RE
+.PP
+Merges the anonymous carts that \fB\-\-cart\fR names into the cart CART_ID, which must belong to a customer. Emporix answers with no body and closes the merged carts rather than deleting them: \fBepx carts search\fR still lists them as CLOSED, but get and delete no longer find them. CART_ID is the ID that \fBepx carts search\fR shows; an unknown one is not found.
+.PP
+Changes data: on a terminal, epx asks before it sends POST. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the cart.cart_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-cart <ID>\fR
+The ID of an anonymous cart to merge (repeatable; required without \fB\-\-file\fR).
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte instead of the one that epx makes (\- reads standard input; sending it then needs \fB\-\-yes\fR).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SS "epx carts refresh"
+Refresh the prices of a cart\(aqs items.
+.PP
+.RS "4"
+.nf
+epx carts refresh CART_ID [flags]
+.fi
+.RE
+.PP
+Refreshes the cart CART_ID: Emporix reads the prices of its items again and assigns those that changed. It sends no body. CART_ID is the ID that \fBepx carts search\fR shows; an unknown one is not found.
+.PP
+Changes data: on a terminal, epx asks before it sends PUT. \fB\-\-yes\fR sends without asking (required without a terminal); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the cart.cart_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal).
+.SS "epx carts search"
+Search carts.
+.PP
+.RS "4"
+.nf
+epx carts search [flags]
+.fi
+.RE
+.PP
+Reads the carts, personal data included, that an Emporix q filter finds (\fB\-\-query\fR; without it, every cart), e.g. \fB\-\-query\fR \fB\(aqstatus:OPEN siteCode:AcmeStore_NL\(aq\fR.
+.PP
+Changes nothing: Emporix serves this read as POST with a JSON body, which the flags make or \fB\-\-body\fR gives whole. STATUS is OPEN or CLOSED (sent by search only), CUSTOMER the customer id (empty for an anonymous cart, whose sessionId \fB\-o json\fR shows), ITEMS the number of items and TOTAL the gross final price (items, shipping and payment fee) in the cart\(aqs currency. A CLOSED cart, such as one merged into another, is listed by search but not found by get.
+.PP
+Requires the cart.cart_manage scope. Opt\-in: epx requests a write\-capable scope for a read only when given \fB\-\-allow\-write\-scope\fR.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-allow\-write\-scope\fR
+Opt in to requesting cart.cart_manage, which can also change data (required).
+.TP
+\fB\-\-body <FILE>\fR
+Send the JSON request body in FILE as given (\- reads standard input) instead of the one the other flags make.
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, STATUS, SITE, TYPE, CUSTOMER, LEGAL ENTITY, ITEMS, TOTAL, MODIFIED.
+.TP
+\fB\-\-limit <n>\fR
+Print at most n items; paged reads stop early where they safely can (0: every item).
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-query <filter>\fR
+Emporix q filter, sent as given in the request body, not in the URL (empty: no filter), e.g. code:(A1,A2); space\-separated conditions must all match (fields mostly as in \fB\-o json\fR).
+.TP
+\fB\-\-sort <order>\fR
+Emporix sort order, passed as given, e.g. code or name.en:desc,code; fields mostly as in \fB\-o json\fR (Emporix may ignore an unknown one).
+.TP
+\fB\-\-stream\fR
+Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes \fB\-o\fR, \fB\-\-columns\fR and \fB\-\-no\-headers\fR).
+.SS "epx carts update"
+Update a cart.
+.PP
+.RS "4"
+.nf
+epx carts update CART_ID [flags]
+.fi
+.RE
+.PP
+Updates the cart CART_ID with the JSON object of \fB\-\-file\fR: customerId, currency, type, status (OPEN or CLOSED), deliveryWindow, zipCode and countryCode (both or neither: one alone is answered 400 Bad Request, exit 1), addresses, mixins and externalDiscounts, as \fBepx carts get CART_ID \-o json\fR shows them. Emporix creates no missing cart, and ignores metadata.version in the body: only \fBepx carts execute \-\-versioning\fR checks the cart\(aqs version. CART_ID is the ID that \fBepx carts search\fR shows; an unknown one is not found.
+.PP
+Changes data: on a terminal, epx asks before it sends PUT. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+\fB\-\-allow\-external\-prices\fR also requests the cart.cart_manage_external_prices scope.
+.PP
+Requires the cart.cart_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-allow\-external\-prices\fR
+Allow external discounts (externalDiscounts) (requests cart.cart_manage_external_prices too).
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SS "epx carts validate"
+Check the prices of a cart\(aqs items.
+.PP
+.RS "4"
+.nf
+epx carts validate CART_ID [flags]
+.fi
+.RE
+.PP
+Reads whether a cart\(aqs items pass Emporix\(aqs checks, which find prices that are no longer valid and prices duplicated for a product; it changes nothing. VALID is true or false and ERRORS the error codes by item id (\fB\-o json\fR adds each error\(aqs message and field). CART_ID is the ID that \fBepx carts search\fR shows; an unknown one is not found.
+.PP
+Requires the cart.cart_manage scope. Opt\-in: epx requests a write\-capable scope for a read only when given \fB\-\-allow\-write\-scope\fR.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-allow\-write\-scope\fR
+Opt in to requesting cart.cart_manage, which can also change data (required).
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among VALID, ERRORS.
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.SH "SEE ALSO"
+\fBepx\fR(1) for the global options, the credentials epx reads and its exit codes; https://commerce-cloud-integrations.github.io/emporix-cli/commands/carts

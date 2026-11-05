@@ -1,0 +1,924 @@
+.TH "EPX\-IMPORTS" "1" "" "epx" "epx manual"
+.SH "NAME"
+epx\-imports \- read import configurations, runs and records; queue files, start and schedule runs
+.SH "SYNOPSIS"
+.RS "4"
+.nf
+epx imports [flags]
+epx imports [command]
+.fi
+.RE
+.SH "DESCRIPTION"
+Reads the Import Service, which imports master data from external sources into Emporix: configurations, their streams (each imports one source, an entity or files, into an Emporix type), the file queue of a file\-based stream, schedules and runs, the errors and diagnostics of a run, the records imported, statistics, job groups, health thresholds and the tenant\(aqs import limits. Emporix allows these reads only with importtool.import_trigger, with which epx also queues files for a stream, and starts, retries, cancels and schedules runs.
+.PP
+Its reads require the importtool.import_trigger scope. Opt\-in: epx requests a write\-capable scope for a read only when given \fB\-\-allow\-write\-scope\fR. Its writes require the importtool.import_trigger scope.
+.SH "COMMANDS"
+.SS "epx imports configurations"
+Read import configurations; start and schedule their runs.
+.PP
+.RS "4"
+.nf
+epx imports configurations [flags]
+epx imports configurations [command]
+.fi
+.RE
+.PP
+Reads import configurations, each a set of streams that run together: ENABLED says whether it is active, VERSION counts its changes and MODIFIED is when it last changed. Its description, source connection, creator and health thresholds are only in \fB\-o json\fR. The service returns the configurations whole, so they are read with one request.
+.PP
+Its reads require the importtool.import_trigger scope. Opt\-in: epx requests a write\-capable scope for a read only when given \fB\-\-allow\-write\-scope\fR. Its writes require the importtool.import_trigger scope.
+.SS "epx imports configurations delete\-schedule"
+Delete the run schedule of a configuration.
+.PP
+.RS "4"
+.nf
+epx imports configurations delete\-schedule CONFIGURATION_ID [flags]
+.fi
+.RE
+.PP
+Deletes the schedule of the configuration CONFIGURATION_ID, which then runs only when it is triggered. Emporix answers alike when there is no schedule, also of a configuration that was deleted.
+.PP
+Deletes data, which cannot be undone. On a terminal, epx sends DELETE only once you type CONFIGURATION_ID at its prompt. \fB\-\-yes\fR sends without asking (required without a terminal); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the importtool.import_trigger scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal).
+.SS "epx imports configurations get"
+Show one configuration.
+.PP
+.RS "4"
+.nf
+epx imports configurations get ID [flags]
+.fi
+.RE
+.PP
+Reads import configurations, each a set of streams that run together: ENABLED says whether it is active, VERSION counts its changes and MODIFIED is when it last changed. Its description, source connection, creator and health thresholds are only in \fB\-o json\fR. The service returns the configurations whole, so they are read with one request.
+.PP
+Requires the importtool.import_trigger scope. Opt\-in: epx requests a write\-capable scope for a read only when given \fB\-\-allow\-write\-scope\fR.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-allow\-write\-scope\fR
+Opt in to requesting importtool.import_trigger, which can also change data (required).
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, NAME, ENABLED, VERSION, MODIFIED.
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.SS "epx imports configurations list"
+List import configurations.
+.PP
+.RS "4"
+.nf
+epx imports configurations list [flags]
+.fi
+.RE
+.PP
+Reads import configurations, each a set of streams that run together: ENABLED says whether it is active, VERSION counts its changes and MODIFIED is when it last changed. Its description, source connection, creator and health thresholds are only in \fB\-o json\fR. The service returns the configurations whole, so they are read with one request.
+.PP
+Requires the importtool.import_trigger scope. Opt\-in: epx requests a write\-capable scope for a read only when given \fB\-\-allow\-write\-scope\fR.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-allow\-write\-scope\fR
+Opt in to requesting importtool.import_trigger, which can also change data (required).
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, NAME, ENABLED, VERSION, MODIFIED.
+.TP
+\fB\-\-limit <n>\fR
+Print at most n items; paged reads stop early where they safely can (0: every item).
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-stream\fR
+Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes \fB\-o\fR, \fB\-\-columns\fR and \fB\-\-no\-headers\fR).
+.SS "epx imports configurations runs"
+List the runs of a configuration.
+.PP
+.RS "4"
+.nf
+epx imports configurations runs CONFIGURATION_ID [flags]
+.fi
+.RE
+.PP
+Reads the run history of an import configuration, most recent first; \fBepx imports runs streams\fR shows the counters of each stream of a run. CONFIGURATION_ID is the ID that \fBepx imports configurations list\fR shows; an unknown one lists nothing. STATUS is QUEUED, RUNNING, RESUMABLE (interrupted; it resumes by itself), SUCCEEDED, PARTIAL (records failed or a limit skipped some, or a stream did not run), FAILED, CANCELLED or ABORTED (refused: nothing was read), MODE FULL or DELTA, followed by dry run for a run that wrote nothing, STARTED when the run was requested, FINISHED when it ended, READ the records it read and FAILED those that failed. \fB\-o json\fR adds its message, queue position and other counters; READ is created + updated + skipped + deleted + failed + unresolvedParents + collapsed + embedded.
+.PP
+Requires the importtool.import_trigger scope. Opt\-in: epx requests a write\-capable scope for a read only when given \fB\-\-allow\-write\-scope\fR.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-allow\-write\-scope\fR
+Opt in to requesting importtool.import_trigger, which can also change data (required).
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, STATUS, MODE, STARTED, FINISHED, READ, FAILED.
+.TP
+\fB\-\-limit <n>\fR
+Print at most n items; paged reads stop early where they safely can (0: every item).
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-stream\fR
+Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes \fB\-o\fR, \fB\-\-columns\fR and \fB\-\-no\-headers\fR).
+.SS "epx imports configurations schedule"
+Show the run schedule of a configuration.
+.PP
+.RS "4"
+.nf
+epx imports configurations schedule CONFIGURATION_ID [flags]
+.fi
+.RE
+.PP
+Reads when an import configuration runs by itself: CRON is a cron expression with six fields (seconds first), evaluated in TIME ZONE, and NEXT RUN when it fires next. A configuration without a schedule is not found (exit 4). CONFIGURATION_ID is the ID that \fBepx imports configurations list\fR shows; an unknown one is not found.
+.PP
+Requires the importtool.import_trigger scope. Opt\-in: epx requests a write\-capable scope for a read only when given \fB\-\-allow\-write\-scope\fR.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-allow\-write\-scope\fR
+Opt in to requesting importtool.import_trigger, which can also change data (required).
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among CRON, TIME ZONE, ENABLED, NEXT RUN.
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.SS "epx imports configurations stream\-order"
+Show the order the streams of a configuration run in.
+.PP
+.RS "4"
+.nf
+epx imports configurations stream\-order CONFIGURATION_ID [flags]
+.fi
+.RE
+.PP
+Reads the order in which the streams of an import configuration run, which the service derives from their dependencies (also those their mappings add) and sequence: each STREAM runs after the streams that AFTER names. CONFIGURATION_ID is the ID that \fBepx imports configurations list\fR shows; an unknown one lists nothing.
+.PP
+Requires the importtool.import_trigger scope. Opt\-in: epx requests a write\-capable scope for a read only when given \fB\-\-allow\-write\-scope\fR.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-allow\-write\-scope\fR
+Opt in to requesting importtool.import_trigger, which can also change data (required).
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among STREAM, AFTER.
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.SS "epx imports configurations streams"
+List the streams of a configuration.
+.PP
+.RS "4"
+.nf
+epx imports configurations streams CONFIGURATION_ID [flags]
+.fi
+.RE
+.PP
+Reads the streams of an import configuration, in their sequence. The service returns them whole, so they are read with one request. CONFIGURATION_ID is the ID that \fBepx imports configurations list\fR shows; an unknown one lists nothing. SOURCE is the stream\(aqs source entity, followed for a file\-based stream (which may name no entity) by SNAPSHOT files or INCREMENTAL files, read as \fBepx imports streams files\fR explains. TARGET TYPE is the Emporix type it writes to (a discriminator, in \fB\-o json\fR, may route records to others), MODE STANDALONE, or COMPOSITE_CHILD or COMPOSITE_MERGE for a stream that adds to the records of another. A stream\(aqs source dataset (sourceDataset, such as the key column and the file format), connection, and delta, delete, write and health settings are only in \fB\-o json\fR.
+.PP
+Requires the importtool.import_trigger scope. Opt\-in: epx requests a write\-capable scope for a read only when given \fB\-\-allow\-write\-scope\fR.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-allow\-write\-scope\fR
+Opt in to requesting importtool.import_trigger, which can also change data (required).
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, NAME, SOURCE, TARGET TYPE, MODE, ENABLED.
+.TP
+\fB\-\-limit <n>\fR
+Print at most n items; paged reads stop early where they safely can (0: every item).
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-stream\fR
+Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes \fB\-o\fR, \fB\-\-columns\fR and \fB\-\-no\-headers\fR).
+.SS "epx imports configurations trigger"
+Start an import run of a configuration.
+.PP
+.RS "4"
+.nf
+epx imports configurations trigger CONFIGURATION_ID [flags]
+.fi
+.RE
+.PP
+Starts an import run of the configuration CONFIGURATION_ID, a DELTA run unless \fB\-\-mode\fR FULL, and prints the run, QUEUED until a worker of the Import Service takes it. \fB\-\-file\fR gives the body instead, e.g. \fB{"mode": "FULL", "dryRun": true, "streamIds": ["ID"]}\fR for a dry run of some streams, which maps and checks records but writes none. A configuration that has a run QUEUED, RUNNING or RESUMABLE already is a conflict (exit 5). Emporix answers a run that it refuses, e.g. of streams whose mappings were never published, as any other: the run ends ABORTED, which \fB\-\-wait\fR reports. CONFIGURATION_ID is the ID that \fBepx imports configurations list\fR shows.
+.PP
+Changes data: on a terminal, epx asks before it sends POST. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+\fB\-\-wait\fR then reads the job again every \fB\-\-poll\-interval\fR, as \fBepx imports runs get\fR does and with the importtool.import_trigger scope too, saying on standard error how its status changes, until it ends: then it prints the job and exits 0 if it ended SUCCEEDED, else 1. When \fB\-\-wait\-timeout\fR passes first, it prints the job as last read and exits 1; the job goes on. When a read of the job fails, it prints the job as last read and exits as that read does, e.g. 4 when the job is not found.
+.PP
+Requires the importtool.import_trigger scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte instead of the one that epx makes (\- reads standard input; sending it then needs \fB\-\-yes\fR).
+.TP
+\fB\-\-mode <MODE>\fR
+The MODE of the run, DELTA when not given: FULL or DELTA.
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-poll\-interval <duration>\fR
+How often \fB\-\-wait\fR reads the run, 1s or more (only with \fB\-\-wait\fR). Default: \fB5s\fR.
+.TP
+\fB\-\-wait\fR
+Wait until the run ends, then print it.
+.TP
+\fB\-\-wait\-timeout <duration>\fR
+How long \fB\-\-wait\fR waits, 1s or more (only with \fB\-\-wait\fR). Default: \fB30m\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.PP
+\fBExamples:\fR
+.PP
+.RS "4"
+.nf
+epx imports configurations trigger 7c9e6679\-7425\-40de\-944b\-e07fc1f90ae7 \-\-mode FULL \-\-wait
+.fi
+.RE
+.SS "epx imports configurations update\-schedule"
+Upsert the run schedule of a configuration.
+.PP
+.RS "4"
+.nf
+epx imports configurations update\-schedule CONFIGURATION_ID [flags]
+.fi
+.RE
+.PP
+Sets when the configuration CONFIGURATION_ID runs by itself, creating its schedule where it has none (an upsert), and prints the schedule. \fB\-\-cron\fR is a Spring cron expression with six fields, seconds first, e.g. \fB"0 0 2 * * *"\fR for 02:00 every day (Emporix refuses one with five: 400 Bad Request), evaluated in \fB\-\-timezone\fR, an IANA time zone such as Europe/Berlin. The schedule runs the configuration unless \fB\-\-enabled=false\fR, which keeps it without running it: epx always sends enabled, as the schedule is replaced whole. \fB\-\-file\fR gives the body instead. CONFIGURATION_ID is the ID that \fBepx imports configurations list\fR shows.
+.PP
+Changes data: on a terminal, epx asks before it sends PUT. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the importtool.import_trigger scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-cron <EXPRESSION>\fR
+The Spring cron EXPRESSION of the schedule, six fields (required without \fB\-\-file\fR).
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-enabled\fR
+Whether the schedule runs the configuration (\fB\-\-enabled=false:\fR not). Default: \fBtrue\fR.
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte instead of the one that epx makes (\- reads standard input; sending it then needs \fB\-\-yes\fR).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-timezone <ZONE>\fR
+The IANA time ZONE the expression is evaluated in.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.PP
+\fBExamples:\fR
+.PP
+.RS "4"
+.nf
+epx imports configurations update\-schedule 7c9e6679\-7425\-40de\-944b\-e07fc1f90ae7 \-\-cron "0 0 2 * * *" \-\-timezone Europe/Berlin
+.fi
+.RE
+.SS "epx imports health\-thresholds"
+Show the thresholds that rate the health of import streams.
+.PP
+.RS "4"
+.nf
+epx imports health\-thresholds [flags]
+.fi
+.RE
+.PP
+Reads the thresholds that rate an import stream GREEN, AMBER or RED in the statistics: the tenant\(aqs, and the built\-in defaults that each one it leaves empty falls back to. A stream is AMBER or RED once this share of its records failed (FAILURE RATIO, 0 to 1) or its newest data is this many hours old (STALE HOURS), and RED after a failed run when FAILED RUN RED is true. A configuration or stream may set its own (in their \fB\-o json\fR).
+.PP
+Requires the importtool.import_trigger scope. Opt\-in: epx requests a write\-capable scope for a read only when given \fB\-\-allow\-write\-scope\fR.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-allow\-write\-scope\fR
+Opt in to requesting importtool.import_trigger, which can also change data (required).
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among LEVEL, FAILURE RATIO AMBER, FAILURE RATIO RED, STALE HOURS AMBER, STALE HOURS RED, FAILED RUN RED.
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.SS "epx imports job\-groups"
+List the job groups that scope the import statistics.
+.PP
+.RS "4"
+.nf
+epx imports job\-groups [flags]
+.fi
+.RE
+.PP
+Reads the tenant\(aqs job groups, named sets of import configurations that the import statistics can be scoped to: CONFIGURATIONS counts them (\fB\-o json\fR lists their IDs). The service returns them whole, so they are read with one request.
+.PP
+Requires the importtool.import_trigger scope. Opt\-in: epx requests a write\-capable scope for a read only when given \fB\-\-allow\-write\-scope\fR.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-allow\-write\-scope\fR
+Opt in to requesting importtool.import_trigger, which can also change data (required).
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, NAME, CONFIGURATIONS, MODIFIED.
+.TP
+\fB\-\-limit <n>\fR
+Print at most n items; paged reads stop early where they safely can (0: every item).
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-stream\fR
+Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes \fB\-o\fR, \fB\-\-columns\fR and \fB\-\-no\-headers\fR).
+.SS "epx imports license"
+Show the tenant\(aqs import limits.
+.PP
+.RS "4"
+.nf
+epx imports license [flags]
+.fi
+.RE
+.PP
+Reads the tenant\(aqs import limits: a run writes at most MAX RECORDS PER TYPE records per target type (it skips the rest and ends PARTIAL), at most MAX CONCURRENT RUNS runs execute at once (others wait, QUEUED), and BATCH SIZE records are written per request, by WORKERS writers in parallel. Emporix support raises a limit on request.
+.PP
+Requires the importtool.import_trigger scope. Opt\-in: epx requests a write\-capable scope for a read only when given \fB\-\-allow\-write\-scope\fR.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-allow\-write\-scope\fR
+Opt in to requesting importtool.import_trigger, which can also change data (required).
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among MAX RECORDS PER TYPE, MAX CONCURRENT RUNS, BATCH SIZE, WORKERS.
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.SS "epx imports records"
+List the imported records of a type.
+.PP
+.RS "4"
+.nf
+epx imports records TYPE [flags]
+.fi
+.RE
+.PP
+Reads the records imported into a target type: KEY is a record\(aqs natural key in the source, OUTCOME how it was last imported (UPSERTED, DELETED at the source, DELETED_TARGET in Emporix, FAILED or DRY_RUN) and IMPORTED when. \fB\-o json\fR adds its stored fields, the Emporix id it was written under, and its configuration, stream and run. TYPE is one that \fBepx imports types\fR shows; an unknown one lists nothing. To search keys or filter by outcome, one page at a time: \fBepx api get /importtool/{tenant}/data/records \-p type=TYPE \-p search=TEXT \-p outcome=FAILED \-\-scope importtool.import_trigger\fR.
+.PP
+Requires the importtool.import_trigger scope. Opt\-in: epx requests a write\-capable scope for a read only when given \fB\-\-allow\-write\-scope\fR.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-allow\-write\-scope\fR
+Opt in to requesting importtool.import_trigger, which can also change data (required).
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, KEY, TYPE, OUTCOME, IMPORTED.
+.TP
+\fB\-\-limit <n>\fR
+Print at most n items; paged reads stop early where they safely can (0: every item).
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-stream\fR
+Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes \fB\-o\fR, \fB\-\-columns\fR and \fB\-\-no\-headers\fR).
+.SS "epx imports runs"
+Read, cancel and retry import runs.
+.PP
+.RS "4"
+.nf
+epx imports runs [flags]
+epx imports runs [command]
+.fi
+.RE
+.PP
+Reads import runs; a run\(aqs ID is the one that \fBepx imports configurations runs CONFIGURATION_ID\fR shows. Its \fB\-o json\fR adds the progress of each stream of the run, which \fBepx imports runs streams\fR shows.
+.PP
+Its reads require the importtool.import_trigger scope. Opt\-in: epx requests a write\-capable scope for a read only when given \fB\-\-allow\-write\-scope\fR. Its writes require the importtool.import_trigger scope.
+.SS "epx imports runs cancel"
+Cancel an import run.
+.PP
+.RS "4"
+.nf
+epx imports runs cancel ID [flags]
+.fi
+.RE
+.PP
+Asks the import run ID to stop, and prints what Emporix answers: whether it accepted the cancellation. A QUEUED run is CANCELLED at once; a running one stops when it can, or with \fB\-\-force\fR at once, which also unblocks its configuration. A RESUMABLE run stops only with \fB\-\-force\fR: without it, a conflict (exit 5). Emporix answers a run that is unknown or ended already with 409 Conflict and \fB"accepted"\fR: false, which epx prints as the answer (exit 5). ID is the one that \fBepx imports configurations runs CONFIGURATION_ID\fR shows.
+.PP
+Changes data: on a terminal, epx asks before it sends POST. \fB\-\-yes\fR sends without asking (required without a terminal); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the importtool.import_trigger scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-force\fR
+Stop the run at once.
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal).
+.SS "epx imports runs diagnostics"
+List the source rows behind a run\(aqs repeated keys and missing parents.
+.PP
+.RS "4"
+.nf
+epx imports runs diagnostics RUN_ID [flags]
+.fi
+.RE
+.PP
+Reads the source rows behind a run\(aqs feed\-quality counters, which do not fail a run: KIND is REPEATED_KEY for a row whose KEY the run had already imported (OCCURRENCE times before), or UNRESOLVED_PARENT for a child line whose parent was missing: LINKING FIELD and LINKING VALUE are the parent key it points at, WAITING LINES the lines waiting for that parent. The service keeps a capped sample per stream and kind; \fB\-o json\fR says how many rows it recorded, its cap and whether a stream reached it (the run\(aqs counters give the totals). Every recorded row is read, up to 50000; a run that recorded more fails, and its rows are read per stream: \fBepx api get /importtool/{tenant}/runs/RUN_ID/diagnostics \-p streamId=ID \-p limit=50000 \-\-scope importtool.import_trigger\fR. RUN_ID is the ID that \fBepx imports configurations runs CONFIGURATION_ID\fR shows; an unknown one lists nothing.
+.PP
+Requires the importtool.import_trigger scope. Opt\-in: epx requests a write\-capable scope for a read only when given \fB\-\-allow\-write\-scope\fR.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-allow\-write\-scope\fR
+Opt in to requesting importtool.import_trigger, which can also change data (required).
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among KIND, STREAM, KEY, LINKING FIELD, LINKING VALUE, WAITING LINES, OCCURRENCE.
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.SS "epx imports runs errors"
+List the errors of a run.
+.PP
+.RS "4"
+.nf
+epx imports runs errors RUN_ID [flags]
+.fi
+.RE
+.PP
+Reads the errors recorded during an import run: KEY is the natural key of the record that failed, STAGE the step it failed in (such as MAPPING or UPSERT), CODE what kind of error it is and MESSAGE what went wrong. Its stream and time are only in \fB\-o json\fR. CODE is VALIDATION (the mapped record was invalid, so it was not written), NO_KEY (its key column was empty), UPSERT (the target refused the write), CONFIGURATION (something to change in the import\(aqs own configuration, such as a missing base URL, refused credentials or an unknown path), EXTERNAL_SYSTEM (another system answered with an error, such as the source with a 5xx), MERGE or PATCH_EMBED (a composite merge or an embed into the parent failed), NO_LINKING_VALUE (a child row without the key of its parent), MARKER_DELETE, TOMBSTONE_DELETE or TOMBSTONE_NO_KEY (a delete the source marked could not be applied), REJECTED_BY_SOURCE (the source refused the record for its data, such as a file row with more array elements than the stream allows; the other records are imported) or STREAM_ERROR (the stream failed as a whole). For CONFIGURATION and EXTERNAL_SYSTEM, MESSAGE says what to change. RUN_ID is the ID that \fBepx imports configurations runs CONFIGURATION_ID\fR shows; an unknown one lists nothing.
+.PP
+Requires the importtool.import_trigger scope. Opt\-in: epx requests a write\-capable scope for a read only when given \fB\-\-allow\-write\-scope\fR.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-allow\-write\-scope\fR
+Opt in to requesting importtool.import_trigger, which can also change data (required).
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, KEY, STAGE, CODE, MESSAGE.
+.TP
+\fB\-\-limit <n>\fR
+Print at most n items; paged reads stop early where they safely can (0: every item).
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-stream\fR
+Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes \fB\-o\fR, \fB\-\-columns\fR and \fB\-\-no\-headers\fR).
+.SS "epx imports runs get"
+Show one run.
+.PP
+.RS "4"
+.nf
+epx imports runs get ID [flags]
+.fi
+.RE
+.PP
+Reads import runs; a run\(aqs ID is the one that \fBepx imports configurations runs CONFIGURATION_ID\fR shows. Its \fB\-o json\fR adds the progress of each stream of the run, which \fBepx imports runs streams\fR shows. STATUS is QUEUED, RUNNING, RESUMABLE (interrupted; it resumes by itself), SUCCEEDED, PARTIAL (records failed or a limit skipped some, or a stream did not run), FAILED, CANCELLED or ABORTED (refused: nothing was read), MODE FULL or DELTA, followed by dry run for a run that wrote nothing, STARTED when the run was requested, FINISHED when it ended, READ the records it read and FAILED those that failed. \fB\-o json\fR adds its message, queue position and other counters; READ is created + updated + skipped + deleted + failed + unresolvedParents + collapsed + embedded.
+.PP
+Requires the importtool.import_trigger scope. Opt\-in: epx requests a write\-capable scope for a read only when given \fB\-\-allow\-write\-scope\fR.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-allow\-write\-scope\fR
+Opt in to requesting importtool.import_trigger, which can also change data (required).
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, STATUS, MODE, STARTED, FINISHED, READ, FAILED.
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.SS "epx imports runs retry"
+Run the failed records of an import run again.
+.PP
+.RS "4"
+.nf
+epx imports runs retry ID [flags]
+.fi
+.RE
+.PP
+Starts a run that imports again only the records that failed in the import run ID, and prints it, QUEUED until a worker takes it; the run ID keeps its counters. A configuration that has a run QUEUED, RUNNING or RESUMABLE already is a conflict (exit 5). ID is the one that \fBepx imports configurations runs CONFIGURATION_ID\fR shows.
+.PP
+Changes data: on a terminal, epx asks before it sends POST. \fB\-\-yes\fR sends without asking (required without a terminal); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+\fB\-\-wait\fR then reads the job again every \fB\-\-poll\-interval\fR, as \fBepx imports runs get\fR does and with the importtool.import_trigger scope too, saying on standard error how its status changes, until it ends: then it prints the job and exits 0 if it ended SUCCEEDED, else 1. When \fB\-\-wait\-timeout\fR passes first, it prints the job as last read and exits 1; the job goes on. When a read of the job fails, it prints the job as last read and exits as that read does, e.g. 4 when the job is not found.
+.PP
+Requires the importtool.import_trigger scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-poll\-interval <duration>\fR
+How often \fB\-\-wait\fR reads the run, 1s or more (only with \fB\-\-wait\fR). Default: \fB5s\fR.
+.TP
+\fB\-\-wait\fR
+Wait until the run ends, then print it.
+.TP
+\fB\-\-wait\-timeout <duration>\fR
+How long \fB\-\-wait\fR waits, 1s or more (only with \fB\-\-wait\fR). Default: \fB30m\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal).
+.SS "epx imports runs streams"
+Show the progress of each stream of a run.
+.PP
+.RS "4"
+.nf
+epx imports runs streams RUN_ID [flags]
+.fi
+.RE
+.PP
+Reads the progress of each stream of an import run: STATUS is QUEUED, RUNNING, SUCCEEDED, PARTIAL, FAILED, SKIPPED or ABORTED (not run because of its configuration, such as mappings never published, as MESSAGE says). READ counts the records the stream read, and the counters after it add up to READ: CREATED, UPDATED, SKIPPED (unchanged, or not written because the tenant\(aqs limit of records per type was reached), DELETED, FAILED, UNRESOLVED (child records whose parent was not found; \fBepx imports runs diagnostics\fR lists those parents), COLLAPSED (rows that repeated a key of the same batch, merged before the write, the last one winning) and EMBEDDED (child records that their parent wrote inside its own record). A STREAM followed by sweep is the repair pass that read again the parents a child stream had not found, not a second stream. \fB\-o json\fR adds duplicateKeys (rows whose key the run had imported already, which \fBepx imports runs diagnostics\fR lists too), capSkipped (whether the tenant\(aqs limit of records per type skipped records), keylessSeen (whether a record had no key: an error NO_KEY) and the files a file\-based stream read (filesRead, fileNames). A queued run lists nothing yet. RUN_ID is the ID that \fBepx imports configurations runs CONFIGURATION_ID\fR shows; an unknown one is not found.
+.PP
+Requires the importtool.import_trigger scope. Opt\-in: epx requests a write\-capable scope for a read only when given \fB\-\-allow\-write\-scope\fR.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-allow\-write\-scope\fR
+Opt in to requesting importtool.import_trigger, which can also change data (required).
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among STREAM, STATUS, READ, CREATED, UPDATED, SKIPPED, DELETED, FAILED, UNRESOLVED, COLLAPSED, EMBEDDED, MESSAGE.
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.SS "epx imports statistics"
+Show the import statistics of the last 30 days.
+.PP
+.RS "4"
+.nf
+epx imports statistics [flags]
+.fi
+.RE
+.PP
+Reads the import statistics of the last 30 days for the whole tenant: RUNS counts the runs started, SUCCEEDED, PARTIAL, FAILED and CANCELLED how they ended, ACTIVE those queued or running now, and RECORDS READ and RECORDS FAILED the records. \fB\-o json\fR adds the rates, a daily series, each stream\(aqs health, the failing streams, an error breakdown and the streams added or removed. Another window or scope, e.g. one configuration (\fBepx imports job\-groups\fR lists sets of them): \fBepx api get /importtool/{tenant}/stats \-p configId=ID \-p from=2026\-09\-01T00:00:00Z \-p granularity=WEEK \-\-scope importtool.import_trigger\fR.
+.PP
+Requires the importtool.import_trigger scope. Opt\-in: epx requests a write\-capable scope for a read only when given \fB\-\-allow\-write\-scope\fR.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-allow\-write\-scope\fR
+Opt in to requesting importtool.import_trigger, which can also change data (required).
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among RUNS, SUCCEEDED, PARTIAL, FAILED, CANCELLED, ACTIVE, RECORDS READ, RECORDS FAILED.
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.SS "epx imports streams"
+Read import streams and the records they imported; queue their files.
+.PP
+.RS "4"
+.nf
+epx imports streams [flags]
+epx imports streams [command]
+.fi
+.RE
+.PP
+Reads an import stream, which imports one source of a configuration, an entity or files, into an Emporix type. A stream\(aqs ID is the one that \fBepx imports configurations streams CONFIGURATION_ID\fR shows. \fBepx imports streams files\fR reads and changes the queue of the files that a file\-based stream imports.
+.PP
+Its reads require the importtool.import_trigger scope. Opt\-in: epx requests a write\-capable scope for a read only when given \fB\-\-allow\-write\-scope\fR. Its writes require the importtool.import_trigger scope.
+.SS "epx imports streams files"
+Read and change the files that a file\-based stream imports.
+.PP
+.RS "4"
+.nf
+epx imports streams files [flags]
+epx imports streams files [command]
+.fi
+.RE
+.PP
+Reads the file queue of a file\-based import stream: the files that it waits to import, in the order that its next run reads them, and those it dealt with; uploads a file to it, sets the order of the waiting files and removes one. Nothing is imported until a run starts (\fBepx imports configurations trigger\fR). A file\-based stream reads its files by its fileMode, SNAPSHOT by default. A SNAPSHOT stream takes each file as the whole picture: its run reads only the most recently arrived waiting file and may report the older ones superseded, in their MESSAGE. An INCREMENTAL stream takes each file as a change set: its run reads them all, in load order, a later file\(aqs values winning on a key that an earlier one carries too. A stream without fileMode reads no files (SOURCE of \fBepx imports streams get ID\fR shows it).
+.PP
+Its reads require the importtool.import_trigger scope. Opt\-in: epx requests a write\-capable scope for a read only when given \fB\-\-allow\-write\-scope\fR. Its writes require the importtool.import_trigger scope.
+.SS "epx imports streams files delete"
+Remove a waiting file from a stream\(aqs queue.
+.PP
+.RS "4"
+.nf
+epx imports streams files delete STREAM_ID ID [flags]
+.fi
+.RE
+.PP
+Removes the waiting file ID from the queue of the stream STREAM_ID and deletes its content. Only a waiting file is removed: one that a run claimed or imported is a conflict (exit 5), as is any while the stream\(aqs job has a run in flight. STREAM_ID is the ID that \fBepx imports configurations streams CONFIGURATION_ID\fR shows; an unknown one is not found. ID is the ID that \fBepx imports streams files list STREAM_ID\fR shows; an unknown one is not found.
+.PP
+Deletes data, which cannot be undone. On a terminal, epx sends DELETE only once you type ID at its prompt. \fB\-\-yes\fR sends without asking (required without a terminal); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the importtool.import_trigger scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal).
+.SS "epx imports streams files limits"
+Show the most bytes that an upload to a stream takes.
+.PP
+.RS "4"
+.nf
+epx imports streams files limits STREAM_ID [flags]
+.fi
+.RE
+.PP
+Reads the largest file that the environment takes in \fBepx imports streams files upload\fR: MAX UPLOAD BYTES, which the API gateway in front of the Import Service sets where GATEWAY LIMITED is true (it refuses a larger file with its own 413 before the service sees it), and UPLOAD SUPPORTED, false where the environment has nowhere to store an uploaded file (an upload is then answered 503 Service Unavailable). A larger file can be published at an HTTP(S) URL that the stream\(aqs connection reads instead, a change that needs importtool.import_manage, which epx does not request. STREAM_ID is the ID that \fBepx imports configurations streams CONFIGURATION_ID\fR shows; an unknown one is not found.
+.PP
+Requires the importtool.import_trigger scope. Opt\-in: epx requests a write\-capable scope for a read only when given \fB\-\-allow\-write\-scope\fR.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-allow\-write\-scope\fR
+Opt in to requesting importtool.import_trigger, which can also change data (required).
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among MAX UPLOAD BYTES, GATEWAY LIMITED, UPLOAD SUPPORTED.
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.SS "epx imports streams files list"
+List the files that a stream waits to import and those it dealt with.
+.PP
+.RS "4"
+.nf
+epx imports streams files list STREAM_ID [flags]
+.fi
+.RE
+.PP
+Reads the file queue of a file\-based stream. First come the files waiting, in the order that its next run reads them: LOAD ORDER is a file\(aqs place among all the files waiting, e.g. 1 of 3. A file\-based stream reads its files by its fileMode, SNAPSHOT by default. A SNAPSHOT stream takes each file as the whole picture: its run reads only the most recently arrived waiting file and may report the older ones superseded, in their MESSAGE. An INCREMENTAL stream takes each file as a change set: its run reads them all, in load order, a later file\(aqs values winning on a key that an earlier one carries too. A stream without fileMode reads no files (SOURCE of \fBepx imports streams get ID\fR shows it). Emporix lists up to 2000 waiting files: where more wait, the last LOAD ORDER listed ends below the total, e.g. 2000 of 2500, and \fBepx imports streams files order\fR cannot reorder them. Then comes the history, newest first and without LOAD ORDER: up to \fB\-\-history\-limit\fR files that a run claimed (STATUS IN_PROGRESS), read to the end (PROCESSED, also with records that failed, as MESSAGE says) or could not import (FAILED: it can be uploaded again). SIZE is in bytes, QUEUED when the file was uploaded, PROCESSED when its import ended and READ the records read from it. A file\(aqs load rank and run are only in \fB\-o json\fR. STREAM_ID is the ID that \fBepx imports configurations streams CONFIGURATION_ID\fR shows; an unknown one is not found.
+.PP
+Requires the importtool.import_trigger scope. Opt\-in: epx requests a write\-capable scope for a read only when given \fB\-\-allow\-write\-scope\fR.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-allow\-write\-scope\fR
+Opt in to requesting importtool.import_trigger, which can also change data (required).
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, LOAD ORDER, NAME, STATUS, SIZE, QUEUED, PROCESSED, READ, MESSAGE.
+.TP
+\fB\-\-history\-limit <FILES>\fR
+The most FILES of the history to list, newest first: 1 to 500 (Emporix: 100 without it).
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.SS "epx imports streams files order"
+Set the order in which a stream imports its waiting files.
+.PP
+.RS "4"
+.nf
+epx imports streams files order STREAM_ID [flags]
+.fi
+.RE
+.PP
+Sets the order in which the stream STREAM_ID reads its waiting files: \fB\-\-id\fR names each one, the first to load first, as \fBepx imports streams files list STREAM_ID\fR shows its ID; \fB\-\-file\fR gives the JSON array of their ids instead. The order matters only for an INCREMENTAL stream, as that list says. Emporix takes every waiting file, no more and no fewer (otherwise 400 Bad Request, exit 1), and answers with the waiting files in their new order. A stream whose job has a run in flight, or with more waiting files than the list shows, is a conflict (exit 5). STREAM_ID is the ID that \fBepx imports configurations streams CONFIGURATION_ID\fR shows; an unknown one is not found.
+.PP
+Changes data: on a terminal, epx asks before it sends PUT. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the importtool.import_trigger scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte instead of the one that epx makes (\- reads standard input; sending it then needs \fB\-\-yes\fR).
+.TP
+\fB\-\-id <ID>\fR
+The ID of a waiting file, the first to load first (repeatable): every waiting file (required without \fB\-\-file\fR).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.PP
+\fBExamples:\fR
+.PP
+.RS "4"
+.nf
+epx imports streams files order 3fa85f64\-5717\-4562\-b3fc\-2c963f66afa6 \-\-id 9b1deb4d\-3b7d\-4bad\-9bdd\-2b0d7b3dcb6d \-\-id c56a4180\-65aa\-42ec\-a945\-5fd21dec0538
+.fi
+.RE
+.SS "epx imports streams files upload"
+Upload a file for a stream to import.
+.PP
+.RS "4"
+.nf
+epx imports streams files upload STREAM_ID [flags]
+.fi
+.RE
+.PP
+Uploads the delimited file (CSV or a variant) that \fB\-\-upload\fR names to the queue of the file\-based stream STREAM_ID, which imports it on its next run: nothing is imported now. The file\(aqs name is sent with it and tells Emporix a compression, such as .gz. Emporix answers with the file queued, whose id \fBepx imports streams files order\fR and \fBepx imports streams files delete\fR take. Which waiting files a run reads depends on the stream\(aqs fileMode, as \fBepx imports streams files list STREAM_ID\fR says. Emporix knows a file by its content, whatever its name, and never imports it twice: content that the stream imported or queued already is a conflict (exit 5), as is an upload to a stream that reads no files or one that would replace content that a run in flight reads; a file that FAILED is taken again. epx sends a file of up to 30 MB including the form, and the environment may take less (\fBepx imports streams files limits\fR): Emporix answers a larger one with 413 Request Entity Too Large (exit 1). A large file may need a longer \fB\-\-timeout\fR, e.g. \fB\-\-timeout\fR 5m, as it bounds the whole request. A 503 Service Unavailable (exit 1) comes from an environment that cannot store uploads (UPLOAD SUPPORTED false in \fBepx imports streams files limits\fR), which queued nothing, or from a gateway that failed, after which the file may have been queued: check \fBepx imports streams files list STREAM_ID\fR before you send it again; if it was queued, a resend is a conflict (exit 5), not a second import. STREAM_ID is the ID that \fBepx imports configurations streams CONFIGURATION_ID\fR shows; an unknown one is not found.
+.PP
+Changes data: on a terminal, epx asks before it sends POST. \fB\-\-yes\fR sends without asking (required without a terminal); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the importtool.import_trigger scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-upload <PATH>\fR
+The delimited file in PATH to queue (up to 30 MB including the form), sent with its name (required).
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal).
+.PP
+\fBExamples:\fR
+.PP
+.RS "4"
+.nf
+epx imports streams files upload 3fa85f64\-5717\-4562\-b3fc\-2c963f66afa6 \-\-upload vendors.csv
+.fi
+.RE
+.SS "epx imports streams get"
+Show one stream.
+.PP
+.RS "4"
+.nf
+epx imports streams get ID [flags]
+.fi
+.RE
+.PP
+Reads an import stream, which imports one source of a configuration, an entity or files, into an Emporix type. A stream\(aqs ID is the one that \fBepx imports configurations streams CONFIGURATION_ID\fR shows. SOURCE is the stream\(aqs source entity, followed for a file\-based stream (which may name no entity) by SNAPSHOT files or INCREMENTAL files, read as \fBepx imports streams files\fR explains. TARGET TYPE is the Emporix type it writes to (a discriminator, in \fB\-o json\fR, may route records to others), MODE STANDALONE, or COMPOSITE_CHILD or COMPOSITE_MERGE for a stream that adds to the records of another. A stream\(aqs source dataset (sourceDataset, such as the key column and the file format), connection, and delta, delete, write and health settings are only in \fB\-o json\fR.
+.PP
+Requires the importtool.import_trigger scope. Opt\-in: epx requests a write\-capable scope for a read only when given \fB\-\-allow\-write\-scope\fR.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-allow\-write\-scope\fR
+Opt in to requesting importtool.import_trigger, which can also change data (required).
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, NAME, SOURCE, TARGET TYPE, MODE, ENABLED.
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.SS "epx imports streams records"
+List the records a stream imported.
+.PP
+.RS "4"
+.nf
+epx imports streams records STREAM_ID [flags]
+.fi
+.RE
+.PP
+Reads the records a stream imported, with the columns of \fBepx imports records\fR. STREAM_ID is the ID that \fBepx imports configurations streams CONFIGURATION_ID\fR shows; an unknown one lists nothing.
+.PP
+Requires the importtool.import_trigger scope. Opt\-in: epx requests a write\-capable scope for a read only when given \fB\-\-allow\-write\-scope\fR.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-allow\-write\-scope\fR
+Opt in to requesting importtool.import_trigger, which can also change data (required).
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, KEY, TYPE, OUTCOME, IMPORTED.
+.TP
+\fB\-\-limit <n>\fR
+Print at most n items; paged reads stop early where they safely can (0: every item).
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-stream\fR
+Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes \fB\-o\fR, \fB\-\-columns\fR and \fB\-\-no\-headers\fR).
+.SS "epx imports types"
+List the types that hold imported records.
+.PP
+.RS "4"
+.nf
+epx imports types [flags]
+.fi
+.RE
+.PP
+Reads the target types that hold imported records (\fBepx imports records\fR lists those of one). The service returns them whole, so they are read with one request.
+.PP
+Requires the importtool.import_trigger scope. Opt\-in: epx requests a write\-capable scope for a read only when given \fB\-\-allow\-write\-scope\fR.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-allow\-write\-scope\fR
+Opt in to requesting importtool.import_trigger, which can also change data (required).
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among TYPE.
+.TP
+\fB\-\-limit <n>\fR
+Print at most n items; paged reads stop early where they safely can (0: every item).
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-stream\fR
+Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes \fB\-o\fR, \fB\-\-columns\fR and \fB\-\-no\-headers\fR).
+.SH "SEE ALSO"
+\fBepx\fR(1) for the global options, the credentials epx reads and its exit codes; https://commerce-cloud-integrations.github.io/emporix-cli/commands/imports

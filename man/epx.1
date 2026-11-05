@@ -1,0 +1,209 @@
+.TH "EPX" "1" "" "epx" "epx manual"
+.SH "NAME"
+epx \- command\-line client for the Emporix Commerce APIs
+.SH "SYNOPSIS"
+.RS "4"
+.nf
+epx [flags]
+epx [command]
+.fi
+.RE
+.SH "DESCRIPTION"
+Command\-line client for the Emporix Commerce APIs.
+.PP
+Credentials are read from the environment:
+.PP
+.RS "4"
+.nf
+EMPORIX_TENANT, EMPORIX_CLIENT_ID, EMPORIX_CLIENT_SECRET (and optionally EMPORIX_API_URL).
+.fi
+.RE
+.PP
+Where none of these is set, a profile (\fBepx profile add\fR) gives them, its client secret from the OS keychain: the profile that \fB\-\-profile\fR names, else EPX_PROFILE, else the default profile (\fBepx profile use\fR). The two never mix, and naming a profile while one is set is a usage error. \fB\-\-tenant\fR overrides the tenant of either. A profile\(aqs default site and language apply where a command needs a site or shows translations and the flag is not given, on the profile\(aqs tenant.
+.PP
+Exit codes: 0 success, 1 error, 2 invalid usage or configuration, 3 authentication or missing scopes, 4 not found, 5 conflict: a write that Emporix answered with 409 Conflict, as when the item changed since it was read or exists already, or a \fBunits update\fR or \fBcatalogs patch\fR with metadata.version answered with 404 Not Found, as the Unit and Catalog services answer a stale version. A 403 Forbidden that the help of a command calls a refusal of its input exits 1.
+.SH "GLOBAL OPTIONS"
+Every command takes these options.
+.TP
+\fB\-h, \-\-help\fR
+Help for epx.
+.TP
+\fB\-\-profile <name>\fR
+Profile to use (default from EPX_PROFILE, else the default profile).
+.TP
+\fB\-\-tenant <string>\fR
+Emporix tenant (default from EMPORIX_TENANT, else the profile).
+.TP
+\fB\-\-timeout <duration>\fR
+Timeout for each HTTP request. Default: \fB30s\fR.
+.SH "COMMANDS"
+.TP
+\fBepx\-ai\fR(1)
+Read and change AI agents and their setup, chat with them, generate texts.
+.TP
+\fBepx\-api\fR(1)
+Send requests to any Emporix API path.
+.TP
+\fBepx\-auth\fR(1)
+Check Emporix credentials.
+.TP
+\fBepx\-availability\fR(1)
+Read and change availability.
+.TP
+\fBepx\-brands\fR(1)
+Read, create, change and delete brands.
+.TP
+\fBepx\-carts\fR(1)
+Read and change carts and their items and discounts.
+.TP
+\fBepx\-catalogs\fR(1)
+Read and change catalogs.
+.TP
+\fBepx\-categories\fR(1)
+Read and change categories and the products assigned to them.
+.TP
+\fBepx\-category\-trees\fR(1)
+Read and rebuild category trees.
+.TP
+\fBepx\-changelog\fR(1)
+Read the change history (audit log).
+.TP
+\fBepx\-completion\fR(1)
+Generate the autocompletion script for the specified shell.
+.TP
+\fBepx\-configurations\fR(1)
+Read and change tenant configurations.
+.TP
+\fBepx\-contact\-assignments\fR(1)
+Read and change which customers are contacts of which legal entities.
+.TP
+\fBepx\-countries\fR(1)
+Read countries, and activate or deactivate them.
+.TP
+\fBepx\-coupons\fR(1)
+Read, create, change and redeem coupons.
+.TP
+\fBepx\-currencies\fR(1)
+Read, create, change and delete currencies.
+.TP
+\fBepx\-custom\-entities\fR(1)
+Read and change custom entity types and their instances.
+.TP
+\fBepx\-customer\-locations\fR(1)
+Read and change the locations of B2B customers.
+.TP
+\fBepx\-customers\fR(1)
+Read and change customers and their addresses.
+.TP
+\fBepx\-delivery\-times\fR(1)
+Read and change delivery times and their time slots; read the delivery windows of a cart.
+.TP
+\fBepx\-exchange\-rates\fR(1)
+Read, create, change and delete currency exchange rates.
+.TP
+\fBepx\-fees\fR(1)
+Read and change fees and which items have them.
+.TP
+\fBepx\-iam\fR(1)
+Read and change IAM users, groups and access rights.
+.TP
+\fBepx\-imports\fR(1)
+Read import configurations, runs and records; queue files, start and schedule runs.
+.TP
+\fBepx\-indexing\fR(1)
+Read and configure search index providers; reindex.
+.TP
+\fBepx\-invoice\-jobs\fR(1)
+Create and read invoice jobs.
+.TP
+\fBepx\-labels\fR(1)
+Read, create, change and delete labels.
+.TP
+\fBepx\-legal\-entities\fR(1)
+Read and change legal entities (B2B companies); read their parents.
+.TP
+\fBepx\-media\fR(1)
+Read, upload, link and change media assets.
+.TP
+\fBepx\-orders\fR(1)
+Read, create and change orders and their status.
+.TP
+\fBepx\-payment\-modes\fR(1)
+Read, create, update and delete payment modes.
+.TP
+\fBepx\-payment\-transactions\fR(1)
+Read payment transactions; authorize, capture, refund and cancel payments.
+.TP
+\fBepx\-price\-lists\fR(1)
+Read and change price lists and their prices.
+.TP
+\fBepx\-price\-models\fR(1)
+Read and change price models.
+.TP
+\fBepx\-prices\fR(1)
+Read and change prices.
+.TP
+\fBepx\-product\-templates\fR(1)
+Read, create, update and delete product templates.
+.TP
+\fBepx\-products\fR(1)
+Read, create, update and delete products.
+.TP
+\fBepx\-profile\fR(1)
+Manage profiles: named settings and credentials of a tenant.
+.TP
+\fBepx\-quotes\fR(1)
+Read, create and change quotes, their PDF, history and reasons.
+.TP
+\fBepx\-regions\fR(1)
+Read regions.
+.TP
+\fBepx\-returns\fR(1)
+Read, create, change and delete returns.
+.TP
+\fBepx\-reward\-points\fR(1)
+Read and change reward points and the ways to redeem them.
+.TP
+\fBepx\-schemas\fR(1)
+Read, create, change and delete custom schemas and schema references.
+.TP
+\fBepx\-search\fR(1)
+Search documents; read and change search indexes and saved searches.
+.TP
+\fBepx\-segments\fR(1)
+Read and change customer segments and what is assigned to them.
+.TP
+\fBepx\-sequential\-ids\fR(1)
+Read, create, activate and delete sequential ID schemas; issue IDs.
+.TP
+\fBepx\-session\-contexts\fR(1)
+Read and change session contexts.
+.TP
+\fBepx\-shipping\fR(1)
+Read and change shipping zones, methods and groups, and calculate shipping fees.
+.TP
+\fBepx\-shopping\-lists\fR(1)
+Read, create, replace and delete customers\(aq shopping lists.
+.TP
+\fBepx\-sites\fR(1)
+Read, create and change sites and their mixins.
+.TP
+\fBepx\-taxes\fR(1)
+Read and change tax configurations, and calculate net and gross prices.
+.TP
+\fBepx\-units\fR(1)
+Read and change units of measurement; read unit types and convert between units.
+.TP
+\fBepx\-vendor\-locations\fR(1)
+Read and change the locations of vendors.
+.TP
+\fBepx\-vendors\fR(1)
+Read and change vendors.
+.TP
+\fBepx\-version\fR(1)
+Print the epx version.
+.TP
+\fBepx\-webhooks\fR(1)
+Read and change webhook configurations and subscriptions; read statistics.
+.SH "SEE ALSO"
+The documentation, with guides and the Emporix API coverage of each command: https://commerce-cloud-integrations.github.io/emporix-cli/

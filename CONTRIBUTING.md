@@ -30,12 +30,12 @@ Some tracked files are generated from the command tree, and `go test` fails whil
 out of date. When you change a command or its help, regenerate them:
 
 ```sh
-go test ./internal/cli -run TestCommandReference -update
+go test ./internal/cli -run 'TestCommandReference|TestManPages' -update
 python3 -I site/sync.py
 ```
 
 The first command rewrites the command reference of the documentation site
-(`site/commands`); the second updates the site's navigation.
+(`site/commands`) and the man pages (`man/`); the second updates the site's navigation.
 To preview the site, run `npx mint dev` in `site/`.
 
 ## How epx is organized

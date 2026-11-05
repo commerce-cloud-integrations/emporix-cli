@@ -1,0 +1,146 @@
+.TH "EPX\-SESSION\-CONTEXTS" "1" "" "epx" "epx manual"
+.SH "NAME"
+epx\-session\-contexts \- read and change session contexts
+.SH "SYNOPSIS"
+.RS "4"
+.nf
+epx session\-contexts [flags]
+epx session\-contexts [command]
+.fi
+.RE
+.SH "DESCRIPTION"
+Reads the context of a storefront session: its customer (once logged in, personal data; ANONYMOUS before), site, currency, language, LOCATION (its target country) and active cart; its custom attributes are only in \fB\-o json\fR. Emporix creates the context with the session\(aqs first cart; before that, the session\(aqs ID is not found (exit 4). The context of an anonymous cart may name the tenant\(aqs default site rather than the cart\(aqs, and names no cart once the cart was merged into a customer\(aqs.
+.PP
+Its reads require the sessioncontext.context_manage scope. Opt\-in: epx requests a write\-capable scope for a read only when given \fB\-\-allow\-write\-scope\fR. Its writes require the sessioncontext.context_manage scope.
+.SH "COMMANDS"
+.SS "epx session\-contexts attributes"
+Add and delete custom attributes of session contexts.
+.PP
+.RS "4"
+.nf
+epx session\-contexts attributes [flags]
+epx session\-contexts attributes [command]
+.fi
+.RE
+.PP
+Adds and deletes the custom attributes of a session context, as its context member holds them (\fBepx session\-contexts get ID \-o json\fR).
+.PP
+Requires the sessioncontext.context_manage scope.
+.SS "epx session\-contexts attributes create"
+Add a custom attribute to a session context.
+.PP
+.RS "4"
+.nf
+epx session\-contexts attributes create SESSION_ID [flags]
+.fi
+.RE
+.PP
+Adds the custom attribute \fB\-\-key\fR with the string \fB\-\-value\fR to the context of the storefront session SESSION_ID; \fB\-\-file\fR gives the body instead, e.g. \fB{"key": "k", "value": {"a": "b"}}\fR for a value that is a JSON object. SESSION_ID is the ID of \fBepx session\-contexts get\fR; an unknown one is not found (exit 4). Emporix does not check the version of the context for it.
+.PP
+Changes data: on a terminal, epx asks before it sends POST. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the sessioncontext.context_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte instead of the one that epx makes (\- reads standard input; sending it then needs \fB\-\-yes\fR).
+.TP
+\fB\-\-key <KEY>\fR
+The KEY of the attribute (required without \fB\-\-file\fR).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-value <VALUE>\fR
+The VALUE of the attribute, a string (required without \fB\-\-file\fR).
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SS "epx session\-contexts attributes delete"
+Delete a custom attribute of a session context.
+.PP
+.RS "4"
+.nf
+epx session\-contexts attributes delete SESSION_ID KEY [flags]
+.fi
+.RE
+.PP
+Deletes the custom attribute KEY of the context of the storefront session SESSION_ID. SESSION_ID is the ID of \fBepx session\-contexts get\fR; an unknown one is not found (exit 4). Emporix does not check the version of the context for it.
+.PP
+Deletes data, which cannot be undone. On a terminal, epx sends DELETE only once you type KEY at its prompt. \fB\-\-yes\fR sends without asking (required without a terminal); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the sessioncontext.context_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal).
+.SS "epx session\-contexts get"
+Show one session context.
+.PP
+.RS "4"
+.nf
+epx session\-contexts get ID [flags]
+.fi
+.RE
+.PP
+Reads the context of a storefront session: its customer (once logged in, personal data; ANONYMOUS before), site, currency, language, LOCATION (its target country) and active cart; its custom attributes are only in \fB\-o json\fR. Emporix creates the context with the session\(aqs first cart; before that, the session\(aqs ID is not found (exit 4). The context of an anonymous cart may name the tenant\(aqs default site rather than the cart\(aqs, and names no cart once the cart was merged into a customer\(aqs.
+.PP
+Requires the sessioncontext.context_manage scope. Opt\-in: epx requests a write\-capable scope for a read only when given \fB\-\-allow\-write\-scope\fR.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-allow\-write\-scope\fR
+Opt in to requesting sessioncontext.context_manage, which can also change data (required).
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, CUSTOMER, SITE, CURRENCY, LANGUAGE, LOCATION, CART.
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.SS "epx session\-contexts update"
+Replace a session context.
+.PP
+.RS "4"
+.nf
+epx session\-contexts update ID [flags]
+.fi
+.RE
+.PP
+Replaces the context of the storefront session ID with the JSON in \fB\-\-file\fR, as \fBepx session\-contexts get ID \-o json\fR prints it, with its metadata.version as read, which Emporix requires. With \fB\-\-upsert\fR, Emporix creates the context where the session has none (an upsert). Emporix answers an anonymous or unknown session with 400 Bad Request (exit 1) that requires the header saas\-token, with or without \fB\-\-upsert\fR, which epx does not send; a session that a customer logged in to needs that customer\(aqs token too.
+.PP
+Changes data: on a terminal, epx asks before it sends PUT. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the sessioncontext.context_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-upsert\fR
+Create the context where the session has none.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SH "SEE ALSO"
+\fBepx\fR(1) for the global options, the credentials epx reads and its exit codes; https://commerce-cloud-integrations.github.io/emporix-cli/commands/session-contexts

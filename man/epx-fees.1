@@ -1,0 +1,627 @@
+.TH "EPX\-FEES" "1" "" "epx" "epx manual"
+.SH "NAME"
+epx\-fees \- read and change fees and which items have them
+.SH "SYNOPSIS"
+.RS "4"
+.nf
+epx fees [flags]
+epx fees [command]
+.fi
+.RE
+.SH "DESCRIPTION"
+Reads and changes fees, surcharges on items such as products or payment types, and in \fBassignments\fR which items have which fees. Emporix filters fees by site and documents main as the default site, so list, for\-product and for\-item require \fB\-\-site\fR. create, update and delete change one fee.
+.PP
+Its reads need no OAuth scope. Its writes require different OAuth scopes; the help of each names them.
+.SH "COMMANDS"
+.SS "epx fees assignments"
+Read and change which items have which fees.
+.PP
+.RS "4"
+.nf
+epx fees assignments [flags]
+epx fees assignments [command]
+.fi
+.RE
+.PP
+Reads item fees: which fees apply to which item (a product or a payment type) on a site. Its writes assign fees to an item, by its YRN, or to a product, by its id.
+.PP
+Its reads need no OAuth scope. Its writes require different OAuth scopes; the help of each names them.
+.SS "epx fees assignments create"
+Assign fees to an item on a site.
+.PP
+.RS "4"
+.nf
+epx fees assignments create [flags]
+.fi
+.RE
+.PP
+Assigns the fees that \fB\-\-fee\fR names to the item that \fB\-\-item\fR names on the site that \fB\-\-site\fR names, or those of \fB\-\-file\fR, a JSON object with itemYrn, siteCode and feeIds, and prints the id and YRN of the item fee. \fB\-\-item\fR takes the YRN of an item, e.g. \fB\(aqurn:yaas:saasag:caasproduct:product:TENANT;PRODUCT_ID\(aq\fR (quoted, because the shell would end the command at ;).
+.PP
+Changes data: on a terminal, epx asks before it sends POST. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the fee.item_create scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-fee <ID>\fR
+The ID of a fee, as \fBepx fees list\fR shows it (repeatable; required without \fB\-\-file\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte instead of the one that epx makes (\- reads standard input; sending it then needs \fB\-\-yes\fR).
+.TP
+\fB\-\-item <YRN>\fR
+The YRN of the item to assign the fees to (required without \fB\-\-file\fR).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-site <code>\fR
+The code of the site that the fees apply on (required without \fB\-\-file\fR).
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.PP
+\fBExamples:\fR
+.PP
+.RS "4"
+.nf
+epx fees assignments create \-\-item \(aqurn:yaas:saasag:caasproduct:product:acme1;100200\(aq \e
+  \-\-site AcmeStore_NL \-\-fee f1 \-\-fee f2
+.fi
+.RE
+.SS "epx fees assignments delete"
+Delete the item fee of an item.
+.PP
+.RS "4"
+.nf
+epx fees assignments delete YRN [flags]
+.fi
+.RE
+.PP
+Deletes the item fee of the item YRN, which then has no fees. Without \fB\-\-site\fR, Emporix acts on the item fee on site main. Emporix answers an unknown YRN as one that it deleted (204 No Content). YRN names the item, e.g. \fB\(aqurn:yaas:saasag:caasproduct:product:TENANT;PRODUCT_ID\(aq\fR (quoted, because the shell would end the command at ;).
+.PP
+Deletes every fee of the item YRN with one request, which cannot be undone. On a terminal, epx sends DELETE only once you type YRN at its prompt. \fB\-\-yes\fR sends without asking (required without a terminal); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the fee.item_delete scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-site <CODE>\fR
+The site CODE of the item fee, sent as siteCode.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal).
+.SS "epx fees assignments delete\-fee"
+Remove a fee from an item.
+.PP
+.RS "4"
+.nf
+epx fees assignments delete\-fee YRN FEE_ID [flags]
+.fi
+.RE
+.PP
+Removes the fee FEE_ID from the item fee of the item YRN; Emporix deletes the item fee once it has no fees. Emporix answers an unknown FEE_ID as one that it deleted (204 No Content). YRN names the item, e.g. \fB\(aqurn:yaas:saasag:caasproduct:product:TENANT;PRODUCT_ID\(aq\fR (quoted, because the shell would end the command at ;). FEE_ID is the ID that \fBepx fees list\fR shows.
+.PP
+Deletes data, which cannot be undone. On a terminal, epx sends DELETE only once you type FEE_ID at its prompt. \fB\-\-yes\fR sends without asking (required without a terminal); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the fee.item_delete scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal).
+.SS "epx fees assignments delete\-product"
+Delete the item fee of a product.
+.PP
+.RS "4"
+.nf
+epx fees assignments delete\-product PRODUCT_ID [flags]
+.fi
+.RE
+.PP
+Deletes the item fee of the product PRODUCT_ID, which then has no fees. Without \fB\-\-site\fR, Emporix acts on the item fee on site main. Emporix answers an unknown PRODUCT_ID as one that it deleted (204 No Content). PRODUCT_ID is the product id (as in \fBepx products list\fR), not its code.
+.PP
+Deletes every fee of the product PRODUCT_ID with one request, which cannot be undone. On a terminal, epx sends DELETE only once you type PRODUCT_ID at its prompt. \fB\-\-yes\fR sends without asking (required without a terminal); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the fee.item_delete scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-site <CODE>\fR
+The site CODE of the item fee, sent as siteCode.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal).
+.SS "epx fees assignments delete\-product\-fee"
+Remove a fee from a product.
+.PP
+.RS "4"
+.nf
+epx fees assignments delete\-product\-fee PRODUCT_ID FEE_ID [flags]
+.fi
+.RE
+.PP
+Removes the fee FEE_ID from the item fee of the product PRODUCT_ID on the site of the fee; Emporix deletes the item fee once it has no fees. Emporix answers an unknown FEE_ID as one that it deleted (204 No Content). PRODUCT_ID is the product id (as in \fBepx products list\fR), not its code. FEE_ID is the ID that \fBepx fees list\fR shows.
+.PP
+Deletes data, which cannot be undone. On a terminal, epx sends DELETE only once you type FEE_ID at its prompt. \fB\-\-yes\fR sends without asking (required without a terminal); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the fee.item_delete scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal).
+.SS "epx fees assignments list"
+List the item fees of a site.
+.PP
+.RS "4"
+.nf
+epx fees assignments list [flags]
+.fi
+.RE
+.PP
+Reads item fees: which fees apply to which item (a product or a payment type) on a site. Emporix documents main as the default site, so \fB\-\-site\fR is required; an unknown site lists nothing. ITEM is the item\(aqs YRN, ID the item fee\(aqs id and FEES the ids of its fees, as \fBepx fees list\fR shows them; \fB\-o json\fR shows the response as sent.
+.PP
+No OAuth scope is needed.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ITEM, ID, SITE, FEES.
+.TP
+\fB\-\-limit <n>\fR
+Print at most n items; paged reads stop early where they safely can (0: every item).
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-site <site>\fR
+Site code, e.g. main (required).
+.TP
+\fB\-\-stream\fR
+Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes \fB\-o\fR, \fB\-\-columns\fR and \fB\-\-no\-headers\fR).
+.SS "epx fees assignments search"
+Search the item fees of items.
+.PP
+.RS "4"
+.nf
+epx fees assignments search [flags]
+.fi
+.RE
+.PP
+Reads item fees: which fees apply to which item (a product or a payment type) on a site. Reads the item fees of the items that \fB\-\-item\fR names. Emporix requires a site, which \fB\-\-site\fR names in the query and in the body the flags make, but does not filter by it: the item fees of other sites come too. \fB\-\-item\fR takes the YRN of an item, e.g. \fB\(aqurn:yaas:saasag:caasproduct:product:TENANT;PRODUCT_ID\(aq\fR (quoted, because the shell would end the command at ;).
+.PP
+Changes nothing: Emporix serves this read as POST with a JSON body, which the flags make or \fB\-\-body\fR gives whole. ITEM is the item\(aqs YRN, ID the item fee\(aqs id and FEES the ids of its fees, as \fBepx fees list\fR shows them; \fB\-o json\fR shows the response as sent.
+.PP
+No OAuth scope is needed.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-body <FILE>\fR
+Send the JSON request body in FILE as given (\- reads standard input) instead of the one the other flags make.
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ITEM, ID, SITE, FEES.
+.TP
+\fB\-\-item <YRN>\fR
+The YRN of an item whose fees to read (repeatable; required without \fB\-\-body\fR).
+.TP
+\fB\-\-limit <n>\fR
+Print at most n items; paged reads stop early where they safely can (0: every item).
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-site <site>\fR
+Site code, e.g. main (required).
+.TP
+\fB\-\-stream\fR
+Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes \fB\-o\fR, \fB\-\-columns\fR and \fB\-\-no\-headers\fR).
+.SS "epx fees assignments search\-by\-product"
+Search the item fees of a product on sites.
+.PP
+.RS "4"
+.nf
+epx fees assignments search\-by\-product [flags]
+.fi
+.RE
+.PP
+Reads item fees: which fees apply to which item (a product or a payment type) on a site. Reads the item fees of the product that \fB\-\-product\fR names on the sites that \fB\-\-site\fR names: its id (as in \fBepx products list\fR), not its code. Emporix pages this search in its body, so epx sets pageNumber and pageSize there, also in the body of \fB\-\-body\fR.
+.PP
+Changes nothing: Emporix serves this read as POST with a JSON body, which the flags make or \fB\-\-body\fR gives whole. ITEM is the item\(aqs YRN, ID the item fee\(aqs id and FEES the ids of its fees, as \fBepx fees list\fR shows them; \fB\-o json\fR shows the response as sent.
+.PP
+No OAuth scope is needed.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-body <FILE>\fR
+Send the JSON request body in FILE as given (\- reads standard input) instead of the one the other flags make.
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ITEM, ID, SITE, FEES.
+.TP
+\fB\-\-limit <n>\fR
+Print at most n items; paged reads stop early where they safely can (0: every item).
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-product <ID>\fR
+The ID of the product whose fees to read (required without \fB\-\-body\fR).
+.TP
+\fB\-\-site <code>\fR
+A site code to read them on, e.g. main (repeatable; required without \fB\-\-body\fR).
+.TP
+\fB\-\-stream\fR
+Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes \fB\-o\fR, \fB\-\-columns\fR and \fB\-\-no\-headers\fR).
+.SS "epx fees assignments search\-by\-products"
+Search the item fees of products on a site.
+.PP
+.RS "4"
+.nf
+epx fees assignments search\-by\-products [flags]
+.fi
+.RE
+.PP
+Reads item fees: which fees apply to which item (a product or a payment type) on a site. Reads the item fees of the products that \fB\-\-products\fR names on the site that \fB\-\-site\fR names: their ids (as in \fBepx products list\fR), not their codes, separated by commas. Emporix pages this search in its body, so epx sets pageNumber and pageSize there, also in the body of \fB\-\-body\fR.
+.PP
+Changes nothing: Emporix serves this read as POST with a JSON body, which the flags make or \fB\-\-body\fR gives whole. ITEM is the item\(aqs YRN, ID the item fee\(aqs id and FEES the ids of its fees, as \fBepx fees list\fR shows them; \fB\-o json\fR shows the response as sent.
+.PP
+No OAuth scope is needed.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-body <FILE>\fR
+Send the JSON request body in FILE as given (\- reads standard input) instead of the one the other flags make.
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ITEM, ID, SITE, FEES.
+.TP
+\fB\-\-limit <n>\fR
+Print at most n items; paged reads stop early where they safely can (0: every item).
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-products <IDs>\fR
+The IDs of the products whose fees to read, separated by commas, e.g. 100200,100201 (required without \fB\-\-body\fR).
+.TP
+\fB\-\-site <code>\fR
+The site code to read them on, e.g. main (required without \fB\-\-body\fR).
+.TP
+\fB\-\-stream\fR
+Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes \fB\-o\fR, \fB\-\-columns\fR and \fB\-\-no\-headers\fR).
+.SS "epx fees assignments update"
+Add fees to an item.
+.PP
+.RS "4"
+.nf
+epx fees assignments update YRN [flags]
+.fi
+.RE
+.PP
+Adds the fees that \fB\-\-fee\fR names, or the feeIds of \fB\-\-file\fR, a JSON object such as \fB{"feeIds": ["f1", "f2"]}\fR, to those of the item YRN, creating its item fee where it has none. Emporix removes no fee, with or without \fB\-\-partial\fR, and an empty list changes nothing: delete\-fee removes one. Without \fB\-\-site\fR, Emporix acts on the item fee on site main. YRN names the item, e.g. \fB\(aqurn:yaas:saasag:caasproduct:product:TENANT;PRODUCT_ID\(aq\fR (quoted, because the shell would end the command at ;).
+.PP
+Changes data: on a terminal, epx asks before it sends PUT. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the fee.item_update scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-fee <ID>\fR
+The ID of a fee, as \fBepx fees list\fR shows it (repeatable; required without \fB\-\-file\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte instead of the one that epx makes (\- reads standard input; sending it then needs \fB\-\-yes\fR).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-partial\fR
+Send partial=true instead of partial=false, which Emporix treats alike.
+.TP
+\fB\-\-site <CODE>\fR
+The site CODE of the item fee, sent as siteCode.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SS "epx fees assignments update\-product"
+Add fees to a product on a site.
+.PP
+.RS "4"
+.nf
+epx fees assignments update\-product PRODUCT_ID [flags]
+.fi
+.RE
+.PP
+Adds the fees that \fB\-\-fee\fR names, or the feeIds of \fB\-\-file\fR, a JSON object such as \fB{"feeIds": ["f1", "f2"]}\fR, to those of the product PRODUCT_ID on the site that \fB\-\-site\fR names, creating its item fee where it has none. Emporix removes no fee, with or without \fB\-\-partial\fR, and an empty list changes nothing: delete\-product\-fee removes one. PRODUCT_ID is the product id (as in \fBepx products list\fR), not its code.
+.PP
+Changes data: on a terminal, epx asks before it sends PUT. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the fee.item_update scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-fee <ID>\fR
+The ID of a fee, as \fBepx fees list\fR shows it (repeatable; required without \fB\-\-file\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte instead of the one that epx makes (\- reads standard input; sending it then needs \fB\-\-yes\fR).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-partial\fR
+Send partial=true instead of partial=false, which Emporix treats alike.
+.TP
+\fB\-\-site <site>\fR
+Site code, e.g. main (required).
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SS "epx fees create"
+Create a fee.
+.PP
+.RS "4"
+.nf
+epx fees create [flags]
+.fi
+.RE
+.PP
+Creates the fee in \fB\-\-file\fR, a JSON object with code (unique in the tenant), name, feeType (PERCENT, ABSOLUTE or ABSOLUTE_MULTIPLY_ITEMQUANTITY), feePercentage or feeAbsolute (amount and currency), siteCode and active, and optionally itemType (PRODUCT or PAYMENTTYPE), taxable with taxCode, and activeTimespan, e.g. \fB{"code": "deposit", "name": {"en": "Deposit"}, "feeType": "ABSOLUTE", "feeAbsolute": {"amount": 0.25, "currency": "EUR"}, "siteCode": "AcmeStore_NL", "active": true}\fR. Without an id, Emporix makes one; the response gives it and its YRN. A code that the tenant has already is a conflict (exit 5).
+.PP
+Localized text in the body is a map of translations, e.g. \fB{"en": "Acme", "de": "Acme"}\fR, as \fB\-o json\fR of a read prints it, sent with Content\-Language: *. The Fee Service ignores Content\-Language: it stores a string as sent, in no language, in place of any translations.
+.PP
+Changes data: on a terminal, epx asks before it sends POST. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the fee.fee_create scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SS "epx fees delete"
+Delete a fee.
+.PP
+.RS "4"
+.nf
+epx fees delete ID [flags]
+.fi
+.RE
+.PP
+Deletes the fee ID, which no item has then. Emporix answers an unknown ID as one that it deleted (204 No Content).
+.PP
+Deletes data, which cannot be undone. On a terminal, epx sends DELETE only once you type ID at its prompt. \fB\-\-yes\fR sends without asking (required without a terminal); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the fee.fee_delete scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal).
+.SS "epx fees for\-item"
+List the fees of an item on a site.
+.PP
+.RS "4"
+.nf
+epx fees for\-item YRN [flags]
+.fi
+.RE
+.PP
+Reads fees, surcharges on items such as products or payment types. Emporix filters fees by site and documents main as the default site, so list, for\-product and for\-item require \fB\-\-site\fR; an unknown site lists nothing. TYPE is PERCENT, ABSOLUTE or ABSOLUTE_MULTIPLY_ITEMQUANTITY (the amount times the item quantity), AMOUNT the percentage or the amount in its currency, ITEM TYPE the type of item the fee applies to (PRODUCT or PAYMENTTYPE), and FROM and TO the active time span. YRN names the item, e.g. \fB\(aqurn:yaas:saasag:caasproduct:product:TENANT;PRODUCT_ID\(aq\fR (quoted, because the shell would end the command at ;). An unknown item lists nothing; Emporix fails on a malformed YRN.
+.PP
+No OAuth scope is needed.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, CODE, NAME, TYPE, AMOUNT, ITEM TYPE, SITE, ACTIVE, TAXABLE, FROM, TO.
+.TP
+\fB\-\-language <language>\fR
+Language of localized table text; a missing translation shows another, labeled (\fB\-o json\fR prints all). Default: \fBen\fR.
+.TP
+\fB\-\-limit <n>\fR
+Print at most n items; paged reads stop early where they safely can (0: every item).
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-site <site>\fR
+Site code, e.g. main (required).
+.TP
+\fB\-\-stream\fR
+Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes \fB\-o\fR, \fB\-\-columns\fR and \fB\-\-no\-headers\fR).
+.SS "epx fees for\-product"
+List the fees of a product on a site.
+.PP
+.RS "4"
+.nf
+epx fees for\-product PRODUCT_ID [flags]
+.fi
+.RE
+.PP
+Reads fees, surcharges on items such as products or payment types. Emporix filters fees by site and documents main as the default site, so list, for\-product and for\-item require \fB\-\-site\fR; an unknown site lists nothing. TYPE is PERCENT, ABSOLUTE or ABSOLUTE_MULTIPLY_ITEMQUANTITY (the amount times the item quantity), AMOUNT the percentage or the amount in its currency, ITEM TYPE the type of item the fee applies to (PRODUCT or PAYMENTTYPE), and FROM and TO the active time span. PRODUCT_ID is the product id (as in \fBepx products list\fR), not its code. An unknown id lists nothing.
+.PP
+No OAuth scope is needed.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, CODE, NAME, TYPE, AMOUNT, ITEM TYPE, SITE, ACTIVE, TAXABLE, FROM, TO.
+.TP
+\fB\-\-language <language>\fR
+Language of localized table text; a missing translation shows another, labeled (\fB\-o json\fR prints all). Default: \fBen\fR.
+.TP
+\fB\-\-limit <n>\fR
+Print at most n items; paged reads stop early where they safely can (0: every item).
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-site <site>\fR
+Site code, e.g. main (required).
+.TP
+\fB\-\-stream\fR
+Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes \fB\-o\fR, \fB\-\-columns\fR and \fB\-\-no\-headers\fR).
+.SS "epx fees get"
+Show one fee.
+.PP
+.RS "4"
+.nf
+epx fees get ID [flags]
+.fi
+.RE
+.PP
+Reads fees, surcharges on items such as products or payment types. Emporix filters fees by site and documents main as the default site, so list, for\-product and for\-item require \fB\-\-site\fR; an unknown site lists nothing. TYPE is PERCENT, ABSOLUTE or ABSOLUTE_MULTIPLY_ITEMQUANTITY (the amount times the item quantity), AMOUNT the percentage or the amount in its currency, ITEM TYPE the type of item the fee applies to (PRODUCT or PAYMENTTYPE), and FROM and TO the active time span.
+.PP
+No OAuth scope is needed.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, CODE, NAME, TYPE, AMOUNT, ITEM TYPE, SITE, ACTIVE, TAXABLE, FROM, TO.
+.TP
+\fB\-\-language <language>\fR
+Language of localized table text; a missing translation shows another, labeled (\fB\-o json\fR prints all). Default: \fBen\fR.
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.SS "epx fees list"
+List the fees of a site.
+.PP
+.RS "4"
+.nf
+epx fees list [flags]
+.fi
+.RE
+.PP
+Reads fees, surcharges on items such as products or payment types. Emporix filters fees by site and documents main as the default site, so list, for\-product and for\-item require \fB\-\-site\fR; an unknown site lists nothing. TYPE is PERCENT, ABSOLUTE or ABSOLUTE_MULTIPLY_ITEMQUANTITY (the amount times the item quantity), AMOUNT the percentage or the amount in its currency, ITEM TYPE the type of item the fee applies to (PRODUCT or PAYMENTTYPE), and FROM and TO the active time span.
+.PP
+No OAuth scope is needed.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, CODE, NAME, TYPE, AMOUNT, ITEM TYPE, SITE, ACTIVE, TAXABLE, FROM, TO.
+.TP
+\fB\-\-language <language>\fR
+Language of localized table text; a missing translation shows another, labeled (\fB\-o json\fR prints all). Default: \fBen\fR.
+.TP
+\fB\-\-limit <n>\fR
+Print at most n items; paged reads stop early where they safely can (0: every item).
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-site <site>\fR
+Site code, e.g. main (required).
+.TP
+\fB\-\-stream\fR
+Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes \fB\-o\fR, \fB\-\-columns\fR and \fB\-\-no\-headers\fR).
+.SS "epx fees update"
+Replace or change a fee.
+.PP
+.RS "4"
+.nf
+epx fees update ID [flags]
+.fi
+.RE
+.PP
+Replaces the fee ID with the one in \fB\-\-file\fR, a JSON object as create takes it, or with \fB\-\-partial\fR changes only the members that it gives, which still include code, siteCode, active and feeType (Emporix refuses the body otherwise). Emporix answers an unknown ID with 409 Conflict (exit 5), not as not found.
+.PP
+Localized text in the body is a map of translations, e.g. \fB{"en": "Acme", "de": "Acme"}\fR, as \fB\-o json\fR of a read prints it, sent with Content\-Language: *. The Fee Service ignores Content\-Language: it stores a string as sent, in no language, in place of any translations.
+.PP
+Changes data: on a terminal, epx asks before it sends PUT. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the fee.fee_update scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-partial\fR
+Change only the fields that the body gives; without it, the body replaces the whole fee.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SH "SEE ALSO"
+\fBepx\fR(1) for the global options, the credentials epx reads and its exit codes; https://commerce-cloud-integrations.github.io/emporix-cli/commands/fees

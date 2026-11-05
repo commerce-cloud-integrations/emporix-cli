@@ -1,0 +1,406 @@
+.TH "EPX\-INDEXING" "1" "" "epx" "epx manual"
+.SH "NAME"
+epx\-indexing \- read and configure search index providers; reindex
+.SH "SYNOPSIS"
+.RS "4"
+.nf
+epx indexing [flags]
+epx indexing [command]
+.fi
+.RE
+.SH "DESCRIPTION"
+Reads and configures the search index providers (e.g. Algolia) and starts and follows reindex jobs.
+.PP
+Its reads require different OAuth scopes; the help of each names them. Its writes require the indexing.search_manage scope.
+.SH "COMMANDS"
+.SS "epx indexing providers"
+Read, create, update and delete index providers.
+.PP
+.RS "4"
+.nf
+epx indexing providers [flags]
+epx indexing providers [command]
+.fi
+.RE
+.PP
+Reads index provider configurations. Search and write keys are only in \fB\-o json\fR; \fBepx indexing providers public\fR shows what a storefront sees and needs no scope.
+.PP
+Its reads require different OAuth scopes; the help of each names them. Its writes require the indexing.search_manage scope.
+.SS "epx indexing providers create"
+Create an index provider configuration.
+.PP
+.RS "4"
+.nf
+epx indexing providers create [flags]
+.fi
+.RE
+.PP
+Creates the configuration of an index provider, whose ID is the provider\(aqs name. The JSON in \fB\-\-file\fR holds provider (ALGOLIA or BATTERY_INCLUDED, required), active, applicationId, indexName, searchKey, writeKey and, for BATTERY_INCLUDED, excludedMixinKeys or includedMixinPaths. Only one provider can be active at a time. Emporix checks the keys of BATTERY_INCLUDED before it stores them: it refuses invalid ones (400 Bad Request, exit 1) and stores nothing when it cannot check them (502 Bad Gateway).
+.PP
+Changes data: on a terminal, epx asks before it sends POST. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the indexing.search_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.PP
+\fBExamples:\fR
+.PP
+.RS "4"
+.nf
+epx indexing providers create \-\-file algolia.json \-\-dry\-run
+.fi
+.RE
+.SS "epx indexing providers delete"
+Delete an index provider configuration.
+.PP
+.RS "4"
+.nf
+epx indexing providers delete PROVIDER [flags]
+.fi
+.RE
+.PP
+Deletes the configuration of PROVIDER, as \fBepx indexing providers list\fR shows it.
+.PP
+Deletes data, which cannot be undone. On a terminal, epx sends DELETE only once you type PROVIDER at its prompt. \fB\-\-yes\fR sends without asking (required without a terminal); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the indexing.search_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal).
+.SS "epx indexing providers get"
+Show one provider.
+.PP
+.RS "4"
+.nf
+epx indexing providers get PROVIDER [flags]
+.fi
+.RE
+.PP
+Reads index provider configurations. Search and write keys are only in \fB\-o json\fR; \fBepx indexing providers public\fR shows what a storefront sees and needs no scope.
+.PP
+Requires the indexing.search_view scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among PROVIDER, ACTIVE, APPLICATION ID, INDEX.
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.SS "epx indexing providers list"
+List index providers.
+.PP
+.RS "4"
+.nf
+epx indexing providers list [flags]
+.fi
+.RE
+.PP
+Reads index provider configurations. Search and write keys are only in \fB\-o json\fR; \fBepx indexing providers public\fR shows what a storefront sees and needs no scope.
+.PP
+Requires the indexing.search_view scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among PROVIDER, ACTIVE, APPLICATION ID, INDEX.
+.TP
+\fB\-\-limit <n>\fR
+Print at most n items; paged reads stop early where they safely can (0: every item).
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-stream\fR
+Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes \fB\-o\fR, \fB\-\-columns\fR and \fB\-\-no\-headers\fR).
+.SS "epx indexing providers public"
+Read index providers as a storefront sees them.
+.PP
+.RS "4"
+.nf
+epx indexing providers public [flags]
+epx indexing providers public [command]
+.fi
+.RE
+.PP
+Reads the public index provider configurations, as a storefront sees them. The search key is only in \fB\-o json\fR.
+.PP
+No OAuth scope is needed.
+.SS "epx indexing providers public get"
+Show one public provider.
+.PP
+.RS "4"
+.nf
+epx indexing providers public get PROVIDER [flags]
+.fi
+.RE
+.PP
+Reads the public index provider configurations, as a storefront sees them. The search key is only in \fB\-o json\fR.
+.PP
+No OAuth scope is needed.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among PROVIDER, ACTIVE, APPLICATION ID, INDEX.
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.SS "epx indexing providers public list"
+List index providers as a storefront sees them.
+.PP
+.RS "4"
+.nf
+epx indexing providers public list [flags]
+.fi
+.RE
+.PP
+Reads the public index provider configurations, as a storefront sees them. The search key is only in \fB\-o json\fR.
+.PP
+No OAuth scope is needed.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among PROVIDER, ACTIVE, APPLICATION ID, INDEX.
+.TP
+\fB\-\-limit <n>\fR
+Print at most n items; paged reads stop early where they safely can (0: every item).
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-stream\fR
+Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes \fB\-o\fR, \fB\-\-columns\fR and \fB\-\-no\-headers\fR).
+.SS "epx indexing providers update"
+Replace an index provider configuration.
+.PP
+.RS "4"
+.nf
+epx indexing providers update PROVIDER [flags]
+.fi
+.RE
+.PP
+Replaces the configuration of PROVIDER, as \fBepx indexing providers list\fR shows it. The reference documents not found (exit 4) for an unknown one, as update creates none; for BATTERY_INCLUDED Emporix checks the write key first, so an invalid configuration is answered 400 before that (the not\-found answer was not checked with a valid key). The JSON in \fB\-\-file\fR holds provider (ALGOLIA or BATTERY_INCLUDED, required), active, applicationId, indexName, searchKey, writeKey and, for BATTERY_INCLUDED, excludedMixinKeys or includedMixinPaths. Only one provider can be active at a time. Emporix checks the keys of BATTERY_INCLUDED before it stores them: it refuses invalid ones (400 Bad Request, exit 1) and stores nothing when it cannot check them (502 Bad Gateway).
+.PP
+Changes data: on a terminal, epx asks before it sends PUT. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the indexing.search_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.PP
+\fBExamples:\fR
+.PP
+.RS "4"
+.nf
+epx indexing providers update ALGOLIA \-\-file algolia.json
+.fi
+.RE
+.SS "epx indexing reindex"
+Reindex every product (deprecated by Emporix).
+.PP
+.RS "4"
+.nf
+epx indexing reindex [flags]
+.fi
+.RE
+.PP
+Reindexes every product of the tenant, sending the mode FULL, the only one there is, unless \fB\-\-file\fR gives the body. Emporix has deprecated this endpoint: \fBepx indexing reindex\-jobs create\fR starts a reindex job instead, which its \fB\-\-wait\fR follows. For BATTERY_INCLUDED, Emporix checks the stored keys first (400 Bad Request when they are invalid, 502 when it cannot check them).
+.PP
+Changes data: on a terminal, epx asks before it sends POST. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the indexing.search_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte instead of the one that epx makes (\- reads standard input; sending it then needs \fB\-\-yes\fR).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.PP
+\fBExamples:\fR
+.PP
+.RS "4"
+.nf
+epx indexing reindex \-\-dry\-run
+.fi
+.RE
+.SS "epx indexing reindex\-jobs"
+Read and start reindex jobs.
+.PP
+.RS "4"
+.nf
+epx indexing reindex\-jobs [flags]
+epx indexing reindex\-jobs [command]
+.fi
+.RE
+.PP
+Reads reindex jobs and their progress. Emporix fails when asked for the number of jobs, so list cannot check it: a job that moves between pages while they are read can be shown twice or missed.
+.PP
+Its reads require the indexing.search_view scope. Its writes require the indexing.search_manage scope.
+.SS "epx indexing reindex\-jobs create"
+Start a reindex job.
+.PP
+.RS "4"
+.nf
+epx indexing reindex\-jobs create [flags]
+.fi
+.RE
+.PP
+Starts a job that indexes every entity of TYPE again; with \fB\-\-rag\fR, it also embeds products for RAG search. TYPE is PRODUCT, ORDER, CUSTOMER or LEGAL\-ENTITY in any case, or a custom entity type, whose ID \fBepx custom\-entities list\fR shows. LEGAL\-ENTITY takes a hyphen, not an underscore. Searches of customers and legal entities, in the Search Service and by the tools of agents, read what a CUSTOMER or LEGAL\-ENTITY job indexes. Emporix answers with the job, or with the job of that type that is IN_PROGRESS already. A job is PENDING while others take its turn, PUBLISHED once every entity was sent to the index and SUCCESS once the index took them all. For BATTERY_INCLUDED, Emporix checks the stored keys before it starts a PRODUCT job (400 Bad Request when they are invalid, 502 when it cannot check them).
+.PP
+Changes data: on a terminal, epx asks before it sends POST. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+\fB\-\-wait\fR then reads the job again every \fB\-\-poll\-interval\fR, as \fBepx indexing reindex\-jobs get\fR does and with the indexing.search_view scope too, saying on standard error how its status changes, until it ends: then it prints the job and exits 0 if it ended SUCCESS, else 1. When \fB\-\-wait\-timeout\fR passes first, it prints the job as last read and exits 1; the job goes on. When a read of the job fails, it prints the job as last read and exits as that read does, e.g. 4 when the job is not found.
+.PP
+Requires the indexing.search_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-entity\-type <TYPE>\fR
+The TYPE of the entities to reindex: PRODUCT, ORDER, CUSTOMER or LEGAL\-ENTITY in any case, or a custom entity type (required without \fB\-\-file\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte instead of the one that epx makes (\- reads standard input; sending it then needs \fB\-\-yes\fR).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-poll\-interval <duration>\fR
+How often \fB\-\-wait\fR reads the reindex job, 1s or more (only with \fB\-\-wait\fR). Default: \fB5s\fR.
+.TP
+\fB\-\-rag\fR
+Embed products for RAG search too (PRODUCT only).
+.TP
+\fB\-\-wait\fR
+Wait until the reindex job ends, then print it.
+.TP
+\fB\-\-wait\-timeout <duration>\fR
+How long \fB\-\-wait\fR waits, 1s or more (only with \fB\-\-wait\fR). Default: \fB30m\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.PP
+\fBExamples:\fR
+.PP
+.RS "4"
+.nf
+epx indexing reindex\-jobs create \-\-entity\-type PRODUCT \-\-rag \-\-wait
+epx indexing reindex\-jobs create \-\-entity\-type LEGAL\-ENTITY \-\-wait
+epx indexing reindex\-jobs create \-\-file reindex.json \-\-yes
+.fi
+.RE
+.SS "epx indexing reindex\-jobs get"
+Show one reindex job.
+.PP
+.RS "4"
+.nf
+epx indexing reindex\-jobs get ID [flags]
+.fi
+.RE
+.PP
+Reads reindex jobs and their progress. Emporix fails when asked for the number of jobs, so list cannot check it: a job that moves between pages while they are read can be shown twice or missed.
+.PP
+Requires the indexing.search_view scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, ENTITY, STATUS, PROCESSED, EXPECTED, CREATED, MODIFIED, MESSAGE.
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.SS "epx indexing reindex\-jobs list"
+List reindex jobs.
+.PP
+.RS "4"
+.nf
+epx indexing reindex\-jobs list [flags]
+.fi
+.RE
+.PP
+Reads reindex jobs and their progress. Emporix fails when asked for the number of jobs, so list cannot check it: a job that moves between pages while they are read can be shown twice or missed.
+.PP
+Requires the indexing.search_view scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, ENTITY, STATUS, PROCESSED, EXPECTED, CREATED, MODIFIED, MESSAGE.
+.TP
+\fB\-\-limit <n>\fR
+Print at most n items; paged reads stop early where they safely can (0: every item).
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-query <filter>\fR
+Emporix q filter, passed as given, e.g. code:(A1,A2); space\-separated conditions must all match (fields mostly as in \fB\-o json\fR).
+.TP
+\fB\-\-sort <order>\fR
+Emporix sort order, passed as given, e.g. code or name.en:desc,code; fields mostly as in \fB\-o json\fR (Emporix may ignore an unknown one).
+.TP
+\fB\-\-stream\fR
+Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes \fB\-o\fR, \fB\-\-columns\fR and \fB\-\-no\-headers\fR).
+.SH "SEE ALSO"
+\fBepx\fR(1) for the global options, the credentials epx reads and its exit codes; https://commerce-cloud-integrations.github.io/emporix-cli/commands/indexing

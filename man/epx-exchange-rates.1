@@ -1,0 +1,184 @@
+.TH "EPX\-EXCHANGE\-RATES" "1" "" "epx" "epx manual"
+.SH "NAME"
+epx\-exchange\-rates \- read, create, change and delete currency exchange rates
+.SH "SYNOPSIS"
+.RS "4"
+.nf
+epx exchange\-rates [flags]
+epx exchange\-rates [command]
+.fi
+.RE
+.SH "DESCRIPTION"
+Reads currency exchange rates. CODE names a rate, e.g. EUR_CHF.
+.PP
+Its reads require the currency.currency_read scope. Its writes require the currency.currency_manage scope.
+.SH "COMMANDS"
+.SS "epx exchange\-rates create"
+Create an exchange rate.
+.PP
+.RS "4"
+.nf
+epx exchange\-rates create [flags]
+.fi
+.RE
+.PP
+Creates the exchange rate from the currency \fB\-\-source\fR into \fB\-\-target\fR (both defined in the tenant, as \fBepx currencies list\fR shows them), or the one in the JSON of \fB\-\-file\fR. Emporix answers with its code, SOURCE_TARGET; a rate that exists already is a conflict (exit 5).
+.PP
+Changes data: on a terminal, epx asks before it sends POST. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the currency.currency_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte instead of the one that epx makes (\- reads standard input; sending it then needs \fB\-\-yes\fR).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-rate <RATE>\fR
+The RATE: what one unit of the source currency is worth in the target currency, e.g. 0.95 (sent as a string; required without \fB\-\-file\fR).
+.TP
+\fB\-\-source <CODE>\fR
+The CODE of the currency to convert from (required without \fB\-\-file\fR).
+.TP
+\fB\-\-target <CODE>\fR
+The CODE of the currency to convert into (required without \fB\-\-file\fR).
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.PP
+\fBExamples:\fR
+.PP
+.RS "4"
+.nf
+epx exchange\-rates create \-\-source EUR \-\-target CHF \-\-rate 0.95
+.fi
+.RE
+.SS "epx exchange\-rates delete"
+Delete an exchange rate.
+.PP
+.RS "4"
+.nf
+epx exchange\-rates delete CODE [flags]
+.fi
+.RE
+.PP
+Deletes the exchange rate CODE; it sends no body. Emporix answers an unknown CODE as one that it deleted (204 No Content).
+.PP
+Deletes data, which cannot be undone. On a terminal, epx sends DELETE only once you type CODE at its prompt. \fB\-\-yes\fR sends without asking (required without a terminal); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the currency.currency_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal).
+.SS "epx exchange\-rates get"
+Show one exchange rate.
+.PP
+.RS "4"
+.nf
+epx exchange\-rates get CODE [flags]
+.fi
+.RE
+.PP
+Reads currency exchange rates. CODE names a rate, e.g. EUR_CHF.
+.PP
+Requires the currency.currency_read scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among CODE, SOURCE, TARGET, RATE.
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.SS "epx exchange\-rates list"
+List exchange rates.
+.PP
+.RS "4"
+.nf
+epx exchange\-rates list [flags]
+.fi
+.RE
+.PP
+Reads currency exchange rates. CODE names a rate, e.g. EUR_CHF.
+.PP
+Requires the currency.currency_read scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among CODE, SOURCE, TARGET, RATE.
+.TP
+\fB\-\-limit <n>\fR
+Print at most n items; paged reads stop early where they safely can (0: every item).
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-sort <order>\fR
+Emporix sort order, passed as given, e.g. code or name.en:desc,code; fields mostly as in \fB\-o json\fR (Emporix may ignore an unknown one).
+.TP
+\fB\-\-stream\fR
+Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes \fB\-o\fR, \fB\-\-columns\fR and \fB\-\-no\-headers\fR).
+.SS "epx exchange\-rates update"
+Change an exchange rate.
+.PP
+.RS "4"
+.nf
+epx exchange\-rates update CODE [flags]
+.fi
+.RE
+.PP
+Changes the rate of the exchange rate CODE (its currencies cannot change) to \fB\-\-rate\fR, with its metadata.version as read (\fB\-\-version\fR, as \fBepx exchange\-rates get CODE \-o json\fR prints it), or to the JSON of \fB\-\-file\fR. A stale version and an unknown CODE are both not found (exit 4): Emporix answers 404 to both.
+.PP
+Changes data: on a terminal, epx asks before it sends PUT. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the currency.currency_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte instead of the one that epx makes (\- reads standard input; sending it then needs \fB\-\-yes\fR).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-rate <RATE>\fR
+The RATE: what one unit of the source currency is worth in the target currency, e.g. 0.95 (sent as a string; required without \fB\-\-file\fR).
+.TP
+\fB\-\-version <VERSION>\fR
+The VERSION of the rate as read (metadata.version; required without \fB\-\-file\fR).
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.PP
+\fBExamples:\fR
+.PP
+.RS "4"
+.nf
+epx exchange\-rates update EUR_CHF \-\-rate 0.96 \-\-version 2
+.fi
+.RE
+.SH "SEE ALSO"
+\fBepx\fR(1) for the global options, the credentials epx reads and its exit codes; https://commerce-cloud-integrations.github.io/emporix-cli/commands/exchange-rates

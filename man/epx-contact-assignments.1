@@ -1,0 +1,156 @@
+.TH "EPX\-CONTACT\-ASSIGNMENTS" "1" "" "epx" "epx manual"
+.SH "NAME"
+epx\-contact\-assignments \- read and change which customers are contacts of which legal entities
+.SH "SYNOPSIS"
+.RS "4"
+.nf
+epx contact\-assignments [flags]
+epx contact\-assignments [command]
+.fi
+.RE
+.SH "DESCRIPTION"
+Reads and changes contact assignments, the customers that act as contacts of a legal entity, personal data included. create and update ID (an upsert) send the JSON body of \fB\-\-file\fR; delete ID sends none.
+.PP
+Its reads require the customermanagement.contactassignment_read scope. Its writes require the customermanagement.contactassignment_manage scope.
+.SH "COMMANDS"
+.SS "epx contact\-assignments create"
+Create one contact assignment.
+.PP
+.RS "4"
+.nf
+epx contact\-assignments create [flags]
+.fi
+.RE
+.PP
+Creates the contact assignment that the JSON body of \fB\-\-file\fR describes, shaped as \fBepx contact\-assignments get ID \-o json\fR prints one: legalEntity and customer (required, each as \fB{"id": ...}\fR of one that exists: 400 Bad Request, exit 1, otherwise; the customer\(aqs id, not its number), type (PRIMARY, BILLING, LOGISTICS or CONTACT, the default) and primary (true or false). Without an id, Emporix makes one, and answers with it; an id that exists already is a conflict (exit 5). A second assignment of a customer to the same legal entity is a conflict (exit 5) too. Assigning a customer to a subsidiary also assigns it to the parent company, as a CONTACT in an assignment of its own, which takes a delete of its own.
+.PP
+Changes data: on a terminal, epx asks before it sends POST. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the customermanagement.contactassignment_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SS "epx contact\-assignments delete"
+Delete one contact assignment.
+.PP
+.RS "4"
+.nf
+epx contact\-assignments delete ID [flags]
+.fi
+.RE
+.PP
+Deletes the contact assignment ID; it sends no body. ID is the ID that \fBepx contact\-assignments list\fR shows; an unknown one is not found.
+.PP
+Deletes data, which cannot be undone. On a terminal, epx sends DELETE only once you type ID at its prompt. \fB\-\-yes\fR sends without asking (required without a terminal); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the customermanagement.contactassignment_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal).
+.SS "epx contact\-assignments get"
+Show one contact assignment.
+.PP
+.RS "4"
+.nf
+epx contact\-assignments get ID [flags]
+.fi
+.RE
+.PP
+Reads contact assignments, the customers that act as contacts of a legal entity, personal data included. CUSTOMER is the customer\(aqs id, not the NUMBER that \fBepx customers get\fR takes. TYPE is PRIMARY, BILLING, LOGISTICS or CONTACT; the PRIMARY column is the assignment\(aqs primary flag, separate from the TYPE PRIMARY. Phone numbers and the legal entity\(aqs details are only in \fB\-o json\fR.
+.PP
+Requires the customermanagement.contactassignment_read scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, LEGAL ENTITY, CUSTOMER, NAME, EMAIL, TYPE, PRIMARY.
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.SS "epx contact\-assignments list"
+List contact assignments.
+.PP
+.RS "4"
+.nf
+epx contact\-assignments list [flags]
+.fi
+.RE
+.PP
+Reads contact assignments, the customers that act as contacts of a legal entity, personal data included. CUSTOMER is the customer\(aqs id, not the NUMBER that \fBepx customers get\fR takes. TYPE is PRIMARY, BILLING, LOGISTICS or CONTACT; the PRIMARY column is the assignment\(aqs primary flag, separate from the TYPE PRIMARY. Phone numbers and the legal entity\(aqs details are only in \fB\-o json\fR.
+.PP
+Requires the customermanagement.contactassignment_read scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, LEGAL ENTITY, CUSTOMER, NAME, EMAIL, TYPE, PRIMARY.
+.TP
+\fB\-\-limit <n>\fR
+Print at most n items; paged reads stop early where they safely can (0: every item).
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-query <filter>\fR
+Emporix q filter, passed as given, e.g. code:(A1,A2); space\-separated conditions must all match (fields mostly as in \fB\-o json\fR).
+.TP
+\fB\-\-sort <order>\fR
+Emporix sort order, passed as given, e.g. code or name.en:desc,code; fields mostly as in \fB\-o json\fR (Emporix may ignore an unknown one).
+.TP
+\fB\-\-stream\fR
+Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes \fB\-o\fR, \fB\-\-columns\fR and \fB\-\-no\-headers\fR).
+.SS "epx contact\-assignments update"
+Upsert one contact assignment.
+.PP
+.RS "4"
+.nf
+epx contact\-assignments update ID [flags]
+.fi
+.RE
+.PP
+Replaces the contact assignment ID with the JSON body of \fB\-\-file\fR, shaped as create takes it but without an id, or creates it with that id where none exists (an upsert); it requires legalEntity and customer; a type left out becomes CONTACT, a primary left out false. With metadata.version as \fBepx contact\-assignments get ID \-o json\fR prints it, Emporix replaces it only if nobody changed it since, and answers 409 Conflict (exit 5) otherwise; without metadata.version, it replaces it whatever its version. ID is the ID that \fBepx contact\-assignments list\fR shows.
+.PP
+Changes data: on a terminal, epx asks before it sends PUT. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the customermanagement.contactassignment_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SH "SEE ALSO"
+\fBepx\fR(1) for the global options, the credentials epx reads and its exit codes; https://commerce-cloud-integrations.github.io/emporix-cli/commands/contact-assignments

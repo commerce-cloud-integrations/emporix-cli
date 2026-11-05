@@ -1,0 +1,2148 @@
+.TH "EPX\-AI" "1" "" "epx" "epx manual"
+.SH "NAME"
+epx\-ai \- read and change AI agents and their setup, chat with them, generate texts
+.SH "SYNOPSIS"
+.RS "4"
+.nf
+epx ai [flags]
+epx ai [command]
+.fi
+.RE
+.SH "DESCRIPTION"
+Reads the AI Service\(aqs agents and what they are built from: agent templates, tools, tokens, OAuth configurations and MCP servers, the LLM models of the supported providers and the commerce events that can trigger an agent; what agents did: their jobs, conversations, request and session logs and analytics; and which fields the AI RAG Indexer embeds. Upserts, changes and deletes agents and what they are built from, exports and imports agents, chats with them and generates texts, which consumes AI credits. \fBepx ai rag reindex\fR embeds the entities of a type again.
+.PP
+Its reads require the ai.agent_read scope. Its writes require different OAuth scopes; the help of each names them.
+.SH "COMMANDS"
+.SS "epx ai agents"
+Read, create, upsert, change, delete, export and import AI agents.
+.PP
+.RS "4"
+.nf
+epx ai agents [flags]
+epx ai agents [command]
+.fi
+.RE
+.PP
+Reads AI agents: TYPE is generic, complaint or anti_fraud, PROVIDER and MODEL the LLM an agent uses and TRIGGERS what starts it (endpoint, slack, teams or commerce_events). Their prompts, tools and MCP servers are only in \fB\-o json\fR.
+.PP
+Its reads require the ai.agent_read scope. Its writes require different OAuth scopes; the help of each names them.
+.SS "epx ai agents attach"
+Attach a file to a chat with an agent.
+.PP
+.RS "4"
+.nf
+epx ai agents attach AGENT_ID [flags]
+.fi
+.RE
+.PP
+Uploads the file that \fB\-\-upload\fR names (jpg, jpeg, png, pdf, csv, text or txt), or assigns the media asset that \fB\-\-media\fR names (\fBepx media list\fR), to the agent AGENT_ID, the ID that \fBepx ai agents list\fR shows, in the session that \fB\-\-session\fR names, or a new one. Emporix answers with the attachment\(aqs id and the sessionId, which \fBepx ai chat\fR with that agent takes as \fB\-\-attachment\fR and \fB\-\-session\fR.
+.PP
+Changes data: on a terminal, epx asks before it sends POST. \fB\-\-yes\fR sends without asking (required without a terminal); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the ai.agentexecution_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-media <ID>\fR
+The ID of a media asset to attach.
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-session <ID>\fR
+The ID of the session to go on with, the sessionId of an earlier chat or attachment; without it, a new one.
+.TP
+\fB\-\-upload <PATH>\fR
+The file in PATH to upload (up to 30 MB including the form), sent with its name.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal).
+.PP
+\fBExamples:\fR
+.PP
+.RS "4"
+.nf
+epx ai agents attach complaint\-agent \-\-upload order.pdf \-\-yes
+.fi
+.RE
+.SS "epx ai agents create"
+Create an agent from a template.
+.PP
+.RS "4"
+.nf
+epx ai agents create TEMPLATE_ID [flags]
+.fi
+.RE
+.PP
+Creates an agent from the agent template TEMPLATE_ID, the ID that \fBepx ai templates list\fR shows, which must be enabled, with the JSON in \fB\-\-file\fR: its name and description, its userPrompt and, optionally, its id. Emporix answers with the id of the agent.
+.PP
+Localized text in the body, such as a name, is a map of translations, e.g. \fB{"en": "gram", "de": "Gramm"}\fR, as \fB\-o json\fR of a read prints it, or with \fB\-\-content\-language\fR LANGUAGE a string in that language, e.g. \fB"gram"\fR with \fB\-\-content\-language\fR en.
+.PP
+Changes data: on a terminal, epx asks before it sends POST. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the ai.agent_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-content\-language <LANGUAGE>\fR
+The LANGUAGE of localized text in the body, or * for maps of translations. Default: \fB*\fR.
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.PP
+\fBExamples:\fR
+.PP
+.RS "4"
+.nf
+epx ai agents create complaint\-template \-\-file agent.json \-\-dry\-run
+.fi
+.RE
+.SS "epx ai agents delete"
+Delete an agent.
+.PP
+.RS "4"
+.nf
+epx ai agents delete ID [flags]
+.fi
+.RE
+.PP
+Deletes the agent ID. Emporix refuses to delete one that others use, unless \fB\-\-force\fR unassigns it from them. ID is the ID that \fBepx ai agents list\fR shows.
+.PP
+Deletes data, which cannot be undone. On a terminal, epx sends DELETE only once you type ID at its prompt. \fB\-\-yes\fR sends without asking (required without a terminal); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the ai.agent_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-force\fR
+Delete it even where other agents collaborate with it.
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal).
+.SS "epx ai agents export"
+Export agents, which creates an export job.
+.PP
+.RS "4"
+.nf
+epx ai agents export [flags]
+.fi
+.RE
+.PP
+Exports the agents that \fB\-\-agent\fR names (up to 100) with the tools and MCP servers they use, and prints the export: data, the agents base64\-encoded, and its checksum, which \fBepx ai agents import\fR takes on another tenant. Emporix keeps each export as a job of type EXPORT, the jobId of the response, which \fBepx ai jobs get JOB_ID\fR reads. It changes data although Emporix needs no write\-capable scope for it.
+.PP
+Changes data: on a terminal, epx asks before it sends POST. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the ai.agent_read scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-agent <ID>\fR
+The ID of an agent to export (repeatable; required without \fB\-\-file\fR).
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte instead of the one that epx makes (\- reads standard input; sending it then needs \fB\-\-yes\fR).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.PP
+\fBExamples:\fR
+.PP
+.RS "4"
+.nf
+epx ai agents export \-\-agent complaint\-agent \-\-yes > agents.json
+.fi
+.RE
+.SS "epx ai agents get"
+Show one agent.
+.PP
+.RS "4"
+.nf
+epx ai agents get ID [flags]
+.fi
+.RE
+.PP
+Reads AI agents: TYPE is generic, complaint or anti_fraud, PROVIDER and MODEL the LLM an agent uses and TRIGGERS what starts it (endpoint, slack, teams or commerce_events). Their prompts, tools and MCP servers are only in \fB\-o json\fR.
+.PP
+Requires the ai.agent_read scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, TYPE, ENABLED, PROVIDER, MODEL, TRIGGERS, NAME.
+.TP
+\fB\-\-language <language>\fR
+Language of localized table text; a missing translation shows another, labeled (\fB\-o json\fR prints all). Default: \fBen\fR.
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.SS "epx ai agents import"
+Import agents.
+.PP
+.RS "4"
+.nf
+epx ai agents import [flags]
+.fi
+.RE
+.PP
+Imports the agents of an export, with the tools and MCP servers they use, from the JSON in \fB\-\-file\fR: the data and checksum that \fBepx ai agents export\fR prints, which Emporix checks. Imported agents start disabled; Emporix answers with what it imported and the jobId of the IMPORT job that it keeps (\fBepx ai jobs get JOB_ID\fR).
+.PP
+Changes data: on a terminal, epx asks before it sends POST. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the ai.agent_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.PP
+\fBExamples:\fR
+.PP
+.RS "4"
+.nf
+epx ai agents import \-\-file agents.json \-\-dry\-run
+.fi
+.RE
+.SS "epx ai agents list"
+List AI agents.
+.PP
+.RS "4"
+.nf
+epx ai agents list [flags]
+.fi
+.RE
+.PP
+Reads AI agents: TYPE is generic, complaint or anti_fraud, PROVIDER and MODEL the LLM an agent uses and TRIGGERS what starts it (endpoint, slack, teams or commerce_events). Their prompts, tools and MCP servers are only in \fB\-o json\fR.
+.PP
+Requires the ai.agent_read scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, TYPE, ENABLED, PROVIDER, MODEL, TRIGGERS, NAME.
+.TP
+\fB\-\-language <language>\fR
+Language of localized table text; a missing translation shows another, labeled (\fB\-o json\fR prints all). Default: \fBen\fR.
+.TP
+\fB\-\-limit <n>\fR
+Print at most n items; paged reads stop early where they safely can (0: every item).
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-query <filter>\fR
+Emporix q filter, passed as given, e.g. code:(A1,A2); space\-separated conditions must all match (fields mostly as in \fB\-o json\fR).
+.TP
+\fB\-\-sort <order>\fR
+Emporix sort order, passed as given, e.g. code or name.en:desc,code; fields mostly as in \fB\-o json\fR (Emporix may ignore an unknown one).
+.TP
+\fB\-\-stream\fR
+Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes \fB\-o\fR, \fB\-\-columns\fR and \fB\-\-no\-headers\fR).
+.SS "epx ai agents patch"
+Change members of an agent.
+.PP
+.RS "4"
+.nf
+epx ai agents patch ID [flags]
+.fi
+.RE
+.PP
+Changes the agent ID with the JSON array of operations in \fB\-\-file\fR, each with op (ADD, REMOVE or REPLACE), path and value, e.g. \fB[{"op": "REPLACE", "path": "/enabled", "value": false}]\fR; its other members keep their values. ID is the ID that \fBepx ai agents list\fR shows; an unknown one is not found.
+.PP
+Changes data: on a terminal, epx asks before it sends PATCH. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the ai.agent_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SS "epx ai agents search"
+Search AI agents.
+.PP
+.RS "4"
+.nf
+epx ai agents search [flags]
+.fi
+.RE
+.PP
+Reads the AI agents that an Emporix q filter finds (\fB\-\-query\fR; without it, every one). It reads and shows them as \fBepx ai agents list\fR does.
+.PP
+Changes nothing: Emporix serves this read as POST with a JSON body, which the flags make or \fB\-\-body\fR gives whole.
+.PP
+Requires the ai.agent_read scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-body <FILE>\fR
+Send the JSON request body in FILE as given (\- reads standard input) instead of the one the other flags make.
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, TYPE, ENABLED, PROVIDER, MODEL, TRIGGERS, NAME.
+.TP
+\fB\-\-language <language>\fR
+Language of localized table text; a missing translation shows another, labeled (\fB\-o json\fR prints all). Default: \fBen\fR.
+.TP
+\fB\-\-limit <n>\fR
+Print at most n items; paged reads stop early where they safely can (0: every item).
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-query <filter>\fR
+Emporix q filter, sent as given in the request body, not in the URL (empty: no filter), e.g. code:(A1,A2); space\-separated conditions must all match (fields mostly as in \fB\-o json\fR).
+.TP
+\fB\-\-sort <order>\fR
+Emporix sort order, passed as given, e.g. code or name.en:desc,code; fields mostly as in \fB\-o json\fR (Emporix may ignore an unknown one).
+.TP
+\fB\-\-stream\fR
+Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes \fB\-o\fR, \fB\-\-columns\fR and \fB\-\-no\-headers\fR).
+.SS "epx ai agents update"
+Upsert an agent.
+.PP
+.RS "4"
+.nf
+epx ai agents update ID [flags]
+.fi
+.RE
+.PP
+Replaces the agent ID with the JSON in \fB\-\-file\fR, or creates it with that ID where none exists (an upsert): Emporix answers with the id of one it created and nothing for one it replaced. With metadata.version, as \fBepx ai agents get ID \-o json\fR prints it, Emporix replaces only that version: another is a conflict (exit 5). The JSON holds its name and description, userPrompt, llmConfig, triggers and mcpServers, and its nativeTools, agentCollaborations, enabledMemory and maxRecursionLimit. ID is the ID that \fBepx ai agents list\fR shows.
+.PP
+Localized text in the body, such as a name, is a map of translations, e.g. \fB{"en": "gram", "de": "Gramm"}\fR, as \fB\-o json\fR of a read prints it, or with \fB\-\-content\-language\fR LANGUAGE a string in that language, e.g. \fB"gram"\fR with \fB\-\-content\-language\fR en.
+.PP
+Changes data: on a terminal, epx asks before it sends PUT. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the ai.agent_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-content\-language <LANGUAGE>\fR
+The LANGUAGE of localized text in the body, or * for maps of translations. Default: \fB*\fR.
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SS "epx ai analytics"
+Read the analytics of agents.
+.PP
+.RS "4"
+.nf
+epx ai analytics [flags]
+epx ai analytics [command]
+.fi
+.RE
+.PP
+Reads what Emporix counts of the requests and sessions of agents, as its dashboards show them.
+.PP
+Requires the ai.agent_read scope.
+.SS "epx ai analytics agent"
+Show the request and session totals of one agent.
+.PP
+.RS "4"
+.nf
+epx ai analytics agent AGENT_ID [flags]
+.fi
+.RE
+.PP
+Reads the totals of the requests and sessions of one agent: AGENT_ID is the ID that \fBepx ai agents list\fR shows; an unknown one counts nothing. LOGS is requests or sessions, TOTAL how many there were in the last four weeks, WARNING and ERROR how many of them had that severity and ERROR RATE their share with errors, as Emporix computes it. The requests per session and the weekly trends are only in \fB\-o json\fR.
+.PP
+Requires the ai.agent_read scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among LOGS, TOTAL, WARNING, ERROR, ERROR RATE.
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.SS "epx ai analytics executions"
+List how often agents ran per calendar quarter, month or week.
+.PP
+.RS "4"
+.nf
+epx ai analytics executions AGENT_IDS [flags]
+.fi
+.RE
+.PP
+Reads how often agents ran (their sessions) per calendar quarter, Emporix\(aqs default granularity, or per month or week (\fB\-\-granularity\fR): each PERIOD that Emporix reports runs from FROM (inclusive) to TO (exclusive), in UTC. AGENT_IDS are the IDs that \fBepx ai agents list\fR shows, separated by commas without spaces (at most 100); an unknown one ran 0 times.
+.PP
+Requires the ai.agent_read scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among AGENT, PERIOD, FROM, TO, EXECUTIONS.
+.TP
+\fB\-\-granularity <period>\fR
+The calendar period of each count: QUARTER, MONTH or WEEK.
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.SS "epx ai analytics tenant"
+Show the request and session totals of every agent.
+.PP
+.RS "4"
+.nf
+epx ai analytics tenant [flags]
+.fi
+.RE
+.PP
+Reads the totals of the requests and sessions of every agent of the tenant. LOGS is requests or sessions, TOTAL how many there were in the last four weeks, WARNING and ERROR how many of them had that severity and ERROR RATE their share with errors, as Emporix computes it. The requests per session and the weekly trends are only in \fB\-o json\fR.
+.PP
+Requires the ai.agent_read scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among LOGS, TOTAL, WARNING, ERROR, ERROR RATE.
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.SS "epx ai chat"
+Send a message to an agent and print its reply (consumes AI credits).
+.PP
+.RS "4"
+.nf
+epx ai chat [flags]
+.fi
+.RE
+.PP
+Sends the message that \fB\-\-message\fR gives to the agent \fB\-\-agent\fR, and prints its reply: the messages of the agent and of those it collaborates with, each with the sessionId that \fB\-\-session\fR takes to go on. A reply may take longer than the \fB\-\-timeout\fR of a request (30s by default): then give a longer one, e.g. \fB\-\-timeout\fR 5m, or use chat\-async. It consumes AI credits: the LLM tokens of the agent\(aqs model, and of the agents it collaborates with. With \fB\-\-session\fR, the chat goes on in that session, which the agent remembers where its enabledMemory is true; an attachment must be one of the session, attached to the same agent (\fBepx ai agents attach\fR). \fB\-\-file\fR gives the body instead, with the caption and purpose of each attachment.
+.PP
+Changes data: on a terminal, epx asks before it sends POST. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the ai.agentexecution_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-agent <ID>\fR
+The ID of the agent, as \fBepx ai agents list\fR shows it (required without \fB\-\-file\fR).
+.TP
+\fB\-\-attachment <ID>\fR
+The ID of an attachment of the session to send with the message, as \fBepx ai agents attach\fR prints it (repeatable) (only with \fB\-\-session\fR).
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte instead of the one that epx makes (\- reads standard input; sending it then needs \fB\-\-yes\fR).
+.TP
+\fB\-\-message <TEXT>\fR
+The TEXT to send to the agent (required without \fB\-\-file\fR).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-session <ID>\fR
+The ID of the session to go on with, the sessionId of an earlier chat or attachment; without it, a new one.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.PP
+\fBExamples:\fR
+.PP
+.RS "4"
+.nf
+epx ai chat \-\-agent complaint\-agent \-\-message "Find order EON1243" \-\-yes
+.fi
+.RE
+.SS "epx ai chat\-async"
+Send a message to an agent, which replies in a job (consumes AI credits).
+.PP
+.RS "4"
+.nf
+epx ai chat\-async [flags]
+.fi
+.RE
+.PP
+Sends the message that \fB\-\-message\fR gives to the agent \fB\-\-agent\fR, which replies in a job of type AGENT_CHAT: Emporix answers with its jobId, which \fBepx ai jobs get JOB_ID\fR reads. It consumes AI credits: the LLM tokens of the agent\(aqs model, and of the agents it collaborates with. With \fB\-\-session\fR, the chat goes on in that session, which the agent remembers where its enabledMemory is true; an attachment must be one of the session, attached to the same agent (\fBepx ai agents attach\fR). \fB\-\-file\fR gives the body instead, with the caption and purpose of each attachment.
+.PP
+Changes data: on a terminal, epx asks before it sends POST. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the ai.agentexecution_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-agent <ID>\fR
+The ID of the agent, as \fBepx ai agents list\fR shows it (required without \fB\-\-file\fR).
+.TP
+\fB\-\-attachment <ID>\fR
+The ID of an attachment of the session to send with the message, as \fBepx ai agents attach\fR prints it (repeatable) (only with \fB\-\-session\fR).
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte instead of the one that epx makes (\- reads standard input; sending it then needs \fB\-\-yes\fR).
+.TP
+\fB\-\-message <TEXT>\fR
+The TEXT to send to the agent (required without \fB\-\-file\fR).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-session <ID>\fR
+The ID of the session to go on with, the sessionId of an earlier chat or attachment; without it, a new one.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.PP
+\fBExamples:\fR
+.PP
+.RS "4"
+.nf
+epx ai chat\-async \-\-agent complaint\-agent \-\-message "Find order EON1243" \-\-yes
+.fi
+.RE
+.SS "epx ai commerce\-events"
+List the commerce events that can trigger an agent.
+.PP
+.RS "4"
+.nf
+epx ai commerce\-events [flags]
+.fi
+.RE
+.PP
+Reads the commerce events that can start an agent with a commerce_events trigger, sorted.
+.PP
+Requires the ai.agent_read scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among EVENT.
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.SS "epx ai conversations"
+Read agent conversations.
+.PP
+.RS "4"
+.nf
+epx ai conversations [flags]
+epx ai conversations [command]
+.fi
+.RE
+.PP
+Reads the conversations of agents in Microsoft Teams channels and group chats: ID is the conversation in Teams, NAME its channel or chat, SESSION the agent\(aqs session (\fBepx ai logs sessions get\fR) and LAST MESSAGE when it was last active. The channel and the context reference are only in \fB\-o json\fR.
+.PP
+Requires the ai.agent_read scope.
+.SS "epx ai conversations list"
+List agent conversations.
+.PP
+.RS "4"
+.nf
+epx ai conversations list [flags]
+.fi
+.RE
+.PP
+Reads the conversations of agents in Microsoft Teams channels and group chats: ID is the conversation in Teams, NAME its channel or chat, SESSION the agent\(aqs session (\fBepx ai logs sessions get\fR) and LAST MESSAGE when it was last active. The channel and the context reference are only in \fB\-o json\fR.
+.PP
+Requires the ai.agent_read scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, NAME, AGENT, SESSION, LAST MESSAGE.
+.TP
+\fB\-\-limit <n>\fR
+Print at most n items; paged reads stop early where they safely can (0: every item).
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-query <filter>\fR
+Emporix q filter, passed as given, e.g. code:(A1,A2); space\-separated conditions must all match (fields mostly as in \fB\-o json\fR).
+.TP
+\fB\-\-sort <order>\fR
+Emporix sort order, passed as given, e.g. code or name.en:desc,code; fields mostly as in \fB\-o json\fR (Emporix may ignore an unknown one).
+.TP
+\fB\-\-stream\fR
+Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes \fB\-o\fR, \fB\-\-columns\fR and \fB\-\-no\-headers\fR).
+.SS "epx ai conversations search"
+Search agent conversations.
+.PP
+.RS "4"
+.nf
+epx ai conversations search [flags]
+.fi
+.RE
+.PP
+Reads the agent conversations that an Emporix q filter finds (\fB\-\-query\fR; without it, every one). It reads and shows them as \fBepx ai conversations list\fR does.
+.PP
+Changes nothing: Emporix serves this read as POST with a JSON body, which the flags make or \fB\-\-body\fR gives whole.
+.PP
+Requires the ai.agent_read scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-body <FILE>\fR
+Send the JSON request body in FILE as given (\- reads standard input) instead of the one the other flags make.
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, NAME, AGENT, SESSION, LAST MESSAGE.
+.TP
+\fB\-\-limit <n>\fR
+Print at most n items; paged reads stop early where they safely can (0: every item).
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-query <filter>\fR
+Emporix q filter, sent as given in the request body, not in the URL (empty: no filter), e.g. code:(A1,A2); space\-separated conditions must all match (fields mostly as in \fB\-o json\fR).
+.TP
+\fB\-\-sort <order>\fR
+Emporix sort order, passed as given, e.g. code or name.en:desc,code; fields mostly as in \fB\-o json\fR (Emporix may ignore an unknown one).
+.TP
+\fB\-\-stream\fR
+Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes \fB\-o\fR, \fB\-\-columns\fR and \fB\-\-no\-headers\fR).
+.SS "epx ai generate\-completion"
+Generate the next message of a chat history (consumes AI credits).
+.PP
+.RS "4"
+.nf
+epx ai generate\-completion [flags]
+.fi
+.RE
+.PP
+Generates the next message of the chat history that \fB\-\-message\fR gives, one message per \fB\-\-message\fR in their order, and prints it as result. It consumes AI credits: the LLM tokens of the tenant\(aqs own OpenAI account where the tenant configuration openAiApiToken holds its token, or else Emporix\(aqs, of which a tenant may use 3 million input and 1 million output tokens. A reply may take longer than the \fB\-\-timeout\fR of a request (30s by default): then give a longer one, e.g. \fB\-\-timeout\fR 5m.
+.PP
+Changes data: on a terminal, epx asks before it sends POST. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the ai.completion_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte instead of the one that epx makes (\- reads standard input; sending it then needs \fB\-\-yes\fR).
+.TP
+\fB\-\-message <ROLE:TEXT>\fR
+A message of the chat history as ROLE:TEXT, ROLE SYSTEM, USER or ASSISTANT (repeatable; required without \fB\-\-file\fR).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.PP
+\fBExamples:\fR
+.PP
+.RS "4"
+.nf
+epx ai generate\-completion \-\-message "SYSTEM:You write product texts" \e
+  \-\-message "USER:Describe product 100200"
+.fi
+.RE
+.SS "epx ai generate\-text"
+Generate a text from a prompt (consumes AI credits).
+.PP
+.RS "4"
+.nf
+epx ai generate\-text [flags]
+.fi
+.RE
+.PP
+Generates a text from the prompt that \fB\-\-prompt\fR gives, such as a product description, and prints it as result. It consumes AI credits: the LLM tokens of the tenant\(aqs own OpenAI account where the tenant configuration openAiApiToken holds its token, or else Emporix\(aqs, of which a tenant may use 3 million input and 1 million output tokens. A reply may take longer than the \fB\-\-timeout\fR of a request (30s by default): then give a longer one, e.g. \fB\-\-timeout\fR 5m.
+.PP
+Changes data: on a terminal, epx asks before it sends POST. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the ai.text_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte instead of the one that epx makes (\- reads standard input; sending it then needs \fB\-\-yes\fR).
+.TP
+\fB\-\-max\-tokens <TOKENS>\fR
+The most LLM TOKENS to use (Emporix: 4097 without it).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-prompt <TEXT>\fR
+The TEXT that asks for the text (required without \fB\-\-file\fR).
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.PP
+\fBExamples:\fR
+.PP
+.RS "4"
+.nf
+epx ai generate\-text \-\-prompt "Describe product 100200 in German" \-\-max\-tokens 500
+.fi
+.RE
+.SS "epx ai jobs"
+Read and delete agent jobs.
+.PP
+.RS "4"
+.nf
+epx ai jobs [flags]
+epx ai jobs [command]
+.fi
+.RE
+.PP
+Reads the jobs of the AI Service: TYPE is AGENT_CHAT (an agent\(aqs run), IMPORT or EXPORT (of agents), STATUS in_progress, success, failure or skipped, AGENT and SESSION the agent that ran and its session (\fBepx ai logs sessions get\fR) and EVENT the commerce event that started it. The agent\(aqs message and an import\(aqs or export\(aqs result are only in \fB\-o json\fR.
+.PP
+Its reads require the ai.agent_read scope. Its writes require the ai.agent_manage scope.
+.SS "epx ai jobs delete"
+Delete an agent job.
+.PP
+.RS "4"
+.nf
+epx ai jobs delete ID [flags]
+.fi
+.RE
+.PP
+Deletes the agent job ID. ID is the ID that \fBepx ai jobs list\fR shows; an unknown one is not found.
+.PP
+Deletes data, which cannot be undone. On a terminal, epx sends DELETE only once you type ID at its prompt. \fB\-\-yes\fR sends without asking (required without a terminal); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the ai.agent_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal).
+.SS "epx ai jobs get"
+Show one agent job.
+.PP
+.RS "4"
+.nf
+epx ai jobs get ID [flags]
+.fi
+.RE
+.PP
+Reads the jobs of the AI Service: TYPE is AGENT_CHAT (an agent\(aqs run), IMPORT or EXPORT (of agents), STATUS in_progress, success, failure or skipped, AGENT and SESSION the agent that ran and its session (\fBepx ai logs sessions get\fR) and EVENT the commerce event that started it. The agent\(aqs message and an import\(aqs or export\(aqs result are only in \fB\-o json\fR.
+.PP
+Requires the ai.agent_read scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, TYPE, STATUS, AGENT, SESSION, EVENT, CREATED.
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.SS "epx ai jobs list"
+List agent jobs.
+.PP
+.RS "4"
+.nf
+epx ai jobs list [flags]
+.fi
+.RE
+.PP
+Reads the jobs of the AI Service: TYPE is AGENT_CHAT (an agent\(aqs run), IMPORT or EXPORT (of agents), STATUS in_progress, success, failure or skipped, AGENT and SESSION the agent that ran and its session (\fBepx ai logs sessions get\fR) and EVENT the commerce event that started it. The agent\(aqs message and an import\(aqs or export\(aqs result are only in \fB\-o json\fR.
+.PP
+Requires the ai.agent_read scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, TYPE, STATUS, AGENT, SESSION, EVENT, CREATED.
+.TP
+\fB\-\-limit <n>\fR
+Print at most n items; paged reads stop early where they safely can (0: every item).
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-query <filter>\fR
+Emporix q filter, passed as given, e.g. code:(A1,A2); space\-separated conditions must all match (fields mostly as in \fB\-o json\fR).
+.TP
+\fB\-\-sort <order>\fR
+Emporix sort order, passed as given, e.g. code or name.en:desc,code; fields mostly as in \fB\-o json\fR (Emporix may ignore an unknown one).
+.TP
+\fB\-\-stream\fR
+Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes \fB\-o\fR, \fB\-\-columns\fR and \fB\-\-no\-headers\fR).
+.SS "epx ai jobs search"
+Search agent jobs.
+.PP
+.RS "4"
+.nf
+epx ai jobs search [flags]
+.fi
+.RE
+.PP
+Reads the agent jobs that an Emporix q filter finds (\fB\-\-query\fR; without it, every one). It reads and shows them as \fBepx ai jobs list\fR does.
+.PP
+Changes nothing: Emporix serves this read as POST with a JSON body, which the flags make or \fB\-\-body\fR gives whole.
+.PP
+Requires the ai.agent_read scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-body <FILE>\fR
+Send the JSON request body in FILE as given (\- reads standard input) instead of the one the other flags make.
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, TYPE, STATUS, AGENT, SESSION, EVENT, CREATED.
+.TP
+\fB\-\-limit <n>\fR
+Print at most n items; paged reads stop early where they safely can (0: every item).
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-query <filter>\fR
+Emporix q filter, sent as given in the request body, not in the URL (empty: no filter), e.g. code:(A1,A2); space\-separated conditions must all match (fields mostly as in \fB\-o json\fR).
+.TP
+\fB\-\-sort <order>\fR
+Emporix sort order, passed as given, e.g. code or name.en:desc,code; fields mostly as in \fB\-o json\fR (Emporix may ignore an unknown one).
+.TP
+\fB\-\-stream\fR
+Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes \fB\-o\fR, \fB\-\-columns\fR and \fB\-\-no\-headers\fR).
+.SS "epx ai logs"
+Read the logs of agent requests and sessions.
+.PP
+.RS "4"
+.nf
+epx ai logs [flags]
+epx ai logs [command]
+.fi
+.RE
+.PP
+Reads the logs that agents write: one per request, and one per session, which holds the messages of its requests.
+.PP
+Requires the ai.agent_read scope.
+.SS "epx ai logs requests"
+Read agent request logs.
+.PP
+.RS "4"
+.nf
+epx ai logs requests [flags]
+epx ai logs requests [command]
+.fi
+.RE
+.PP
+Reads the logs of the requests to agents, one per request: ID is the log that get takes, REQUEST the request it logs and SESSION the session it belongs to. AGENT is the agent that was called, SEVERITY INFO, WARNING or ERROR, MESSAGES how many messages were logged (empty when a log comes without them) and SECONDS how long it took; the messages, the other agents that took part and the LLM tokens used are only in \fB\-o json\fR.
+.PP
+Requires the ai.agent_read scope.
+.SS "epx ai logs requests get"
+Show one agent request log.
+.PP
+.RS "4"
+.nf
+epx ai logs requests get ID [flags]
+.fi
+.RE
+.PP
+Reads the logs of the requests to agents, one per request: ID is the log that get takes, REQUEST the request it logs and SESSION the session it belongs to. AGENT is the agent that was called, SEVERITY INFO, WARNING or ERROR, MESSAGES how many messages were logged (empty when a log comes without them) and SECONDS how long it took; the messages, the other agents that took part and the LLM tokens used are only in \fB\-o json\fR.
+.PP
+Requires the ai.agent_read scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, REQUEST, SESSION, AGENT, SEVERITY, MESSAGES, SECONDS, CREATED.
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.SS "epx ai logs requests list"
+List agent request logs.
+.PP
+.RS "4"
+.nf
+epx ai logs requests list [flags]
+.fi
+.RE
+.PP
+Reads the logs of the requests to agents, one per request: ID is the log that get takes, REQUEST the request it logs and SESSION the session it belongs to. AGENT is the agent that was called, SEVERITY INFO, WARNING or ERROR, MESSAGES how many messages were logged (empty when a log comes without them) and SECONDS how long it took; the messages, the other agents that took part and the LLM tokens used are only in \fB\-o json\fR.
+.PP
+Requires the ai.agent_read scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, REQUEST, SESSION, AGENT, SEVERITY, MESSAGES, SECONDS, CREATED.
+.TP
+\fB\-\-limit <n>\fR
+Print at most n items; paged reads stop early where they safely can (0: every item).
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-query <filter>\fR
+Emporix q filter, passed as given, e.g. code:(A1,A2); space\-separated conditions must all match (fields mostly as in \fB\-o json\fR).
+.TP
+\fB\-\-sort <order>\fR
+Emporix sort order, passed as given, e.g. code or name.en:desc,code; fields mostly as in \fB\-o json\fR (Emporix may ignore an unknown one).
+.TP
+\fB\-\-stream\fR
+Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes \fB\-o\fR, \fB\-\-columns\fR and \fB\-\-no\-headers\fR).
+.SS "epx ai logs requests search"
+Search agent request logs.
+.PP
+.RS "4"
+.nf
+epx ai logs requests search [flags]
+.fi
+.RE
+.PP
+Reads the agent request logs that an Emporix q filter finds (\fB\-\-query\fR; without it, every one). It reads and shows them as \fBepx ai logs requests list\fR does.
+.PP
+Changes nothing: Emporix serves this read as POST with a JSON body, which the flags make or \fB\-\-body\fR gives whole.
+.PP
+Requires the ai.agent_read scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-body <FILE>\fR
+Send the JSON request body in FILE as given (\- reads standard input) instead of the one the other flags make.
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, REQUEST, SESSION, AGENT, SEVERITY, MESSAGES, SECONDS, CREATED.
+.TP
+\fB\-\-limit <n>\fR
+Print at most n items; paged reads stop early where they safely can (0: every item).
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-query <filter>\fR
+Emporix q filter, sent as given in the request body, not in the URL (empty: no filter), e.g. code:(A1,A2); space\-separated conditions must all match (fields mostly as in \fB\-o json\fR).
+.TP
+\fB\-\-sort <order>\fR
+Emporix sort order, passed as given, e.g. code or name.en:desc,code; fields mostly as in \fB\-o json\fR (Emporix may ignore an unknown one).
+.TP
+\fB\-\-stream\fR
+Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes \fB\-o\fR, \fB\-\-columns\fR and \fB\-\-no\-headers\fR).
+.SS "epx ai logs sessions"
+Read agent session logs.
+.PP
+.RS "4"
+.nf
+epx ai logs sessions [flags]
+epx ai logs sessions [command]
+.fi
+.RE
+.PP
+Reads the logs of the sessions of agents, one per session, with the messages of each of its requests. AGENT is the agent that was called, SEVERITY INFO, WARNING or ERROR, MESSAGES how many messages were logged (empty when a log comes without them) and SECONDS how long it took; the messages, the other agents that took part and the LLM tokens used are only in \fB\-o json\fR.
+.PP
+Requires the ai.agent_read scope.
+.SS "epx ai logs sessions get"
+Show one agent session log.
+.PP
+.RS "4"
+.nf
+epx ai logs sessions get ID [flags]
+.fi
+.RE
+.PP
+Reads the logs of the sessions of agents, one per session, with the messages of each of its requests. AGENT is the agent that was called, SEVERITY INFO, WARNING or ERROR, MESSAGES how many messages were logged (empty when a log comes without them) and SECONDS how long it took; the messages, the other agents that took part and the LLM tokens used are only in \fB\-o json\fR.
+.PP
+Requires the ai.agent_read scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, AGENT, SEVERITY, MESSAGES, SECONDS, CREATED.
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.SS "epx ai logs sessions list"
+List agent session logs.
+.PP
+.RS "4"
+.nf
+epx ai logs sessions list [flags]
+.fi
+.RE
+.PP
+Reads the logs of the sessions of agents, one per session, with the messages of each of its requests. AGENT is the agent that was called, SEVERITY INFO, WARNING or ERROR, MESSAGES how many messages were logged (empty when a log comes without them) and SECONDS how long it took; the messages, the other agents that took part and the LLM tokens used are only in \fB\-o json\fR.
+.PP
+Requires the ai.agent_read scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, AGENT, SEVERITY, MESSAGES, SECONDS, CREATED.
+.TP
+\fB\-\-limit <n>\fR
+Print at most n items; paged reads stop early where they safely can (0: every item).
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-query <filter>\fR
+Emporix q filter, passed as given, e.g. code:(A1,A2); space\-separated conditions must all match (fields mostly as in \fB\-o json\fR).
+.TP
+\fB\-\-sort <order>\fR
+Emporix sort order, passed as given, e.g. code or name.en:desc,code; fields mostly as in \fB\-o json\fR (Emporix may ignore an unknown one).
+.TP
+\fB\-\-stream\fR
+Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes \fB\-o\fR, \fB\-\-columns\fR and \fB\-\-no\-headers\fR).
+.SS "epx ai logs sessions search"
+Search agent session logs.
+.PP
+.RS "4"
+.nf
+epx ai logs sessions search [flags]
+.fi
+.RE
+.PP
+Reads the agent session logs that an Emporix q filter finds (\fB\-\-query\fR; without it, every one). It reads and shows them as \fBepx ai logs sessions list\fR does.
+.PP
+Changes nothing: Emporix serves this read as POST with a JSON body, which the flags make or \fB\-\-body\fR gives whole.
+.PP
+Requires the ai.agent_read scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-body <FILE>\fR
+Send the JSON request body in FILE as given (\- reads standard input) instead of the one the other flags make.
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, AGENT, SEVERITY, MESSAGES, SECONDS, CREATED.
+.TP
+\fB\-\-limit <n>\fR
+Print at most n items; paged reads stop early where they safely can (0: every item).
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-query <filter>\fR
+Emporix q filter, sent as given in the request body, not in the URL (empty: no filter), e.g. code:(A1,A2); space\-separated conditions must all match (fields mostly as in \fB\-o json\fR).
+.TP
+\fB\-\-sort <order>\fR
+Emporix sort order, passed as given, e.g. code or name.en:desc,code; fields mostly as in \fB\-o json\fR (Emporix may ignore an unknown one).
+.TP
+\fB\-\-stream\fR
+Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes \fB\-o\fR, \fB\-\-columns\fR and \fB\-\-no\-headers\fR).
+.SS "epx ai mcp\-servers"
+Read, upsert, change and delete MCP servers.
+.PP
+.RS "4"
+.nf
+epx ai mcp\-servers [flags]
+epx ai mcp\-servers [command]
+.fi
+.RE
+.PP
+Reads the tenant\(aqs MCP servers, whose tools agents can use: TYPE is custom (a server at URL) or dynamic (a preview at Emporix: tools that the server\(aqs configuration defines, only in \fB\-o json\fR), TRANSPORT streamable_http or sse.
+.PP
+Its reads require the ai.agent_read scope. Its writes require the ai.agent_manage scope.
+.SS "epx ai mcp\-servers delete"
+Delete an MCP server.
+.PP
+.RS "4"
+.nf
+epx ai mcp\-servers delete ID [flags]
+.fi
+.RE
+.PP
+Deletes the MCP server ID. Emporix refuses to delete one that others use, unless \fB\-\-force\fR unassigns it from them. ID is the ID that \fBepx ai mcp\-servers list\fR shows.
+.PP
+Deletes data, which cannot be undone. On a terminal, epx sends DELETE only once you type ID at its prompt. \fB\-\-yes\fR sends without asking (required without a terminal); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the ai.agent_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-force\fR
+Delete it even where agents use it.
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal).
+.SS "epx ai mcp\-servers get"
+Show one MCP server.
+.PP
+.RS "4"
+.nf
+epx ai mcp\-servers get ID [flags]
+.fi
+.RE
+.PP
+Reads the tenant\(aqs MCP servers, whose tools agents can use: TYPE is custom (a server at URL) or dynamic (a preview at Emporix: tools that the server\(aqs configuration defines, only in \fB\-o json\fR), TRANSPORT streamable_http or sse.
+.PP
+Requires the ai.agent_read scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, TYPE, ENABLED, TRANSPORT, NAME, URL.
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.SS "epx ai mcp\-servers list"
+List MCP servers.
+.PP
+.RS "4"
+.nf
+epx ai mcp\-servers list [flags]
+.fi
+.RE
+.PP
+Reads the tenant\(aqs MCP servers, whose tools agents can use: TYPE is custom (a server at URL) or dynamic (a preview at Emporix: tools that the server\(aqs configuration defines, only in \fB\-o json\fR), TRANSPORT streamable_http or sse.
+.PP
+Requires the ai.agent_read scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, TYPE, ENABLED, TRANSPORT, NAME, URL.
+.TP
+\fB\-\-limit <n>\fR
+Print at most n items; paged reads stop early where they safely can (0: every item).
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-query <filter>\fR
+Emporix q filter, passed as given, e.g. code:(A1,A2); space\-separated conditions must all match (fields mostly as in \fB\-o json\fR).
+.TP
+\fB\-\-sort <order>\fR
+Emporix sort order, passed as given, e.g. code or name.en:desc,code; fields mostly as in \fB\-o json\fR (Emporix may ignore an unknown one).
+.TP
+\fB\-\-stream\fR
+Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes \fB\-o\fR, \fB\-\-columns\fR and \fB\-\-no\-headers\fR).
+.SS "epx ai mcp\-servers patch"
+Change members of an MCP server.
+.PP
+.RS "4"
+.nf
+epx ai mcp\-servers patch ID [flags]
+.fi
+.RE
+.PP
+Changes the MCP server ID with the JSON array of operations in \fB\-\-file\fR, each with op (ADD, REMOVE or REPLACE), path and value, e.g. \fB[{"op": "REPLACE", "path": "/enabled", "value": false}]\fR; its other members keep their values. ID is the ID that \fBepx ai mcp\-servers list\fR shows; an unknown one is not found.
+.PP
+Changes data: on a terminal, epx asks before it sends PATCH. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the ai.agent_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-\-force\fR
+Disable it even where enabled agents use it, which disables them too.
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SS "epx ai mcp\-servers search"
+Search MCP servers.
+.PP
+.RS "4"
+.nf
+epx ai mcp\-servers search [flags]
+.fi
+.RE
+.PP
+Reads the MCP servers that an Emporix q filter finds (\fB\-\-query\fR; without it, every one). It reads and shows them as \fBepx ai mcp\-servers list\fR does.
+.PP
+Changes nothing: Emporix serves this read as POST with a JSON body, which the flags make or \fB\-\-body\fR gives whole.
+.PP
+Requires the ai.agent_read scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-body <FILE>\fR
+Send the JSON request body in FILE as given (\- reads standard input) instead of the one the other flags make.
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, TYPE, ENABLED, TRANSPORT, NAME, URL.
+.TP
+\fB\-\-limit <n>\fR
+Print at most n items; paged reads stop early where they safely can (0: every item).
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-query <filter>\fR
+Emporix q filter, sent as given in the request body, not in the URL (empty: no filter), e.g. code:(A1,A2); space\-separated conditions must all match (fields mostly as in \fB\-o json\fR).
+.TP
+\fB\-\-sort <order>\fR
+Emporix sort order, passed as given, e.g. code or name.en:desc,code; fields mostly as in \fB\-o json\fR (Emporix may ignore an unknown one).
+.TP
+\fB\-\-stream\fR
+Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes \fB\-o\fR, \fB\-\-columns\fR and \fB\-\-no\-headers\fR).
+.SS "epx ai mcp\-servers update"
+Upsert an MCP server.
+.PP
+.RS "4"
+.nf
+epx ai mcp\-servers update ID [flags]
+.fi
+.RE
+.PP
+Replaces the MCP server ID with the JSON in \fB\-\-file\fR, or creates it with that ID where none exists (an upsert): Emporix answers with the id of one it created and nothing for one it replaced. With metadata.version, as \fBepx ai mcp\-servers get ID \-o json\fR prints it, Emporix replaces only that version: another is a conflict (exit 5). The JSON holds its type (custom: config with the server\(aqs url; dynamic: its tools), name and transport, and whether it is enabled. ID is the ID that \fBepx ai mcp\-servers list\fR shows.
+.PP
+Changes data: on a terminal, epx asks before it sends PUT. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the ai.agent_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-\-force\fR
+Disable it even where enabled agents use it, which disables them too.
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SS "epx ai models"
+List the LLM models that agents can use.
+.PP
+.RS "4"
+.nf
+epx ai models [flags]
+.fi
+.RE
+.PP
+Reads the LLM models of every provider that agents can use (openai, anthropic and google): ID is what an agent\(aqs LLM configuration names and THINKING whether the model supports thinking; descriptions are only in \fB\-o json\fR.
+.PP
+Requires the ai.agent_read scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, PROVIDER, THINKING, NAME.
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.SS "epx ai oauths"
+Read, upsert, change and delete OAuth configurations.
+.PP
+.RS "4"
+.nf
+epx ai oauths [flags]
+epx ai oauths [command]
+.fi
+.RE
+.PP
+Reads OAuth configurations (a preview at Emporix): the OAuth 2.0 client credentials with which agents get a token for a self\-hosted LLM from TOKEN URL. SECRET TOKEN is the ID of the token (\fBepx ai tokens list\fR) that holds the client\(aqs secret; the scope is only in \fB\-o json\fR, which prints the response as Emporix sends it.
+.PP
+Its reads require the ai.agent_read scope. Its writes require the ai.agent_manage scope.
+.SS "epx ai oauths delete"
+Delete an OAuth configuration.
+.PP
+.RS "4"
+.nf
+epx ai oauths delete ID [flags]
+.fi
+.RE
+.PP
+Deletes the OAuth configuration ID. Emporix refuses to delete one that others use, unless \fB\-\-force\fR unassigns it from them. ID is the ID that \fBepx ai oauths list\fR shows.
+.PP
+Deletes data, which cannot be undone. On a terminal, epx sends DELETE only once you type ID at its prompt. \fB\-\-yes\fR sends without asking (required without a terminal); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the ai.agent_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-force\fR
+Delete it even where agents use it.
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal).
+.SS "epx ai oauths get"
+Show one OAuth configuration.
+.PP
+.RS "4"
+.nf
+epx ai oauths get ID [flags]
+.fi
+.RE
+.PP
+Reads OAuth configurations (a preview at Emporix): the OAuth 2.0 client credentials with which agents get a token for a self\-hosted LLM from TOKEN URL. SECRET TOKEN is the ID of the token (\fBepx ai tokens list\fR) that holds the client\(aqs secret; the scope is only in \fB\-o json\fR, which prints the response as Emporix sends it.
+.PP
+Requires the ai.agent_read scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, ENABLED, CLIENT ID, SECRET TOKEN, TOKEN URL.
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.SS "epx ai oauths list"
+List OAuth configurations.
+.PP
+.RS "4"
+.nf
+epx ai oauths list [flags]
+.fi
+.RE
+.PP
+Reads OAuth configurations (a preview at Emporix): the OAuth 2.0 client credentials with which agents get a token for a self\-hosted LLM from TOKEN URL. SECRET TOKEN is the ID of the token (\fBepx ai tokens list\fR) that holds the client\(aqs secret; the scope is only in \fB\-o json\fR, which prints the response as Emporix sends it.
+.PP
+Requires the ai.agent_read scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, ENABLED, CLIENT ID, SECRET TOKEN, TOKEN URL.
+.TP
+\fB\-\-limit <n>\fR
+Print at most n items; paged reads stop early where they safely can (0: every item).
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-query <filter>\fR
+Emporix q filter, passed as given, e.g. code:(A1,A2); space\-separated conditions must all match (fields mostly as in \fB\-o json\fR).
+.TP
+\fB\-\-sort <order>\fR
+Emporix sort order, passed as given, e.g. code or name.en:desc,code; fields mostly as in \fB\-o json\fR (Emporix may ignore an unknown one).
+.TP
+\fB\-\-stream\fR
+Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes \fB\-o\fR, \fB\-\-columns\fR and \fB\-\-no\-headers\fR).
+.SS "epx ai oauths patch"
+Change members of an OAuth configuration.
+.PP
+.RS "4"
+.nf
+epx ai oauths patch ID [flags]
+.fi
+.RE
+.PP
+Changes the OAuth configuration ID with the JSON array of operations in \fB\-\-file\fR, each with op (ADD, REMOVE or REPLACE), path and value, e.g. \fB[{"op": "REPLACE", "path": "/enabled", "value": false}]\fR; its other members keep their values. ID is the ID that \fBepx ai oauths list\fR shows; an unknown one is not found.
+.PP
+Changes data: on a terminal, epx asks before it sends PATCH. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the ai.agent_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-\-force\fR
+Disable it even where enabled agents use it, which disables them too.
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SS "epx ai oauths search"
+Search OAuth configurations.
+.PP
+.RS "4"
+.nf
+epx ai oauths search [flags]
+.fi
+.RE
+.PP
+Reads the OAuth configurations that an Emporix q filter finds (\fB\-\-query\fR; without it, every one). It reads and shows them as \fBepx ai oauths list\fR does.
+.PP
+Changes nothing: Emporix serves this read as POST with a JSON body, which the flags make or \fB\-\-body\fR gives whole.
+.PP
+Requires the ai.agent_read scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-body <FILE>\fR
+Send the JSON request body in FILE as given (\- reads standard input) instead of the one the other flags make.
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, ENABLED, CLIENT ID, SECRET TOKEN, TOKEN URL.
+.TP
+\fB\-\-limit <n>\fR
+Print at most n items; paged reads stop early where they safely can (0: every item).
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-query <filter>\fR
+Emporix q filter, sent as given in the request body, not in the URL (empty: no filter), e.g. code:(A1,A2); space\-separated conditions must all match (fields mostly as in \fB\-o json\fR).
+.TP
+\fB\-\-sort <order>\fR
+Emporix sort order, passed as given, e.g. code or name.en:desc,code; fields mostly as in \fB\-o json\fR (Emporix may ignore an unknown one).
+.TP
+\fB\-\-stream\fR
+Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes \fB\-o\fR, \fB\-\-columns\fR and \fB\-\-no\-headers\fR).
+.SS "epx ai oauths update"
+Upsert an OAuth configuration.
+.PP
+.RS "4"
+.nf
+epx ai oauths update ID [flags]
+.fi
+.RE
+.PP
+Replaces the OAuth configuration ID with the JSON in \fB\-\-file\fR, or creates it with that ID where none exists (an upsert): Emporix answers with the id of one it created and nothing for one it replaced. With metadata.version, as \fBepx ai oauths get ID \-o json\fR prints it, Emporix replaces only that version: another is a conflict (exit 5). The JSON holds its url (the token URL), clientId and grantType (client_credentials, the only one), and its scope, clientSecretToken (the token that holds the secret) and whether it is enabled. ID is the ID that \fBepx ai oauths list\fR shows.
+.PP
+Changes data: on a terminal, epx asks before it sends PUT. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the ai.agent_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-\-force\fR
+Disable it even where enabled agents use it, which disables them too.
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SS "epx ai rag"
+Read which fields the AI RAG Indexer embeds and filters by; reindex.
+.PP
+.RS "4"
+.nf
+epx ai rag [flags]
+epx ai rag [command]
+.fi
+.RE
+.PP
+Reads the AI RAG Indexer, which embeds the entities of a type in a vector database for the retrieval\-augmented generation (RAG) tools of agents: the fields it can embed and those a vector search can filter by; and embeds the entities of a type again.
+.PP
+Its reads require the ai.agent_read scope. Its writes require the ai.agent_manage scope.
+.SS "epx ai rag fields"
+List the fields of an entity type that can be embedded for RAG search.
+.PP
+.RS "4"
+.nf
+epx ai rag fields TYPE [flags]
+.fi
+.RE
+.PP
+Reads the fields of an entity type, by path, that the AI RAG Indexer can embed. TYPE is PRODUCT, ORDER, CUSTOMER or LEGAL\-ENTITY in any case, or a custom entity type, whose ID \fBepx custom\-entities list\fR shows. LEGAL\-ENTITY takes a hyphen, not an underscore. An unknown TYPE, such as LEGAL_ENTITY, gets 400 Bad Request (exit 1). The fields come whole, so they are read with one request.
+.PP
+Requires the ai.agent_read scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among FIELD.
+.TP
+\fB\-\-limit <n>\fR
+Print at most n items; paged reads stop early where they safely can (0: every item).
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-stream\fR
+Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes \fB\-o\fR, \fB\-\-columns\fR and \fB\-\-no\-headers\fR).
+.SS "epx ai rag filter\-fields"
+List the fields of an entity type that a vector search can filter by.
+.PP
+.RS "4"
+.nf
+epx ai rag filter\-fields TYPE [flags]
+.fi
+.RE
+.PP
+Reads the fields of an entity type, by path, that a vector search can filter by before RAG retrieval, with their data type in the TYPE column (string, integer, float, boolean, datetime, date, time, dictionary, list or object). PARENT is the path of the list of objects a field sits in, such as addresses, and empty outside a list; tables cut a long PARENT. A schema\(aqs REFERENCE attribute comes as two fields, its path (object) and that path with .id (string), the one to filter by. TYPE is PRODUCT, ORDER, CUSTOMER or LEGAL\-ENTITY in any case, or a custom entity type, whose ID \fBepx custom\-entities list\fR shows. LEGAL\-ENTITY takes a hyphen, not an underscore. An unknown TYPE, such as LEGAL_ENTITY, gets 400 Bad Request (exit 1). The fields come whole, so they are read with one request.
+.PP
+Requires the ai.agent_read scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among FIELD, TYPE, PARENT.
+.TP
+\fB\-\-limit <n>\fR
+Print at most n items; paged reads stop early where they safely can (0: every item).
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-stream\fR
+Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes \fB\-o\fR, \fB\-\-columns\fR and \fB\-\-no\-headers\fR).
+.SS "epx ai rag reindex"
+Embed every entity of a type again for RAG search (deprecated by Emporix).
+.PP
+.RS "4"
+.nf
+epx ai rag reindex TYPE [flags]
+.fi
+.RE
+.PP
+Embeds every entity of a type again in the vector database, replacing its records there; it sends no body. Emporix has deprecated this endpoint in favor of a reindex job: \fBepx indexing reindex\-jobs create\fR, which \fB\-\-wait\fR follows. Give it \fB\-\-rag\fR for PRODUCT; for CUSTOMER and LEGAL\-ENTITY, the job updates their embeddings without it. TYPE is PRODUCT, ORDER, CUSTOMER or LEGAL\-ENTITY in any case, or a custom entity type, whose ID \fBepx custom\-entities list\fR shows. LEGAL\-ENTITY takes a hyphen, not an underscore. Emporix has answered an unknown TYPE with 204 No Content (exit 0), not the 400 Bad Request its reference gives, so check the TYPE first.
+.PP
+Changes data: on a terminal, epx asks before it sends POST. \fB\-\-yes\fR sends without asking (required without a terminal); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the ai.agent_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal).
+.PP
+\fBExamples:\fR
+.PP
+.RS "4"
+.nf
+epx ai rag reindex PRODUCT \-\-dry\-run
+.fi
+.RE
+.SS "epx ai templates"
+Read agent templates.
+.PP
+.RS "4"
+.nf
+epx ai templates [flags]
+epx ai templates [command]
+.fi
+.RE
+.PP
+Reads agent templates, from which agents are made: TYPE is generic, complaint or anti_fraud, PROVIDER and MODEL the LLM a template uses. Emporix reads no single template: \fBepx ai templates list \-\-query id:ID \-o json\fR shows one.
+.PP
+Requires the ai.agent_read scope.
+.SS "epx ai templates list"
+List agent templates.
+.PP
+.RS "4"
+.nf
+epx ai templates list [flags]
+.fi
+.RE
+.PP
+Reads agent templates, from which agents are made: TYPE is generic, complaint or anti_fraud, PROVIDER and MODEL the LLM a template uses. Emporix reads no single template: \fBepx ai templates list \-\-query id:ID \-o json\fR shows one.
+.PP
+Requires the ai.agent_read scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, TYPE, ENABLED, PROVIDER, MODEL, NAME.
+.TP
+\fB\-\-language <language>\fR
+Language of localized table text; a missing translation shows another, labeled (\fB\-o json\fR prints all). Default: \fBen\fR.
+.TP
+\fB\-\-limit <n>\fR
+Print at most n items; paged reads stop early where they safely can (0: every item).
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-query <filter>\fR
+Emporix q filter, passed as given, e.g. code:(A1,A2); space\-separated conditions must all match (fields mostly as in \fB\-o json\fR).
+.TP
+\fB\-\-sort <order>\fR
+Emporix sort order, passed as given, e.g. code or name.en:desc,code; fields mostly as in \fB\-o json\fR (Emporix may ignore an unknown one).
+.TP
+\fB\-\-stream\fR
+Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes \fB\-o\fR, \fB\-\-columns\fR and \fB\-\-no\-headers\fR).
+.SS "epx ai templates search"
+Search agent templates.
+.PP
+.RS "4"
+.nf
+epx ai templates search [flags]
+.fi
+.RE
+.PP
+Reads the agent templates that an Emporix q filter finds (\fB\-\-query\fR; without it, every one). It reads and shows them as \fBepx ai templates list\fR does.
+.PP
+Changes nothing: Emporix serves this read as POST with a JSON body, which the flags make or \fB\-\-body\fR gives whole.
+.PP
+Requires the ai.agent_read scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-body <FILE>\fR
+Send the JSON request body in FILE as given (\- reads standard input) instead of the one the other flags make.
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, TYPE, ENABLED, PROVIDER, MODEL, NAME.
+.TP
+\fB\-\-language <language>\fR
+Language of localized table text; a missing translation shows another, labeled (\fB\-o json\fR prints all). Default: \fBen\fR.
+.TP
+\fB\-\-limit <n>\fR
+Print at most n items; paged reads stop early where they safely can (0: every item).
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-query <filter>\fR
+Emporix q filter, sent as given in the request body, not in the URL (empty: no filter), e.g. code:(A1,A2); space\-separated conditions must all match (fields mostly as in \fB\-o json\fR).
+.TP
+\fB\-\-sort <order>\fR
+Emporix sort order, passed as given, e.g. code or name.en:desc,code; fields mostly as in \fB\-o json\fR (Emporix may ignore an unknown one).
+.TP
+\fB\-\-stream\fR
+Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes \fB\-o\fR, \fB\-\-columns\fR and \fB\-\-no\-headers\fR).
+.SS "epx ai tokens"
+Read, upsert, change and delete AI tokens.
+.PP
+.RS "4"
+.nf
+epx ai tokens [flags]
+epx ai tokens [command]
+.fi
+.RE
+.PP
+Reads the tokens that hold the API keys and secrets of LLMs, tools, OAuth configurations and MCP servers, by name: the table shows no value, and the API reference documents none in a response; \fB\-o json\fR prints the response as Emporix sends it.
+.PP
+Its reads require the ai.agent_read scope. Its writes require the ai.agent_manage scope.
+.SS "epx ai tokens delete"
+Delete an AI token.
+.PP
+.RS "4"
+.nf
+epx ai tokens delete ID [flags]
+.fi
+.RE
+.PP
+Deletes the token ID. Emporix refuses to delete one that others use, unless \fB\-\-force\fR unassigns it from them. ID is the ID that \fBepx ai tokens list\fR shows.
+.PP
+Deletes data, which cannot be undone. On a terminal, epx sends DELETE only once you type ID at its prompt. \fB\-\-yes\fR sends without asking (required without a terminal); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the ai.agent_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-force\fR
+Delete it even where agents or MCP servers use it.
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal).
+.SS "epx ai tokens get"
+Show one token.
+.PP
+.RS "4"
+.nf
+epx ai tokens get ID [flags]
+.fi
+.RE
+.PP
+Reads the tokens that hold the API keys and secrets of LLMs, tools, OAuth configurations and MCP servers, by name: the table shows no value, and the API reference documents none in a response; \fB\-o json\fR prints the response as Emporix sends it.
+.PP
+Requires the ai.agent_read scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, NAME, CREATED, MODIFIED.
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.SS "epx ai tokens list"
+List AI tokens.
+.PP
+.RS "4"
+.nf
+epx ai tokens list [flags]
+.fi
+.RE
+.PP
+Reads the tokens that hold the API keys and secrets of LLMs, tools, OAuth configurations and MCP servers, by name: the table shows no value, and the API reference documents none in a response; \fB\-o json\fR prints the response as Emporix sends it.
+.PP
+Requires the ai.agent_read scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, NAME, CREATED, MODIFIED.
+.TP
+\fB\-\-limit <n>\fR
+Print at most n items; paged reads stop early where they safely can (0: every item).
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-query <filter>\fR
+Emporix q filter, passed as given, e.g. code:(A1,A2); space\-separated conditions must all match (fields mostly as in \fB\-o json\fR).
+.TP
+\fB\-\-sort <order>\fR
+Emporix sort order, passed as given, e.g. code or name.en:desc,code; fields mostly as in \fB\-o json\fR (Emporix may ignore an unknown one).
+.TP
+\fB\-\-stream\fR
+Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes \fB\-o\fR, \fB\-\-columns\fR and \fB\-\-no\-headers\fR).
+.SS "epx ai tokens patch"
+Change members of an AI token.
+.PP
+.RS "4"
+.nf
+epx ai tokens patch ID [flags]
+.fi
+.RE
+.PP
+Changes the token ID with the JSON array of operations in \fB\-\-file\fR, each with op (ADD, REMOVE or REPLACE), path and value, e.g. \fB[{"op": "REPLACE", "path": "/enabled", "value": false}]\fR; its other members keep their values. ID is the ID that \fBepx ai tokens list\fR shows; an unknown one is not found.
+.PP
+Changes data: on a terminal, epx asks before it sends PATCH. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the ai.agent_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SS "epx ai tokens search"
+Search AI tokens.
+.PP
+.RS "4"
+.nf
+epx ai tokens search [flags]
+.fi
+.RE
+.PP
+Reads the AI tokens that an Emporix q filter finds (\fB\-\-query\fR; without it, every one). It reads and shows them as \fBepx ai tokens list\fR does.
+.PP
+Changes nothing: Emporix serves this read as POST with a JSON body, which the flags make or \fB\-\-body\fR gives whole.
+.PP
+Requires the ai.agent_read scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-body <FILE>\fR
+Send the JSON request body in FILE as given (\- reads standard input) instead of the one the other flags make.
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, NAME, CREATED, MODIFIED.
+.TP
+\fB\-\-limit <n>\fR
+Print at most n items; paged reads stop early where they safely can (0: every item).
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-query <filter>\fR
+Emporix q filter, sent as given in the request body, not in the URL (empty: no filter), e.g. code:(A1,A2); space\-separated conditions must all match (fields mostly as in \fB\-o json\fR).
+.TP
+\fB\-\-sort <order>\fR
+Emporix sort order, passed as given, e.g. code or name.en:desc,code; fields mostly as in \fB\-o json\fR (Emporix may ignore an unknown one).
+.TP
+\fB\-\-stream\fR
+Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes \fB\-o\fR, \fB\-\-columns\fR and \fB\-\-no\-headers\fR).
+.SS "epx ai tokens update"
+Upsert an AI token.
+.PP
+.RS "4"
+.nf
+epx ai tokens update ID [flags]
+.fi
+.RE
+.PP
+Replaces the token ID with the JSON in \fB\-\-file\fR, or creates it with that ID where none exists (an upsert): Emporix answers with the id of one it created and nothing for one it replaced. With metadata.version, as \fBepx ai tokens get ID \-o json\fR prints it, Emporix replaces only that version: another is a conflict (exit 5). The JSON holds its name and value, the API key or secret, which cannot change once the token is created. A dry run prints the body, value included. ID is the ID that \fBepx ai tokens list\fR shows.
+.PP
+Changes data: on a terminal, epx asks before it sends PUT. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the ai.agent_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SS "epx ai tools"
+Read, upsert, change and delete agent tools.
+.PP
+.RS "4"
+.nf
+epx ai tools [flags]
+epx ai tools [command]
+.fi
+.RE
+.PP
+Reads the native tools that agents can use: TYPE is slack, teams, rag_custom (retrieval\-augmented generation over the tenant\(aqs own vector database), rag_emporix (over Emporix data) or search (customers or legal entities, found without embeddings in a search index that Emporix keeps); their configuration is only in \fB\-o json\fR. The first search tool of an entity type (customer or legal\-entity) finds nothing until a reindex job of that type (\fBepx indexing reindex\-jobs create \-\-entity\-type CUSTOMER\fR or LEGAL\-ENTITY), started after the tool is saved, ends.
+.PP
+Its reads require the ai.agent_read scope. Its writes require the ai.agent_manage scope.
+.SS "epx ai tools delete"
+Delete an agent tool.
+.PP
+.RS "4"
+.nf
+epx ai tools delete ID [flags]
+.fi
+.RE
+.PP
+Deletes the tool ID. Emporix refuses to delete one that others use, unless \fB\-\-force\fR unassigns it from them. ID is the ID that \fBepx ai tools list\fR shows.
+.PP
+Deletes data, which cannot be undone. On a terminal, epx sends DELETE only once you type ID at its prompt. \fB\-\-yes\fR sends without asking (required without a terminal); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the ai.agent_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-force\fR
+Delete it even where agents use it.
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal).
+.SS "epx ai tools get"
+Show one tool.
+.PP
+.RS "4"
+.nf
+epx ai tools get ID [flags]
+.fi
+.RE
+.PP
+Reads the native tools that agents can use: TYPE is slack, teams, rag_custom (retrieval\-augmented generation over the tenant\(aqs own vector database), rag_emporix (over Emporix data) or search (customers or legal entities, found without embeddings in a search index that Emporix keeps); their configuration is only in \fB\-o json\fR. The first search tool of an entity type (customer or legal\-entity) finds nothing until a reindex job of that type (\fBepx indexing reindex\-jobs create \-\-entity\-type CUSTOMER\fR or LEGAL\-ENTITY), started after the tool is saved, ends.
+.PP
+Requires the ai.agent_read scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, TYPE, ENABLED, NAME.
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.SS "epx ai tools list"
+List agent tools.
+.PP
+.RS "4"
+.nf
+epx ai tools list [flags]
+.fi
+.RE
+.PP
+Reads the native tools that agents can use: TYPE is slack, teams, rag_custom (retrieval\-augmented generation over the tenant\(aqs own vector database), rag_emporix (over Emporix data) or search (customers or legal entities, found without embeddings in a search index that Emporix keeps); their configuration is only in \fB\-o json\fR. The first search tool of an entity type (customer or legal\-entity) finds nothing until a reindex job of that type (\fBepx indexing reindex\-jobs create \-\-entity\-type CUSTOMER\fR or LEGAL\-ENTITY), started after the tool is saved, ends.
+.PP
+Requires the ai.agent_read scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, TYPE, ENABLED, NAME.
+.TP
+\fB\-\-limit <n>\fR
+Print at most n items; paged reads stop early where they safely can (0: every item).
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-query <filter>\fR
+Emporix q filter, passed as given, e.g. code:(A1,A2); space\-separated conditions must all match (fields mostly as in \fB\-o json\fR).
+.TP
+\fB\-\-sort <order>\fR
+Emporix sort order, passed as given, e.g. code or name.en:desc,code; fields mostly as in \fB\-o json\fR (Emporix may ignore an unknown one).
+.TP
+\fB\-\-stream\fR
+Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes \fB\-o\fR, \fB\-\-columns\fR and \fB\-\-no\-headers\fR).
+.SS "epx ai tools patch"
+Change members of an agent tool.
+.PP
+.RS "4"
+.nf
+epx ai tools patch ID [flags]
+.fi
+.RE
+.PP
+Changes the tool ID with the JSON array of operations in \fB\-\-file\fR, each with op (ADD, REMOVE or REPLACE), path and value, e.g. \fB[{"op": "REPLACE", "path": "/enabled", "value": false}]\fR; its other members keep their values. ID is the ID that \fBepx ai tools list\fR shows; an unknown one is not found.
+.PP
+Changes data: on a terminal, epx asks before it sends PATCH. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the ai.agent_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-\-force\fR
+Disable it even where enabled agents use it, which disables them too.
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SS "epx ai tools search"
+Search agent tools.
+.PP
+.RS "4"
+.nf
+epx ai tools search [flags]
+.fi
+.RE
+.PP
+Reads the agent tools that an Emporix q filter finds (\fB\-\-query\fR; without it, every one). It reads and shows them as \fBepx ai tools list\fR does.
+.PP
+Changes nothing: Emporix serves this read as POST with a JSON body, which the flags make or \fB\-\-body\fR gives whole.
+.PP
+Requires the ai.agent_read scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-body <FILE>\fR
+Send the JSON request body in FILE as given (\- reads standard input) instead of the one the other flags make.
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, TYPE, ENABLED, NAME.
+.TP
+\fB\-\-limit <n>\fR
+Print at most n items; paged reads stop early where they safely can (0: every item).
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-query <filter>\fR
+Emporix q filter, sent as given in the request body, not in the URL (empty: no filter), e.g. code:(A1,A2); space\-separated conditions must all match (fields mostly as in \fB\-o json\fR).
+.TP
+\fB\-\-sort <order>\fR
+Emporix sort order, passed as given, e.g. code or name.en:desc,code; fields mostly as in \fB\-o json\fR (Emporix may ignore an unknown one).
+.TP
+\fB\-\-stream\fR
+Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes \fB\-o\fR, \fB\-\-columns\fR and \fB\-\-no\-headers\fR).
+.SS "epx ai tools update"
+Upsert an agent tool.
+.PP
+.RS "4"
+.nf
+epx ai tools update ID [flags]
+.fi
+.RE
+.PP
+Replaces the tool ID with the JSON in \fB\-\-file\fR, or creates it with that ID where none exists (an upsert): Emporix answers with the id of one it created and nothing for one it replaced. With metadata.version, as \fBepx ai tools get ID \-o json\fR prints it, Emporix replaces only that version: another is a conflict (exit 5). The JSON holds its type (slack, teams, rag_custom, rag_emporix or search), name and config, and whether it is enabled. The first search tool of an entity type (customer or legal\-entity) finds nothing until a reindex job of that type (\fBepx indexing reindex\-jobs create \-\-entity\-type CUSTOMER\fR or LEGAL\-ENTITY), started after the tool is saved, ends. ID is the ID that \fBepx ai tools list\fR shows.
+.PP
+Changes data: on a terminal, epx asks before it sends PUT. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the ai.agent_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-\-force\fR
+Disable it even where enabled agents use it, which disables them too.
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SH "SEE ALSO"
+\fBepx\fR(1) for the global options, the credentials epx reads and its exit codes; https://commerce-cloud-integrations.github.io/emporix-cli/commands/ai

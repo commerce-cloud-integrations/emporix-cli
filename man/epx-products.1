@@ -1,0 +1,575 @@
+.TH "EPX\-PRODUCTS" "1" "" "epx" "epx manual"
+.SH "NAME"
+epx\-products \- read, create, update and delete products
+.SH "SYNOPSIS"
+.RS "4"
+.nf
+epx products [flags]
+epx products [command]
+.fi
+.RE
+.SH "DESCRIPTION"
+Reads and changes products. Reads find products published and unpublished (without the product.product_read_unpublished scope, Emporix would silently omit unpublished products). create, update and patch change one product, bulk\-create and bulk\-update up to 200, import any number in batches, each from \fB\-\-file\fR; recalculate rebuilds variant trees; delete deletes one.
+.PP
+Its reads require different OAuth scopes; the help of each names them. Opt\-in: epx requests a write\-capable scope for a read only when given \fB\-\-allow\-write\-scope\fR. Its writes require the product.product_manage scope.
+.SH "COMMANDS"
+.SS "epx products bulk\-create"
+Create products in bulk.
+.PP
+.RS "4"
+.nf
+epx products bulk\-create [flags]
+.fi
+.RE
+.PP
+Creates the products in \fB\-\-file\fR, a JSON array of products, each as create takes it. Emporix answers each product with its index, id, code (the HTTP status of the product, e.g. 201) and status (e.g. CREATED), and a message where it failed.
+.PP
+Localized text in the body, such as a name, is a map of translations, e.g. \fB{"en": "gram", "de": "Gramm"}\fR, as \fB\-o json\fR of a read prints it, or with \fB\-\-content\-language\fR LANGUAGE a string in that language, e.g. \fB"gram"\fR with \fB\-\-content\-language\fR en.
+.PP
+Emporix takes up to 200 items in one request (epx refuses more), carries out each on its own and answers with the result of each: when one failed, epx prints the response, lists the items that failed on standard error (one that failed with 500, 502, 503 or 504 may have been carried out all the same) and exits with the code that their failures share (for example 5 for a 409 Conflict, 4 for a 404), else 1.
+.PP
+Changes data: on a terminal, epx asks before it sends POST. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+\fB\-\-allow\-publish\fR also requests the product.product_publish scope. Without it, Emporix refuses a product that the write publishes (403 Forbidden, exit 3).
+.PP
+Requires the product.product_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-allow\-publish\fR
+Allow the write to publish products, which needs a scope of its own (requests product.product_publish too).
+.TP
+\fB\-\-content\-language <LANGUAGE>\fR
+The LANGUAGE of localized text in the body, or * for maps of translations. Default: \fB*\fR.
+.TP
+\fB\-\-do\-index <string>\fR
+Whether Emporix reindexes the products it writes (by default, it does; with false, other changes or Emporix\(aqs scheduled indexing may still index them, as it may index a product published with false): true or false.
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-skip\-related\-items\-validation\fR
+Do not check that related products exist, as when they are written later (a tenant may ignore it and refuse unknown related products all the same).
+.TP
+\fB\-\-skip\-variant\-generation\fR
+Do not generate the variants of a PARENT_VARIANT product from its variant attributes.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SS "epx products bulk\-update"
+Upsert products in bulk.
+.PP
+.RS "4"
+.nf
+epx products bulk\-update [flags]
+.fi
+.RE
+.PP
+Upserts the products in \fB\-\-file\fR, a JSON array of products, each complete and with its id, as update takes it. import sends more than 200 in batches. Emporix answers each product with its index, id, code (the HTTP status of the product, e.g. 201) and status (e.g. CREATED), and a message where it failed.
+.PP
+Localized text in the body, such as a name, is a map of translations, e.g. \fB{"en": "gram", "de": "Gramm"}\fR, as \fB\-o json\fR of a read prints it, or with \fB\-\-content\-language\fR LANGUAGE a string in that language, e.g. \fB"gram"\fR with \fB\-\-content\-language\fR en.
+.PP
+Emporix takes up to 200 items in one request (epx refuses more), carries out each on its own and answers with the result of each: when one failed, epx prints the response, lists the items that failed on standard error (one that failed with 500, 502, 503 or 504 may have been carried out all the same) and exits with the code that their failures share (for example 5 for a 409 Conflict, 4 for a 404), else 1.
+.PP
+Changes data: on a terminal, epx asks before it sends PUT. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+\fB\-\-allow\-publish\fR also requests the product.product_publish scope. Without it, Emporix refuses a product that the write publishes (403 Forbidden, exit 3). \fB\-\-allow\-unpublish\fR also requests the product.product_unpublish scope. Without it, Emporix refuses a product that the write unpublishes (403 Forbidden, exit 3).
+.PP
+Requires the product.product_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-allow\-publish\fR
+Allow the write to publish products, which needs a scope of its own (requests product.product_publish too).
+.TP
+\fB\-\-allow\-unpublish\fR
+Allow the write to unpublish products, which needs a scope of its own (requests product.product_unpublish too).
+.TP
+\fB\-\-content\-language <LANGUAGE>\fR
+The LANGUAGE of localized text in the body, or * for maps of translations. Default: \fB*\fR.
+.TP
+\fB\-\-do\-index <string>\fR
+Whether Emporix reindexes the products it writes (by default, it does; with false, other changes or Emporix\(aqs scheduled indexing may still index them, as it may index a product published with false): true or false.
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-skip\-related\-items\-validation\fR
+Do not check that related products exist, as when they are written later (a tenant may ignore it and refuse unknown related products all the same).
+.TP
+\fB\-\-skip\-variant\-generation\fR
+Do not generate the variants of a PARENT_VARIANT product from its variant attributes.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SS "epx products create"
+Create a product.
+.PP
+.RS "4"
+.nf
+epx products create [flags]
+.fi
+.RE
+.PP
+Creates the product in the JSON object of \fB\-\-file\fR, as the Product Service takes it (without an id, Emporix makes one), and prints its id. Emporix refuses it as a conflict (exit 5) when a product has its id or code.
+.PP
+Localized text in the body, such as a name, is a map of translations, e.g. \fB{"en": "gram", "de": "Gramm"}\fR, as \fB\-o json\fR of a read prints it, or with \fB\-\-content\-language\fR LANGUAGE a string in that language, e.g. \fB"gram"\fR with \fB\-\-content\-language\fR en.
+.PP
+Changes data: on a terminal, epx asks before it sends POST. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+\fB\-\-allow\-publish\fR also requests the product.product_publish scope. Without it, Emporix refuses a product that the write publishes (403 Forbidden, exit 3).
+.PP
+Requires the product.product_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-allow\-publish\fR
+Allow the write to publish products, which needs a scope of its own (requests product.product_publish too).
+.TP
+\fB\-\-content\-language <LANGUAGE>\fR
+The LANGUAGE of localized text in the body, or * for maps of translations. Default: \fB*\fR.
+.TP
+\fB\-\-do\-index <string>\fR
+Whether Emporix reindexes the products it writes (by default, it does; with false, other changes or Emporix\(aqs scheduled indexing may still index them, as it may index a product published with false): true or false.
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-skip\-related\-items\-validation\fR
+Do not check that related products exist, as when they are written later (a tenant may ignore it and refuse unknown related products all the same).
+.TP
+\fB\-\-skip\-variant\-generation\fR
+Do not generate the variants of a PARENT_VARIANT product from its variant attributes.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SS "epx products delete"
+Delete a product.
+.PP
+.RS "4"
+.nf
+epx products delete ID [flags]
+.fi
+.RE
+.PP
+Deletes the product ID. A parent variant product (PARENT_VARIANT, or DYNAMIC_VARIANT with variants below it) is deleted only with \fB\-\-force\fR, with every variant below it (without it, Emporix answers 400 Bad Request, exit 1). An unknown ID is no error: Emporix answers as for a deleted product.
+.PP
+Deletes data, which cannot be undone. With \fB\-\-force\fR, it deletes the product and every variant below it with one request. On a terminal, epx sends DELETE only once you type ID at its prompt. \fB\-\-yes\fR sends without asking (required without a terminal); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the product.product_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-force\fR
+Delete a parent variant product with every variant below it.
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal).
+.SS "epx products get"
+Show one product.
+.PP
+.RS "4"
+.nf
+epx products get ID [flags]
+.fi
+.RE
+.PP
+Reads products, published and unpublished (without the product.product_read_unpublished scope, Emporix would silently omit unpublished products).
+.PP
+Where a mixin\(aqs schema is site\-aware, an item may hold, besides the mixin NAME, an overlay for a site, NAME__SITE, with the values that differ there. \fB\-\-mixin\-site\fR SITE sends SITE as the emporix\-site header: Emporix then merges the overlay of SITE into NAME (nested objects member by member; arrays and other values are replaced, not merged; a null leaves the base value) and leaves out every overlay. A site without an overlay, or one the tenant lacks (codes are case\-sensitive; epx does not check them), gets NAME as stored. Without \fB\-\-mixin\-site\fR, mixins and overlays are read as stored, whatever the default site of the profile. Tables leave mixins (attribute values) out; \fB\-o json\fR and \fB\-o yaml\fR print them, as \fB\-\-stream\fR does on a list.
+.PP
+A merged item is that site\(aqs view, not the item as stored. Do not write it back with update, bulk\-update or (products) import, which replace whole items and would delete every overlay, nor build a patch from it: NAME would take the site\(aqs values.
+.PP
+Requires the product.product_read_unpublished scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, CODE, TYPE, PUBLISHED, NAME.
+.TP
+\fB\-\-language <language>\fR
+Language of localized table text; a missing translation shows another, labeled (\fB\-o json\fR prints all). Default: \fBen\fR.
+.TP
+\fB\-\-mixin\-site <SITE>\fR
+Merge the site\-aware mixin overlays of the site SITE (NAME__SITE) into their mixins.
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.SS "epx products import"
+Upsert the products of a file in batches.
+.PP
+.RS "4"
+.nf
+epx products import [flags]
+.fi
+.RE
+.PP
+Upserts the products in \fB\-\-file\fR, a JSON array of any number of products, each complete and with its id as update takes it, as bulk\-update does up to 200. To resume an import that stopped, send the products from the item that its error names: a product sent again is upserted again, but one whose metadata.version the import changed is a conflict. Emporix answers each product with its index, id, code (the HTTP status of the product, e.g. 201) and status (e.g. CREATED), and a message where it failed.
+.PP
+Localized text in the body, such as a name, is a map of translations, e.g. \fB{"en": "gram", "de": "Gramm"}\fR, as \fB\-o json\fR of a read prints it, or with \fB\-\-content\-language\fR LANGUAGE a string in that language, e.g. \fB"gram"\fR with \fB\-\-content\-language\fR en.
+.PP
+epx sends the items in requests of up to 200, in order, confirmed once, and stops at a request that fails as a whole, sending none after it. Emporix carries out each on its own and answers with the result of each: when one failed, epx prints the response, lists the items that failed on standard error (one that failed with 500, 502, 503 or 504 may have been carried out all the same) and exits with the code that their failures share (for example 5 for a 409 Conflict, 4 for a 404), else 1.
+.PP
+Changes data: on a terminal, epx asks before it sends PUT. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+\fB\-\-allow\-publish\fR also requests the product.product_publish scope. Without it, Emporix refuses a product that the write publishes (403 Forbidden, exit 3). \fB\-\-allow\-unpublish\fR also requests the product.product_unpublish scope. Without it, Emporix refuses a product that the write unpublishes (403 Forbidden, exit 3).
+.PP
+Requires the product.product_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-allow\-publish\fR
+Allow the write to publish products, which needs a scope of its own (requests product.product_publish too).
+.TP
+\fB\-\-allow\-unpublish\fR
+Allow the write to unpublish products, which needs a scope of its own (requests product.product_unpublish too).
+.TP
+\fB\-\-content\-language <LANGUAGE>\fR
+The LANGUAGE of localized text in the body, or * for maps of translations. Default: \fB*\fR.
+.TP
+\fB\-\-do\-index <string>\fR
+Whether Emporix reindexes the products it writes (by default, it does; with false, other changes or Emporix\(aqs scheduled indexing may still index them, as it may index a product published with false): true or false.
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-skip\-related\-items\-validation\fR
+Do not check that related products exist, as when they are written later (a tenant may ignore it and refuse unknown related products all the same).
+.TP
+\fB\-\-skip\-variant\-generation\fR
+Do not generate the variants of a PARENT_VARIANT product from its variant attributes.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SS "epx products list"
+List products.
+.PP
+.RS "4"
+.nf
+epx products list [flags]
+.fi
+.RE
+.PP
+Reads products, published and unpublished (without the product.product_read_unpublished scope, Emporix would silently omit unpublished products).
+.PP
+Where a mixin\(aqs schema is site\-aware, an item may hold, besides the mixin NAME, an overlay for a site, NAME__SITE, with the values that differ there. \fB\-\-mixin\-site\fR SITE sends SITE as the emporix\-site header: Emporix then merges the overlay of SITE into NAME (nested objects member by member; arrays and other values are replaced, not merged; a null leaves the base value) and leaves out every overlay. A site without an overlay, or one the tenant lacks (codes are case\-sensitive; epx does not check them), gets NAME as stored. Without \fB\-\-mixin\-site\fR, mixins and overlays are read as stored, whatever the default site of the profile. Tables leave mixins (attribute values) out; \fB\-o json\fR and \fB\-o yaml\fR print them, as \fB\-\-stream\fR does on a list.
+.PP
+A merged item is that site\(aqs view, not the item as stored. Do not write it back with update, bulk\-update or (products) import, which replace whole items and would delete every overlay, nor build a patch from it: NAME would take the site\(aqs values.
+.PP
+Requires the product.product_read_unpublished scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, CODE, TYPE, PUBLISHED, NAME.
+.TP
+\fB\-\-language <language>\fR
+Language of localized table text; a missing translation shows another, labeled (\fB\-o json\fR prints all). Default: \fBen\fR.
+.TP
+\fB\-\-limit <n>\fR
+Print at most n items; paged reads stop early where they safely can (0: every item).
+.TP
+\fB\-\-mixin\-site <SITE>\fR
+Merge the site\-aware mixin overlays of the site SITE (NAME__SITE) into their mixins.
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-query <filter>\fR
+Emporix q filter, passed as given, e.g. code:(A1,A2); space\-separated conditions must all match (fields mostly as in \fB\-o json\fR).
+.TP
+\fB\-\-sort <order>\fR
+Emporix sort order, passed as given, e.g. code or name.en:desc,code; fields mostly as in \fB\-o json\fR (Emporix may ignore an unknown one).
+.TP
+\fB\-\-stream\fR
+Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes \fB\-o\fR, \fB\-\-columns\fR and \fB\-\-no\-headers\fR).
+.SS "epx products patch"
+Change members of a product.
+.PP
+.RS "4"
+.nf
+epx products patch ID [flags]
+.fi
+.RE
+.PP
+Changes the members of product ID that the JSON object of \fB\-\-file\fR names; the others stay, and mixins are merged member by member (update removes a mixin). Emporix refuses it as a conflict (exit 5) when another product has its code or, given metadata.version, when the product changed since that version.
+.PP
+Localized text in the body, such as a name, is a map of translations, e.g. \fB{"en": "gram", "de": "Gramm"}\fR, as \fB\-o json\fR of a read prints it, or with \fB\-\-content\-language\fR LANGUAGE a string in that language, e.g. \fB"gram"\fR with \fB\-\-content\-language\fR en.
+.PP
+Changes data: on a terminal, epx asks before it sends PATCH. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+\fB\-\-allow\-publish\fR also requests the product.product_publish scope. Without it, Emporix refuses a product that the write publishes (403 Forbidden, exit 3). \fB\-\-allow\-unpublish\fR also requests the product.product_unpublish scope. Without it, Emporix refuses a product that the write unpublishes (403 Forbidden, exit 3).
+.PP
+Requires the product.product_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-allow\-publish\fR
+Allow the write to publish products, which needs a scope of its own (requests product.product_publish too).
+.TP
+\fB\-\-allow\-unpublish\fR
+Allow the write to unpublish products, which needs a scope of its own (requests product.product_unpublish too).
+.TP
+\fB\-\-content\-language <LANGUAGE>\fR
+The LANGUAGE of localized text in the body, or * for maps of translations. Default: \fB*\fR.
+.TP
+\fB\-\-do\-index <string>\fR
+Whether Emporix reindexes the products it writes (by default, it does; with false, other changes or Emporix\(aqs scheduled indexing may still index them, as it may index a product published with false): true or false.
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-skip\-related\-items\-validation\fR
+Do not check that related products exist, as when they are written later (a tenant may ignore it and refuse unknown related products all the same).
+.TP
+\fB\-\-skip\-variant\-generation\fR
+Do not generate the variants of a PARENT_VARIANT product from its variant attributes.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SS "epx products recalculate"
+Recalculate the variant trees of dynamic variant products.
+.PP
+.RS "4"
+.nf
+epx products recalculate [flags]
+.fi
+.RE
+.PP
+Starts the recalculation of the variant trees of DYNAMIC_VARIANT products once their products are written in bulk (a write of one product updates its tree at once). Emporix finds the root product of each ID, at any level, and starts one job per root, which \fBepx products recalculation\-jobs list\fR shows (jobs). An ID that is unknown, is not of a DYNAMIC_VARIANT product, or whose root has a job pending or processing is skipped (skippedProductIds, left out when none is); where every ID is, the answer has no jobs. Takes up to 1000 IDs, given with \fB\-\-product\fR or in the JSON object of \fB\-\-file\fR (\fB{"productIds": [...]}\fR).
+.PP
+Changes data: on a terminal, epx asks before it sends POST. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the product.product_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte instead of the one that epx makes (\- reads standard input; sending it then needs \fB\-\-yes\fR).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-product <ID>\fR
+ID of a product to recalculate (repeatable; required without \fB\-\-file\fR).
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SS "epx products recalculation\-jobs"
+Read variant recalculation jobs.
+.PP
+.RS "4"
+.nf
+epx products recalculation\-jobs [flags]
+epx products recalculation\-jobs [command]
+.fi
+.RE
+.PP
+Reads the jobs that rebuild the variant tree of a DYNAMIC_VARIANT product once a recalculation was triggered, one per ROOT PRODUCT (an id). STATUS is PENDING, PROCESSING, FINISHED, FAILED or FAILED_PERMANENT, ATTEMPTS counts processing attempts and ERROR says why a job failed; \fB\-o json\fR adds the product ids it was requested for and when processing started, and leaves out each of processingStartedAt, finishedAt and error until it is set. Emporix removes jobs about 30 days after they end. The jobs of one status: \fBepx api get /product/{tenant}/products/recalculate/jobs \-p status=FAILED \-\-scope product.product_manage\fR.
+.PP
+Requires the product.product_manage scope. Opt\-in: epx requests a write\-capable scope for a read only when given \fB\-\-allow\-write\-scope\fR.
+.SS "epx products recalculation\-jobs get"
+Show one recalculation job.
+.PP
+.RS "4"
+.nf
+epx products recalculation\-jobs get ID [flags]
+.fi
+.RE
+.PP
+Reads the jobs that rebuild the variant tree of a DYNAMIC_VARIANT product once a recalculation was triggered, one per ROOT PRODUCT (an id). STATUS is PENDING, PROCESSING, FINISHED, FAILED or FAILED_PERMANENT, ATTEMPTS counts processing attempts and ERROR says why a job failed; \fB\-o json\fR adds the product ids it was requested for and when processing started, and leaves out each of processingStartedAt, finishedAt and error until it is set. Emporix removes jobs about 30 days after they end. The jobs of one status: \fBepx api get /product/{tenant}/products/recalculate/jobs \-p status=FAILED \-\-scope product.product_manage\fR.
+.PP
+Requires the product.product_manage scope. Opt\-in: epx requests a write\-capable scope for a read only when given \fB\-\-allow\-write\-scope\fR.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-allow\-write\-scope\fR
+Opt in to requesting product.product_manage, which can also change data (required).
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, ROOT PRODUCT, STATUS, ATTEMPTS, CREATED, FINISHED, ERROR.
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.SS "epx products recalculation\-jobs list"
+List variant recalculation jobs.
+.PP
+.RS "4"
+.nf
+epx products recalculation\-jobs list [flags]
+.fi
+.RE
+.PP
+Reads the jobs that rebuild the variant tree of a DYNAMIC_VARIANT product once a recalculation was triggered, one per ROOT PRODUCT (an id). STATUS is PENDING, PROCESSING, FINISHED, FAILED or FAILED_PERMANENT, ATTEMPTS counts processing attempts and ERROR says why a job failed; \fB\-o json\fR adds the product ids it was requested for and when processing started, and leaves out each of processingStartedAt, finishedAt and error until it is set. Emporix removes jobs about 30 days after they end. The jobs of one status: \fBepx api get /product/{tenant}/products/recalculate/jobs \-p status=FAILED \-\-scope product.product_manage\fR.
+.PP
+Requires the product.product_manage scope. Opt\-in: epx requests a write\-capable scope for a read only when given \fB\-\-allow\-write\-scope\fR.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-allow\-write\-scope\fR
+Opt in to requesting product.product_manage, which can also change data (required).
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, ROOT PRODUCT, STATUS, ATTEMPTS, CREATED, FINISHED, ERROR.
+.TP
+\fB\-\-limit <n>\fR
+Print at most n items; paged reads stop early where they safely can (0: every item).
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-stream\fR
+Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes \fB\-o\fR, \fB\-\-columns\fR and \fB\-\-no\-headers\fR).
+.SS "epx products search"
+Search products.
+.PP
+.RS "4"
+.nf
+epx products search [flags]
+.fi
+.RE
+.PP
+Reads the products, published and unpublished, that an Emporix q filter finds (\fB\-\-query\fR; without it, every product). It reads and shows them as \fBepx products list\fR does.
+.PP
+Changes nothing: Emporix serves this read as POST with a JSON body, which the flags make or \fB\-\-body\fR gives whole.
+.PP
+Where a mixin\(aqs schema is site\-aware, an item may hold, besides the mixin NAME, an overlay for a site, NAME__SITE, with the values that differ there. \fB\-\-mixin\-site\fR SITE sends SITE as the emporix\-site header: Emporix then merges the overlay of SITE into NAME (nested objects member by member; arrays and other values are replaced, not merged; a null leaves the base value) and leaves out every overlay. A site without an overlay, or one the tenant lacks (codes are case\-sensitive; epx does not check them), gets NAME as stored. Without \fB\-\-mixin\-site\fR, mixins and overlays are read as stored, whatever the default site of the profile. Tables leave mixins (attribute values) out; \fB\-o json\fR and \fB\-o yaml\fR print them, as \fB\-\-stream\fR does on a list.
+.PP
+A merged item is that site\(aqs view, not the item as stored. Do not write it back with update, bulk\-update or (products) import, which replace whole items and would delete every overlay, nor build a patch from it: NAME would take the site\(aqs values.
+.PP
+Requires the product.product_read_unpublished scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-body <FILE>\fR
+Send the JSON request body in FILE as given (\- reads standard input) instead of the one the other flags make.
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, CODE, TYPE, PUBLISHED, NAME.
+.TP
+\fB\-\-language <language>\fR
+Language of localized table text; a missing translation shows another, labeled (\fB\-o json\fR prints all). Default: \fBen\fR.
+.TP
+\fB\-\-limit <n>\fR
+Print at most n items; paged reads stop early where they safely can (0: every item).
+.TP
+\fB\-\-mixin\-site <SITE>\fR
+Merge the site\-aware mixin overlays of the site SITE (NAME__SITE) into their mixins.
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-query <filter>\fR
+Emporix q filter, sent as given in the request body, not in the URL (empty: no filter), e.g. code:(A1,A2); space\-separated conditions must all match (fields mostly as in \fB\-o json\fR).
+.TP
+\fB\-\-sort <order>\fR
+Emporix sort order, passed as given, e.g. code or name.en:desc,code; fields mostly as in \fB\-o json\fR (Emporix may ignore an unknown one).
+.TP
+\fB\-\-stream\fR
+Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes \fB\-o\fR, \fB\-\-columns\fR and \fB\-\-no\-headers\fR).
+.SS "epx products update"
+Upsert a product.
+.PP
+.RS "4"
+.nf
+epx products update ID [flags]
+.fi
+.RE
+.PP
+Replaces product ID with the JSON object of \fB\-\-file\fR, the complete product: an upsert, as Emporix creates the product where none has the ID (and answers with its id and yrn). Mixins left out are removed. Emporix refuses it as a conflict (exit 5) when another product has its code or, given metadata.version, when the product changed since that version.
+.PP
+Localized text in the body, such as a name, is a map of translations, e.g. \fB{"en": "gram", "de": "Gramm"}\fR, as \fB\-o json\fR of a read prints it, or with \fB\-\-content\-language\fR LANGUAGE a string in that language, e.g. \fB"gram"\fR with \fB\-\-content\-language\fR en.
+.PP
+Changes data: on a terminal, epx asks before it sends PUT. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+\fB\-\-allow\-publish\fR also requests the product.product_publish scope. Without it, Emporix refuses a product that the write publishes (403 Forbidden, exit 3). \fB\-\-allow\-unpublish\fR also requests the product.product_unpublish scope. Without it, Emporix refuses a product that the write unpublishes (403 Forbidden, exit 3).
+.PP
+Requires the product.product_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-allow\-publish\fR
+Allow the write to publish products, which needs a scope of its own (requests product.product_publish too).
+.TP
+\fB\-\-allow\-unpublish\fR
+Allow the write to unpublish products, which needs a scope of its own (requests product.product_unpublish too).
+.TP
+\fB\-\-content\-language <LANGUAGE>\fR
+The LANGUAGE of localized text in the body, or * for maps of translations. Default: \fB*\fR.
+.TP
+\fB\-\-do\-index <string>\fR
+Whether Emporix reindexes the products it writes (by default, it does; with false, other changes or Emporix\(aqs scheduled indexing may still index them, as it may index a product published with false): true or false.
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-skip\-related\-items\-validation\fR
+Do not check that related products exist, as when they are written later (a tenant may ignore it and refuse unknown related products all the same).
+.TP
+\fB\-\-skip\-variant\-generation\fR
+Do not generate the variants of a PARENT_VARIANT product from its variant attributes.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SH "SEE ALSO"
+\fBepx\fR(1) for the global options, the credentials epx reads and its exit codes; https://commerce-cloud-integrations.github.io/emporix-cli/commands/products

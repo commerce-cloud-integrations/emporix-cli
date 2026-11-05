@@ -1,0 +1,222 @@
+.TH "EPX\-CATALOGS" "1" "" "epx" "epx manual"
+.SH "NAME"
+epx\-catalogs \- read and change catalogs
+.SH "SYNOPSIS"
+.RS "4"
+.nf
+epx catalogs [flags]
+epx catalogs [command]
+.fi
+.RE
+.SH "DESCRIPTION"
+Reads catalogs, visible or not. STATUS and VISIBLE are separate Emporix fields and can disagree. ROOT CATEGORIES counts the categories assigned directly to the catalog.
+.PP
+Its reads need no OAuth scope. Its writes require the catalog.catalog_manage scope.
+.SH "COMMANDS"
+.SS "epx catalogs create"
+Create a catalog.
+.PP
+.RS "4"
+.nf
+epx catalogs create [flags]
+.fi
+.RE
+.PP
+Creates a catalog from the JSON in \fB\-\-file\fR, shaped as \fBepx catalogs get ID \-o json\fR shows one: name and description (maps of languages to text), visibility, publishedSites and categoryIds (root categories); Emporix generates the id unless the body gives one. It answers with the id; an id that exists already is a conflict (exit 5).
+.PP
+Changes data: on a terminal, epx asks before it sends POST. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the catalog.catalog_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SS "epx catalogs delete"
+Delete a catalog.
+.PP
+.RS "4"
+.nf
+epx catalogs delete ID [flags]
+.fi
+.RE
+.PP
+Deletes the catalog ID, as \fBepx catalogs list\fR shows it.
+.PP
+Deletes data, which cannot be undone. On a terminal, epx sends DELETE only once you type ID at its prompt. \fB\-\-yes\fR sends without asking (required without a terminal); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the catalog.catalog_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal).
+.SS "epx catalogs for\-category"
+List the catalogs a category is assigned to.
+.PP
+.RS "4"
+.nf
+epx catalogs for\-category CATEGORY_ID [flags]
+.fi
+.RE
+.PP
+Reads catalogs, visible or not. STATUS and VISIBLE are separate Emporix fields and can disagree. ROOT CATEGORIES counts the categories assigned directly to the catalog. CATEGORY_ID is the id of a category assigned to catalogs directly, a root category (an unindented row of \fBepx category\-trees list\fR); a category below one, or an unknown id, lists nothing.
+.PP
+No OAuth scope is needed.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, NAME, STATUS, VISIBLE, FROM, TO, SITES, ROOT CATEGORIES.
+.TP
+\fB\-\-language <language>\fR
+Language of localized table text; a missing translation shows another, labeled (\fB\-o json\fR prints all). Default: \fBen\fR.
+.TP
+\fB\-\-limit <n>\fR
+Print at most n items; paged reads stop early where they safely can (0: every item).
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-sort <order>\fR
+Emporix sort order, passed as given, e.g. code or name.en:desc,code; fields mostly as in \fB\-o json\fR (Emporix may ignore an unknown one).
+.TP
+\fB\-\-stream\fR
+Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes \fB\-o\fR, \fB\-\-columns\fR and \fB\-\-no\-headers\fR).
+.SS "epx catalogs get"
+Show one catalog.
+.PP
+.RS "4"
+.nf
+epx catalogs get ID [flags]
+.fi
+.RE
+.PP
+Reads catalogs, visible or not. STATUS and VISIBLE are separate Emporix fields and can disagree. ROOT CATEGORIES counts the categories assigned directly to the catalog.
+.PP
+No OAuth scope is needed.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, NAME, STATUS, VISIBLE, FROM, TO, SITES, ROOT CATEGORIES.
+.TP
+\fB\-\-language <language>\fR
+Language of localized table text; a missing translation shows another, labeled (\fB\-o json\fR prints all). Default: \fBen\fR.
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.SS "epx catalogs list"
+List catalogs.
+.PP
+.RS "4"
+.nf
+epx catalogs list [flags]
+.fi
+.RE
+.PP
+Reads catalogs, visible or not. STATUS and VISIBLE are separate Emporix fields and can disagree. ROOT CATEGORIES counts the categories assigned directly to the catalog.
+.PP
+No OAuth scope is needed.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, NAME, STATUS, VISIBLE, FROM, TO, SITES, ROOT CATEGORIES.
+.TP
+\fB\-\-language <language>\fR
+Language of localized table text; a missing translation shows another, labeled (\fB\-o json\fR prints all). Default: \fBen\fR.
+.TP
+\fB\-\-limit <n>\fR
+Print at most n items; paged reads stop early where they safely can (0: every item).
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-sort <order>\fR
+Emporix sort order, passed as given, e.g. code or name.en:desc,code; fields mostly as in \fB\-o json\fR (Emporix may ignore an unknown one).
+.TP
+\fB\-\-stream\fR
+Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes \fB\-o\fR, \fB\-\-columns\fR and \fB\-\-no\-headers\fR).
+.SS "epx catalogs patch"
+Change members of a catalog.
+.PP
+.RS "4"
+.nf
+epx catalogs patch ID [flags]
+.fi
+.RE
+.PP
+Changes the members of the catalog ID that the JSON in \fB\-\-file\fR gives, and keeps the others. Emporix requires metadata.version in the body, as \fBepx catalogs get ID \-o json\fR shows it, and answers a version that is not the catalog\(aqs as it answers an unknown catalog, with 404 Not Found: epx then exits with 5, a conflict (read the catalog again before you retry), also for an unknown ID, and with 4 without a version.
+.PP
+Changes data: on a terminal, epx asks before it sends PATCH. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the catalog.catalog_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SS "epx catalogs update"
+Upsert a catalog.
+.PP
+.RS "4"
+.nf
+epx catalogs update ID [flags]
+.fi
+.RE
+.PP
+Replaces the catalog ID with the JSON in \fB\-\-file\fR, or creates it with that id when there is none (an upsert); the body has the members of create\(aqs but the id. With metadata.version, as \fBepx catalogs get ID \-o json\fR shows it, Emporix refuses the write as a conflict (exit 5) when the catalog changed since it was read.
+.PP
+Changes data: on a terminal, epx asks before it sends PUT. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the catalog.catalog_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SH "SEE ALSO"
+\fBepx\fR(1) for the global options, the credentials epx reads and its exit codes; https://commerce-cloud-integrations.github.io/emporix-cli/commands/catalogs

@@ -1,0 +1,615 @@
+.TH "EPX\-CATEGORIES" "1" "" "epx" "epx manual"
+.SH "NAME"
+epx\-categories \- read and change categories and the products assigned to them
+.SH "SYNOPSIS"
+.RS "4"
+.nf
+epx categories [flags]
+epx categories [command]
+.fi
+.RE
+.SH "DESCRIPTION"
+Reads categories, published and unpublished.
+.PP
+Its reads require the category.category_read_unpublished scope. Its writes require different OAuth scopes; the help of each names them.
+.SH "COMMANDS"
+.SS "epx categories assignments"
+Read and change the products assigned to a category.
+.PP
+.RS "4"
+.nf
+epx categories assignments [flags]
+epx categories assignments [command]
+.fi
+.RE
+.PP
+Reads the products assigned to a category, assigns products to it and unassigns them.
+.PP
+Its reads require the category.category_read_unpublished scope. Its writes require different OAuth scopes; the help of each names them.
+.SS "epx categories assignments bulk\-create"
+Assign products to a category.
+.PP
+.RS "4"
+.nf
+epx categories assignments bulk\-create CATEGORY_ID [flags]
+.fi
+.RE
+.PP
+Assigns products to a category: the JSON in \fB\-\-file\fR is an array of assignments, each as in \fB{"ref": {"id": "100200", "type": "PRODUCT"}}\fR. CATEGORY_ID is the ID that \fBepx categories list\fR shows; an unknown one is not found.
+.PP
+Emporix takes up to 200 items in one request (epx refuses more), carries out each on its own and answers with the result of each: when one failed, epx prints the response, lists the items that failed on standard error (one that failed with 500, 502, 503 or 504 may have been carried out all the same) and exits with the code that their failures share (for example 5 for a 409 Conflict, 4 for a 404), else 1.
+.PP
+Changes data: on a terminal, epx asks before it sends POST. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the category.category_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SS "epx categories assignments bulk\-update"
+Upsert the assignments of products to a category.
+.PP
+.RS "4"
+.nf
+epx categories assignments bulk\-update CATEGORY_ID [flags]
+.fi
+.RE
+.PP
+Assigns products to a category, or updates the assignments that exist (an upsert): the JSON in \fB\-\-file\fR is an array of assignments, each naming a product by its id, as in \fB{"ref": {"id": "100200"}}\fR. CATEGORY_ID is the ID that \fBepx categories list\fR shows; an unknown one is not found.
+.PP
+Emporix takes up to 200 items in one request (epx refuses more), carries out each on its own and answers with the result of each: when one failed, epx prints the response, lists the items that failed on standard error (one that failed with 500, 502, 503 or 504 may have been carried out all the same) and exits with the code that their failures share (for example 5 for a 409 Conflict, 4 for a 404), else 1.
+.PP
+Changes data: on a terminal, epx asks before it sends PUT. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the category.category_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SS "epx categories assignments create"
+Assign a product to a category.
+.PP
+.RS "4"
+.nf
+epx categories assignments create CATEGORY_ID [flags]
+.fi
+.RE
+.PP
+Assigns a product to a category: the JSON in \fB\-\-file\fR names it by its id, as in \fB{"ref": {"id": "100200", "type": "PRODUCT"}}\fR. Emporix answers with the id of the assignment. \fBepx categories assignments update CATEGORY_ID PRODUCT_ID\fR assigns one without a body. CATEGORY_ID is the ID that \fBepx categories list\fR shows; an unknown one is not found.
+.PP
+Changes data: on a terminal, epx asks before it sends POST. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the category.category_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SS "epx categories assignments delete"
+Unassign a product from a category.
+.PP
+.RS "4"
+.nf
+epx categories assignments delete CATEGORY_ID PRODUCT_ID [flags]
+.fi
+.RE
+.PP
+Deletes the assignment of the product PRODUCT_ID to the category CATEGORY_ID: the PRODUCT that \fBepx categories assignments list CATEGORY_ID\fR shows, as update assigns it. The product and the category stay. PRODUCT_ID is the product id (as in \fBepx products list\fR), not its code.
+.PP
+Deletes data, which cannot be undone. On a terminal, epx sends DELETE only once you type PRODUCT_ID at its prompt. \fB\-\-yes\fR sends without asking (required without a terminal); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the category.category_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal).
+.SS "epx categories assignments delete\-all"
+Unassign every product from a category.
+.PP
+.RS "4"
+.nf
+epx categories assignments delete\-all CATEGORY_ID [flags]
+.fi
+.RE
+.PP
+Deletes the assignments of every product to the category CATEGORY_ID, published or unpublished, as \fBepx categories assignments list CATEGORY_ID\fR lists them. The products and the category stay.
+.PP
+Deletes the assignments of every product to the category with one request, which cannot be undone. On a terminal, epx sends DELETE only once you type CATEGORY_ID at its prompt. \fB\-\-yes\fR sends without asking (required without a terminal); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the category.category_manage, category.category_read_unpublished scopes.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal).
+.SS "epx categories assignments delete\-assignment"
+Delete an assignment of a product to a category.
+.PP
+.RS "4"
+.nf
+epx categories assignments delete\-assignment CATEGORY_ID ASSIGNMENT_ID [flags]
+.fi
+.RE
+.PP
+Deletes the assignment ASSIGNMENT_ID of a product to the category CATEGORY_ID: the ID that \fBepx categories assignments list CATEGORY_ID\fR shows. The product and the category stay.
+.PP
+Deletes data, which cannot be undone. On a terminal, epx sends DELETE only once you type ASSIGNMENT_ID at its prompt. \fB\-\-yes\fR sends without asking (required without a terminal); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the category.category_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal).
+.SS "epx categories assignments delete\-product\-everywhere"
+Unassign a product from every category.
+.PP
+.RS "4"
+.nf
+epx categories assignments delete\-product\-everywhere PRODUCT_ID [flags]
+.fi
+.RE
+.PP
+Deletes the assignments of the product PRODUCT_ID to every category, as \fBepx categories for\-product PRODUCT_ID\fR lists them. The product and the categories stay. PRODUCT_ID is the product id (as in \fBepx products list\fR), not its code.
+.PP
+Deletes the assignments of the product to every category with one request, which cannot be undone. On a terminal, epx sends DELETE only once you type PRODUCT_ID at its prompt. \fB\-\-yes\fR sends without asking (required without a terminal); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the category.category_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal).
+.SS "epx categories assignments list"
+List the products assigned to a category.
+.PP
+.RS "4"
+.nf
+epx categories assignments list CATEGORY_ID [flags]
+.fi
+.RE
+.PP
+Reads the products assigned to a category, published and unpublished. PRODUCT is the product id (as in \fBepx products list\fR) and TYPE the kind of item, a product. CATEGORY_ID is the ID that \fBepx categories list\fR shows; an unknown one is not found.
+.PP
+Requires the category.category_read_unpublished scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, PRODUCT, TYPE, PUBLISHED, NAME.
+.TP
+\fB\-\-language <language>\fR
+Language of localized table text; a missing translation shows another, labeled (\fB\-o json\fR prints all). Default: \fBen\fR.
+.TP
+\fB\-\-limit <n>\fR
+Print at most n items; paged reads stop early where they safely can (0: every item).
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-sort <order>\fR
+Emporix sort order, passed as given, e.g. code or name.en:desc,code; fields mostly as in \fB\-o json\fR (Emporix may ignore an unknown one).
+.TP
+\fB\-\-stream\fR
+Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes \fB\-o\fR, \fB\-\-columns\fR and \fB\-\-no\-headers\fR).
+.SS "epx categories assignments update"
+Upsert the assignment of a product to a category.
+.PP
+.RS "4"
+.nf
+epx categories assignments update CATEGORY_ID PRODUCT_ID [flags]
+.fi
+.RE
+.PP
+Assigns the product PRODUCT_ID to a category, or updates its assignment when it exists (an upsert). It sends no body. PRODUCT_ID is the product id (as in \fBepx products list\fR), not its code. CATEGORY_ID is the ID that \fBepx categories list\fR shows; an unknown one is not found.
+.PP
+Changes data: on a terminal, epx asks before it sends PUT. \fB\-\-yes\fR sends without asking (required without a terminal); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the category.category_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal).
+.SS "epx categories create"
+Create a category.
+.PP
+.RS "4"
+.nf
+epx categories create [flags]
+.fi
+.RE
+.PP
+Creates a category from the JSON in \fB\-\-file\fR, shaped as \fBepx categories get ID \-o json\fR shows one: localizedName (a map of languages to text, as are the other localized members), published, which Emporix requires, parentId (a root category without one) and the other members; Emporix generates the id unless the body gives one, and answers with it. To create it published, give published: true in the body and \fB\-\-publish\fR, which sends the publish parameter that Emporix requires to match it, with the scope it requires for it.
+.PP
+Changes data: on a terminal, epx asks before it sends POST. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+\fB\-\-publish\fR also requests the category.category_publish scope.
+.PP
+Requires the category.category_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-publish\fR
+Publish the category: sends publish=true, which needs published: true in the body (requests category.category_publish too).
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SS "epx categories delete"
+Delete a category.
+.PP
+.RS "4"
+.nf
+epx categories delete ID [flags]
+.fi
+.RE
+.PP
+Deletes the category ID. Without \fB\-\-with\-subcategories\fR, the categories directly below it move to the category above it and keep the categories below them; Emporix refuses to delete a root category with categories below it (400 Bad Request, exit 1). With it, Emporix deletes every category below it too.
+.PP
+Deletes data, which cannot be undone. With \fB\-\-with\-subcategories\fR, it deletes the category and every category below it with one request. On a terminal, epx sends DELETE only once you type ID at its prompt. \fB\-\-yes\fR sends without asking (required without a terminal); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the category.category_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-with\-subcategories\fR
+Delete every category below the category too.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal).
+.SS "epx categories for\-product"
+List the categories a product is assigned to.
+.PP
+.RS "4"
+.nf
+epx categories for\-product PRODUCT_ID [flags]
+.fi
+.RE
+.PP
+Reads categories, published and unpublished. PRODUCT_ID is the product id (as in \fBepx products list\fR), not its code. An unknown id lists nothing, because Emporix does not distinguish it from a product without assignments.
+.PP
+Requires the category.category_read_unpublished scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, CODE, TYPE, PUBLISHED, NAME.
+.TP
+\fB\-\-language <language>\fR
+Language of localized table text; a missing translation shows another, labeled (\fB\-o json\fR prints all). Default: \fBen\fR.
+.TP
+\fB\-\-limit <n>\fR
+Print at most n items; paged reads stop early where they safely can (0: every item).
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-sort <order>\fR
+Emporix sort order, passed as given, e.g. code or name.en:desc,code; fields mostly as in \fB\-o json\fR (Emporix may ignore an unknown one).
+.TP
+\fB\-\-stream\fR
+Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes \fB\-o\fR, \fB\-\-columns\fR and \fB\-\-no\-headers\fR).
+.SS "epx categories get"
+Show one category.
+.PP
+.RS "4"
+.nf
+epx categories get ID [flags]
+.fi
+.RE
+.PP
+Reads categories, published and unpublished.
+.PP
+Requires the category.category_read_unpublished scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, CODE, TYPE, PUBLISHED, NAME.
+.TP
+\fB\-\-language <language>\fR
+Language of localized table text; a missing translation shows another, labeled (\fB\-o json\fR prints all). Default: \fBen\fR.
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.SS "epx categories list"
+List categories.
+.PP
+.RS "4"
+.nf
+epx categories list [flags]
+.fi
+.RE
+.PP
+Reads categories, published and unpublished.
+.PP
+Requires the category.category_read_unpublished scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, CODE, TYPE, PUBLISHED, NAME.
+.TP
+\fB\-\-language <language>\fR
+Language of localized table text; a missing translation shows another, labeled (\fB\-o json\fR prints all). Default: \fBen\fR.
+.TP
+\fB\-\-limit <n>\fR
+Print at most n items; paged reads stop early where they safely can (0: every item).
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-query <filter>\fR
+Emporix q filter, passed as given, e.g. code:(A1,A2); space\-separated conditions must all match (fields mostly as in \fB\-o json\fR).
+.TP
+\fB\-\-sort <order>\fR
+Emporix sort order, passed as given, e.g. code or name.en:desc,code; fields mostly as in \fB\-o json\fR (Emporix may ignore an unknown one).
+.TP
+\fB\-\-stream\fR
+Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes \fB\-o\fR, \fB\-\-columns\fR and \fB\-\-no\-headers\fR).
+.SS "epx categories parents"
+List the categories above a category.
+.PP
+.RS "4"
+.nf
+epx categories parents CATEGORY_ID [flags]
+.fi
+.RE
+.PP
+Reads the categories above a category, published and unpublished, from its root down unless \fB\-\-sort\fR says otherwise. CATEGORY_ID is the ID that \fBepx categories list\fR shows; an unknown one is not found.
+.PP
+Requires the category.category_read_unpublished scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, CODE, TYPE, PUBLISHED, NAME.
+.TP
+\fB\-\-language <language>\fR
+Language of localized table text; a missing translation shows another, labeled (\fB\-o json\fR prints all). Default: \fBen\fR.
+.TP
+\fB\-\-limit <n>\fR
+Print at most n items; paged reads stop early where they safely can (0: every item).
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-sort <order>\fR
+Emporix sort order, passed as given, e.g. code or name.en:desc,code; fields mostly as in \fB\-o json\fR (Emporix may ignore an unknown one).
+.TP
+\fB\-\-stream\fR
+Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes \fB\-o\fR, \fB\-\-columns\fR and \fB\-\-no\-headers\fR).
+.SS "epx categories patch"
+Change members of a category.
+.PP
+.RS "4"
+.nf
+epx categories patch ID [flags]
+.fi
+.RE
+.PP
+Changes the members of the category ID that the JSON in \fB\-\-file\fR gives, and keeps the others. Emporix requires metadata.version in the body, as \fBepx categories get ID \-o json\fR shows it, and refuses a version that is not the category\(aqs with 400 Bad Request (exit 1), not as a conflict. published in the body publishes or unpublishes the category as sent, without the publish scopes. A move (parentId) shows in \fBepx categories parents\fR at once, in \fBepx category\-trees\fR a few seconds later.
+.PP
+Changes data: on a terminal, epx asks before it sends PATCH. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the category.category_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SS "epx categories search"
+Search categories.
+.PP
+.RS "4"
+.nf
+epx categories search [flags]
+.fi
+.RE
+.PP
+Reads the categories, published and unpublished, that an Emporix q filter finds (\fB\-\-query\fR; without it, every category). It reads and shows them as \fBepx categories list\fR does.
+.PP
+Changes nothing: Emporix serves this read as POST with a JSON body, which the flags make or \fB\-\-body\fR gives whole.
+.PP
+Requires the category.category_read_unpublished scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-body <FILE>\fR
+Send the JSON request body in FILE as given (\- reads standard input) instead of the one the other flags make.
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, CODE, TYPE, PUBLISHED, NAME.
+.TP
+\fB\-\-language <language>\fR
+Language of localized table text; a missing translation shows another, labeled (\fB\-o json\fR prints all). Default: \fBen\fR.
+.TP
+\fB\-\-limit <n>\fR
+Print at most n items; paged reads stop early where they safely can (0: every item).
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-query <filter>\fR
+Emporix q filter, sent as given in the request body, not in the URL (empty: no filter), e.g. code:(A1,A2); space\-separated conditions must all match (fields mostly as in \fB\-o json\fR).
+.TP
+\fB\-\-sort <order>\fR
+Emporix sort order, passed as given, e.g. code or name.en:desc,code; fields mostly as in \fB\-o json\fR (Emporix may ignore an unknown one).
+.TP
+\fB\-\-stream\fR
+Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes \fB\-o\fR, \fB\-\-columns\fR and \fB\-\-no\-headers\fR).
+.SS "epx categories subcategories"
+List the categories below a category.
+.PP
+.RS "4"
+.nf
+epx categories subcategories CATEGORY_ID [flags]
+.fi
+.RE
+.PP
+Reads every category below a category, at all levels, published and unpublished; PARENT is the id of the category each one lies directly below. CATEGORY_ID is the ID that \fBepx categories list\fR shows; an unknown one is not found.
+.PP
+Requires the category.category_read_unpublished scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, PARENT, CODE, TYPE, PUBLISHED, NAME.
+.TP
+\fB\-\-language <language>\fR
+Language of localized table text; a missing translation shows another, labeled (\fB\-o json\fR prints all). Default: \fBen\fR.
+.TP
+\fB\-\-limit <n>\fR
+Print at most n items; paged reads stop early where they safely can (0: every item).
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-sort <order>\fR
+Emporix sort order, passed as given, e.g. code or name.en:desc,code; fields mostly as in \fB\-o json\fR (Emporix may ignore an unknown one).
+.TP
+\fB\-\-stream\fR
+Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes \fB\-o\fR, \fB\-\-columns\fR and \fB\-\-no\-headers\fR).
+.SS "epx categories update"
+Upsert a category.
+.PP
+.RS "4"
+.nf
+epx categories update ID [flags]
+.fi
+.RE
+.PP
+Replaces the category ID with the JSON in \fB\-\-file\fR, or creates it with that id when there is none (an upsert); the body has the members of create\(aqs, published included, but id, type and ownClassificationMixins. Without parentId, the category becomes a root category. With metadata.version, as \fBepx categories get ID \-o json\fR shows it, Emporix refuses the write as a conflict (exit 5) when the category changed since it was read. To publish or unpublish it, give published in the body and \fB\-\-publish\fR or \fB\-\-unpublish\fR, which sends the publish parameter that Emporix requires to match it, with the scope it requires for it. Emporix requires \fB\-\-publish\fR for any body with published: true, also of a category that is published already.
+.PP
+Changes data: on a terminal, epx asks before it sends PUT. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+\fB\-\-publish\fR also requests the category.category_publish scope. \fB\-\-unpublish\fR also requests the category.category_unpublish scope.
+.PP
+Requires the category.category_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-publish\fR
+Publish the category: sends publish=true, which needs published: true in the body (requests category.category_publish too).
+.TP
+\fB\-\-unpublish\fR
+Unpublish the category: sends publish=false, which needs published: false in the body (requests category.category_unpublish too).
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SH "SEE ALSO"
+\fBepx\fR(1) for the global options, the credentials epx reads and its exit codes; https://commerce-cloud-integrations.github.io/emporix-cli/commands/categories

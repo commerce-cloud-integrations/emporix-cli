@@ -1,0 +1,652 @@
+.TH "EPX\-CUSTOM\-ENTITIES" "1" "" "epx" "epx manual"
+.SH "NAME"
+epx\-custom\-entities \- read and change custom entity types and their instances
+.SH "SYNOPSIS"
+.RS "4"
+.nf
+epx custom\-entities [flags]
+epx custom\-entities [command]
+.fi
+.RE
+.SH "DESCRIPTION"
+Reads and changes custom entity types: entities a tenant defines. create, update and delete change types; export exports types with their schemas (opt\-in), which import imports. \fBepx custom\-entities instances\fR reads and changes the instances of a type.
+.PP
+Its reads require different OAuth scopes; the help of each names them. Opt\-in: epx requests a write\-capable scope for a read only when given \fB\-\-allow\-write\-scope\fR. Its writes require different OAuth scopes; the help of each names them.
+.SH "COMMANDS"
+.SS "epx custom\-entities create"
+Create a custom entity type.
+.PP
+.RS "4"
+.nf
+epx custom\-entities create [flags]
+.fi
+.RE
+.PP
+Creates the custom entity type in \fB\-\-file\fR, a JSON object with its id and name, such as \fB{"id": "CUSTOM_DOCUMENT", "name": {"en": "Document"}}\fR, and prints the id that Emporix answers with; one that exists already is a conflict. The id has capital letters, digits and underscores, the first a letter. Emporix also creates the scopes that read and manage the instances of the type, such as custom.custom_document_manage, which it grants only minutes later: until then, the instance commands of the type exit with code 3. Built\-in types, such as AVAILABILITY and LOCATION, cannot be created.
+.PP
+Localized text in the body is a map of translations, e.g. \fB{"en": "Acme", "de": "Acme"}\fR, as \fB\-o json\fR of a read prints it, sent with Content\-Language: *. Emporix refuses a string in its place.
+.PP
+Changes data: on a terminal, epx asks before it sends POST. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the schema.schema_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SS "epx custom\-entities delete"
+Delete a custom entity type.
+.PP
+.RS "4"
+.nf
+epx custom\-entities delete ID [flags]
+.fi
+.RE
+.PP
+Deletes the custom entity type ID. Emporix refuses to delete a type that schemas or instances use (400 Bad Request), and answers an unknown ID as deleted, not as not found. The scopes that Emporix created with the type remain granted: the instances of a deleted type then read as an empty list.
+.PP
+Deletes data, which cannot be undone. On a terminal, epx sends DELETE only once you type ID at its prompt. \fB\-\-yes\fR sends without asking (required without a terminal); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the schema.schema_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal).
+.SS "epx custom\-entities export"
+Export custom entity types with their schemas.
+.PP
+.RS "4"
+.nf
+epx custom\-entities export [flags]
+.fi
+.RE
+.PP
+Reads an export package of the custom entity types that \fB\-\-type\fR names (the ID that \fBepx custom\-entities list\fR shows): each type with its schemas, without metadata, and none of their instances. Emporix leaves out an ID that names no custom entity type (a built\-in type such as PRODUCT too); if none is left, it answers with an empty package (exit 0). Emporix refuses an empty selection (\fB\-\-body\fR with [], exit 1).
+.PP
+Changes nothing: Emporix serves this read as POST with a JSON body, which the flags make or \fB\-\-body\fR gives whole. DATA is the package, base64\-encoded and cut in the table; \fB\-o json\fR prints the package whole, as an import on another tenant takes it.
+.PP
+Requires the schema.schema_manage scope. Opt\-in: epx requests a write\-capable scope for a read only when given \fB\-\-allow\-write\-scope\fR.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-allow\-write\-scope\fR
+Opt in to requesting schema.schema_manage, which can also change data (required).
+.TP
+\fB\-\-body <FILE>\fR
+Send the JSON request body in FILE as given (\- reads standard input) instead of the one the other flags make.
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among DATA, EXPORTED AT.
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-type <ID>\fR
+A custom entity type ID to export (repeatable; required without \fB\-\-body\fR).
+.SS "epx custom\-entities get"
+Show one custom entity.
+.PP
+.RS "4"
+.nf
+epx custom\-entities get ID [flags]
+.fi
+.RE
+.PP
+Reads custom entity types: entities a tenant defines. \fBepx custom\-entities instances\fR reads and changes the instances of a type.
+.PP
+No OAuth scope is needed.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, NAME, VERSION.
+.TP
+\fB\-\-language <language>\fR
+Language of localized table text; a missing translation shows another, labeled (\fB\-o json\fR prints all). Default: \fBen\fR.
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.SS "epx custom\-entities import"
+Import custom entity types with their schemas.
+.PP
+.RS "4"
+.nf
+epx custom\-entities import [flags]
+.fi
+.RE
+.PP
+Imports the custom entity types and their schemas of the export package in \fB\-\-file\fR, as \fBepx custom\-entities export \-o json\fR prints it, e.g. on another tenant. A type or schema that exists already is created again, its id followed by _COPY, such as CUSTOM_DOCUMENT_COPY, and the references of its schemas then name the copy.
+.PP
+Changes data: on a terminal, epx asks before it sends POST. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the schema.schema_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SS "epx custom\-entities instances"
+Read and change the instances of a custom entity type.
+.PP
+.RS "4"
+.nf
+epx custom\-entities instances [flags]
+epx custom\-entities instances [command]
+.fi
+.RE
+.PP
+Reads the instances of a custom entity type, every one (list), those a filter finds (search) or one (get), and creates, changes and deletes them, one at a time or in bulk.
+.PP
+Its reads require the custom.<type>_read scope. Its writes require the custom.<type>_manage scope. <type> is the custom entity type in lower case (custom.document_manage, custom.document_read for DOCUMENT).
+.SS "epx custom\-entities instances bulk\-create"
+Create instances of a custom entity type in bulk.
+.PP
+.RS "4"
+.nf
+epx custom\-entities instances bulk\-create CUSTOM_ENTITY_ID [flags]
+.fi
+.RE
+.PP
+Creates instances of the custom entity type CUSTOM_ENTITY_ID from \fB\-\-file\fR, a JSON array of instances, each as create takes it. CUSTOM_ENTITY_ID is the ID that \fBepx custom\-entities list\fR shows.
+.PP
+With \fB\-\-validate\-references\fR true, Emporix checks the items that the references of each instance name with epx\(aqs token, which reads the instances of CUSTOM_ENTITY_ID alone: an instance with a reference to an item that does not exist fails with 500 Internal Server Error (nothing is created), as one with a reference to an instance of another custom entity type is expected to, and one with a reference to another kind of item, such as a product, may.
+.PP
+Localized text in the body is a map of translations, e.g. \fB{"en": "Acme", "de": "Acme"}\fR, as \fB\-o json\fR of a read prints it, sent with Content\-Language: *. Emporix refuses a string in its place.
+.PP
+Emporix takes up to 200 items in one request (epx refuses more), carries out each on its own and answers with the result of each: when one failed, epx prints the response, lists the items that failed on standard error (one that failed with 500, 502, 503 or 504 may have been carried out all the same) and exits with the code that their failures share (for example 5 for a 409 Conflict, 4 for a 404), else 1.
+.PP
+Changes data: on a terminal, epx asks before it sends POST. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Where \fB\-\-validate\-references\fR is true, epx also requests the custom.<type>_read scope.
+.PP
+Requires the custom.<type>_manage scope. <type> is the custom entity type in lower case (custom.document_manage for DOCUMENT).
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-validate\-references <string>\fR
+Whether Emporix checks that the items that references in the body name exist (false without it), requesting custom.<type>_read where it is true: true or false.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SS "epx custom\-entities instances bulk\-delete"
+Delete instances of a custom entity type in bulk.
+.PP
+.RS "4"
+.nf
+epx custom\-entities instances bulk\-delete CUSTOM_ENTITY_ID [flags]
+.fi
+.RE
+.PP
+Deletes the instances of the custom entity type CUSTOM_ENTITY_ID whose ids \fB\-\-file\fR lists, a JSON array of strings, such as \fB["123", "124"]\fR; Emporix answers an unknown id as deleted. CUSTOM_ENTITY_ID is the ID that \fBepx custom\-entities list\fR shows.
+.PP
+Emporix takes up to 1000 items in one request (epx refuses more), carries out each on its own and answers with the result of each: when one failed, epx prints the response, lists the items that failed on standard error (one that failed with 500, 502, 503 or 504 may have been carried out all the same) and exits with the code that their failures share (for example 5 for a 409 Conflict, 4 for a 404), else 1.
+.PP
+Deletes the instances of a custom entity type that \fB\-\-file\fR names with one request, which cannot be undone. On a terminal, epx sends DELETE only once you type CUSTOM_ENTITY_ID at its prompt. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the custom.<type>_manage scope. <type> is the custom entity type in lower case (custom.document_manage for DOCUMENT).
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SS "epx custom\-entities instances bulk\-patch"
+Change instances of a custom entity type in bulk.
+.PP
+.RS "4"
+.nf
+epx custom\-entities instances bulk\-patch CUSTOM_ENTITY_ID [flags]
+.fi
+.RE
+.PP
+Changes instances of the custom entity type CUSTOM_ENTITY_ID as \fB\-\-file\fR says: a JSON array with the id of each instance and the JSON Patch operations that change it, as patch takes them, such as \fB[{"id": "123", "data": [{"op": "replace", "path": "/name/en", "value": "Report"}]}]\fR. CUSTOM_ENTITY_ID is the ID that \fBepx custom\-entities list\fR shows.
+.PP
+With \fB\-\-validate\-references\fR true, Emporix checks the items that the references of each instance name with epx\(aqs token, which reads the instances of CUSTOM_ENTITY_ID alone: an instance with a reference to an item that does not exist fails with 500 Internal Server Error (nothing is created), as one with a reference to an instance of another custom entity type is expected to, and one with a reference to another kind of item, such as a product, may.
+.PP
+Localized text in the body is a map of translations, e.g. \fB{"en": "Acme", "de": "Acme"}\fR, as \fB\-o json\fR of a read prints it, sent with Content\-Language: *. Emporix refuses a string in its place.
+.PP
+Emporix takes up to 200 items in one request (epx refuses more), carries out each on its own and answers with the result of each: when one failed, epx prints the response, lists the items that failed on standard error (one that failed with 500, 502, 503 or 504 may have been carried out all the same) and exits with the code that their failures share (for example 5 for a 409 Conflict, 4 for a 404), else 1.
+.PP
+Changes data: on a terminal, epx asks before it sends PATCH. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Where \fB\-\-validate\-references\fR is true, epx also requests the custom.<type>_read scope.
+.PP
+Requires the custom.<type>_manage scope. <type> is the custom entity type in lower case (custom.document_manage for DOCUMENT).
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-validate\-references <string>\fR
+Whether Emporix checks that the items that references in the body name exist (false without it, although its reference says true), requesting custom.<type>_read where it is true: true or false.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SS "epx custom\-entities instances bulk\-update"
+Upsert instances of a custom entity type in bulk.
+.PP
+.RS "4"
+.nf
+epx custom\-entities instances bulk\-update CUSTOM_ENTITY_ID [flags]
+.fi
+.RE
+.PP
+Replaces the instances of the custom entity type CUSTOM_ENTITY_ID in \fB\-\-file\fR, a JSON array of instances, each with its id and as update takes it, or creates those that do not exist (an upsert). CUSTOM_ENTITY_ID is the ID that \fBepx custom\-entities list\fR shows.
+.PP
+With \fB\-\-validate\-references\fR true, Emporix checks the items that the references of each instance name with epx\(aqs token, which reads the instances of CUSTOM_ENTITY_ID alone: an instance with a reference to an item that does not exist fails with 500 Internal Server Error (nothing is created), as one with a reference to an instance of another custom entity type is expected to, and one with a reference to another kind of item, such as a product, may.
+.PP
+Localized text in the body is a map of translations, e.g. \fB{"en": "Acme", "de": "Acme"}\fR, as \fB\-o json\fR of a read prints it, sent with Content\-Language: *. Emporix refuses a string in its place.
+.PP
+Emporix takes up to 200 items in one request (epx refuses more), carries out each on its own and answers with the result of each: when one failed, epx prints the response, lists the items that failed on standard error (one that failed with 500, 502, 503 or 504 may have been carried out all the same) and exits with the code that their failures share (for example 5 for a 409 Conflict, 4 for a 404), else 1.
+.PP
+Changes data: on a terminal, epx asks before it sends PUT. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Where \fB\-\-validate\-references\fR is true, epx also requests the custom.<type>_read scope.
+.PP
+Requires the custom.<type>_manage scope. <type> is the custom entity type in lower case (custom.document_manage for DOCUMENT).
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-validate\-references <string>\fR
+Whether Emporix checks that the items that references in the body name exist (false without it), requesting custom.<type>_read where it is true: true or false.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SS "epx custom\-entities instances create"
+Create an instance of a custom entity type.
+.PP
+.RS "4"
+.nf
+epx custom\-entities instances create CUSTOM_ENTITY_ID [flags]
+.fi
+.RE
+.PP
+Creates an instance of the custom entity type CUSTOM_ENTITY_ID from the JSON object in \fB\-\-file\fR, such as \fB{"id": "123", "name": {"en": "Report"}, "mixins": {\[u2026]}}\fR, and prints the id that Emporix answers with; it makes one unless the object names it, and an id that exists already is a conflict. An owner, such as \fB{"type": "EMPLOYEE", "userId": "\[u2026]"}\fR, cannot change once set. The attributes of a schema go under its id, which metadata.mixins maps to its URL: \fB{"mixins": {"SCHEMA_ID": {\[u2026]}}, "metadata": {"mixins": {"SCHEMA_ID": "URL"}}}\fR, the URL being the metadata.url that \fBepx schemas get SCHEMA_ID \-o json\fR prints. A localized attribute, unlike the name, is a list of translations, such as \fB[{"language": "en", "value": "Report"}]\fR. CUSTOM_ENTITY_ID is the ID that \fBepx custom\-entities list\fR shows.
+.PP
+Emporix checks the items that the references of the instance name (unless \fB\-\-validate\-references\fR false) with epx\(aqs token, which reads the instances of CUSTOM_ENTITY_ID alone: a reference to an instance of another custom entity type is then expected to fail with 400 Bad Request, as one to the type fails without that scope, and one to another kind of item, such as a product, may fail too.
+.PP
+Localized text in the body is a map of translations, e.g. \fB{"en": "Acme", "de": "Acme"}\fR, as \fB\-o json\fR of a read prints it, sent with Content\-Language: *. Emporix refuses a string in its place.
+.PP
+Changes data: on a terminal, epx asks before it sends POST. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Where \fB\-\-validate\-references\fR is true or not given, epx also requests the custom.<type>_read scope.
+.PP
+Requires the custom.<type>_manage scope. <type> is the custom entity type in lower case (custom.document_manage for DOCUMENT).
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-validate\-references <string>\fR
+Whether Emporix checks that the items that references in the body name exist (true without it), requesting custom.<type>_read where it is true or not given: true or false.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SS "epx custom\-entities instances delete"
+Delete an instance of a custom entity type.
+.PP
+.RS "4"
+.nf
+epx custom\-entities instances delete CUSTOM_ENTITY_ID ID [flags]
+.fi
+.RE
+.PP
+Deletes the instance ID of the custom entity type CUSTOM_ENTITY_ID; Emporix answers an unknown ID as deleted, not as not found. CUSTOM_ENTITY_ID is the ID that \fBepx custom\-entities list\fR shows, and ID the one that \fBepx custom\-entities instances list CUSTOM_ENTITY_ID\fR shows.
+.PP
+Deletes data, which cannot be undone. On a terminal, epx sends DELETE only once you type ID at its prompt. \fB\-\-yes\fR sends without asking (required without a terminal); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the custom.<type>_manage scope. <type> is the custom entity type in lower case (custom.document_manage for DOCUMENT).
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal).
+.SS "epx custom\-entities instances get"
+Show one instance of a custom entity type.
+.PP
+.RS "4"
+.nf
+epx custom\-entities instances get CUSTOM_ENTITY_ID ID [flags]
+.fi
+.RE
+.PP
+Reads one instance of a custom entity type. CUSTOM_ENTITY_ID is the ID that \fBepx custom\-entities list\fR shows; an unknown one has no scope that Emporix grants (exit code 3), and a type created in the last minutes has none yet. ID is the ID that \fBepx custom\-entities instances list CUSTOM_ENTITY_ID\fR shows; an unknown one is not found. OWNER is an instance\(aqs owner, by default who created it (EMPLOYEE, CUSTOMER or SERVICE, and the user or client id). epx requests the scope of the type, not the tenant\-wide schema.custominstance_read that Emporix also accepts.
+.PP
+Where a mixin\(aqs schema is site\-aware, an item may hold, besides the mixin NAME, an overlay for a site, NAME__SITE, with the values that differ there. \fB\-\-mixin\-site\fR SITE sends SITE as the emporix\-site header: Emporix then merges the overlay of SITE into NAME (nested objects member by member; arrays and other values are replaced, not merged; a null leaves the base value) and leaves out every overlay. A site without an overlay, or one the tenant lacks (codes are case\-sensitive; epx does not check them), gets NAME as stored. Without \fB\-\-mixin\-site\fR, mixins and overlays are read as stored, whatever the default site of the profile. Tables leave mixins (attribute values) out; \fB\-o json\fR and \fB\-o yaml\fR print them, as \fB\-\-stream\fR does on a list.
+.PP
+A merged item is that site\(aqs view, not the item as stored. Do not write it back with update, bulk\-update or (products) import, which replace whole items and would delete every overlay, nor build a patch from it: NAME would take the site\(aqs values.
+.PP
+Requires the custom.<type>_read scope. <type> is the custom entity type in lower case (custom.document_read for DOCUMENT).
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, NAME, OWNER, VERSION.
+.TP
+\fB\-\-language <language>\fR
+Language of localized table text; a missing translation shows another, labeled (\fB\-o json\fR prints all). Default: \fBen\fR.
+.TP
+\fB\-\-mixin\-site <SITE>\fR
+Merge the site\-aware mixin overlays of the site SITE (NAME__SITE) into their mixins.
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.SS "epx custom\-entities instances list"
+List the instances of a custom entity type.
+.PP
+.RS "4"
+.nf
+epx custom\-entities instances list CUSTOM_ENTITY_ID [flags]
+.fi
+.RE
+.PP
+Reads the instances of a custom entity type (\fBepx custom\-entities instances get\fR shows one). CUSTOM_ENTITY_ID is the ID that \fBepx custom\-entities list\fR shows; an unknown one has no scope that Emporix grants (exit code 3), and a type created in the last minutes has none yet. OWNER is an instance\(aqs owner, by default who created it (EMPLOYEE, CUSTOMER or SERVICE, and the user or client id). epx requests the scope of the type, not the tenant\-wide schema.custominstance_read that Emporix also accepts.
+.PP
+Where a mixin\(aqs schema is site\-aware, an item may hold, besides the mixin NAME, an overlay for a site, NAME__SITE, with the values that differ there. \fB\-\-mixin\-site\fR SITE sends SITE as the emporix\-site header: Emporix then merges the overlay of SITE into NAME (nested objects member by member; arrays and other values are replaced, not merged; a null leaves the base value) and leaves out every overlay. A site without an overlay, or one the tenant lacks (codes are case\-sensitive; epx does not check them), gets NAME as stored. Without \fB\-\-mixin\-site\fR, mixins and overlays are read as stored, whatever the default site of the profile. Tables leave mixins (attribute values) out; \fB\-o json\fR and \fB\-o yaml\fR print them, as \fB\-\-stream\fR does on a list.
+.PP
+A merged item is that site\(aqs view, not the item as stored. Do not write it back with update, bulk\-update or (products) import, which replace whole items and would delete every overlay, nor build a patch from it: NAME would take the site\(aqs values.
+.PP
+Requires the custom.<type>_read scope. <type> is the custom entity type in lower case (custom.document_read for DOCUMENT).
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, NAME, OWNER, VERSION.
+.TP
+\fB\-\-language <language>\fR
+Language of localized table text; a missing translation shows another, labeled (\fB\-o json\fR prints all). Default: \fBen\fR.
+.TP
+\fB\-\-limit <n>\fR
+Print at most n items; paged reads stop early where they safely can (0: every item).
+.TP
+\fB\-\-mixin\-site <SITE>\fR
+Merge the site\-aware mixin overlays of the site SITE (NAME__SITE) into their mixins.
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-query <filter>\fR
+Emporix q filter, passed as given, e.g. code:(A1,A2); space\-separated conditions must all match (fields mostly as in \fB\-o json\fR).
+.TP
+\fB\-\-sort <order>\fR
+Emporix sort order, passed as given, e.g. code or name.en:desc,code; fields mostly as in \fB\-o json\fR (Emporix may ignore an unknown one).
+.TP
+\fB\-\-stream\fR
+Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes \fB\-o\fR, \fB\-\-columns\fR and \fB\-\-no\-headers\fR).
+.SS "epx custom\-entities instances patch"
+Change an instance of a custom entity type.
+.PP
+.RS "4"
+.nf
+epx custom\-entities instances patch CUSTOM_ENTITY_ID ID [flags]
+.fi
+.RE
+.PP
+Changes the instance ID of the custom entity type CUSTOM_ENTITY_ID with the JSON array of JSON Patch (RFC 6902) operations in \fB\-\-file\fR, such as \fB[{"op": "replace", "path": "/name", "value": {"en": "Report"}}]\fR; an add whose path ends in /\- appends to an array. An unknown ID is not found. CUSTOM_ENTITY_ID is the ID that \fBepx custom\-entities list\fR shows, and ID the one that \fBepx custom\-entities instances list CUSTOM_ENTITY_ID\fR shows.
+.PP
+Emporix checks the items that the references of the instance name (unless \fB\-\-validate\-references\fR false) with epx\(aqs token, which reads the instances of CUSTOM_ENTITY_ID alone: a reference to an instance of another custom entity type is then expected to fail with 400 Bad Request, as one to the type fails without that scope, and one to another kind of item, such as a product, may fail too.
+.PP
+Localized text in the body is a map of translations, e.g. \fB{"en": "Acme", "de": "Acme"}\fR, as \fB\-o json\fR of a read prints it, sent with Content\-Language: *. Emporix refuses a string in its place.
+.PP
+Changes data: on a terminal, epx asks before it sends PATCH. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Where \fB\-\-validate\-references\fR is true or not given, epx also requests the custom.<type>_read scope.
+.PP
+Requires the custom.<type>_manage scope. <type> is the custom entity type in lower case (custom.document_manage for DOCUMENT).
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-validate\-references <string>\fR
+Whether Emporix checks that the items that references in the body name exist (true without it), requesting custom.<type>_read where it is true or not given: true or false.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SS "epx custom\-entities instances search"
+Search the instances of a custom entity type.
+.PP
+.RS "4"
+.nf
+epx custom\-entities instances search CUSTOM_ENTITY_ID [flags]
+.fi
+.RE
+.PP
+Reads the instances of a custom entity type that an Emporix q filter finds (\fB\-\-query\fR; without it, every one). It reads and shows them as \fBepx custom\-entities instances list CUSTOM_ENTITY_ID\fR does. CUSTOM_ENTITY_ID is the ID that \fBepx custom\-entities list\fR shows; an unknown one has no scope that Emporix grants (exit code 3), and a type created in the last minutes has none yet.
+.PP
+Changes nothing: Emporix serves this read as POST with a JSON body, which the flags make or \fB\-\-body\fR gives whole. OWNER is an instance\(aqs owner, by default who created it (EMPLOYEE, CUSTOMER or SERVICE, and the user or client id). epx requests the scope of the type, not the tenant\-wide schema.custominstance_read that Emporix also accepts.
+.PP
+Where a mixin\(aqs schema is site\-aware, an item may hold, besides the mixin NAME, an overlay for a site, NAME__SITE, with the values that differ there. \fB\-\-mixin\-site\fR SITE sends SITE as the emporix\-site header: Emporix then merges the overlay of SITE into NAME (nested objects member by member; arrays and other values are replaced, not merged; a null leaves the base value) and leaves out every overlay. A site without an overlay, or one the tenant lacks (codes are case\-sensitive; epx does not check them), gets NAME as stored. Without \fB\-\-mixin\-site\fR, mixins and overlays are read as stored, whatever the default site of the profile. Tables leave mixins (attribute values) out; \fB\-o json\fR and \fB\-o yaml\fR print them, as \fB\-\-stream\fR does on a list.
+.PP
+A merged item is that site\(aqs view, not the item as stored. Do not write it back with update, bulk\-update or (products) import, which replace whole items and would delete every overlay, nor build a patch from it: NAME would take the site\(aqs values.
+.PP
+Requires the custom.<type>_read scope. <type> is the custom entity type in lower case (custom.document_read for DOCUMENT).
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-body <FILE>\fR
+Send the JSON request body in FILE as given (\- reads standard input) instead of the one the other flags make.
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, NAME, OWNER, VERSION.
+.TP
+\fB\-\-language <language>\fR
+Language of localized table text; a missing translation shows another, labeled (\fB\-o json\fR prints all). Default: \fBen\fR.
+.TP
+\fB\-\-limit <n>\fR
+Print at most n items; paged reads stop early where they safely can (0: every item).
+.TP
+\fB\-\-mixin\-site <SITE>\fR
+Merge the site\-aware mixin overlays of the site SITE (NAME__SITE) into their mixins.
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-query <filter>\fR
+Emporix q filter, sent as given in the request body, not in the URL (empty: no filter), e.g. code:(A1,A2); space\-separated conditions must all match (fields mostly as in \fB\-o json\fR).
+.TP
+\fB\-\-sort <order>\fR
+Emporix sort order, passed as given, e.g. code or name.en:desc,code; fields mostly as in \fB\-o json\fR (Emporix may ignore an unknown one).
+.TP
+\fB\-\-stream\fR
+Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes \fB\-o\fR, \fB\-\-columns\fR and \fB\-\-no\-headers\fR).
+.SS "epx custom\-entities instances update"
+Upsert an instance of a custom entity type.
+.PP
+.RS "4"
+.nf
+epx custom\-entities instances update CUSTOM_ENTITY_ID ID [flags]
+.fi
+.RE
+.PP
+Replaces the instance ID of the custom entity type CUSTOM_ENTITY_ID with the JSON object in \fB\-\-file\fR, as create takes it without the id, or creates it with that id where none exists (an upsert). With metadata.version, as \fBepx custom\-entities instances get CUSTOM_ENTITY_ID ID \-o json\fR prints it, Emporix replaces only that version: an older one is a conflict. CUSTOM_ENTITY_ID is the ID that \fBepx custom\-entities list\fR shows, and ID the one that \fBepx custom\-entities instances list CUSTOM_ENTITY_ID\fR shows.
+.PP
+Emporix checks the items that the references of the instance name (unless \fB\-\-validate\-references\fR false) with epx\(aqs token, which reads the instances of CUSTOM_ENTITY_ID alone: a reference to an instance of another custom entity type is then expected to fail with 400 Bad Request, as one to the type fails without that scope, and one to another kind of item, such as a product, may fail too.
+.PP
+Localized text in the body is a map of translations, e.g. \fB{"en": "Acme", "de": "Acme"}\fR, as \fB\-o json\fR of a read prints it, sent with Content\-Language: *. Emporix refuses a string in its place.
+.PP
+Changes data: on a terminal, epx asks before it sends PUT. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Where \fB\-\-validate\-references\fR is true or not given, epx also requests the custom.<type>_read scope.
+.PP
+Requires the custom.<type>_manage scope. <type> is the custom entity type in lower case (custom.document_manage for DOCUMENT).
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-validate\-references <string>\fR
+Whether Emporix checks that the items that references in the body name exist (true without it), requesting custom.<type>_read where it is true or not given: true or false.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SS "epx custom\-entities list"
+List custom entity types.
+.PP
+.RS "4"
+.nf
+epx custom\-entities list [flags]
+.fi
+.RE
+.PP
+Reads custom entity types: entities a tenant defines. \fBepx custom\-entities instances\fR reads and changes the instances of a type.
+.PP
+No OAuth scope is needed.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, NAME, VERSION.
+.TP
+\fB\-\-language <language>\fR
+Language of localized table text; a missing translation shows another, labeled (\fB\-o json\fR prints all). Default: \fBen\fR.
+.TP
+\fB\-\-limit <n>\fR
+Print at most n items; paged reads stop early where they safely can (0: every item).
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-query <filter>\fR
+Emporix q filter, passed as given, e.g. code:(A1,A2); space\-separated conditions must all match (fields mostly as in \fB\-o json\fR).
+.TP
+\fB\-\-sort <order>\fR
+Emporix sort order, passed as given, e.g. code or name.en:desc,code; fields mostly as in \fB\-o json\fR (Emporix may ignore an unknown one).
+.TP
+\fB\-\-stream\fR
+Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes \fB\-o\fR, \fB\-\-columns\fR and \fB\-\-no\-headers\fR).
+.SS "epx custom\-entities update"
+Upsert a custom entity type.
+.PP
+.RS "4"
+.nf
+epx custom\-entities update ID [flags]
+.fi
+.RE
+.PP
+Replaces the name of the custom entity type ID with the one in \fB\-\-file\fR, a JSON object such as \fB{"name": {"en": "Document"}, "metadata": {"version": 1}}\fR, or creates the type where none exists (an upsert). With metadata.version, as \fBepx custom\-entities get ID \-o json\fR prints it, Emporix replaces only that version: an older one is a conflict.
+.PP
+Localized text in the body is a map of translations, e.g. \fB{"en": "Acme", "de": "Acme"}\fR, as \fB\-o json\fR of a read prints it, sent with Content\-Language: *. Emporix refuses a string in its place.
+.PP
+Changes data: on a terminal, epx asks before it sends PUT. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the schema.schema_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SH "SEE ALSO"
+\fBepx\fR(1) for the global options, the credentials epx reads and its exit codes; https://commerce-cloud-integrations.github.io/emporix-cli/commands/custom-entities

@@ -1,0 +1,1003 @@
+.TH "EPX\-IAM" "1" "" "epx" "epx manual"
+.SH "NAME"
+epx\-iam \- read and change IAM users, groups and access rights
+.SH "SYNOPSIS"
+.RS "4"
+.nf
+epx iam [flags]
+epx iam [command]
+.fi
+.RE
+.SH "DESCRIPTION"
+Reads the tenant\(aqs IAM (identity and access management) data: user accounts, the groups they belong to and what these may do: scopes, access controls and templates. Its writes change users, groups and their users, access controls and custom scopes, and with them who may do what in the tenant.
+.PP
+Its reads require different OAuth scopes; the help of each names them. Its writes require different OAuth scopes; the help of each names them.
+.SH "COMMANDS"
+.SS "epx iam access\-controls"
+Read, upsert and delete access controls.
+.PP
+.RS "4"
+.nf
+epx iam access\-controls [flags]
+epx iam access\-controls [command]
+.fi
+.RE
+.PP
+Reads IAM access controls, the scopes they grant the users of the groups that hold them, and upserts and deletes them. Its writes change who may do what in the tenant.
+.PP
+Its reads require the iam.access_read scope. Its writes require the iam.access_manage scope.
+.SS "epx iam access\-controls delete"
+Delete an access control.
+.PP
+.RS "4"
+.nf
+epx iam access\-controls delete ID [flags]
+.fi
+.RE
+.PP
+Deletes the access control ID. Emporix deletes only those made for the tenant, not the predefined ones (PREDEFINED in \fBepx iam access\-controls list\fR). It changes who may do what in the tenant.
+.PP
+Deletes data, which cannot be undone. On a terminal, epx sends DELETE only once you type ID at its prompt. \fB\-\-yes\fR sends without asking (required without a terminal); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the iam.access_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal).
+.SS "epx iam access\-controls get"
+Show one access control.
+.PP
+.RS "4"
+.nf
+epx iam access\-controls get ID [flags]
+.fi
+.RE
+.PP
+Reads IAM access controls. SCOPES counts the scopes an access control grants (\fB\-o json\fR lists them).
+.PP
+Requires the iam.access_read scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, NAME, SCOPES, PREDEFINED.
+.TP
+\fB\-\-language <language>\fR
+Language of localized table text; a missing translation shows another, labeled (\fB\-o json\fR prints all). Default: \fBen\fR.
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.SS "epx iam access\-controls list"
+List IAM access controls.
+.PP
+.RS "4"
+.nf
+epx iam access\-controls list [flags]
+.fi
+.RE
+.PP
+Reads IAM access controls. SCOPES counts the scopes an access control grants (\fB\-o json\fR lists them). list sorts by id unless \fB\-\-sort\fR says otherwise; end another order with ,id:asc (e.g. name.en:asc,id:asc), as Emporix wants a direction on every field, so pages do not overlap.
+.PP
+Requires the iam.access_read scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, NAME, SCOPES, PREDEFINED.
+.TP
+\fB\-\-language <language>\fR
+Language of localized table text; a missing translation shows another, labeled (\fB\-o json\fR prints all). Default: \fBen\fR.
+.TP
+\fB\-\-limit <n>\fR
+Print at most n items; paged reads stop early where they safely can (0: every item).
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-query <filter>\fR
+Emporix q filter, passed as given, e.g. code:(A1,A2); space\-separated conditions must all match (fields mostly as in \fB\-o json\fR).
+.TP
+\fB\-\-sort <order>\fR
+Emporix sort order, passed as given, e.g. code or name.en:desc,code; fields mostly as in \fB\-o json\fR (Emporix may ignore an unknown one).
+.TP
+\fB\-\-stream\fR
+Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes \fB\-o\fR, \fB\-\-columns\fR and \fB\-\-no\-headers\fR).
+.SS "epx iam access\-controls update"
+Upsert an access control.
+.PP
+.RS "4"
+.nf
+epx iam access\-controls update ID [flags]
+.fi
+.RE
+.PP
+Replaces the access control ID with the JSON in \fB\-\-file\fR, or creates it with that id where none exists (an upsert): the scopes it grants (at least one), and optionally its name and description, domains and restrictedTo (CUSTOMER or EMPLOYEE: the only kind of group that may grant it, set when it is created only). With metadata.version as read, Emporix changes it only if that is still its version. Emporix answers with the id of one it created, and with nothing when it replaced one. It changes who may do what in the tenant.
+.PP
+Localized text in the body is a map of translations, e.g. \fB{"en": "Acme", "de": "Acme"}\fR, as \fB\-o json\fR of a read prints it, sent with Content\-Language: *. Emporix refuses a string in its place.
+.PP
+Changes data: on a terminal, epx asks before it sends PUT. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the iam.access_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SS "epx iam groups"
+Read, create, upsert and delete IAM groups and their users.
+.PP
+.RS "4"
+.nf
+epx iam groups [flags]
+epx iam groups [command]
+.fi
+.RE
+.PP
+Reads the tenant\(aqs user groups, their users and the access controls they grant, and changes groups and their users. Its writes change who may do what in the tenant.
+.PP
+Its reads require different OAuth scopes; the help of each names them. Its writes require different OAuth scopes; the help of each names them.
+.SS "epx iam groups access\-controls"
+List the access controls of a group.
+.PP
+.RS "4"
+.nf
+epx iam groups access\-controls GROUP_ID [flags]
+.fi
+.RE
+.PP
+Reads the access controls a group grants its users. SCOPES counts the scopes an access control grants (\fB\-o json\fR lists them). A group\(aqs ACCESS CONTROLS in \fBepx iam groups list\fR may also count removed access controls, which this leaves out. GROUP_ID is the ID that \fBepx iam groups list\fR shows; an unknown one is not found.
+.PP
+Requires the iam.access_read scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, NAME, SCOPES, PREDEFINED.
+.TP
+\fB\-\-language <language>\fR
+Language of localized table text; a missing translation shows another, labeled (\fB\-o json\fR prints all). Default: \fBen\fR.
+.TP
+\fB\-\-limit <n>\fR
+Print at most n items; paged reads stop early where they safely can (0: every item).
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-stream\fR
+Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes \fB\-o\fR, \fB\-\-columns\fR and \fB\-\-no\-headers\fR).
+.SS "epx iam groups create"
+Create a group.
+.PP
+.RS "4"
+.nf
+epx iam groups create [flags]
+.fi
+.RE
+.PP
+Creates the group in \fB\-\-file\fR, a JSON object with its name and the ids of the access controls that its users get (accessControls, from \fBepx iam access\-controls list\fR), and optionally its id (Emporix makes one otherwise), description, userType (CUSTOMER, or EMPLOYEE, the default), templates, b2b.legalEntityId, restrictions and mixins. Emporix answers with the group\(aqs id; a group with the id exists already: a conflict (exit 5). It changes who may do what in the tenant.
+.PP
+Localized text in the body is a map of translations, e.g. \fB{"en": "Acme", "de": "Acme"}\fR, as \fB\-o json\fR of a read prints it, sent with Content\-Language: *. Emporix refuses a string in its place.
+.PP
+Changes data: on a terminal, epx asks before it sends POST. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the iam.group_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SS "epx iam groups delete"
+Delete a group.
+.PP
+.RS "4"
+.nf
+epx iam groups delete ID [flags]
+.fi
+.RE
+.PP
+Deletes the group ID. Emporix refuses to delete a group that users belong to (400 Bad Request, exit 1; \fBepx iam groups users list ID\fR lists them) unless \fB\-\-force\-delete\fR is given, which removes every user from it too. It changes who may do what in the tenant.
+.PP
+Deletes data, which cannot be undone. With \fB\-\-force\-delete\fR, it deletes the group and the membership of every user of it with one request. On a terminal, epx sends DELETE only once you type ID at its prompt. \fB\-\-yes\fR sends without asking (required without a terminal); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+\fB\-\-force\-delete\fR also requests the iam.assignment_manage scope.
+.PP
+Requires the iam.group_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-force\-delete\fR
+Delete the group also when users belong to it, removing every user from it (requests iam.assignment_manage too).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal).
+.SS "epx iam groups get"
+Show one group.
+.PP
+.RS "4"
+.nf
+epx iam groups get ID [flags]
+.fi
+.RE
+.PP
+Reads the tenant\(aqs user groups. TYPE is the kind of user a group is for (e.g. EMPLOYEE, CUSTOMER), and ACCESS CONTROLS counts the access controls it grants (\fB\-o json\fR lists their ids, \fBepx iam groups access\-controls\fR reads them).
+.PP
+Requires the iam.group_read scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, CODE, NAME, TYPE, ACCESS CONTROLS.
+.TP
+\fB\-\-language <language>\fR
+Language of localized table text; a missing translation shows another, labeled (\fB\-o json\fR prints all). Default: \fBen\fR.
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.SS "epx iam groups list"
+List IAM groups.
+.PP
+.RS "4"
+.nf
+epx iam groups list [flags]
+.fi
+.RE
+.PP
+Reads the tenant\(aqs user groups. TYPE is the kind of user a group is for (e.g. EMPLOYEE, CUSTOMER), and ACCESS CONTROLS counts the access controls it grants (\fB\-o json\fR lists their ids, \fBepx iam groups access\-controls\fR reads them). list sorts by id unless \fB\-\-sort\fR says otherwise; end another order with ,id:asc (e.g. name.en:asc,id:asc), as Emporix wants a direction on every field, so pages do not overlap.
+.PP
+Requires the iam.group_read scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, CODE, NAME, TYPE, ACCESS CONTROLS.
+.TP
+\fB\-\-language <language>\fR
+Language of localized table text; a missing translation shows another, labeled (\fB\-o json\fR prints all). Default: \fBen\fR.
+.TP
+\fB\-\-limit <n>\fR
+Print at most n items; paged reads stop early where they safely can (0: every item).
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-query <filter>\fR
+Emporix q filter, passed as given, e.g. code:(A1,A2); space\-separated conditions must all match (fields mostly as in \fB\-o json\fR).
+.TP
+\fB\-\-sort <order>\fR
+Emporix sort order, passed as given, e.g. code or name.en:desc,code; fields mostly as in \fB\-o json\fR (Emporix may ignore an unknown one).
+.TP
+\fB\-\-stream\fR
+Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes \fB\-o\fR, \fB\-\-columns\fR and \fB\-\-no\-headers\fR).
+.SS "epx iam groups update"
+Upsert a group.
+.PP
+.RS "4"
+.nf
+epx iam groups update ID [flags]
+.fi
+.RE
+.PP
+Replaces the group ID with the JSON in \fB\-\-file\fR, as create takes it without id, or creates it with that id where none exists (an upsert): give its name and every other member to keep, as \fBepx iam groups get ID \-o json\fR prints it. With metadata.version as read, Emporix changes it only if that is still its version. Emporix answers with the id of one it created, and with nothing when it replaced one. It changes who may do what in the tenant.
+.PP
+Localized text in the body is a map of translations, e.g. \fB{"en": "Acme", "de": "Acme"}\fR, as \fB\-o json\fR of a read prints it, sent with Content\-Language: *. Emporix refuses a string in its place.
+.PP
+Changes data: on a terminal, epx asks before it sends PUT. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the iam.group_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SS "epx iam groups users"
+Read the users of a group, add and remove them.
+.PP
+.RS "4"
+.nf
+epx iam groups users [flags]
+epx iam groups users [command]
+.fi
+.RE
+.PP
+Reads the users of a group, adds users to it and removes them from it. Its writes change who may do what in the tenant.
+.PP
+Its reads require the iam.user_read scope. Its writes require the iam.assignment_manage scope.
+.SS "epx iam groups users create"
+Add a user to a group.
+.PP
+.RS "4"
+.nf
+epx iam groups users create GROUP_ID [flags]
+.fi
+.RE
+.PP
+Adds the user that \fB\-\-user\fR names, of the kind that \fB\-\-user\-type\fR names (EMPLOYEE when left out), to the group GROUP_ID, or the one in \fB\-\-file\fR, a JSON object with its userId and userType. Emporix answers with the id of the membership; a user already in the group is answered with a new id that is not the listed membership\(aqs, and no second membership is made (read the members with \fBepx iam groups users list\fR). The user then gets the scopes of the group\(aqs access controls; a group of a vendor takes only the vendor\(aqs employees. GROUP_ID is the ID that \fBepx iam groups list\fR shows; an unknown one is not found. It changes who may do what in the tenant.
+.PP
+Changes data: on a terminal, epx asks before it sends POST. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the iam.assignment_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte instead of the one that epx makes (\- reads standard input; sending it then needs \fB\-\-yes\fR).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-user <USER_ID>\fR
+The USER_ID of the user to add: the ID that \fBepx iam users list\fR shows, or a customer\(aqs id (required without \fB\-\-file\fR).
+.TP
+\fB\-\-user\-type <TYPE>\fR
+The TYPE of user: CUSTOMER or EMPLOYEE.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SS "epx iam groups users delete"
+Remove a user from a group.
+.PP
+.RS "4"
+.nf
+epx iam groups users delete GROUP_ID USER_ID [flags]
+.fi
+.RE
+.PP
+Removes the user USER_ID from the group GROUP_ID: the user no longer gets the scopes of its access controls. GROUP_ID is the ID that \fBepx iam groups list\fR shows; an unknown GROUP_ID or USER_ID is answered as one that Emporix deleted (204 No Content). It changes who may do what in the tenant.
+.PP
+Deletes data, which cannot be undone. On a terminal, epx sends DELETE only once you type USER_ID at its prompt. \fB\-\-yes\fR sends without asking (required without a terminal); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the iam.assignment_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal).
+.SS "epx iam groups users delete\-all"
+Remove every user from a group.
+.PP
+.RS "4"
+.nf
+epx iam groups users delete\-all GROUP_ID [flags]
+.fi
+.RE
+.PP
+Removes every user from the group GROUP_ID, which stays. GROUP_ID is the ID that \fBepx iam groups list\fR shows; an unknown one is answered as one that Emporix deleted (204 No Content). It changes who may do what in the tenant.
+.PP
+Deletes the membership of every user of the group with one request, which cannot be undone. On a terminal, epx sends DELETE only once you type GROUP_ID at its prompt. \fB\-\-yes\fR sends without asking (required without a terminal); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the iam.assignment_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal).
+.SS "epx iam groups users list"
+List the users of a group.
+.PP
+.RS "4"
+.nf
+epx iam groups users list GROUP_ID [flags]
+.fi
+.RE
+.PP
+Reads the members of a group: USER is a user\(aqs id and TYPE the kind of user. GROUP_ID is the ID that \fBepx iam groups list\fR shows; an unknown one lists nothing.
+.PP
+Requires the iam.user_read scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, USER, TYPE.
+.TP
+\fB\-\-limit <n>\fR
+Print at most n items; paged reads stop early where they safely can (0: every item).
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-stream\fR
+Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes \fB\-o\fR, \fB\-\-columns\fR and \fB\-\-no\-headers\fR).
+.SS "epx iam groups users update"
+Upsert the membership of a user in a group.
+.PP
+.RS "4"
+.nf
+epx iam groups users update GROUP_ID USER_TYPE USER_ID [flags]
+.fi
+.RE
+.PP
+Adds the user USER_ID, of the kind USER_TYPE (CUSTOMER or EMPLOYEE), to the group GROUP_ID unless it belongs to it already (an upsert): Emporix answers with the id of the membership it made, and with nothing when there was one, which it leaves as it is. The user then gets the scopes of the group\(aqs access controls; a group of a vendor takes only the vendor\(aqs employees. GROUP_ID is the ID that \fBepx iam groups list\fR shows; an unknown one is not found. It changes who may do what in the tenant.
+.PP
+Changes data: on a terminal, epx asks before it sends PUT. \fB\-\-yes\fR sends without asking (required without a terminal); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the iam.assignment_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal).
+.SS "epx iam scopes"
+Read, upsert and delete OAuth scopes.
+.PP
+.RS "4"
+.nf
+epx iam scopes [flags]
+epx iam scopes [command]
+.fi
+.RE
+.PP
+Reads the OAuth scopes the tenant knows, and upserts and deletes its custom scopes. Its writes change who may do what in the tenant.
+.PP
+Its reads require the iam.scope_read scope. Its writes require the iam.scope_manage scope.
+.SS "epx iam scopes delete"
+Delete a custom scope.
+.PP
+.RS "4"
+.nf
+epx iam scopes delete ID [flags]
+.fi
+.RE
+.PP
+Deletes the custom scope ID: it can no longer be used, though API keys made before may still show it. Emporix deletes only custom scopes, not the predefined ones (PREDEFINED in \fBepx iam scopes list\fR). It changes who may do what in the tenant.
+.PP
+Deletes data, which cannot be undone. On a terminal, epx sends DELETE only once you type ID at its prompt. \fB\-\-yes\fR sends without asking (required without a terminal); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the iam.scope_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal).
+.SS "epx iam scopes get"
+Show one scope.
+.PP
+.RS "4"
+.nf
+epx iam scopes get ID [flags]
+.fi
+.RE
+.PP
+Reads the OAuth scopes the tenant knows: ID is the scope, DOMAIN the service it belongs to and PREDEFINED whether Emporix defines it.
+.PP
+Requires the iam.scope_read scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, DOMAIN, PREDEFINED, DESCRIPTION.
+.TP
+\fB\-\-language <language>\fR
+Language of localized table text; a missing translation shows another, labeled (\fB\-o json\fR prints all). Default: \fBen\fR.
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.SS "epx iam scopes list"
+List IAM scopes.
+.PP
+.RS "4"
+.nf
+epx iam scopes list [flags]
+.fi
+.RE
+.PP
+Reads the OAuth scopes the tenant knows: ID is the scope, DOMAIN the service it belongs to and PREDEFINED whether Emporix defines it. list sorts by id unless \fB\-\-sort\fR says otherwise; end another order with ,id:asc (e.g. name.en:asc,id:asc), as Emporix wants a direction on every field, so pages do not overlap.
+.PP
+Requires the iam.scope_read scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, DOMAIN, PREDEFINED, DESCRIPTION.
+.TP
+\fB\-\-language <language>\fR
+Language of localized table text; a missing translation shows another, labeled (\fB\-o json\fR prints all). Default: \fBen\fR.
+.TP
+\fB\-\-limit <n>\fR
+Print at most n items; paged reads stop early where they safely can (0: every item).
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-query <filter>\fR
+Emporix q filter, passed as given, e.g. code:(A1,A2); space\-separated conditions must all match (fields mostly as in \fB\-o json\fR).
+.TP
+\fB\-\-sort <order>\fR
+Emporix sort order, passed as given, e.g. code or name.en:desc,code; fields mostly as in \fB\-o json\fR (Emporix may ignore an unknown one).
+.TP
+\fB\-\-stream\fR
+Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes \fB\-o\fR, \fB\-\-columns\fR and \fB\-\-no\-headers\fR).
+.SS "epx iam scopes update"
+Upsert a custom scope.
+.PP
+.RS "4"
+.nf
+epx iam scopes update ID [flags]
+.fi
+.RE
+.PP
+Replaces the custom scope ID, e.g. acme.vehicle_manage, with the JSON in \fB\-\-file\fR, or creates it where none exists (an upsert): its domain and description, a map of translations such as \fB{"en": "Manage vehicles"}\fR. With metadata.version as read, Emporix changes it only if that is still its version. Emporix answers with the id of one it created, and with nothing when it replaced one. Access controls grant scopes (\fBepx iam access\-controls update\fR). It changes who may do what in the tenant.
+.PP
+Changes data: on a terminal, epx asks before it sends PUT. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the iam.scope_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SS "epx iam templates"
+Read IAM templates.
+.PP
+.RS "4"
+.nf
+epx iam templates [flags]
+epx iam templates [command]
+.fi
+.RE
+.PP
+Reads IAM access control templates: sets of access controls that groups are built from (\fB\-o json\fR lists them).
+.PP
+Requires the iam.template_read scope.
+.SS "epx iam templates list"
+List IAM templates.
+.PP
+.RS "4"
+.nf
+epx iam templates list [flags]
+.fi
+.RE
+.PP
+Reads IAM access control templates: sets of access controls that groups are built from (\fB\-o json\fR lists them). list sorts by id unless \fB\-\-sort\fR says otherwise; end another order with ,id:asc (e.g. name.en:asc,id:asc), as Emporix wants a direction on every field, so pages do not overlap.
+.PP
+Requires the iam.template_read scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, NAME, ACCESS CONTROLS.
+.TP
+\fB\-\-language <language>\fR
+Language of localized table text; a missing translation shows another, labeled (\fB\-o json\fR prints all). Default: \fBen\fR.
+.TP
+\fB\-\-limit <n>\fR
+Print at most n items; paged reads stop early where they safely can (0: every item).
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-sort <order>\fR
+Emporix sort order, passed as given, e.g. code or name.en:desc,code; fields mostly as in \fB\-o json\fR (Emporix may ignore an unknown one).
+.TP
+\fB\-\-stream\fR
+Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes \fB\-o\fR, \fB\-\-columns\fR and \fB\-\-no\-headers\fR).
+.SS "epx iam users"
+Read, create, replace and delete IAM users; read what they may do.
+.PP
+.RS "4"
+.nf
+epx iam users [flags]
+epx iam users [command]
+.fi
+.RE
+.PP
+Reads the tenant\(aqs users (such as employees), personal data included, their groups and what they may do, and the users of a vendor; creates, replaces and deletes users and removes them from their groups. Its writes change who may do what in the tenant.
+.PP
+Its reads require different OAuth scopes; the help of each names them. Its writes require different OAuth scopes; the help of each names them.
+.SS "epx iam users access\-controls"
+List the access controls of a user.
+.PP
+.RS "4"
+.nf
+epx iam users access\-controls USER_ID [flags]
+.fi
+.RE
+.PP
+Reads the access controls a user is granted through their groups. SCOPES counts the scopes an access control grants (\fB\-o json\fR lists them). Emporix lists them on one page only, so they are read as one page of up to 1000: a user with more fails. USER_ID is the ID that \fBepx iam users list\fR shows; an unknown one lists nothing.
+.PP
+Requires the iam.access_read scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, NAME, SCOPES, PREDEFINED.
+.TP
+\fB\-\-language <language>\fR
+Language of localized table text; a missing translation shows another, labeled (\fB\-o json\fR prints all). Default: \fBen\fR.
+.TP
+\fB\-\-limit <n>\fR
+Print at most n items; paged reads stop early where they safely can (0: every item).
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-stream\fR
+Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes \fB\-o\fR, \fB\-\-columns\fR and \fB\-\-no\-headers\fR).
+.SS "epx iam users create"
+Create a user.
+.PP
+.RS "4"
+.nf
+epx iam users create [flags]
+.fi
+.RE
+.PP
+Creates a Management Dashboard user (an employee) from the JSON in \fB\-\-file\fR, which gives each of firstName, lastName, preferredSite, preferredCurrency, preferredLanguage, department, contactEmail and groupIds (the groups that the user belongs to, from \fBepx iam groups list\fR). Emporix emails the user to confirm the address and set a password. An e\-mail that a user of the tenant has already is a conflict (exit 5): Emporix creates no user. It answers with the user\(aqs id. It changes who may do what in the tenant.
+.PP
+Changes data: on a terminal, epx asks before it sends POST. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the iam.user_create scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SS "epx iam users delete"
+Delete a user.
+.PP
+.RS "4"
+.nf
+epx iam users delete ID [flags]
+.fi
+.RE
+.PP
+Deletes the user ID from the tenant: Emporix removes them from every group and blocks their access to the Management Dashboard; their Developer Portal account stays. It changes who may do what in the tenant.
+.PP
+Deletes data, which cannot be undone. On a terminal, epx sends DELETE only once you type ID at its prompt. \fB\-\-yes\fR sends without asking (required without a terminal); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the iam.user_delete scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal).
+.SS "epx iam users for\-vendor"
+List the users of a vendor.
+.PP
+.RS "4"
+.nf
+epx iam users for\-vendor VENDOR_ID [flags]
+.fi
+.RE
+.PP
+Reads the users of a vendor (\fBepx vendors list\fR), personal data included, with the columns of \fBepx iam users list\fR. VENDOR_ID is the ID that \fBepx vendors list\fR shows; an unknown one lists nothing.
+.PP
+Requires the iam.user_read scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, NAME, EMAIL, STATUS, LOCKED, GROUPS.
+.TP
+\fB\-\-limit <n>\fR
+Print at most n items; paged reads stop early where they safely can (0: every item).
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-stream\fR
+Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes \fB\-o\fR, \fB\-\-columns\fR and \fB\-\-no\-headers\fR).
+.SS "epx iam users get"
+Show one user.
+.PP
+.RS "4"
+.nf
+epx iam users get ID [flags]
+.fi
+.RE
+.PP
+Reads the tenant\(aqs users (such as employees), personal data included. STATUS and LOCKED tell whether a user can sign in, and GROUPS counts the groups a user belongs to (\fBepx iam users groups list\fR lists them). Emporix orders users differently on every request and fails on most second pages, so list reads them as one page of up to 500: the order, and the users \fB\-\-limit\fR keeps, vary per run, and a tenant with more users fails.
+.PP
+Requires the iam.user_read scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, NAME, EMAIL, STATUS, LOCKED, GROUPS.
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.SS "epx iam users groups"
+Read the groups of a user, remove a user from them.
+.PP
+.RS "4"
+.nf
+epx iam users groups [flags]
+epx iam users groups [command]
+.fi
+.RE
+.PP
+Reads the groups a user belongs to, all or one, and removes a user from every group. Its writes change who may do what in the tenant.
+.PP
+Its reads require the iam.group_read scope. Its writes require the iam.assignment_manage scope.
+.SS "epx iam users groups delete\-all"
+Remove a user from every group.
+.PP
+.RS "4"
+.nf
+epx iam users groups delete\-all USER_ID [flags]
+.fi
+.RE
+.PP
+Removes the user USER_ID from every group: the user keeps their account, but no group grants them access any more. USER_ID is the ID that \fBepx iam users list\fR shows; an unknown one is answered as one that Emporix deleted (204 No Content). It changes who may do what in the tenant.
+.PP
+Deletes the user\(aqs membership of every group with one request, which cannot be undone. On a terminal, epx sends DELETE only once you type USER_ID at its prompt. \fB\-\-yes\fR sends without asking (required without a terminal); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the iam.assignment_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal).
+.SS "epx iam users groups get"
+Show one group of a user.
+.PP
+.RS "4"
+.nf
+epx iam users groups get USER_ID ID [flags]
+.fi
+.RE
+.PP
+Reads one group a user belongs to; one the user does not belong to is not found. USER_ID is the ID that \fBepx iam users list\fR shows; an unknown one is not found. ID is the ID that \fBepx iam users groups list USER_ID\fR shows; an unknown one is not found.
+.PP
+Requires the iam.group_read scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, CODE, NAME, TYPE, ACCESS CONTROLS.
+.TP
+\fB\-\-language <language>\fR
+Language of localized table text; a missing translation shows another, labeled (\fB\-o json\fR prints all). Default: \fBen\fR.
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.SS "epx iam users groups list"
+List the groups of a user.
+.PP
+.RS "4"
+.nf
+epx iam users groups list USER_ID [flags]
+.fi
+.RE
+.PP
+Reads the groups a user belongs to. USER_ID is the ID that \fBepx iam users list\fR shows; an unknown one lists nothing.
+.PP
+Requires the iam.group_read scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, CODE, NAME, TYPE, ACCESS CONTROLS.
+.TP
+\fB\-\-language <language>\fR
+Language of localized table text; a missing translation shows another, labeled (\fB\-o json\fR prints all). Default: \fBen\fR.
+.TP
+\fB\-\-limit <n>\fR
+Print at most n items; paged reads stop early where they safely can (0: every item).
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-stream\fR
+Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes \fB\-o\fR, \fB\-\-columns\fR and \fB\-\-no\-headers\fR).
+.SS "epx iam users list"
+List IAM users.
+.PP
+.RS "4"
+.nf
+epx iam users list [flags]
+.fi
+.RE
+.PP
+Reads the tenant\(aqs users (such as employees), personal data included. STATUS and LOCKED tell whether a user can sign in, and GROUPS counts the groups a user belongs to (\fBepx iam users groups list\fR lists them). Emporix orders users differently on every request and fails on most second pages, so list reads them as one page of up to 500: the order, and the users \fB\-\-limit\fR keeps, vary per run, and a tenant with more users fails.
+.PP
+Requires the iam.user_read scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, NAME, EMAIL, STATUS, LOCKED, GROUPS.
+.TP
+\fB\-\-limit <n>\fR
+Print at most n items; paged reads stop early where they safely can (0: every item).
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-stream\fR
+Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes \fB\-o\fR, \fB\-\-columns\fR and \fB\-\-no\-headers\fR).
+.SS "epx iam users scopes"
+List the scopes of a user.
+.PP
+.RS "4"
+.nf
+epx iam users scopes USER_ID [flags]
+.fi
+.RE
+.PP
+Reads the scopes a user is granted through their groups, sorted, without the tenant entry; a user without scopes lists nothing, like an unknown one. USER_ID is the ID that \fBepx iam users list\fR shows; an unknown one lists nothing.
+.PP
+Requires the iam.scope_read scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among SCOPE.
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.SS "epx iam users update"
+Replace a user.
+.PP
+.RS "4"
+.nf
+epx iam users update ID [flags]
+.fi
+.RE
+.PP
+Replaces the user ID, an employee, with the JSON in \fB\-\-file\fR, which gives each of firstName, lastName, preferredSite, preferredCurrency, preferredLanguage, department, backofficeUserNumber and groupIds: Emporix removes the user from every group and adds them to those of groupIds. An unknown ID is not refused: Emporix answers 204 No Content and adds that ID as a member of each group of groupIds, so those groups take effect for it. Check the ID with \fBepx iam users get\fR first; \fBepx iam users groups delete\-all ID\fR removes it from every group it is in. It changes who may do what in the tenant.
+.PP
+Changes data: on a terminal, epx asks before it sends PUT. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the iam.user_update scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SH "SEE ALSO"
+\fBepx\fR(1) for the global options, the credentials epx reads and its exit codes; https://commerce-cloud-integrations.github.io/emporix-cli/commands/iam

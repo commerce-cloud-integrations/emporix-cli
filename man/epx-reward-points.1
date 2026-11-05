@@ -1,0 +1,365 @@
+.TH "EPX\-REWARD\-POINTS" "1" "" "epx" "epx manual"
+.SH "NAME"
+epx\-reward\-points \- read and change reward points and the ways to redeem them
+.SH "SYNOPSIS"
+.RS "4"
+.nf
+epx reward\-points [flags]
+epx reward\-points [command]
+.fi
+.RE
+.SH "DESCRIPTION"
+Reads customers\(aq reward points, personal data included: ACTIVE is the number of points a customer can redeem now (expired points are left out), ADDED and REDEEMED the points added and redeemed so far, expired ones included (a failed redemption is refunded as an addition), so ACTIVE may be less than ADDED minus REDEEMED. Each addition and redemption is only in \fB\-o json\fR. \fBepx reward\-points redeem\-options\fR lists the ways to redeem points. The writes create and delete a customer\(aqs reward points entry (create, delete), add and redeem points (add, redeem), and create, replace and delete the ways to redeem them (redeem\-option\-create, \-update, \-delete).
+.PP
+Its reads require different OAuth scopes; the help of each names them. Its writes require the rewardspoints.rewardpoints_manage scope.
+.SH "COMMANDS"
+.SS "epx reward\-points add"
+Add reward points to a customer.
+.PP
+.RS "4"
+.nf
+epx reward\-points add CUSTOMER [flags]
+.fi
+.RE
+.PP
+Adds \fB\-\-points\fR reward points to a customer. Emporix answers without a body, so epx prints nothing. Sent twice, it adds them twice. The reward points settings of the site \fB\-\-site\fR apply, the default site of the profile in effect without it, and site main without either: how long the points stay valid. Emporix keeps them in the site\(aqs couponSettings mixin; it accepts a site without them, also an unknown site code, and the points then stay valid 36 months. \fB\-\-valid\-until\fR, which gives these points their own end of validity, takes a time such as 2027\-12\-31T23:59:59Z: unlike the redeem options, Emporix reads a time that ends in Z. A customer without a reward points entry is not found (exit 4). CUSTOMER is the customer id that \fBepx reward\-points list\fR shows.
+.PP
+Changes data: on a terminal, epx asks before it sends POST. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the rewardspoints.rewardpoints_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-description <string>\fR
+What the points are for.
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte instead of the one that epx makes (\- reads standard input; sending it then needs \fB\-\-yes\fR).
+.TP
+\fB\-\-order <ID>\fR
+The ID of the order that earned the points.
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-points <POINTS>\fR
+The number of POINTS to add (required without \fB\-\-file\fR).
+.TP
+\fB\-\-site <CODE>\fR
+The site CODE whose reward points settings apply, sent as siteCode.
+.TP
+\fB\-\-valid\-until <TIME>\fR
+The TIME until which the points can be redeemed, e.g. 2027\-12\-31T23:59:59Z.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.PP
+\fBExamples:\fR
+.PP
+.RS "4"
+.nf
+epx reward\-points add C1001 \-\-site AcmeStore_NL \-\-points 50 \-\-description "Goodwill"
+.fi
+.RE
+.SS "epx reward\-points balance"
+Show the reward points balance of a customer.
+.PP
+.RS "4"
+.nf
+epx reward\-points balance CUSTOMER [flags]
+.fi
+.RE
+.PP
+Reads the reward points balance of a customer, personal data: POINTS, one number, the points that the customer can redeem now: ACTIVE of \fBepx reward\-points get\fR, which also shows the points added and redeemed so far. CUSTOMER is the customer id that \fBepx reward\-points list\fR shows; an unknown one is not found (exit 4).
+.PP
+Requires the rewardspoints.rewardpoints_view scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among POINTS.
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.SS "epx reward\-points create"
+Create the reward points entry of a customer.
+.PP
+.RS "4"
+.nf
+epx reward\-points create CUSTOMER [flags]
+.fi
+.RE
+.PP
+Creates the reward points entry of a customer, with the points it starts with where \fB\-\-points\fR gives them. Emporix answers without a body, so epx prints nothing. A customer with an entry is a conflict (exit 5). Emporix does not check the customer: an unknown one gets an entry too. \fBepx reward\-points add\fR adds points to an entry. The reward points settings of the site \fB\-\-site\fR apply, the default site of the profile in effect without it, and site main without either: how long the points stay valid. Emporix keeps them in the site\(aqs couponSettings mixin; it accepts a site without them, also an unknown site code, and the points then stay valid 36 months. The JSON of \fB\-\-file\fR must give customerId, CUSTOMER again (Emporix answers 400 Bad Request to another and 500 Internal Server Error without one, exit 1, and creates no entry), and the points it starts with as startPoints, e.g. \fB{"customerId": "C1001", "startPoints": {"points": 20}}\fR. CUSTOMER is the customer id that \fBepx reward\-points list\fR shows.
+.PP
+Changes data: on a terminal, epx asks before it sends POST. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the rewardspoints.rewardpoints_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-description <string>\fR
+What the points it starts with are for (only with \fB\-\-points\fR).
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte instead of the one that epx makes (\- reads standard input; sending it then needs \fB\-\-yes\fR).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-points <POINTS>\fR
+The number of POINTS the entry starts with.
+.TP
+\fB\-\-site <CODE>\fR
+The site CODE whose reward points settings apply, sent as siteCode.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.PP
+\fBExamples:\fR
+.PP
+.RS "4"
+.nf
+epx reward\-points create C1001 \-\-site AcmeStore_NL \-\-points 20 \-\-description "Welcome"
+.fi
+.RE
+.SS "epx reward\-points delete"
+Delete the reward points of a customer.
+.PP
+.RS "4"
+.nf
+epx reward\-points delete CUSTOMER [flags]
+.fi
+.RE
+.PP
+Deletes the reward points entry of a customer, with the points added and redeemed so far. Emporix answers 200 OK, also for an unknown customer or one without an entry: neither is an error. CUSTOMER is the customer id that \fBepx reward\-points list\fR shows.
+.PP
+Deletes data, which cannot be undone. On a terminal, epx sends DELETE only once you type CUSTOMER at its prompt. \fB\-\-yes\fR sends without asking (required without a terminal); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the rewardspoints.rewardpoints_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal).
+.SS "epx reward\-points get"
+Show the reward points of a customer.
+.PP
+.RS "4"
+.nf
+epx reward\-points get CUSTOMER [flags]
+.fi
+.RE
+.PP
+Reads customers\(aq reward points, personal data included: ACTIVE is the number of points a customer can redeem now (expired points are left out), ADDED and REDEEMED the points added and redeemed so far, expired ones included (a failed redemption is refunded as an addition), so ACTIVE may be less than ADDED minus REDEEMED. Each addition and redemption is only in \fB\-o json\fR. CUSTOMER is the customer id that \fBepx reward\-points list\fR shows; one without reward points is not found.
+.PP
+Requires the rewardspoints.rewardpoints_view scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among CUSTOMER, ACTIVE, ADDED, REDEEMED.
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.SS "epx reward\-points list"
+List the reward points of every customer.
+.PP
+.RS "4"
+.nf
+epx reward\-points list [flags]
+.fi
+.RE
+.PP
+Reads customers\(aq reward points, personal data included: ACTIVE is the number of points a customer can redeem now (expired points are left out), ADDED and REDEEMED the points added and redeemed so far, expired ones included (a failed redemption is refunded as an addition), so ACTIVE may be less than ADDED minus REDEEMED. Each addition and redemption is only in \fB\-o json\fR.
+.PP
+Requires the rewardspoints.rewardpoints_view scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among CUSTOMER, ACTIVE, ADDED, REDEEMED.
+.TP
+\fB\-\-limit <n>\fR
+Print at most n items; paged reads stop early where they safely can (0: every item).
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-stream\fR
+Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes \fB\-o\fR, \fB\-\-columns\fR and \fB\-\-no\-headers\fR).
+.SS "epx reward\-points redeem"
+Redeem reward points of a customer.
+.PP
+.RS "4"
+.nf
+epx reward\-points redeem CUSTOMER [flags]
+.fi
+.RE
+.PP
+Redeems \fB\-\-points\fR reward points of a customer without making a coupon of them, the oldest points that are still valid first. Emporix answers without a body, so epx prints nothing. More points than are active (ACTIVE of \fBepx reward\-points get\fR) are a conflict (exit 5). Sent twice, it redeems them twice. A customer without a reward points entry is not found (exit 4). CUSTOMER is the customer id that \fBepx reward\-points list\fR shows.
+.PP
+Changes data: on a terminal, epx asks before it sends POST. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the rewardspoints.rewardpoints_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-description <string>\fR
+What the points are redeemed for.
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte instead of the one that epx makes (\- reads standard input; sending it then needs \fB\-\-yes\fR).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-points <POINTS>\fR
+The number of POINTS to redeem (required without \fB\-\-file\fR).
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.PP
+\fBExamples:\fR
+.PP
+.RS "4"
+.nf
+epx reward\-points redeem C1001 \-\-points 50 \-\-description "Gift wrapping"
+.fi
+.RE
+.SS "epx reward\-points redeem\-option\-create"
+Create a way to redeem reward points.
+.PP
+.RS "4"
+.nf
+epx reward\-points redeem\-option\-create [flags]
+.fi
+.RE
+.PP
+Creates a way to redeem reward points from the JSON in \fB\-\-file\fR: its type (coupon), name, the points it costs and, for a coupon, the coupon that it makes of them, as \fBepx coupons create\fR takes it. It prints the option that Emporix answers with; sending the same JSON twice creates two. The coupon\(aqs restrictions.validFrom and validUntil take epoch milliseconds or a time with a numeric offset, e.g. 2027\-01\-01T00:00:00.000+00:00: Emporix refuses a time that ends in Z (400 Bad Request).
+.PP
+Changes data: on a terminal, epx asks before it sends POST. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the rewardspoints.rewardpoints_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SS "epx reward\-points redeem\-option\-delete"
+Delete a way to redeem reward points.
+.PP
+.RS "4"
+.nf
+epx reward\-points redeem\-option\-delete ID [flags]
+.fi
+.RE
+.PP
+Deletes the redeem option ID, as \fBepx reward\-points redeem\-options\fR shows it; it sends no body. Emporix answers an unknown ID as one that it deleted (204 No Content).
+.PP
+Deletes data, which cannot be undone. On a terminal, epx sends DELETE only once you type ID at its prompt. \fB\-\-yes\fR sends without asking (required without a terminal); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the rewardspoints.rewardpoints_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal).
+.SS "epx reward\-points redeem\-option\-update"
+Replace a way to redeem reward points.
+.PP
+.RS "4"
+.nf
+epx reward\-points redeem\-option\-update ID [flags]
+.fi
+.RE
+.PP
+Replaces the redeem option ID, as \fBepx reward\-points redeem\-options\fR shows it, with the JSON in \fB\-\-file\fR, as redeem\-option\-create takes it. Send its metadata.version as read to change it only if nobody changed it since: Emporix answers 409 Conflict (exit 5) otherwise.
+.PP
+Changes data: on a terminal, epx asks before it sends PUT. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the rewardspoints.rewardpoints_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SS "epx reward\-points redeem\-options"
+List the ways to redeem reward points.
+.PP
+.RS "4"
+.nf
+epx reward\-points redeem\-options [flags]
+.fi
+.RE
+.PP
+Reads the ways customers can redeem reward points: their TYPE, NAME and the POINTS they cost.
+.PP
+No OAuth scope is needed.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, TYPE, NAME, POINTS.
+.TP
+\fB\-\-limit <n>\fR
+Print at most n items; paged reads stop early where they safely can (0: every item).
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-stream\fR
+Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes \fB\-o\fR, \fB\-\-columns\fR and \fB\-\-no\-headers\fR).
+.SH "SEE ALSO"
+\fBepx\fR(1) for the global options, the credentials epx reads and its exit codes; https://commerce-cloud-integrations.github.io/emporix-cli/commands/reward-points

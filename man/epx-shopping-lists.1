@@ -1,0 +1,186 @@
+.TH "EPX\-SHOPPING\-LISTS" "1" "" "epx" "epx manual"
+.SH "NAME"
+epx\-shopping\-lists \- read, create, replace and delete customers\(aq shopping lists
+.SH "SYNOPSIS"
+.RS "4"
+.nf
+epx shopping\-lists [flags]
+epx shopping\-lists [command]
+.fi
+.RE
+.SH "DESCRIPTION"
+Reads customers\(aq shopping lists, personal data included: each customer\(aqs lists by name, with how many items they hold. Items are only in \fB\-o json\fR. CUSTOMER is the customer id the lists are kept under (the reference calls it the customer number; for a customer that Emporix numbered, the two are the same); get takes it, and a customer without shopping lists is not found. create, update and delete create, replace and delete a customer\(aqs lists.
+.PP
+Its reads require the shoppinglist.shoppinglist_read scope. Its writes require the shoppinglist.shoppinglist_manage scope.
+.SH "COMMANDS"
+.SS "epx shopping\-lists create"
+Create a shopping list of a customer.
+.PP
+.RS "4"
+.nf
+epx shopping\-lists create [flags]
+.fi
+.RE
+.PP
+Creates the shopping list in \fB\-\-file\fR, a JSON object with the customerId of the customer it belongs to, the list\(aqs name and its items (each with its id, productId and quantity), and prints what Emporix answers with: the customer\(aqs id. A list of that name that the customer has already is a conflict (exit 5). Emporix does not check the customer: it creates the list of an unknown customer id too.
+.PP
+Changes data: on a terminal, epx asks before it sends POST. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the shoppinglist.shoppinglist_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.PP
+\fBExamples:\fR
+.PP
+.RS "4"
+.nf
+epx shopping\-lists create \-\-file list.json \-\-dry\-run
+.fi
+.RE
+.SS "epx shopping\-lists delete"
+Delete a shopping list of a customer.
+.PP
+.RS "4"
+.nf
+epx shopping\-lists delete CUSTOMER [flags]
+.fi
+.RE
+.PP
+Deletes the shopping list \fB\-\-name\fR of CUSTOMER; its other lists stay. A customer without shopping lists, or without a list of that name, is not found (exit 4). \fBepx shopping\-lists get CUSTOMER\fR shows the lists that are left.
+.PP
+Deletes data, which cannot be undone. On a terminal, epx sends DELETE only once you type CUSTOMER at its prompt. \fB\-\-yes\fR sends without asking (required without a terminal); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the shoppinglist.shoppinglist_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-name <NAME>\fR
+The NAME of the list to delete (required).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal).
+.SS "epx shopping\-lists delete\-all"
+Delete every shopping list of a customer.
+.PP
+.RS "4"
+.nf
+epx shopping\-lists delete\-all CUSTOMER [flags]
+.fi
+.RE
+.PP
+Deletes every shopping list of CUSTOMER. A customer without shopping lists is not found (exit 4).
+.PP
+Deletes every shopping list of the customer with one request, which cannot be undone. On a terminal, epx sends DELETE only once you type CUSTOMER at its prompt. \fB\-\-yes\fR sends without asking (required without a terminal); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the shoppinglist.shoppinglist_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal).
+.SS "epx shopping\-lists get"
+Show one customer\(aqs shopping lists.
+.PP
+.RS "4"
+.nf
+epx shopping\-lists get CUSTOMER [flags]
+.fi
+.RE
+.PP
+Reads customers\(aq shopping lists, personal data included: each customer\(aqs lists by name, with how many items they hold. Items are only in \fB\-o json\fR. CUSTOMER is the customer id the lists are kept under (the reference calls it the customer number; for a customer that Emporix numbered, the two are the same); get takes it, and a customer without shopping lists is not found.
+.PP
+Requires the shoppinglist.shoppinglist_read scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among CUSTOMER, LISTS.
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.SS "epx shopping\-lists list"
+List customers\(aq shopping lists.
+.PP
+.RS "4"
+.nf
+epx shopping\-lists list [flags]
+.fi
+.RE
+.PP
+Reads customers\(aq shopping lists, personal data included: each customer\(aqs lists by name, with how many items they hold. Items are only in \fB\-o json\fR. CUSTOMER is the customer id the lists are kept under (the reference calls it the customer number; for a customer that Emporix numbered, the two are the same); get takes it, and a customer without shopping lists is not found.
+.PP
+Requires the shoppinglist.shoppinglist_read scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among CUSTOMER, LISTS.
+.TP
+\fB\-\-limit <n>\fR
+Print at most n items; paged reads stop early where they safely can (0: every item).
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-stream\fR
+Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes \fB\-o\fR, \fB\-\-columns\fR and \fB\-\-no\-headers\fR).
+.SS "epx shopping\-lists update"
+Replace a shopping list of a customer.
+.PP
+.RS "4"
+.nf
+epx shopping\-lists update CUSTOMER [flags]
+.fi
+.RE
+.PP
+Replaces the shopping list of CUSTOMER that the JSON in \fB\-\-file\fR names with it: an object with the list\(aqs name and its items (each with its id, productId and quantity). Send its metadata.version as read to replace it only if nobody changed it since: Emporix answers 409 Conflict (exit 5) otherwise. A customer without shopping lists, or without a list of that name, is not found (exit 4). Update creates no list; create does.
+.PP
+Changes data: on a terminal, epx asks before it sends PUT. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the shoppinglist.shoppinglist_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SH "SEE ALSO"
+\fBepx\fR(1) for the global options, the credentials epx reads and its exit codes; https://commerce-cloud-integrations.github.io/emporix-cli/commands/shopping-lists

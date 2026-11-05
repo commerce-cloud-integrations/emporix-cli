@@ -1,0 +1,49 @@
+.TH "EPX\-CHANGELOG" "1" "" "epx" "epx manual"
+.SH "NAME"
+epx\-changelog \- read the change history (audit log)
+.SH "SYNOPSIS"
+.RS "4"
+.nf
+epx changelog [flags]
+epx changelog [command]
+.fi
+.RE
+.SH "DESCRIPTION"
+Reads the tenant\(aqs change history, an audit log (personal data: who changed what, with the old and new values in \fB\-o json\fR), ordered by when the changes occurred. AT is when, TYPE create, update or delete, ENTITY and ENTITY ID the changed document (an order, customer, product, site, \[u2026]), ACTOR who changed it (a name, system, external or unknown) and FIELDS the changed fields. Without a lower bound on occurredAt (not only inside OR), Emporix returns the last 30 days, a window that moves while the pages are read: on an active tenant, read a closed range in the past, e.g. \fB\-\-query\fR \fB\(aqoccurredAt:(>"2026\-09\-01T00:00:00.000Z" AND <"2026\-10\-01T00:00:00.000Z")\(aq\fR, or use \fB\-\-limit\fR; otherwise a change can come or go between pages, so the read fails or misses it. One document\(aqs history: \fB\-\-query\fR \fB\(aqentity:order entityId:ID\(aq\fR.
+.PP
+Requires the changelog.changelog_read scope.
+.SH "COMMANDS"
+.SS "epx changelog list"
+List changes.
+.PP
+.RS "4"
+.nf
+epx changelog list [flags]
+.fi
+.RE
+.PP
+Reads the tenant\(aqs change history, an audit log (personal data: who changed what, with the old and new values in \fB\-o json\fR), ordered by when the changes occurred. AT is when, TYPE create, update or delete, ENTITY and ENTITY ID the changed document (an order, customer, product, site, \[u2026]), ACTOR who changed it (a name, system, external or unknown) and FIELDS the changed fields. Without a lower bound on occurredAt (not only inside OR), Emporix returns the last 30 days, a window that moves while the pages are read: on an active tenant, read a closed range in the past, e.g. \fB\-\-query\fR \fB\(aqoccurredAt:(>"2026\-09\-01T00:00:00.000Z" AND <"2026\-10\-01T00:00:00.000Z")\(aq\fR, or use \fB\-\-limit\fR; otherwise a change can come or go between pages, so the read fails or misses it. One document\(aqs history: \fB\-\-query\fR \fB\(aqentity:order entityId:ID\(aq\fR.
+.PP
+Requires the changelog.changelog_read scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among AT, TYPE, ENTITY, ENTITY ID, NAME, ACTOR, FIELDS.
+.TP
+\fB\-\-limit <n>\fR
+Print at most n items; paged reads stop early where they safely can (0: every item).
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-query <filter>\fR
+Emporix q filter, passed as given, e.g. code:(A1,A2); space\-separated conditions must all match (fields mostly as in \fB\-o json\fR).
+.TP
+\fB\-\-stream\fR
+Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes \fB\-o\fR, \fB\-\-columns\fR and \fB\-\-no\-headers\fR).
+.SH "SEE ALSO"
+\fBepx\fR(1) for the global options, the credentials epx reads and its exit codes; https://commerce-cloud-integrations.github.io/emporix-cli/commands/changelog

@@ -168,9 +168,15 @@ pack() {
 	done
 	cp -R "$src/npm/epx-cli" "$main"
 	cp "$src/LICENSE" "$src/README.md" "$main/"
-	jq --arg version "$version" --argjson deps "$(deps "${platforms[@]}")" \
-		'del(.private) | .version = $version | .optionalDependencies = $deps' \
-		<"$src/npm/epx-cli/package.json" >"$main/package.json"
+	# The man pages of the tarballs (the same in each), which npm links into its man directory.
+	for file in "${archives[@]}"; do
+		[[ $file == *.tar.gz ]] && cp -R "$stage/$(base "$file")/man" "$main/man" && break
+	done
+	[[ -d "$main/man" ]] || fail "no archive holds the man pages"
+	jq --arg version "$version" --argjson deps "$(deps "${platforms[@]}")" --args \
+		'del(.private) | .version = $version | .optionalDependencies = $deps
+		 | .files += ["man"] | .man = $ARGS.positional' \
+		$(cd "$main" && ls man/*.1) <"$src/npm/epx-cli/package.json" >"$main/package.json"
 	(cd "$packed" && npm pack --silent "$main" >/dev/null) || fail "cannot pack $pkg"
 }
 
@@ -204,7 +210,11 @@ check() {
 	manifest "$main_tgz" | jq -e --arg pkg "$pkg" --arg version "$version" --argjson deps "$(deps "${platforms[@]}")" '
 		.name == $pkg and .version == $version and (has("private") | not)
 		and (has("scripts") | not) and .bin == {"epx": "bin/epx.js"}
-		and .optionalDependencies == $deps' >/dev/null || fail "$main_tgz has a wrong package.json"
+		and .optionalDependencies == $deps
+		and (.man | length > 1) and (.man | index("man/epx.1"))' >/dev/null || fail "$main_tgz has a wrong package.json"
+	for page in $(manifest "$main_tgz" | jq -r '.man[]'); do
+		tar -tzf "$main_tgz" "package/$page" >/dev/null 2>&1 || fail "$main_tgz lacks its man page $page"
+	done
 }
 
 # smoke installs the package as npm does from the registry, its optional dependencies

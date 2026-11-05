@@ -1,0 +1,83 @@
+.TH "EPX\-INVOICE\-JOBS" "1" "" "epx" "epx manual"
+.SH "NAME"
+epx\-invoice\-jobs \- create and read invoice jobs
+.SH "SYNOPSIS"
+.RS "4"
+.nf
+epx invoice\-jobs [flags]
+epx invoice\-jobs [command]
+.fi
+.RE
+.SH "DESCRIPTION"
+Creates and reads the jobs that generate the invoices of orders.
+.PP
+Its reads require the invoice.invoice_view scope. Its writes require the invoice.invoice_manage scope.
+.SH "COMMANDS"
+.SS "epx invoice\-jobs create"
+Start an invoice job.
+.PP
+.RS "4"
+.nf
+epx invoice\-jobs create [flags]
+.fi
+.RE
+.PP
+Starts a job that generates the invoices of orders: of those that \fB\-\-order\fR names (\fB\-\-type\fR MANUAL, which requires one at least), or of those ready for an invoice that the tenant\(aqs invoice configuration selects (\fB\-\-type\fR AUTOMATIC, which takes no \fB\-\-order\fR). Without an invoice configuration of the tenant\(aqs own, an order is ready for an invoice when its mixins.generalAttributes.extendedOrderStatus is 70, 75 or 76 (\fBepx orders create\fR stores 10; \fBepx orders patch\fR changes it); the job\(aqs entry of an order with 10 fails as not ready. Invoicing a ready order calls the tenant\(aqs Pick\-Pack service: where that service is not reachable, the entry fails at the VALIDATION step. Emporix answers with the job\(aqs id (jobId), which \fBepx invoice\-jobs get ID\fR reads.
+.PP
+Changes data: on a terminal, epx asks before it sends POST. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the invoice.invoice_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte instead of the one that epx makes (\- reads standard input; sending it then needs \fB\-\-yes\fR).
+.TP
+\fB\-\-order <ID>\fR
+The ID of an order to invoice, repeatable (only with \fB\-\-type\fR MANUAL, which requires it).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-type <TYPE>\fR
+The TYPE of job: MANUAL or AUTOMATIC (required without \fB\-\-file\fR).
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.PP
+\fBExamples:\fR
+.PP
+.RS "4"
+.nf
+epx invoice\-jobs create \-\-type MANUAL \-\-order O1001 \-\-order O1002
+epx invoice\-jobs create \-\-type AUTOMATIC \-\-yes
+.fi
+.RE
+.SS "epx invoice\-jobs get"
+Show the status of an invoice job.
+.PP
+.RS "4"
+.nf
+epx invoice\-jobs get ID [flags]
+.fi
+.RE
+.PP
+Reads an invoice job: STATUS is IN_PROGRESS or DONE and TYPE MANUAL (orders chosen when the job was created) or AUTOMATIC (orders that the tenant\(aqs configuration selects). ORDERS counts the orders the job processed, of which INVOICED got an invoice, FAILED did not and PENDING wait for one. Each order\(aqs entry in invoices (orderId and status; errorStep and message for a failure, e.g. an order not ready for invoicing; for a success, the reference documents the invoice number and download link) is only in \fB\-o json\fR. ID is the job id that creating the job returned. Emporix answers an unknown job with 500 Internal Server Error (the reference documents 404), so get fails with exit code 1.
+.PP
+Requires the invoice.invoice_view scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among STATUS, TYPE, ORDERS, INVOICED, FAILED, PENDING.
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.SH "SEE ALSO"
+\fBepx\fR(1) for the global options, the credentials epx reads and its exit codes; https://commerce-cloud-integrations.github.io/emporix-cli/commands/invoice-jobs

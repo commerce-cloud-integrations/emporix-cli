@@ -1,0 +1,393 @@
+.TH "EPX\-SITES" "1" "" "epx" "epx manual"
+.SH "NAME"
+epx\-sites \- read, create and change sites and their mixins
+.SH "SYNOPSIS"
+.RS "4"
+.nf
+epx sites [flags]
+epx sites [command]
+.fi
+.RE
+.SH "DESCRIPTION"
+Reads active sites. Inactive sites are not included: Emporix returns them only with the write\-capable site.site_manage scope, so \fBget CODE\fR of an inactive site is refused (403, exit 3) without it. \fBepx sites codes\fR lists the codes of every site, inactive ones too (opt\-in); to read inactive sites whole, run \fBepx api get \(aq/site/{tenant}/sites?includeInactive=true\(aq \-\-scope site.site_manage\fR.
+.PP
+Its reads require different OAuth scopes; the help of each names them. Opt\-in: epx requests a write\-capable scope for a read only when given \fB\-\-allow\-write\-scope\fR. Its writes require the site.site_manage scope.
+.SH "COMMANDS"
+.SS "epx sites codes"
+List the codes of every site, inactive ones too.
+.PP
+.RS "4"
+.nf
+epx sites codes [flags]
+.fi
+.RE
+.PP
+Reads the code of every site, active or not. Emporix lists inactive sites only with the write\-capable site.site_manage and site.site_read scopes together (each alone answers 403), so this read is opt\-in; \fBepx sites list\fR shows active sites whole without a scope. Emporix sends no total for the codes, so their pages are read until an empty one.
+.PP
+Requires the site.site_read, site.site_manage scopes. Opt\-in: epx requests a write\-capable scope for a read only when given \fB\-\-allow\-write\-scope\fR.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-allow\-write\-scope\fR
+Opt in to requesting site.site_read, site.site_manage, which can also change data (required).
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among CODE.
+.TP
+\fB\-\-limit <n>\fR
+Print at most n items; paged reads stop early where they safely can (0: every item).
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-query <filter>\fR
+Emporix q filter, passed as given, e.g. code:(A1,A2); space\-separated conditions must all match (fields mostly as in \fB\-o json\fR).
+.TP
+\fB\-\-sort <order>\fR
+Emporix sort order, passed as given, e.g. code or name.en:desc,code; fields mostly as in \fB\-o json\fR (Emporix may ignore an unknown one).
+.TP
+\fB\-\-stream\fR
+Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes \fB\-o\fR, \fB\-\-columns\fR and \fB\-\-no\-headers\fR).
+.SS "epx sites create"
+Create a site.
+.PP
+.RS "4"
+.nf
+epx sites create [flags]
+.fi
+.RE
+.PP
+Creates a site from the JSON in \fB\-\-file\fR, shaped as \fBepx sites get CODE \-o json\fR prints one. The reference requires code, name, defaultLanguage, languages, currency, homeBase (an address with country and zipCode), shipToCountries and taxDeterminationBasedOn (BILLING_ADDRESS or SHIPPING_ADDRESS); active, default, includesTax, availableCurrencies, payment, shipping, tax, mixins and cartCalculationScale are optional.
+.PP
+Changes data: on a terminal, epx asks before it sends POST. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the site.site_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SS "epx sites delete"
+Delete a site.
+.PP
+.RS "4"
+.nf
+epx sites delete CODE [flags]
+.fi
+.RE
+.PP
+Deletes the site CODE; it sends no body. Emporix refuses to delete the default site. An unknown CODE is not found (exit 4).
+.PP
+Deletes data, which cannot be undone. On a terminal, epx sends DELETE only once you type CODE at its prompt. \fB\-\-yes\fR sends without asking (required without a terminal); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the site.site_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal).
+.SS "epx sites get"
+Show one site.
+.PP
+.RS "4"
+.nf
+epx sites get CODE [flags]
+.fi
+.RE
+.PP
+Reads active sites. Inactive sites are not included: Emporix returns them only with the write\-capable site.site_manage scope, so \fBget CODE\fR of an inactive site is refused (403, exit 3) without it. \fBepx sites codes\fR lists the codes of every site, inactive ones too (opt\-in); to read inactive sites whole, run \fBepx api get \(aq/site/{tenant}/sites?includeInactive=true\(aq \-\-scope site.site_manage\fR.
+.PP
+No OAuth scope is needed.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among CODE, NAME, DEFAULT, LANGUAGES, CURRENCY, HOME, SHIPS TO.
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.SS "epx sites list"
+List sites.
+.PP
+.RS "4"
+.nf
+epx sites list [flags]
+.fi
+.RE
+.PP
+Reads active sites. Inactive sites are not included: Emporix returns them only with the write\-capable site.site_manage scope, so \fBget CODE\fR of an inactive site is refused (403, exit 3) without it. \fBepx sites codes\fR lists the codes of every site, inactive ones too (opt\-in); to read inactive sites whole, run \fBepx api get \(aq/site/{tenant}/sites?includeInactive=true\(aq \-\-scope site.site_manage\fR.
+.PP
+No OAuth scope is needed.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among CODE, NAME, DEFAULT, LANGUAGES, CURRENCY, HOME, SHIPS TO.
+.TP
+\fB\-\-limit <n>\fR
+Print at most n items; paged reads stop early where they safely can (0: every item).
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-query <filter>\fR
+Emporix q filter, passed as given, e.g. code:(A1,A2); space\-separated conditions must all match (fields mostly as in \fB\-o json\fR).
+.TP
+\fB\-\-sort <order>\fR
+Emporix sort order, passed as given, e.g. code or name.en:desc,code; fields mostly as in \fB\-o json\fR (Emporix may ignore an unknown one).
+.TP
+\fB\-\-stream\fR
+Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes \fB\-o\fR, \fB\-\-columns\fR and \fB\-\-no\-headers\fR).
+.SS "epx sites mixins"
+Read and change the mixins of a site.
+.PP
+.RS "4"
+.nf
+epx sites mixins [flags]
+epx sites mixins [command]
+.fi
+.RE
+.PP
+Reads the mixins of a site, the custom settings that extend it, and creates, changes and deletes them. SITE_CODE is the CODE that \fBepx sites list\fR shows.
+.PP
+Its reads need no OAuth scope. Its writes require the site.site_manage scope.
+.SS "epx sites mixins create"
+Add mixins to a site.
+.PP
+.RS "4"
+.nf
+epx sites mixins create SITE_CODE [flags]
+.fi
+.RE
+.PP
+Adds mixins to the site SITE_CODE: the JSON object in \fB\-\-file\fR maps the name of each to its fields, e.g. \fB{"generalShopSettings": {"logoUrl": "https://shop.acme.example/logo.png"}}\fR. Emporix checks each against the schema that its metadata.schema names; a mixin that the site has already is a conflict (exit 5).
+.PP
+Changes data: on a terminal, epx asks before it sends POST. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the site.site_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SS "epx sites mixins delete"
+Delete a mixin of a site.
+.PP
+.RS "4"
+.nf
+epx sites mixins delete SITE_CODE NAME [flags]
+.fi
+.RE
+.PP
+Deletes the mixin NAME of the site SITE_CODE; it sends no body. An unknown site or mixin is not found (exit 4).
+.PP
+Deletes data, which cannot be undone. On a terminal, epx sends DELETE only once you type NAME at its prompt. \fB\-\-yes\fR sends without asking (required without a terminal); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the site.site_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal).
+.SS "epx sites mixins get"
+Show one mixin of a site.
+.PP
+.RS "4"
+.nf
+epx sites mixins get SITE_CODE NAME [flags]
+.fi
+.RE
+.PP
+Reads one mixin of a site: its fields by NAME, each VALUE cut (\fB\-o json\fR prints them whole). SITE_CODE is the CODE that \fBepx sites list\fR shows; an unknown one is not found. NAME is the NAME that \fBepx sites mixins list SITE_CODE\fR shows; an unknown one is not found.
+.PP
+No OAuth scope is needed.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among NAME, VALUE.
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.SS "epx sites mixins list"
+List the mixins of a site.
+.PP
+.RS "4"
+.nf
+epx sites mixins list SITE_CODE [flags]
+.fi
+.RE
+.PP
+Reads the mixins of a site, the custom settings that extend it (such as coupon or customer settings), by NAME, each VALUE cut (\fB\-o json\fR prints them whole). A site without mixins lists none. SITE_CODE is the CODE that \fBepx sites list\fR shows; an unknown one is not found.
+.PP
+No OAuth scope is needed.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among NAME, VALUE.
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.SS "epx sites mixins patch"
+Change fields of a mixin of a site.
+.PP
+.RS "4"
+.nf
+epx sites mixins patch SITE_CODE NAME [flags]
+.fi
+.RE
+.PP
+Changes the fields of the mixin NAME of the site SITE_CODE that the JSON object in \fB\-\-file\fR gives, such as \fB{"active": true}\fR; the others keep their values.
+.PP
+Changes data: on a terminal, epx asks before it sends PATCH. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the site.site_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SS "epx sites mixins update"
+Replace a mixin of a site.
+.PP
+.RS "4"
+.nf
+epx sites mixins update SITE_CODE NAME [flags]
+.fi
+.RE
+.PP
+Replaces the mixin NAME of the site SITE_CODE with the JSON object in \fB\-\-file\fR; the reference\(aqs example gives it as create does, in an object named after the mixin. An unknown site or mixin is not found (exit 4).
+.PP
+Changes data: on a terminal, epx asks before it sends PUT. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the site.site_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SS "epx sites patch"
+Change members of a site.
+.PP
+.RS "4"
+.nf
+epx sites patch CODE [flags]
+.fi
+.RE
+.PP
+Changes the members of the site CODE that the JSON in \fB\-\-file\fR gives, such as \fB{"languages": ["en", "nl"]}\fR; the others keep their values. An unknown CODE is not found (exit 4).
+.PP
+Changes data: on a terminal, epx asks before it sends PATCH. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the site.site_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SS "epx sites update"
+Replace a site.
+.PP
+.RS "4"
+.nf
+epx sites update CODE [flags]
+.fi
+.RE
+.PP
+Replaces the site CODE with the JSON in \fB\-\-file\fR, shaped as create takes it: a member that it leaves out is removed. It changes the payment, shipping and tax configurations that the body gives too; Emporix changes an inactive one only with \fB\-\-expand\fR naming it, e.g. payment:all. An unknown CODE is not found (exit 4).
+.PP
+Changes data: on a terminal, epx asks before it sends PUT. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the site.site_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-expand <SETTINGS>\fR
+The SETTINGS to expand, e.g. payment:all,shipping:all,tax:all (all, active or none each).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SH "SEE ALSO"
+\fBepx\fR(1) for the global options, the credentials epx reads and its exit codes; https://commerce-cloud-integrations.github.io/emporix-cli/commands/sites

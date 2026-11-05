@@ -1,0 +1,172 @@
+.TH "EPX\-PRODUCT\-TEMPLATES" "1" "" "epx" "epx manual"
+.SH "NAME"
+epx\-product\-templates \- read, create, update and delete product templates
+.SH "SYNOPSIS"
+.RS "4"
+.nf
+epx product\-templates [flags]
+epx product\-templates [command]
+.fi
+.RE
+.SH "DESCRIPTION"
+Reads and changes product templates, the attribute sets shared by products based on them: create makes one, update replaces one, each from \fB\-\-file\fR; delete deletes one.
+.PP
+Its reads require the product.product_template_read scope. Its writes require the product.product_template_manage scope.
+.SH "COMMANDS"
+.SS "epx product\-templates create"
+Create a product template.
+.PP
+.RS "4"
+.nf
+epx product\-templates create [flags]
+.fi
+.RE
+.PP
+Creates the product template in the JSON object of \fB\-\-file\fR (name, attributes) and prints its id.
+.PP
+Localized text in the body, such as a name, is a map of translations, e.g. \fB{"en": "gram", "de": "Gramm"}\fR, as \fB\-o json\fR of a read prints it, or with \fB\-\-content\-language\fR LANGUAGE a string in that language, e.g. \fB"gram"\fR with \fB\-\-content\-language\fR en.
+.PP
+Changes data: on a terminal, epx asks before it sends POST. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the product.product_template_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-content\-language <LANGUAGE>\fR
+The LANGUAGE of localized text in the body, or * for maps of translations. Default: \fB*\fR.
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SS "epx product\-templates delete"
+Delete a product template.
+.PP
+.RS "4"
+.nf
+epx product\-templates delete ID [flags]
+.fi
+.RE
+.PP
+Deletes the product template ID. Emporix deletes only a template that no product and no parent variant is based on: it refuses one in use with 400 Bad Request (exit 1). An unknown ID is no error: Emporix answers as for a deleted template.
+.PP
+Deletes data, which cannot be undone. On a terminal, epx sends DELETE only once you type ID at its prompt. \fB\-\-yes\fR sends without asking (required without a terminal); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the product.product_template_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal).
+.SS "epx product\-templates get"
+Show one product template.
+.PP
+.RS "4"
+.nf
+epx product\-templates get ID [flags]
+.fi
+.RE
+.PP
+Reads product templates, the attribute sets shared by products based on them. ATTRIBUTES counts the template\(aqs attributes (\fB\-o json\fR prints their definitions).
+.PP
+Requires the product.product_template_read scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, NAME, ATTRIBUTES, VERSION.
+.TP
+\fB\-\-language <language>\fR
+Language of localized table text; a missing translation shows another, labeled (\fB\-o json\fR prints all). Default: \fBen\fR.
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.SS "epx product\-templates list"
+List product templates.
+.PP
+.RS "4"
+.nf
+epx product\-templates list [flags]
+.fi
+.RE
+.PP
+Reads product templates, the attribute sets shared by products based on them. ATTRIBUTES counts the template\(aqs attributes (\fB\-o json\fR prints their definitions).
+.PP
+Requires the product.product_template_read scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, NAME, ATTRIBUTES, VERSION.
+.TP
+\fB\-\-language <language>\fR
+Language of localized table text; a missing translation shows another, labeled (\fB\-o json\fR prints all). Default: \fBen\fR.
+.TP
+\fB\-\-limit <n>\fR
+Print at most n items; paged reads stop early where they safely can (0: every item).
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-query <filter>\fR
+Emporix q filter, passed as given, e.g. code:(A1,A2); space\-separated conditions must all match (fields mostly as in \fB\-o json\fR).
+.TP
+\fB\-\-sort <order>\fR
+Emporix sort order, passed as given, e.g. code or name.en:desc,code; fields mostly as in \fB\-o json\fR (Emporix may ignore an unknown one).
+.TP
+\fB\-\-stream\fR
+Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes \fB\-o\fR, \fB\-\-columns\fR and \fB\-\-no\-headers\fR).
+.SS "epx product\-templates update"
+Replace a product template.
+.PP
+.RS "4"
+.nf
+epx product\-templates update ID [flags]
+.fi
+.RE
+.PP
+Replaces product template ID with the JSON object of \fB\-\-file\fR, which names its metadata.version: Emporix refuses it as a conflict (exit 5) when the template changed since. Every update makes a new version of the template; the products based on an earlier version keep it until they are updated to the new one. An unknown ID is not found (exit 4).
+.PP
+Localized text in the body, such as a name, is a map of translations, e.g. \fB{"en": "gram", "de": "Gramm"}\fR, as \fB\-o json\fR of a read prints it, or with \fB\-\-content\-language\fR LANGUAGE a string in that language, e.g. \fB"gram"\fR with \fB\-\-content\-language\fR en.
+.PP
+Changes data: on a terminal, epx asks before it sends PUT. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the product.product_template_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-content\-language <LANGUAGE>\fR
+The LANGUAGE of localized text in the body, or * for maps of translations. Default: \fB*\fR.
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SH "SEE ALSO"
+\fBepx\fR(1) for the global options, the credentials epx reads and its exit codes; https://commerce-cloud-integrations.github.io/emporix-cli/commands/product-templates

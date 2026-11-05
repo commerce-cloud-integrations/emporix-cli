@@ -1,0 +1,343 @@
+.TH "EPX\-WEBHOOKS" "1" "" "epx" "epx manual"
+.SH "NAME"
+epx\-webhooks \- read and change webhook configurations and subscriptions; read statistics
+.SH "SYNOPSIS"
+.RS "4"
+.nf
+epx webhooks [flags]
+epx webhooks [command]
+.fi
+.RE
+.SH "DESCRIPTION"
+Reads the tenant\(aqs webhooks: where events are sent, which events it subscribes to, how many webhooks it sent, and a link to its webhook dashboard; changes where events are sent and which events it subscribes to.
+.PP
+Its reads require different OAuth scopes; the help of each names them. Opt\-in: epx requests a write\-capable scope for a read only when given \fB\-\-allow\-write\-scope\fR. Its writes require the webhook.subscription_manage scope.
+.SH "COMMANDS"
+.SS "epx webhooks configurations"
+Read, create, change and delete webhook configurations.
+.PP
+.RS "4"
+.nf
+epx webhooks configurations [flags]
+epx webhooks configurations [command]
+.fi
+.RE
+.PP
+Reads webhook configurations: PROVIDER is SVIX_SHARED, SVIX or HTTP, DESTINATION where events are sent and ENTRIES counts the event entries, each with its own destination, headers and filter (inactive ones included), which only \fB\-o json\fR shows. The service returns the configurations whole, so they are read with one request.
+.PP
+Its reads require the webhook.subscription_read scope. Its writes require the webhook.subscription_manage scope.
+.SS "epx webhooks configurations create"
+Create a webhook configuration.
+.PP
+.RS "4"
+.nf
+epx webhooks configurations create [flags]
+.fi
+.RE
+.PP
+Creates the webhook configuration in \fB\-\-file\fR, a JSON object with its code, provider (SVIX_SHARED, SVIX or HTTP), active and configuration: none for SVIX_SHARED, the apiKey of your Svix account for SVIX, and for HTTP the destinationUrl, secretKey, headers and eventsConfiguration (entries that send events of a type elsewhere, each without an id: Emporix assigns one and refuses one given). For HTTP, Emporix checks that the destinationUrl is reachable (400 Bad Request, exit 1, \fB"not reachable"\fR otherwise). Emporix answers with the code. A tenant has at most one configuration per provider: when it has one, Emporix answers 409 Conflict (exit 5); change that one with update or patch.
+.PP
+Changes data: on a terminal, epx asks before it sends POST. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the webhook.subscription_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.PP
+\fBExamples:\fR
+.PP
+.RS "4"
+.nf
+epx webhooks configurations create \-\-file http.json \-\-dry\-run
+.fi
+.RE
+.SS "epx webhooks configurations delete"
+Delete a webhook configuration.
+.PP
+.RS "4"
+.nf
+epx webhooks configurations delete CODE [flags]
+.fi
+.RE
+.PP
+Deletes the webhook configuration CODE; Emporix deletes an active one only with \fB\-\-force\fR. CODE is the code that \fBepx webhooks configurations list\fR shows, such as http.
+.PP
+Deletes data, which cannot be undone. On a terminal, epx sends DELETE only once you type CODE at its prompt. \fB\-\-yes\fR sends without asking (required without a terminal); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the webhook.subscription_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-force\fR
+Delete the configuration also while it is active.
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal).
+.SS "epx webhooks configurations get"
+Show one webhook configuration.
+.PP
+.RS "4"
+.nf
+epx webhooks configurations get CODE [flags]
+.fi
+.RE
+.PP
+Reads webhook configurations: PROVIDER is SVIX_SHARED, SVIX or HTTP, DESTINATION where events are sent and ENTRIES counts the event entries, each with its own destination, headers and filter (inactive ones included), which only \fB\-o json\fR shows. The service returns the configurations whole, so they are read with one request.
+.PP
+Requires the webhook.subscription_read scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among CODE, PROVIDER, ACTIVE, DESTINATION, ENTRIES.
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.SS "epx webhooks configurations list"
+List webhook configurations.
+.PP
+.RS "4"
+.nf
+epx webhooks configurations list [flags]
+.fi
+.RE
+.PP
+Reads webhook configurations: PROVIDER is SVIX_SHARED, SVIX or HTTP, DESTINATION where events are sent and ENTRIES counts the event entries, each with its own destination, headers and filter (inactive ones included), which only \fB\-o json\fR shows. The service returns the configurations whole, so they are read with one request.
+.PP
+Requires the webhook.subscription_read scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among CODE, PROVIDER, ACTIVE, DESTINATION, ENTRIES.
+.TP
+\fB\-\-limit <n>\fR
+Print at most n items; paged reads stop early where they safely can (0: every item).
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-stream\fR
+Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes \fB\-o\fR, \fB\-\-columns\fR and \fB\-\-no\-headers\fR).
+.SS "epx webhooks configurations patch"
+Change members of a webhook configuration.
+.PP
+.RS "4"
+.nf
+epx webhooks configurations patch CODE [flags]
+.fi
+.RE
+.PP
+Changes the webhook configuration CODE with the JSON array of operations in \fB\-\-file\fR, each with op (UPSERT sets the member at path to value; REMOVE removes an item of a list), path and value, e.g. \fB[{"op":"UPSERT","path":"/active","value":false}]\fR. For HTTP, an UPSERT of /configuration/http/eventsConfigurationEntry adds an entry (without an id), and one of /configuration/http/eventsConfigurationEntry/ID/active with false stops sending events to the destination of the entry ID. CODE is the code that \fBepx webhooks configurations list\fR shows, such as http.
+.PP
+Changes data: on a terminal, epx asks before it sends PATCH. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the webhook.subscription_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.PP
+\fBExamples:\fR
+.PP
+.RS "4"
+.nf
+echo \(aq[{"op":"UPSERT","path":"/active","value":false}]\(aq |
+  epx webhooks configurations patch http \-\-file \- \-\-yes
+.fi
+.RE
+.SS "epx webhooks configurations update"
+Replace a webhook configuration.
+.PP
+.RS "4"
+.nf
+epx webhooks configurations update CODE [flags]
+.fi
+.RE
+.PP
+Replaces the webhook configuration CODE with the one in \fB\-\-file\fR, a JSON object as create takes it. Keep the id of each entry of eventsConfiguration that stays, as \fBepx webhooks configurations get CODE \-o json\fR prints it; Emporix assigns an id to an entry without one. A read gives secretKeyExists, not the secret: send secretKey (and apiKey for SVIX) again, or change single members with patch. For HTTP, the destinationUrl must be reachable, as at create. CODE is the code that \fBepx webhooks configurations list\fR shows, such as http.
+.PP
+Changes data: on a terminal, epx asks before it sends PUT. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the webhook.subscription_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SS "epx webhooks dashboard\-access"
+Show a link that logs in to the webhook dashboard.
+.PP
+.RS "4"
+.nf
+epx webhooks dashboard\-access [flags]
+.fi
+.RE
+.PP
+Reads a URL that logs in to the tenant\(aqs webhook dashboard, the Svix application portal of a tenant whose webhooks Emporix sends through its shared Svix account (provider SVIX_SHARED). The URL holds its own authentication, so treat it as a secret; \fB\-o json\fR also prints the portal\(aqs token.
+.PP
+Requires the webhook.subscription_manage scope. Opt\-in: epx requests a write\-capable scope for a read only when given \fB\-\-allow\-write\-scope\fR.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-allow\-write\-scope\fR
+Opt in to requesting webhook.subscription_manage, which can also change data (required).
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among URL.
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.SS "epx webhooks statistics"
+Show how many webhooks were sent per month.
+.PP
+.RS "4"
+.nf
+epx webhooks statistics [flags]
+.fi
+.RE
+.PP
+Reads the monthly webhook LIMIT and the webhooks sent per month, for the months Emporix reports by default. For other months, run \fBepx api get /webhook/{tenant}/statistics \-p fromYearMonth=2026\-01 \-p toYearMonth=2026\-06 \-\-scope webhook.subscription_read\fR.
+.PP
+Requires the webhook.subscription_read scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among LIMIT, SENT PER MONTH.
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.SS "epx webhooks subscriptions"
+Read and change the webhook events that the tenant subscribes to.
+.PP
+.RS "4"
+.nf
+epx webhooks subscriptions [flags]
+epx webhooks subscriptions [command]
+.fi
+.RE
+.PP
+Reads the webhook events and whether the tenant subscribes to them, and subscribes to events or unsubscribes from them.
+.PP
+Its reads require the webhook.subscription_read scope. Its writes require the webhook.subscription_manage scope.
+.SS "epx webhooks subscriptions bulk\-patch"
+Subscribe to webhook events and unsubscribe from them.
+.PP
+.RS "4"
+.nf
+epx webhooks subscriptions bulk\-patch [flags]
+.fi
+.RE
+.PP
+Changes the tenant\(aqs webhook event subscriptions with the JSON array in \fB\-\-file\fR, an item per event: its eventType, action (SUBSCRIBE or UNSUBSCRIBE), the metadata.version of its subscription, as \fBepx webhooks subscriptions list \-o json\fR prints it (Emporix answers a stale one with 409 Conflict), and optionally fieldsToUnsubscribe, the fields of the event to leave out of its payload, and fieldsToSubscribe, those to send again. Each result names the eventType of its item, as each failure that epx lists does.
+.PP
+Emporix takes up to 200 items in one request (epx refuses more), carries out each on its own and answers with the result of each: when one failed, epx prints the response, lists the items that failed on standard error (one that failed with 500, 502, 503 or 504 may have been carried out all the same) and exits with the code that their failures share (for example 5 for a 409 Conflict, 4 for a 404), else 1.
+.PP
+Changes data: on a terminal, epx asks before it sends PATCH. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the webhook.subscription_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.PP
+\fBExamples:\fR
+.PP
+.RS "4"
+.nf
+epx webhooks subscriptions bulk\-patch \-\-file subscriptions.json \-\-dry\-run
+.fi
+.RE
+.SS "epx webhooks subscriptions list"
+List the webhook events and whether the tenant subscribes to them.
+.PP
+.RS "4"
+.nf
+epx webhooks subscriptions list [flags]
+.fi
+.RE
+.PP
+Reads every webhook event type and whether the tenant receives it: STATUS is SUBSCRIBED, UNSUBSCRIBED or NONE. The service returns them whole, so they are read with one request.
+.PP
+Requires the webhook.subscription_read scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among EVENT, STATUS, NAME.
+.TP
+\fB\-\-language <language>\fR
+Language of localized table text; a missing translation shows another, labeled (\fB\-o json\fR prints all). Default: \fBen\fR.
+.TP
+\fB\-\-limit <n>\fR
+Print at most n items; paged reads stop early where they safely can (0: every item).
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-stream\fR
+Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes \fB\-o\fR, \fB\-\-columns\fR and \fB\-\-no\-headers\fR).
+.SH "SEE ALSO"
+\fBepx\fR(1) for the global options, the credentials epx reads and its exit codes; https://commerce-cloud-integrations.github.io/emporix-cli/commands/webhooks

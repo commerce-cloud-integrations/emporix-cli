@@ -1,0 +1,225 @@
+.TH "EPX\-LEGAL\-ENTITIES" "1" "" "epx" "epx manual"
+.SH "NAME"
+epx\-legal\-entities \- read and change legal entities (B2B companies); read their parents
+.SH "SYNOPSIS"
+.RS "4"
+.nf
+epx legal\-entities [flags]
+epx legal\-entities [command]
+.fi
+.RE
+.SH "DESCRIPTION"
+Reads and changes legal entities, the companies of B2B customers and their subsidiaries, personal data included. create and update ID (an upsert) send the JSON body of \fB\-\-file\fR; delete ID sends none.
+.PP
+Its reads require the customermanagement.legalentity_read scope. Its writes require the customermanagement.legalentity_manage scope.
+.SH "COMMANDS"
+.SS "epx legal\-entities create"
+Create one legal entity.
+.PP
+.RS "4"
+.nf
+epx legal\-entities create [flags]
+.fi
+.RE
+.PP
+Creates the legal entity that the JSON body of \fB\-\-file\fR describes, shaped as \fBepx legal\-entities get ID \-o json\fR prints one: name (required), type (COMPANY, the default, or SUBSIDIARY), parentId (the legal entity a subsidiary belongs to), legalInfo, accountLimit, customerGroups (IAM groups), entitiesAddresses and approvalGroup (its customer locations and contact assignments), restrictions and mixins; parentId, customerGroups, entitiesAddresses and approvalGroup must name items that exist (400 Bad Request, exit 1, otherwise), the last three each as \fB{"id": ...}\fR or in full, as get prints it. Without an id, Emporix makes one, and answers with it; an id that exists already is a conflict (exit 5). A create that Emporix refuses as a conflict may still make the IAM customer groups of the legal entity.
+.PP
+Changes data: on a terminal, epx asks before it sends POST. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the customermanagement.legalentity_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SS "epx legal\-entities delete"
+Delete one legal entity.
+.PP
+.RS "4"
+.nf
+epx legal\-entities delete ID [flags]
+.fi
+.RE
+.PP
+Deletes the legal entity ID; it sends no body. ID is the ID that \fBepx legal\-entities list\fR shows; an unknown one is answered as one that Emporix deleted (204 No Content). The assignments are the contact assignments of it and of its subsidiaries and the segment assignments that name it; the IAM customer groups those still in its customerGroups. Its customer locations stay, and its customers no longer name it (one with no other legal entity becomes a B2C customer).
+.PP
+Deletes the legal entity with its subsidiaries, assignments and IAM customer groups with one request, which cannot be undone. On a terminal, epx sends DELETE only once you type ID at its prompt. \fB\-\-yes\fR sends without asking (required without a terminal); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the customermanagement.legalentity_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal).
+.SS "epx legal\-entities get"
+Show one legal entity.
+.PP
+.RS "4"
+.nf
+epx legal\-entities get ID [flags]
+.fi
+.RE
+.PP
+Reads legal entities, the companies of B2B customers and their subsidiaries, personal data included (approval groups name customers). TYPE is COMPANY or SUBSIDIARY, PARENT the legal entity a subsidiary belongs to, COUNTRY the country of registration. Registration details, addresses, customer groups, approval groups and restrictions are only in \fB\-o json\fR.
+.PP
+Requires the customermanagement.legalentity_read scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, NAME, TYPE, PARENT, LEGAL NAME, COUNTRY, ACCOUNT LIMIT.
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.SS "epx legal\-entities hierarchy"
+List a legal entity and its parents.
+.PP
+.RS "4"
+.nf
+epx legal\-entities hierarchy LEGAL_ENTITY_ID [flags]
+.fi
+.RE
+.PP
+Reads a legal entity and every one above it, up to its company, in the order Emporix sends them, personal data included; the columns are those of \fBepx legal\-entities list\fR. LEGAL_ENTITY_ID is the ID that \fBepx legal\-entities list\fR shows; an unknown one lists nothing.
+.PP
+Requires the customermanagement.legalentity_read scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, NAME, TYPE, PARENT, LEGAL NAME, COUNTRY, ACCOUNT LIMIT.
+.TP
+\fB\-\-limit <n>\fR
+Print at most n items; paged reads stop early where they safely can (0: every item).
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-stream\fR
+Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes \fB\-o\fR, \fB\-\-columns\fR and \fB\-\-no\-headers\fR).
+.SS "epx legal\-entities list"
+List legal entities.
+.PP
+.RS "4"
+.nf
+epx legal\-entities list [flags]
+.fi
+.RE
+.PP
+Reads legal entities, the companies of B2B customers and their subsidiaries, personal data included (approval groups name customers). TYPE is COMPANY or SUBSIDIARY, PARENT the legal entity a subsidiary belongs to, COUNTRY the country of registration. Registration details, addresses, customer groups, approval groups and restrictions are only in \fB\-o json\fR.
+.PP
+Requires the customermanagement.legalentity_read scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, NAME, TYPE, PARENT, LEGAL NAME, COUNTRY, ACCOUNT LIMIT.
+.TP
+\fB\-\-limit <n>\fR
+Print at most n items; paged reads stop early where they safely can (0: every item).
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-query <filter>\fR
+Emporix q filter, passed as given, e.g. code:(A1,A2); space\-separated conditions must all match (fields mostly as in \fB\-o json\fR).
+.TP
+\fB\-\-sort <order>\fR
+Emporix sort order, passed as given, e.g. code or name.en:desc,code; fields mostly as in \fB\-o json\fR (Emporix may ignore an unknown one).
+.TP
+\fB\-\-stream\fR
+Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes \fB\-o\fR, \fB\-\-columns\fR and \fB\-\-no\-headers\fR).
+.SS "epx legal\-entities search"
+Search legal entities.
+.PP
+.RS "4"
+.nf
+epx legal\-entities search [flags]
+.fi
+.RE
+.PP
+Reads the legal entities, personal data included, that an Emporix q filter finds (\fB\-\-query\fR; without it, every legal entity). It reads and shows them as \fBepx legal\-entities list\fR does.
+.PP
+Changes nothing: Emporix serves this read as POST with a JSON body, which the flags make or \fB\-\-body\fR gives whole.
+.PP
+Requires the customermanagement.legalentity_read scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-body <FILE>\fR
+Send the JSON request body in FILE as given (\- reads standard input) instead of the one the other flags make.
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, NAME, TYPE, PARENT, LEGAL NAME, COUNTRY, ACCOUNT LIMIT.
+.TP
+\fB\-\-limit <n>\fR
+Print at most n items; paged reads stop early where they safely can (0: every item).
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-query <filter>\fR
+Emporix q filter, sent as given in the request body, not in the URL (empty: no filter), e.g. code:(A1,A2); space\-separated conditions must all match (fields mostly as in \fB\-o json\fR).
+.TP
+\fB\-\-sort <order>\fR
+Emporix sort order, passed as given, e.g. code or name.en:desc,code; fields mostly as in \fB\-o json\fR (Emporix may ignore an unknown one).
+.TP
+\fB\-\-stream\fR
+Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes \fB\-o\fR, \fB\-\-columns\fR and \fB\-\-no\-headers\fR).
+.SS "epx legal\-entities update"
+Upsert one legal entity.
+.PP
+.RS "4"
+.nf
+epx legal\-entities update ID [flags]
+.fi
+.RE
+.PP
+Replaces the legal entity ID with the JSON body of \fB\-\-file\fR, shaped as create takes it but without an id, or creates it with that id where none exists (an upsert); it requires name and type. With metadata.version as \fBepx legal\-entities get ID \-o json\fR prints it, Emporix replaces it only if nobody changed it since, and answers 409 Conflict (exit 5) otherwise; without metadata.version, it replaces it whatever its version. ID is the ID that \fBepx legal\-entities list\fR shows. Keep every customer group that Emporix made for the legal entity (Admin, Buyer, Requester and Contact) in customerGroups: without the Contact group, Emporix deletes that group from IAM; without another, it leaves that group in IAM, where deleting the legal entity no longer removes it.
+.PP
+Changes data: on a terminal, epx asks before it sends PUT. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the customermanagement.legalentity_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SH "SEE ALSO"
+\fBepx\fR(1) for the global options, the credentials epx reads and its exit codes; https://commerce-cloud-integrations.github.io/emporix-cli/commands/legal-entities

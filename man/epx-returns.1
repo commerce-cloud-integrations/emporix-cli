@@ -1,0 +1,184 @@
+.TH "EPX\-RETURNS" "1" "" "epx" "epx manual"
+.SH "NAME"
+epx\-returns \- read, create, change and delete returns
+.SH "SYNOPSIS"
+.RS "4"
+.nf
+epx returns [flags]
+epx returns [command]
+.fi
+.RE
+.SH "DESCRIPTION"
+Reads return requests, personal data included. STATUS is the approval status (PENDING, APPROVED, REJECTED or CLOSED), RECEIVED whether the goods arrived, ORDERS the orders whose items are returned, REQUESTOR who asked (email, name or customer id) and TOTAL the value returned: the order entries\(aq deprecated unitPrice times the quantity returned, net or gross as that unitPrice is. Items (with their reasons and prices), the return reason, approver, submitter, expiry date and assisted\-buying entries are only in \fB\-o json\fR. \fB\-\-query submitter.userType:CUSTOMER\fR lists the returns that customers made themselves (EMPLOYEE: those made on their behalf). \fBepx returns create\fR, \fBupdate\fR, \fBpatch\fR and \fBdelete\fR change returns.
+.PP
+Its reads require the returns.returns_read scope. Its writes require different OAuth scopes; the help of each names them.
+.SH "COMMANDS"
+.SS "epx returns create"
+Create a return.
+.PP
+.RS "4"
+.nf
+epx returns create [flags]
+.fi
+.RE
+.PP
+Creates a return on behalf of a customer from the JSON object in \fB\-\-file\fR: its orders (each with its id and the items to return, each with id and quantity), reason (code or details), requestor (the customer, by customerId) and submitter (who submits it), and optionally approver (\fB{"type": "USER" or "GROUP", "id": an IAM user or group id}\fR; Emporix refuses an id unknown for that type with 400 Bad Request, exit 1), expiryDate and mixins. Emporix answers with the return\(aqs id. It does not check quantities against earlier returns: sending the body again creates another return, even beyond the entry\(aqs amount. It fails with 500 Internal Server Error (exit 1) for an order whose entries lack the deprecated unitPrice (nothing is created).
+.PP
+Changes data: on a terminal, epx asks before it sends POST. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the returns.returns_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SS "epx returns delete"
+Delete one return.
+.PP
+.RS "4"
+.nf
+epx returns delete ID [flags]
+.fi
+.RE
+.PP
+Deletes the return ID; it sends no body. Emporix deletes a PENDING or an APPROVED return (the reference documents 400 Bad Request, exit 1, where the status does not allow it). Emporix answers an unknown ID as one that it deleted (204 No Content). ID is the ID that \fBepx returns list\fR shows.
+.PP
+Deletes data, which cannot be undone. On a terminal, epx sends DELETE only once you type ID at its prompt. \fB\-\-yes\fR sends without asking (required without a terminal); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the returns.returns_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal).
+.SS "epx returns get"
+Show one return.
+.PP
+.RS "4"
+.nf
+epx returns get ID [flags]
+.fi
+.RE
+.PP
+Reads return requests, personal data included. STATUS is the approval status (PENDING, APPROVED, REJECTED or CLOSED), RECEIVED whether the goods arrived, ORDERS the orders whose items are returned, REQUESTOR who asked (email, name or customer id) and TOTAL the value returned: the order entries\(aq deprecated unitPrice times the quantity returned, net or gross as that unitPrice is. Items (with their reasons and prices), the return reason, approver, submitter, expiry date and assisted\-buying entries are only in \fB\-o json\fR. \fB\-\-query submitter.userType:CUSTOMER\fR lists the returns that customers made themselves (EMPLOYEE: those made on their behalf). \fBepx returns create\fR, \fBupdate\fR, \fBpatch\fR and \fBdelete\fR change returns.
+.PP
+Requires the returns.returns_read scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, STATUS, RECEIVED, ORDERS, REQUESTOR, TOTAL, CREATED.
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.SS "epx returns list"
+List returns.
+.PP
+.RS "4"
+.nf
+epx returns list [flags]
+.fi
+.RE
+.PP
+Reads return requests, personal data included. STATUS is the approval status (PENDING, APPROVED, REJECTED or CLOSED), RECEIVED whether the goods arrived, ORDERS the orders whose items are returned, REQUESTOR who asked (email, name or customer id) and TOTAL the value returned: the order entries\(aq deprecated unitPrice times the quantity returned, net or gross as that unitPrice is. Items (with their reasons and prices), the return reason, approver, submitter, expiry date and assisted\-buying entries are only in \fB\-o json\fR. \fB\-\-query submitter.userType:CUSTOMER\fR lists the returns that customers made themselves (EMPLOYEE: those made on their behalf). \fBepx returns create\fR, \fBupdate\fR, \fBpatch\fR and \fBdelete\fR change returns.
+.PP
+Requires the returns.returns_read scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among ID, STATUS, RECEIVED, ORDERS, REQUESTOR, TOTAL, CREATED.
+.TP
+\fB\-\-limit <n>\fR
+Print at most n items; paged reads stop early where they safely can (0: every item).
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-query <filter>\fR
+Emporix q filter, passed as given, e.g. code:(A1,A2); space\-separated conditions must all match (fields mostly as in \fB\-o json\fR).
+.TP
+\fB\-\-sort <order>\fR
+Emporix sort order, passed as given, e.g. code or name.en:desc,code; fields mostly as in \fB\-o json\fR (Emporix may ignore an unknown one).
+.TP
+\fB\-\-stream\fR
+Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes \fB\-o\fR, \fB\-\-columns\fR and \fB\-\-no\-headers\fR).
+.SS "epx returns patch"
+Change a return.
+.PP
+.RS "4"
+.nf
+epx returns patch ID [flags]
+.fi
+.RE
+.PP
+Changes the return ID with the JSON Patch (RFC 6902) in \fB\-\-file\fR: an array of operations, each with op (add, remove or replace), path and value, e.g. \fB[{"op": "replace", "path": "/approvalStatus", "value": "APPROVED"}]\fR. Emporix requires its read scope for it too, and answers a token without it with 400 Bad Request. ID is the ID that \fBepx returns list\fR shows.
+.PP
+Changes data: on a terminal, epx asks before it sends PATCH. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the returns.returns_read, returns.returns_manage scopes.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SS "epx returns update"
+Replace a return.
+.PP
+.RS "4"
+.nf
+epx returns update ID [flags]
+.fi
+.RE
+.PP
+Replaces the return ID with the return in \fB\-\-file\fR, a JSON object as \fBepx returns get ID \-o json\fR prints it, metadata.version included (Emporix refuses a body without metadata with 400 Bad Request). Emporix replaces only the latest version: an older metadata.version, like an unknown return, is not found (exit 4). ID is the ID that \fBepx returns list\fR shows.
+.PP
+Changes data: on a terminal, epx asks before it sends PUT. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the returns.returns_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SH "SEE ALSO"
+\fBepx\fR(1) for the global options, the credentials epx reads and its exit codes; https://commerce-cloud-integrations.github.io/emporix-cli/commands/returns

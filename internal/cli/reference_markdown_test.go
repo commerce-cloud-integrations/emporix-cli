@@ -17,30 +17,47 @@ import (
 // runs of prose lines as paragraphs (proseBlock), and runs of indented lines
 // as text blocks.
 func helpBlocks(text string, root *cobra.Command) []string {
-	var blocks, run []string
-	fenced := false // run is indented lines
-	flush := func() {
-		switch {
-		case len(run) == 0:
-		case fenced:
-			blocks = append(blocks, fence(dedent(run)))
-		default:
-			blocks = append(blocks, proseBlock(run, root))
+	var blocks []string
+	for _, run := range helpRuns(text) {
+		if run.indented {
+			blocks = append(blocks, fence(dedent(run.lines)))
+		} else {
+			blocks = append(blocks, proseBlock(run.lines, root))
 		}
-		run = nil
+	}
+	return blocks
+}
+
+// helpRun is a run of help lines: prose lines, or indented lines, which help
+// shows as written.
+type helpRun struct {
+	lines    []string
+	indented bool
+}
+
+// helpRuns splits help text into its runs of prose and of indented lines; a
+// blank line ends a run.
+func helpRuns(text string) []helpRun {
+	var runs []helpRun
+	var run helpRun
+	flush := func() {
+		if len(run.lines) > 0 {
+			runs = append(runs, run)
+		}
+		run = helpRun{}
 	}
 	for line := range strings.Lines(text) {
 		line = strings.TrimRight(line, " \t\r\n")
-		if line == "" || indented(line) != fenced {
+		if line == "" || indented(line) != run.indented {
 			flush()
 		}
 		if line != "" {
-			fenced = indented(line)
-			run = append(run, line)
+			run.indented = indented(line)
+			run.lines = append(run.lines, line)
 		}
 	}
 	flush()
-	return blocks
+	return runs
 }
 
 // proseBlock renders run, lines of prose, as one paragraph, its lines joined

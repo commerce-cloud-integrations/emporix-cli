@@ -1,0 +1,209 @@
+.TH "EPX\-TAXES" "1" "" "epx" "epx manual"
+.SH "NAME"
+epx\-taxes \- read and change tax configurations, and calculate net and gross prices
+.SH "SYNOPSIS"
+.RS "4"
+.nf
+epx taxes [flags]
+epx taxes [command]
+.fi
+.RE
+.SH "DESCRIPTION"
+Reads tax configurations, one per location. CLASSES lists each tax class with its rate in percent (\fB\-o json\fR adds their names). \fBepx taxes calculate\fR applies them to a price.
+.PP
+Its reads require different OAuth scopes; the help of each names them. Its writes require the tax.tax_manage scope.
+.SH "COMMANDS"
+.SS "epx taxes calculate"
+Calculate the net and gross value of a price.
+.PP
+.RS "4"
+.nf
+epx taxes calculate [flags]
+.fi
+.RE
+.PP
+Calculates the net and gross value of a price with the tax configurations that \fBepx taxes list\fR shows: a net \fB\-\-price\fR gets the rate of \fB\-\-tax\-class\fR in \fB\-\-country\fR; with \fB\-\-gross\fR, a gross price is reduced by that rate, or, with \fB\-\-source\-country\fR and \fB\-\-source\-tax\-class\fR, by theirs before the rate of \fB\-\-country\fR is added. SOURCE RATE and TARGET RATE are the rates applied, in percent. A country without a tax configuration is not found (exit 4).
+.PP
+Changes nothing: Emporix serves this read as PUT with a JSON body, which the flags make or \fB\-\-body\fR gives whole.
+.PP
+No OAuth scope is needed.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-body <FILE>\fR
+Send the JSON request body in FILE as given (\- reads standard input) instead of the one the other flags make.
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among NET, GROSS, SOURCE RATE, TARGET RATE.
+.TP
+\fB\-\-country <COUNTRY>\fR
+The COUNTRY code to calculate for (required without \fB\-\-body\fR).
+.TP
+\fB\-\-gross\fR
+The price is gross, tax included (default: net).
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-price <PRICE>\fR
+The PRICE to calculate from, e.g. 12.99 (required without \fB\-\-body\fR).
+.TP
+\fB\-\-source\-country <COUNTRY>\fR
+The COUNTRY code whose tax the gross price includes (only with \fB\-\-gross\fR).
+.TP
+\fB\-\-source\-tax\-class <CLASS>\fR
+The tax CLASS that the gross price includes (only with \fB\-\-gross\fR).
+.TP
+\fB\-\-tax\-class <CLASS>\fR
+The tax CLASS to apply, e.g. STANDARD (required without \fB\-\-body\fR).
+.SS "epx taxes create"
+Create a tax configuration.
+.PP
+.RS "4"
+.nf
+epx taxes create [flags]
+.fi
+.RE
+.PP
+Creates the tax configuration of a country from the JSON in \fB\-\-file\fR: location.countryCode and taxClasses, each with its code, name, order, rate in percent and, for one, isDefault, e.g. \fB{"location": {"countryCode": "NL"}, "taxClasses": [{"code": "STANDARD", "name": {"en": "Standard"}, "order": 0, "rate": 21, "isDefault": true}]}\fR. A country that has one already is a conflict (exit 5).
+.PP
+Localized text in the body, such as a name, is a map of translations, e.g. \fB{"en": "gram", "de": "Gramm"}\fR, as \fB\-o json\fR of a read prints it, or with \fB\-\-content\-language\fR LANGUAGE a string in that language, e.g. \fB"gram"\fR with \fB\-\-content\-language\fR en.
+.PP
+Changes data: on a terminal, epx asks before it sends POST. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the tax.tax_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-content\-language <LANGUAGE>\fR
+The LANGUAGE of localized text in the body, or * for maps of translations. Default: \fB*\fR.
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SS "epx taxes delete"
+Delete a tax configuration.
+.PP
+.RS "4"
+.nf
+epx taxes delete LOCATION [flags]
+.fi
+.RE
+.PP
+Deletes the tax configuration of LOCATION; it sends no body.
+.PP
+Deletes data, which cannot be undone. On a terminal, epx sends DELETE only once you type LOCATION at its prompt. \fB\-\-yes\fR sends without asking (required without a terminal); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the tax.tax_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal).
+.SS "epx taxes get"
+Show one tax configuration.
+.PP
+.RS "4"
+.nf
+epx taxes get LOCATION [flags]
+.fi
+.RE
+.PP
+Reads tax configurations, one per location. CLASSES lists each tax class with its rate in percent (\fB\-o json\fR adds their names). \fBepx taxes calculate\fR applies them to a price.
+.PP
+Requires the tax.tax_read scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among LOCATION, COUNTRY, CLASSES.
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.SS "epx taxes list"
+List taxes.
+.PP
+.RS "4"
+.nf
+epx taxes list [flags]
+.fi
+.RE
+.PP
+Reads tax configurations, one per location. CLASSES lists each tax class with its rate in percent (\fB\-o json\fR adds their names). \fBepx taxes calculate\fR applies them to a price.
+.PP
+Requires the tax.tax_read scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-columns <names>\fR
+Print only these columns of table and csv, in this order: comma\-separated names (any case) among LOCATION, COUNTRY, CLASSES.
+.TP
+\fB\-\-limit <n>\fR
+Print at most n items; paged reads stop early where they safely can (0: every item).
+.TP
+\fB\-\-no\-headers\fR
+Print table and csv without the header row.
+.TP
+\fB\-o, \-\-output <format>\fR
+Output format: table, json, yaml or csv (csv: the table\(aqs rows; json and yaml: the whole response). Default: \fBtable\fR.
+.TP
+\fB\-\-sort <order>\fR
+Emporix sort order, passed as given, e.g. code or name.en:desc,code; fields mostly as in \fB\-o json\fR (Emporix may ignore an unknown one).
+.TP
+\fB\-\-stream\fR
+Print items as JSON Lines as soon as they are checked, page by page on paged lists, reading up to 10000 pages where a list without it stops after 1000: a check failing on a later page exits 1 after the pages before it (excludes \fB\-o\fR, \fB\-\-columns\fR and \fB\-\-no\-headers\fR).
+.SS "epx taxes update"
+Replace a tax configuration.
+.PP
+.RS "4"
+.nf
+epx taxes update LOCATION [flags]
+.fi
+.RE
+.PP
+Replaces the tax configuration of LOCATION with the JSON in \fB\-\-file\fR, shaped as \fBepx taxes get LOCATION \-o json\fR prints it, with its metadata.version as read: a stale version and an unknown LOCATION are both not found (exit 4): Emporix answers 404 to both. The country code cannot change.
+.PP
+Localized text in the body, such as a name, is a map of translations, e.g. \fB{"en": "gram", "de": "Gramm"}\fR, as \fB\-o json\fR of a read prints it, or with \fB\-\-content\-language\fR LANGUAGE a string in that language, e.g. \fB"gram"\fR with \fB\-\-content\-language\fR en.
+.PP
+Changes data: on a terminal, epx asks before it sends PUT. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the tax.tax_manage scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-content\-language <LANGUAGE>\fR
+The LANGUAGE of localized text in the body, or * for maps of translations. Default: \fB*\fR.
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-\-file <PATH>\fR
+JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
+.SH "SEE ALSO"
+\fBepx\fR(1) for the global options, the credentials epx reads and its exit codes; https://commerce-cloud-integrations.github.io/emporix-cli/commands/taxes
