@@ -1,7 +1,7 @@
 # Emporix API compatibility
 
 Which Emporix API operations `epx` sends, checked against the Emporix API reference
-([emporix/api-references](https://github.com/emporix/api-references)) at commit [`7e0d194`](https://github.com/emporix/api-references/commit/7e0d194dc2df1235d19d2bb470fd77d4a4de42b4) (2026-11-05).
+([emporix/api-references](https://github.com/emporix/api-references)) at commit [`9b4d296`](https://github.com/emporix/api-references/commit/9b4d2964814a853d65b2c89860eaf4683cd9770b) (2026-11-18).
 
 Emporix versions services in their paths where it versions them at all (such as
 `/order-v2/`), and most reference files carry no version number. Each service is
@@ -16,7 +16,7 @@ any GET operation that answers JSON to a service token, and
 `epx api post|put|patch|delete PATH` sends any write with the scopes given, before a
 command of its own does.
 
-**Coverage:** 602 of 667 operations built, 65 not applicable, 0 to do; in 43 services (and the
+**Coverage:** 603 of 668 operations built, 65 not applicable, 0 to do; in 43 services (and the
 OAuth Service for the token).
 
 ## Summary
@@ -24,11 +24,11 @@ OAuth Service for the token).
 | Service | Reference file | Last change | Version | Operations | Built | Not applicable |
 | --- | --- | --- | --- | --- | --- | --- |
 | [AI Rag Indexer](#ai-rag-indexer) | `artificial-intelligence/ai-rag-indexer` | 2026-10-28 (`7387567`) | — | 3 | 3 | 0 |
-| [AI Service](#ai-service) | `artificial-intelligence/ai-service` | 2026-10-28 (`7387567`) | — | 57 | 56 | 1 |
+| [AI Service](#ai-service) | `artificial-intelligence/ai-service` | 2026-11-18 (`1961242`) | — | 57 | 56 | 1 |
 | [OAuth Service](#oauth-service) | `authentication/oauth-service` | 2026-02-27 (`48eee2b`) | — | 1 | 1 | 0 |
 | [Catalog Management](#catalog-management) | `catalogs-and-categories/catalog` | 2026-04-16 (`6d06d44`) | `1.0.0` | 7 | 7 | 0 |
 | [Category](#category) | `catalogs-and-categories/category-tree` | 2026-10-26 (`c22b87c`) | — | 24 | 23 | 1 |
-| [Cart Service](#cart-service) | `checkout/cart` | 2026-10-07 (`1f21665`) | — | 25 | 25 | 0 |
+| [Cart Service](#cart-service) | `checkout/cart` | 2026-11-12 (`1ba97c5`) | — | 25 | 25 | 0 |
 | [Checkout Service](#checkout-service) | `checkout/checkout` | 2026-10-01 (`de786a4`) | — | 1 | 0 | 1 |
 | [Fee Service](#fee-service) | `checkout/fee` | 2026-04-16 (`b290b28`) | `v1` | 18 | 18 | 0 |
 | [Payment-Gateway Service](#payment-gateway-service) | `checkout/payment-gateway` | 2026-02-10 (`e61a2e2`) | — | 15 | 13 | 2 |
@@ -42,28 +42,28 @@ OAuth Service for the token).
 | [Configuration Service](#configuration-service) | `configuration/configuration-service` | 2026-01-28 (`9015ed5`) | — | 12 | 12 | 0 |
 | [Country Service](#country-service) | `configuration/country-service` | 2026-06-30 (`1e29a43`) | — | 5 | 5 | 0 |
 | [Currency Service](#currency-service) | `configuration/currency-service` | 2026-04-17 (`2e76d42`) | — | 10 | 10 | 0 |
-| [Indexing Service](#indexing-service) | `configuration/indexing-service` | 2026-10-28 (`7387567`) | `v1` | 11 | 11 | 0 |
-| [Site Settings Service](#site-settings-service) | `configuration/site-settings-service` | 2026-09-28 (`7c702b5`) | — | 13 | 13 | 0 |
+| [Indexing Service](#indexing-service) | `configuration/indexing-service` | 2026-11-16 (`fb8e243`) | `v1` | 11 | 11 | 0 |
+| [Site Settings Service](#site-settings-service) | `configuration/site-settings-service` | 2026-11-02 (`62b1ebd`) | — | 13 | 13 | 0 |
 | [Unit Handling Service](#unit-handling-service) | `configuration/unit-handling-service` | 2026-04-17 (`ce5a5d6`) | — | 9 | 9 | 0 |
 | [Shipping Service](#shipping-service) | `delivery-and-shipping/shipping` | 2026-09-11 (`eeddb11`) | — | 45 | 44 | 1 |
 | [Media Service](#media-service) | `media/media` | 2026-10-23 (`e2b4815`) | — | 9 | 8 | 1 |
 | [Availability Service](#availability-service) | `orders/availability` | 2026-10-01 (`84cc3ec`) | — | 14 | 9 | 5 |
 | [Invoice Service](#invoice-service) | `orders/invoice` | 2025-11-18 (`322697f`) | `1.0.0` | 2 | 2 | 0 |
-| [Order Service](#order-service) | `orders/order` | 2026-10-07 (`1f21665`) | — | 20 | 14 | 6 |
-| [Returns Service](#returns-service) | `orders/returns` | 2026-03-20 (`b658888`) | — | 6 | 6 | 0 |
-| [Price Service](#price-service) | `prices-and-taxes/price-service` | 2026-10-01 (`de786a4`) | — | 30 | 29 | 1 |
+| [Order Service](#order-service) | `orders/order` | 2026-11-12 (`1ba97c5`) | — | 20 | 14 | 6 |
+| [Returns Service](#returns-service) | `orders/returns` | 2026-11-02 (`5d350e0`) | — | 6 | 6 | 0 |
+| [Price Service](#price-service) | `prices-and-taxes/price-service` | 2026-11-10 (`4e7b398`) | — | 30 | 29 | 1 |
 | [Tax Service](#tax-service) | `prices-and-taxes/tax-service` | 2026-10-23 (`54fb931`) | — | 6 | 6 | 0 |
-| [Brand Service](#brand-service) | `products-labels-and-brands/brand-service` | 2026-01-19 (`d7fbba2`) | — | 6 | 6 | 0 |
+| [Brand Service](#brand-service) | `products-labels-and-brands/brand-service` | 2026-11-02 (`62b1ebd`) | — | 6 | 6 | 0 |
 | [Label Service](#label-service) | `products-labels-and-brands/label-service` | 2026-10-23 (`fd03e52`) | — | 6 | 6 | 0 |
-| [Product Service](#product-service) | `products-labels-and-brands/product-service` | 2026-10-21 (`a5226cb`) | — | 17 | 17 | 0 |
+| [Product Service](#product-service) | `products-labels-and-brands/product-service` | 2026-11-12 (`1ba97c5`) | — | 17 | 17 | 0 |
 | [Quote Service](#quote-service) | `quotes/quote` | 2026-10-09 (`abf90d6`) | — | 12 | 12 | 0 |
 | [Coupon Service](#coupon-service) | `rewards-and-promotions/coupon` | 2026-09-25 (`86c5409`) | — | 13 | 13 | 0 |
 | [Reward Points Service](#reward-points-service) | `rewards-and-promotions/reward-points` | 2026-10-26 (`e551035`) | — | 14 | 11 | 3 |
 | [IAM Service](#iam-service) | `users-and-permissions/iam` | 2026-11-03 (`c3dbbf2`) | — | 34 | 31 | 3 |
 | [Session Context Service](#session-context-service) | `users-and-permissions/session-context` | 2026-10-01 (`7fad4ee`) | — | 8 | 4 | 4 |
 | [Audit Logs (Changelog) Service](#audit-logs-changelog-service) | `utilities/audit-logs-changelog` | 2026-10-01 (`84cc3ec`) | — | 1 | 1 | 0 |
-| [Import Service](#import-service) | `utilities/import-service` | 2026-10-28 (`19c7309`) | — | 29 | 27 | 2 |
-| [Schema Service](#schema-service) | `utilities/schema` | 2026-10-15 (`eb42d3c`) | — | 31 | 31 | 0 |
+| [Import Service](#import-service) | `utilities/import-service` | 2026-11-12 (`e78e576`) | — | 30 | 28 | 2 |
+| [Schema Service](#schema-service) | `utilities/schema` | 2026-11-09 (`41bafe2`) | — | 31 | 31 | 0 |
 | [Search Service](#search-service) | `utilities/search-service` | 2026-10-28 (`7387567`) | — | 15 | 15 | 0 |
 | [Sequential ID Service](#sequential-id-service) | `utilities/sequential-id` | 2026-10-01 (`7fad4ee`) | — | 8 | 8 | 0 |
 | [Webhook Service](#webhook-service) | `webhooks/webhook-service` | 2026-08-11 (`279d397`) | — | 10 | 10 | 0 |
@@ -72,7 +72,7 @@ OAuth Service for the token).
 
 ### AI Rag Indexer
 
-[`artificial-intelligence/ai-rag-indexer/api-reference/api.yml`](https://github.com/emporix/api-references/blob/7e0d194dc2df1235d19d2bb470fd77d4a4de42b4/artificial-intelligence/ai-rag-indexer/api-reference/api.yml), last changed 2026-10-28.
+[`artificial-intelligence/ai-rag-indexer/api-reference/api.yml`](https://github.com/emporix/api-references/blob/9b4d2964814a853d65b2c89860eaf4683cd9770b/artificial-intelligence/ai-rag-indexer/api-reference/api.yml), last changed 2026-10-28.
 
 | Operation | epx |
 | --- | --- |
@@ -82,7 +82,7 @@ OAuth Service for the token).
 
 ### AI Service
 
-[`artificial-intelligence/ai-service/api-reference/api.yml`](https://github.com/emporix/api-references/blob/7e0d194dc2df1235d19d2bb470fd77d4a4de42b4/artificial-intelligence/ai-service/api-reference/api.yml), last changed 2026-10-28.
+[`artificial-intelligence/ai-service/api-reference/api.yml`](https://github.com/emporix/api-references/blob/9b4d2964814a853d65b2c89860eaf4683cd9770b/artificial-intelligence/ai-service/api-reference/api.yml), last changed 2026-11-18.
 
 | Operation | epx |
 | --- | --- |
@@ -146,7 +146,7 @@ OAuth Service for the token).
 
 ### OAuth Service
 
-[`authentication/oauth-service/api-reference/api.yml`](https://github.com/emporix/api-references/blob/7e0d194dc2df1235d19d2bb470fd77d4a4de42b4/authentication/oauth-service/api-reference/api.yml), last changed 2026-02-27.
+[`authentication/oauth-service/api-reference/api.yml`](https://github.com/emporix/api-references/blob/9b4d2964814a853d65b2c89860eaf4683cd9770b/authentication/oauth-service/api-reference/api.yml), last changed 2026-02-27.
 
 | Operation | epx |
 | --- | --- |
@@ -154,7 +154,7 @@ OAuth Service for the token).
 
 ### Catalog Management
 
-[`catalogs-and-categories/catalog/api-reference/api.yml`](https://github.com/emporix/api-references/blob/7e0d194dc2df1235d19d2bb470fd77d4a4de42b4/catalogs-and-categories/catalog/api-reference/api.yml), last changed 2026-04-16.
+[`catalogs-and-categories/catalog/api-reference/api.yml`](https://github.com/emporix/api-references/blob/9b4d2964814a853d65b2c89860eaf4683cd9770b/catalogs-and-categories/catalog/api-reference/api.yml), last changed 2026-04-16.
 
 | Operation | epx |
 | --- | --- |
@@ -168,7 +168,7 @@ OAuth Service for the token).
 
 ### Category
 
-[`catalogs-and-categories/category-tree/api-reference/api.yml`](https://github.com/emporix/api-references/blob/7e0d194dc2df1235d19d2bb470fd77d4a4de42b4/catalogs-and-categories/category-tree/api-reference/api.yml), last changed 2026-10-26.
+[`catalogs-and-categories/category-tree/api-reference/api.yml`](https://github.com/emporix/api-references/blob/9b4d2964814a853d65b2c89860eaf4683cd9770b/catalogs-and-categories/category-tree/api-reference/api.yml), last changed 2026-10-26.
 
 | Operation | epx |
 | --- | --- |
@@ -199,7 +199,7 @@ OAuth Service for the token).
 
 ### Cart Service
 
-[`checkout/cart/api-reference/api.yml`](https://github.com/emporix/api-references/blob/7e0d194dc2df1235d19d2bb470fd77d4a4de42b4/checkout/cart/api-reference/api.yml), last changed 2026-10-07.
+[`checkout/cart/api-reference/api.yml`](https://github.com/emporix/api-references/blob/9b4d2964814a853d65b2c89860eaf4683cd9770b/checkout/cart/api-reference/api.yml), last changed 2026-11-12.
 
 | Operation | epx |
 | --- | --- |
@@ -231,7 +231,7 @@ OAuth Service for the token).
 
 ### Checkout Service
 
-[`checkout/checkout/api-reference/api.yml`](https://github.com/emporix/api-references/blob/7e0d194dc2df1235d19d2bb470fd77d4a4de42b4/checkout/checkout/api-reference/api.yml), last changed 2026-10-01.
+[`checkout/checkout/api-reference/api.yml`](https://github.com/emporix/api-references/blob/9b4d2964814a853d65b2c89860eaf4683cd9770b/checkout/checkout/api-reference/api.yml), last changed 2026-10-01.
 
 | Operation | epx |
 | --- | --- |
@@ -239,7 +239,7 @@ OAuth Service for the token).
 
 ### Fee Service
 
-[`checkout/fee/api-reference/api.yml`](https://github.com/emporix/api-references/blob/7e0d194dc2df1235d19d2bb470fd77d4a4de42b4/checkout/fee/api-reference/api.yml), last changed 2026-04-16.
+[`checkout/fee/api-reference/api.yml`](https://github.com/emporix/api-references/blob/9b4d2964814a853d65b2c89860eaf4683cd9770b/checkout/fee/api-reference/api.yml), last changed 2026-04-16.
 
 | Operation | epx |
 | --- | --- |
@@ -264,7 +264,7 @@ OAuth Service for the token).
 
 ### Payment-Gateway Service
 
-[`checkout/payment-gateway/api-reference/api.yml`](https://github.com/emporix/api-references/blob/7e0d194dc2df1235d19d2bb470fd77d4a4de42b4/checkout/payment-gateway/api-reference/api.yml), last changed 2026-02-10.
+[`checkout/payment-gateway/api-reference/api.yml`](https://github.com/emporix/api-references/blob/9b4d2964814a853d65b2c89860eaf4683cd9770b/checkout/payment-gateway/api-reference/api.yml), last changed 2026-02-10.
 
 | Operation | epx |
 | --- | --- |
@@ -286,7 +286,7 @@ OAuth Service for the token).
 
 ### Shopping List Service
 
-[`checkout/shopping-list/api-reference/api.yml`](https://github.com/emporix/api-references/blob/7e0d194dc2df1235d19d2bb470fd77d4a4de42b4/checkout/shopping-list/api-reference/api.yml), last changed 2026-10-01.
+[`checkout/shopping-list/api-reference/api.yml`](https://github.com/emporix/api-references/blob/9b4d2964814a853d65b2c89860eaf4683cd9770b/checkout/shopping-list/api-reference/api.yml), last changed 2026-10-01.
 
 | Operation | epx |
 | --- | --- |
@@ -298,7 +298,7 @@ OAuth Service for the token).
 
 ### Approval Service
 
-[`companies-and-customers/approval-service/approval-api-reference/api.yml`](https://github.com/emporix/api-references/blob/7e0d194dc2df1235d19d2bb470fd77d4a4de42b4/companies-and-customers/approval-service/approval-api-reference/api.yml), last changed 2026-10-01.
+[`companies-and-customers/approval-service/approval-api-reference/api.yml`](https://github.com/emporix/api-references/blob/9b4d2964814a853d65b2c89860eaf4683cd9770b/companies-and-customers/approval-service/approval-api-reference/api.yml), last changed 2026-10-01.
 
 | Operation | epx |
 | --- | --- |
@@ -312,7 +312,7 @@ OAuth Service for the token).
 
 ### Customer Management Service
 
-[`companies-and-customers/client-management/api-reference/api.yml`](https://github.com/emporix/api-references/blob/7e0d194dc2df1235d19d2bb470fd77d4a4de42b4/companies-and-customers/client-management/api-reference/api.yml), last changed 2026-04-27.
+[`companies-and-customers/client-management/api-reference/api.yml`](https://github.com/emporix/api-references/blob/9b4d2964814a853d65b2c89860eaf4683cd9770b/companies-and-customers/client-management/api-reference/api.yml), last changed 2026-04-27.
 
 | Operation | epx |
 | --- | --- |
@@ -336,7 +336,7 @@ OAuth Service for the token).
 
 ### Customer Service (customer-managed)
 
-[`companies-and-customers/customer-management/api-reference/api.yml`](https://github.com/emporix/api-references/blob/7e0d194dc2df1235d19d2bb470fd77d4a4de42b4/companies-and-customers/customer-management/api-reference/api.yml), last changed 2026-10-01.
+[`companies-and-customers/customer-management/api-reference/api.yml`](https://github.com/emporix/api-references/blob/9b4d2964814a853d65b2c89860eaf4683cd9770b/companies-and-customers/customer-management/api-reference/api.yml), last changed 2026-10-01.
 
 | Operation | epx |
 | --- | --- |
@@ -368,7 +368,7 @@ OAuth Service for the token).
 
 ### Customer Segment Service
 
-[`companies-and-customers/customer-segments/api-reference/api.yml`](https://github.com/emporix/api-references/blob/7e0d194dc2df1235d19d2bb470fd77d4a4de42b4/companies-and-customers/customer-segments/api-reference/api.yml), last changed 2026-10-01.
+[`companies-and-customers/customer-segments/api-reference/api.yml`](https://github.com/emporix/api-references/blob/9b4d2964814a853d65b2c89860eaf4683cd9770b/companies-and-customers/customer-segments/api-reference/api.yml), last changed 2026-10-01.
 
 | Operation | epx |
 | --- | --- |
@@ -411,7 +411,7 @@ OAuth Service for the token).
 
 ### Customer Service (tenant-managed)
 
-[`companies-and-customers/customer-service/api-reference/api.yml`](https://github.com/emporix/api-references/blob/7e0d194dc2df1235d19d2bb470fd77d4a4de42b4/companies-and-customers/customer-service/api-reference/api.yml), last changed 2026-10-01.
+[`companies-and-customers/customer-service/api-reference/api.yml`](https://github.com/emporix/api-references/blob/9b4d2964814a853d65b2c89860eaf4683cd9770b/companies-and-customers/customer-service/api-reference/api.yml), last changed 2026-10-01.
 
 | Operation | epx |
 | --- | --- |
@@ -437,7 +437,7 @@ OAuth Service for the token).
 
 ### Vendor Service
 
-[`companies-and-customers/vendor-service/api-reference/api.yml`](https://github.com/emporix/api-references/blob/7e0d194dc2df1235d19d2bb470fd77d4a4de42b4/companies-and-customers/vendor-service/api-reference/api.yml), last changed 2025-11-14.
+[`companies-and-customers/vendor-service/api-reference/api.yml`](https://github.com/emporix/api-references/blob/9b4d2964814a853d65b2c89860eaf4683cd9770b/companies-and-customers/vendor-service/api-reference/api.yml), last changed 2025-11-14.
 
 | Operation | epx |
 | --- | --- |
@@ -455,7 +455,7 @@ OAuth Service for the token).
 
 ### Configuration Service
 
-[`configuration/configuration-service/api-reference/api.yml`](https://github.com/emporix/api-references/blob/7e0d194dc2df1235d19d2bb470fd77d4a4de42b4/configuration/configuration-service/api-reference/api.yml), last changed 2026-01-28.
+[`configuration/configuration-service/api-reference/api.yml`](https://github.com/emporix/api-references/blob/9b4d2964814a853d65b2c89860eaf4683cd9770b/configuration/configuration-service/api-reference/api.yml), last changed 2026-01-28.
 
 | Operation | epx |
 | --- | --- |
@@ -474,7 +474,7 @@ OAuth Service for the token).
 
 ### Country Service
 
-[`configuration/country-service/api-reference/api.yml`](https://github.com/emporix/api-references/blob/7e0d194dc2df1235d19d2bb470fd77d4a4de42b4/configuration/country-service/api-reference/api.yml), last changed 2026-06-30.
+[`configuration/country-service/api-reference/api.yml`](https://github.com/emporix/api-references/blob/9b4d2964814a853d65b2c89860eaf4683cd9770b/configuration/country-service/api-reference/api.yml), last changed 2026-06-30.
 
 | Operation | epx |
 | --- | --- |
@@ -486,7 +486,7 @@ OAuth Service for the token).
 
 ### Currency Service
 
-[`configuration/currency-service/api-reference/api.yml`](https://github.com/emporix/api-references/blob/7e0d194dc2df1235d19d2bb470fd77d4a4de42b4/configuration/currency-service/api-reference/api.yml), last changed 2026-04-17.
+[`configuration/currency-service/api-reference/api.yml`](https://github.com/emporix/api-references/blob/9b4d2964814a853d65b2c89860eaf4683cd9770b/configuration/currency-service/api-reference/api.yml), last changed 2026-04-17.
 
 | Operation | epx |
 | --- | --- |
@@ -503,7 +503,7 @@ OAuth Service for the token).
 
 ### Indexing Service
 
-[`configuration/indexing-service/api-reference/api.yml`](https://github.com/emporix/api-references/blob/7e0d194dc2df1235d19d2bb470fd77d4a4de42b4/configuration/indexing-service/api-reference/api.yml), last changed 2026-10-28.
+[`configuration/indexing-service/api-reference/api.yml`](https://github.com/emporix/api-references/blob/9b4d2964814a853d65b2c89860eaf4683cd9770b/configuration/indexing-service/api-reference/api.yml), last changed 2026-11-16.
 
 | Operation | epx |
 | --- | --- |
@@ -521,7 +521,7 @@ OAuth Service for the token).
 
 ### Site Settings Service
 
-[`configuration/site-settings-service/api-reference/api.yml`](https://github.com/emporix/api-references/blob/7e0d194dc2df1235d19d2bb470fd77d4a4de42b4/configuration/site-settings-service/api-reference/api.yml), last changed 2026-09-28.
+[`configuration/site-settings-service/api-reference/api.yml`](https://github.com/emporix/api-references/blob/9b4d2964814a853d65b2c89860eaf4683cd9770b/configuration/site-settings-service/api-reference/api.yml), last changed 2026-11-02.
 
 | Operation | epx |
 | --- | --- |
@@ -541,7 +541,7 @@ OAuth Service for the token).
 
 ### Unit Handling Service
 
-[`configuration/unit-handling-service/api-reference/api.yml`](https://github.com/emporix/api-references/blob/7e0d194dc2df1235d19d2bb470fd77d4a4de42b4/configuration/unit-handling-service/api-reference/api.yml), last changed 2026-04-17.
+[`configuration/unit-handling-service/api-reference/api.yml`](https://github.com/emporix/api-references/blob/9b4d2964814a853d65b2c89860eaf4683cd9770b/configuration/unit-handling-service/api-reference/api.yml), last changed 2026-04-17.
 
 | Operation | epx |
 | --- | --- |
@@ -557,7 +557,7 @@ OAuth Service for the token).
 
 ### Shipping Service
 
-[`delivery-and-shipping/shipping/api-reference/api.yml`](https://github.com/emporix/api-references/blob/7e0d194dc2df1235d19d2bb470fd77d4a4de42b4/delivery-and-shipping/shipping/api-reference/api.yml), last changed 2026-09-11.
+[`delivery-and-shipping/shipping/api-reference/api.yml`](https://github.com/emporix/api-references/blob/9b4d2964814a853d65b2c89860eaf4683cd9770b/delivery-and-shipping/shipping/api-reference/api.yml), last changed 2026-09-11.
 
 | Operation | epx |
 | --- | --- |
@@ -609,7 +609,7 @@ OAuth Service for the token).
 
 ### Media Service
 
-[`media/media/api-reference/api.yml`](https://github.com/emporix/api-references/blob/7e0d194dc2df1235d19d2bb470fd77d4a4de42b4/media/media/api-reference/api.yml), last changed 2026-10-23.
+[`media/media/api-reference/api.yml`](https://github.com/emporix/api-references/blob/9b4d2964814a853d65b2c89860eaf4683cd9770b/media/media/api-reference/api.yml), last changed 2026-10-23.
 
 | Operation | epx |
 | --- | --- |
@@ -625,7 +625,7 @@ OAuth Service for the token).
 
 ### Availability Service
 
-[`orders/availability/api-reference/api.yml`](https://github.com/emporix/api-references/blob/7e0d194dc2df1235d19d2bb470fd77d4a4de42b4/orders/availability/api-reference/api.yml), last changed 2026-10-01.
+[`orders/availability/api-reference/api.yml`](https://github.com/emporix/api-references/blob/9b4d2964814a853d65b2c89860eaf4683cd9770b/orders/availability/api-reference/api.yml), last changed 2026-10-01.
 
 | Operation | epx |
 | --- | --- |
@@ -646,7 +646,7 @@ OAuth Service for the token).
 
 ### Invoice Service
 
-[`orders/invoice/api-reference/api.yaml`](https://github.com/emporix/api-references/blob/7e0d194dc2df1235d19d2bb470fd77d4a4de42b4/orders/invoice/api-reference/api.yaml), last changed 2025-11-18.
+[`orders/invoice/api-reference/api.yaml`](https://github.com/emporix/api-references/blob/9b4d2964814a853d65b2c89860eaf4683cd9770b/orders/invoice/api-reference/api.yaml), last changed 2025-11-18.
 
 | Operation | epx |
 | --- | --- |
@@ -655,7 +655,7 @@ OAuth Service for the token).
 
 ### Order Service
 
-[`orders/order/api-reference/api.yml`](https://github.com/emporix/api-references/blob/7e0d194dc2df1235d19d2bb470fd77d4a4de42b4/orders/order/api-reference/api.yml), last changed 2026-10-07.
+[`orders/order/api-reference/api.yml`](https://github.com/emporix/api-references/blob/9b4d2964814a853d65b2c89860eaf4683cd9770b/orders/order/api-reference/api.yml), last changed 2026-11-12.
 
 | Operation | epx |
 | --- | --- |
@@ -682,7 +682,7 @@ OAuth Service for the token).
 
 ### Returns Service
 
-[`orders/returns/api-reference/api.yml`](https://github.com/emporix/api-references/blob/7e0d194dc2df1235d19d2bb470fd77d4a4de42b4/orders/returns/api-reference/api.yml), last changed 2026-03-20.
+[`orders/returns/api-reference/api.yml`](https://github.com/emporix/api-references/blob/9b4d2964814a853d65b2c89860eaf4683cd9770b/orders/returns/api-reference/api.yml), last changed 2026-11-02.
 
 | Operation | epx |
 | --- | --- |
@@ -695,7 +695,7 @@ OAuth Service for the token).
 
 ### Price Service
 
-[`prices-and-taxes/price-service/api-reference/api.yml`](https://github.com/emporix/api-references/blob/7e0d194dc2df1235d19d2bb470fd77d4a4de42b4/prices-and-taxes/price-service/api-reference/api.yml), last changed 2026-10-01.
+[`prices-and-taxes/price-service/api-reference/api.yml`](https://github.com/emporix/api-references/blob/9b4d2964814a853d65b2c89860eaf4683cd9770b/prices-and-taxes/price-service/api-reference/api.yml), last changed 2026-11-10.
 
 | Operation | epx |
 | --- | --- |
@@ -732,7 +732,7 @@ OAuth Service for the token).
 
 ### Tax Service
 
-[`prices-and-taxes/tax-service/api-reference/api.yml`](https://github.com/emporix/api-references/blob/7e0d194dc2df1235d19d2bb470fd77d4a4de42b4/prices-and-taxes/tax-service/api-reference/api.yml), last changed 2026-10-23.
+[`prices-and-taxes/tax-service/api-reference/api.yml`](https://github.com/emporix/api-references/blob/9b4d2964814a853d65b2c89860eaf4683cd9770b/prices-and-taxes/tax-service/api-reference/api.yml), last changed 2026-10-23.
 
 | Operation | epx |
 | --- | --- |
@@ -745,7 +745,7 @@ OAuth Service for the token).
 
 ### Brand Service
 
-[`products-labels-and-brands/brand-service/api-reference/api.yml`](https://github.com/emporix/api-references/blob/7e0d194dc2df1235d19d2bb470fd77d4a4de42b4/products-labels-and-brands/brand-service/api-reference/api.yml), last changed 2026-01-19.
+[`products-labels-and-brands/brand-service/api-reference/api.yml`](https://github.com/emporix/api-references/blob/9b4d2964814a853d65b2c89860eaf4683cd9770b/products-labels-and-brands/brand-service/api-reference/api.yml), last changed 2026-11-02.
 
 | Operation | epx |
 | --- | --- |
@@ -758,7 +758,7 @@ OAuth Service for the token).
 
 ### Label Service
 
-[`products-labels-and-brands/label-service/api-reference/api.yml`](https://github.com/emporix/api-references/blob/7e0d194dc2df1235d19d2bb470fd77d4a4de42b4/products-labels-and-brands/label-service/api-reference/api.yml), last changed 2026-10-23.
+[`products-labels-and-brands/label-service/api-reference/api.yml`](https://github.com/emporix/api-references/blob/9b4d2964814a853d65b2c89860eaf4683cd9770b/products-labels-and-brands/label-service/api-reference/api.yml), last changed 2026-10-23.
 
 | Operation | epx |
 | --- | --- |
@@ -771,7 +771,7 @@ OAuth Service for the token).
 
 ### Product Service
 
-[`products-labels-and-brands/product-service/api-reference/api.yml`](https://github.com/emporix/api-references/blob/7e0d194dc2df1235d19d2bb470fd77d4a4de42b4/products-labels-and-brands/product-service/api-reference/api.yml), last changed 2026-10-21.
+[`products-labels-and-brands/product-service/api-reference/api.yml`](https://github.com/emporix/api-references/blob/9b4d2964814a853d65b2c89860eaf4683cd9770b/products-labels-and-brands/product-service/api-reference/api.yml), last changed 2026-11-12.
 
 | Operation | epx |
 | --- | --- |
@@ -795,7 +795,7 @@ OAuth Service for the token).
 
 ### Quote Service
 
-[`quotes/quote/api-reference/api.yaml`](https://github.com/emporix/api-references/blob/7e0d194dc2df1235d19d2bb470fd77d4a4de42b4/quotes/quote/api-reference/api.yaml), last changed 2026-10-09.
+[`quotes/quote/api-reference/api.yaml`](https://github.com/emporix/api-references/blob/9b4d2964814a853d65b2c89860eaf4683cd9770b/quotes/quote/api-reference/api.yaml), last changed 2026-10-09.
 
 | Operation | epx |
 | --- | --- |
@@ -814,7 +814,7 @@ OAuth Service for the token).
 
 ### Coupon Service
 
-[`rewards-and-promotions/coupon/api-reference/api.yml`](https://github.com/emporix/api-references/blob/7e0d194dc2df1235d19d2bb470fd77d4a4de42b4/rewards-and-promotions/coupon/api-reference/api.yml), last changed 2026-09-25.
+[`rewards-and-promotions/coupon/api-reference/api.yml`](https://github.com/emporix/api-references/blob/9b4d2964814a853d65b2c89860eaf4683cd9770b/rewards-and-promotions/coupon/api-reference/api.yml), last changed 2026-09-25.
 
 | Operation | epx |
 | --- | --- |
@@ -834,7 +834,7 @@ OAuth Service for the token).
 
 ### Reward Points Service
 
-[`rewards-and-promotions/reward-points/api-reference/api.yml`](https://github.com/emporix/api-references/blob/7e0d194dc2df1235d19d2bb470fd77d4a4de42b4/rewards-and-promotions/reward-points/api-reference/api.yml), last changed 2026-10-26.
+[`rewards-and-promotions/reward-points/api-reference/api.yml`](https://github.com/emporix/api-references/blob/9b4d2964814a853d65b2c89860eaf4683cd9770b/rewards-and-promotions/reward-points/api-reference/api.yml), last changed 2026-10-26.
 
 | Operation | epx |
 | --- | --- |
@@ -855,7 +855,7 @@ OAuth Service for the token).
 
 ### IAM Service
 
-[`users-and-permissions/iam/api-reference/api.yml`](https://github.com/emporix/api-references/blob/7e0d194dc2df1235d19d2bb470fd77d4a4de42b4/users-and-permissions/iam/api-reference/api.yml), last changed 2026-11-03.
+[`users-and-permissions/iam/api-reference/api.yml`](https://github.com/emporix/api-references/blob/9b4d2964814a853d65b2c89860eaf4683cd9770b/users-and-permissions/iam/api-reference/api.yml), last changed 2026-11-03.
 
 | Operation | epx |
 | --- | --- |
@@ -896,7 +896,7 @@ OAuth Service for the token).
 
 ### Session Context Service
 
-[`users-and-permissions/session-context/api-reference/api.yaml`](https://github.com/emporix/api-references/blob/7e0d194dc2df1235d19d2bb470fd77d4a4de42b4/users-and-permissions/session-context/api-reference/api.yaml), last changed 2026-10-01.
+[`users-and-permissions/session-context/api-reference/api.yaml`](https://github.com/emporix/api-references/blob/9b4d2964814a853d65b2c89860eaf4683cd9770b/users-and-permissions/session-context/api-reference/api.yaml), last changed 2026-10-01.
 
 | Operation | epx |
 | --- | --- |
@@ -911,7 +911,7 @@ OAuth Service for the token).
 
 ### Audit Logs (Changelog) Service
 
-[`utilities/audit-logs-changelog/api-reference/api.yml`](https://github.com/emporix/api-references/blob/7e0d194dc2df1235d19d2bb470fd77d4a4de42b4/utilities/audit-logs-changelog/api-reference/api.yml), last changed 2026-10-01.
+[`utilities/audit-logs-changelog/api-reference/api.yml`](https://github.com/emporix/api-references/blob/9b4d2964814a853d65b2c89860eaf4683cd9770b/utilities/audit-logs-changelog/api-reference/api.yml), last changed 2026-10-01.
 
 | Operation | epx |
 | --- | --- |
@@ -919,7 +919,7 @@ OAuth Service for the token).
 
 ### Import Service
 
-[`utilities/import-service/api-reference/api.yml`](https://github.com/emporix/api-references/blob/7e0d194dc2df1235d19d2bb470fd77d4a4de42b4/utilities/import-service/api-reference/api.yml), last changed 2026-10-28.
+[`utilities/import-service/api-reference/api.yml`](https://github.com/emporix/api-references/blob/9b4d2964814a853d65b2c89860eaf4683cd9770b/utilities/import-service/api-reference/api.yml), last changed 2026-11-12.
 
 | Operation | epx |
 | --- | --- |
@@ -932,6 +932,7 @@ OAuth Service for the token).
 | `GET /importtool/{tenant}/streams/{streamId}/files/limits` | `epx imports streams files limits` |
 | `PUT /importtool/{tenant}/streams/{streamId}/files/order` | `epx imports streams files order` |
 | `DELETE /importtool/{tenant}/streams/{streamId}/files/{fileId}` | `epx imports streams files delete` |
+| `POST /importtool/{tenant}/streams/{streamId}/files/{fileId}/requeue` | `epx imports streams files requeue` |
 | `GET /importtool/{tenant}/configs/{configId}/schedule` | `epx imports configurations schedule` |
 | `PUT /importtool/{tenant}/configs/{configId}/schedule` | `epx imports configurations update-schedule` |
 | `DELETE /importtool/{tenant}/configs/{configId}/schedule` | `epx imports configurations delete-schedule` |
@@ -955,7 +956,7 @@ OAuth Service for the token).
 
 ### Schema Service
 
-[`utilities/schema/api-reference/api.yml`](https://github.com/emporix/api-references/blob/7e0d194dc2df1235d19d2bb470fd77d4a4de42b4/utilities/schema/api-reference/api.yml), last changed 2026-10-15.
+[`utilities/schema/api-reference/api.yml`](https://github.com/emporix/api-references/blob/9b4d2964814a853d65b2c89860eaf4683cd9770b/utilities/schema/api-reference/api.yml), last changed 2026-11-09.
 
 | Operation | epx |
 | --- | --- |
@@ -993,7 +994,7 @@ OAuth Service for the token).
 
 ### Search Service
 
-[`utilities/search-service/api-reference/api.yml`](https://github.com/emporix/api-references/blob/7e0d194dc2df1235d19d2bb470fd77d4a4de42b4/utilities/search-service/api-reference/api.yml), last changed 2026-10-28.
+[`utilities/search-service/api-reference/api.yml`](https://github.com/emporix/api-references/blob/9b4d2964814a853d65b2c89860eaf4683cd9770b/utilities/search-service/api-reference/api.yml), last changed 2026-10-28.
 
 | Operation | epx |
 | --- | --- |
@@ -1015,7 +1016,7 @@ OAuth Service for the token).
 
 ### Sequential ID Service
 
-[`utilities/sequential-id/api-reference/api.yml`](https://github.com/emporix/api-references/blob/7e0d194dc2df1235d19d2bb470fd77d4a4de42b4/utilities/sequential-id/api-reference/api.yml), last changed 2026-10-01.
+[`utilities/sequential-id/api-reference/api.yml`](https://github.com/emporix/api-references/blob/9b4d2964814a853d65b2c89860eaf4683cd9770b/utilities/sequential-id/api-reference/api.yml), last changed 2026-10-01.
 
 | Operation | epx |
 | --- | --- |
@@ -1030,7 +1031,7 @@ OAuth Service for the token).
 
 ### Webhook Service
 
-[`webhooks/webhook-service/api-reference/api.yml`](https://github.com/emporix/api-references/blob/7e0d194dc2df1235d19d2bb470fd77d4a4de42b4/webhooks/webhook-service/api-reference/api.yml), last changed 2026-08-11.
+[`webhooks/webhook-service/api-reference/api.yml`](https://github.com/emporix/api-references/blob/9b4d2964814a853d65b2c89860eaf4683cd9770b/webhooks/webhook-service/api-reference/api.yml), last changed 2026-08-11.
 
 | Operation | epx |
 | --- | --- |

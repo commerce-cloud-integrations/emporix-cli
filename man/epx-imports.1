@@ -9,7 +9,7 @@ epx imports [command]
 .fi
 .RE
 .SH "DESCRIPTION"
-Reads the Import Service, which imports master data from external sources into Emporix: configurations, their streams (each imports one source, an entity or files, into an Emporix type), the file queue of a file\-based stream, schedules and runs, the errors and diagnostics of a run, the records imported, statistics, job groups, health thresholds and the tenant\(aqs import limits. Emporix allows these reads only with importtool.import_trigger, with which epx also queues files for a stream, and starts, retries, cancels and schedules runs.
+Reads the Import Service, which imports master data from external sources into Emporix: configurations, their streams (each imports one source, an entity or files, into an Emporix type), the file queue of a file\-based stream, schedules and runs, the errors and diagnostics of a run, the records imported, statistics, job groups, health thresholds and the tenant\(aqs import limits. Emporix allows these reads only with importtool.import_trigger, with which epx also queues files for a stream (and a failed one again), and starts, retries, cancels and schedules runs.
 .PP
 Its reads require the importtool.import_trigger scope. Opt\-in: epx requests a write\-capable scope for a read only when given \fB\-\-allow\-write\-scope\fR. Its writes require the importtool.import_trigger scope.
 .SH "COMMANDS"
@@ -672,7 +672,7 @@ epx imports streams files [command]
 .fi
 .RE
 .PP
-Reads the file queue of a file\-based import stream: the files that it waits to import, in the order that its next run reads them, and those it dealt with; uploads a file to it, sets the order of the waiting files and removes one. Nothing is imported until a run starts (\fBepx imports configurations trigger\fR). A file\-based stream reads its files by its fileMode, SNAPSHOT by default. A SNAPSHOT stream takes each file as the whole picture: its run reads only the most recently arrived waiting file and may report the older ones superseded, in their MESSAGE. An INCREMENTAL stream takes each file as a change set: its run reads them all, in load order, a later file\(aqs values winning on a key that an earlier one carries too. A stream without fileMode reads no files (SOURCE of \fBepx imports streams get ID\fR shows it).
+Reads the file queue of a file\-based import stream: the files that it waits to import, in the order that its next run reads them, and those it dealt with; uploads a file to it, sets the order of the waiting files, removes one and queues a failed one again. Nothing is imported until a run starts (\fBepx imports configurations trigger\fR). A file\-based stream reads its files by its fileMode, SNAPSHOT by default. A SNAPSHOT stream takes each file as the whole picture: its run reads only the most recently arrived waiting file and may report the older ones superseded, in their MESSAGE; with no file waiting, it reads the last file it imported again. An INCREMENTAL stream takes each file as a change set: its run reads them all, in load order, a later file\(aqs values winning on a key that an earlier one carries too. A stream without fileMode reads no files (SOURCE of \fBepx imports streams get ID\fR shows it).
 .PP
 Its reads require the importtool.import_trigger scope. Opt\-in: epx requests a write\-capable scope for a read only when given \fB\-\-allow\-write\-scope\fR. Its writes require the importtool.import_trigger scope.
 .SS "epx imports streams files delete"
@@ -735,7 +735,7 @@ epx imports streams files list STREAM_ID [flags]
 .fi
 .RE
 .PP
-Reads the file queue of a file\-based stream. First come the files waiting, in the order that its next run reads them: LOAD ORDER is a file\(aqs place among all the files waiting, e.g. 1 of 3. A file\-based stream reads its files by its fileMode, SNAPSHOT by default. A SNAPSHOT stream takes each file as the whole picture: its run reads only the most recently arrived waiting file and may report the older ones superseded, in their MESSAGE. An INCREMENTAL stream takes each file as a change set: its run reads them all, in load order, a later file\(aqs values winning on a key that an earlier one carries too. A stream without fileMode reads no files (SOURCE of \fBepx imports streams get ID\fR shows it). Emporix lists up to 2000 waiting files: where more wait, the last LOAD ORDER listed ends below the total, e.g. 2000 of 2500, and \fBepx imports streams files order\fR cannot reorder them. Then comes the history, newest first and without LOAD ORDER: up to \fB\-\-history\-limit\fR files that a run claimed (STATUS IN_PROGRESS), read to the end (PROCESSED, also with records that failed, as MESSAGE says) or could not import (FAILED: it can be uploaded again). SIZE is in bytes, QUEUED when the file was uploaded, PROCESSED when its import ended and READ the records read from it. A file\(aqs load rank and run are only in \fB\-o json\fR. STREAM_ID is the ID that \fBepx imports configurations streams CONFIGURATION_ID\fR shows; an unknown one is not found.
+Reads the file queue of a file\-based stream. First come the files waiting, in the order that its next run reads them: LOAD ORDER is a file\(aqs place among all the files waiting, e.g. 1 of 3. A file\-based stream reads its files by its fileMode, SNAPSHOT by default. A SNAPSHOT stream takes each file as the whole picture: its run reads only the most recently arrived waiting file and may report the older ones superseded, in their MESSAGE; with no file waiting, it reads the last file it imported again. An INCREMENTAL stream takes each file as a change set: its run reads them all, in load order, a later file\(aqs values winning on a key that an earlier one carries too. A stream without fileMode reads no files (SOURCE of \fBepx imports streams get ID\fR shows it). Emporix lists up to 2000 waiting files: where more wait, the last LOAD ORDER listed ends below the total, e.g. 2000 of 2500, and \fBepx imports streams files order\fR cannot reorder them. Then comes the history, newest first and without LOAD ORDER: up to \fB\-\-history\-limit\fR files that a run claimed (STATUS IN_PROGRESS), read to the end (PROCESSED, also with records that failed, as MESSAGE says) or could not import (FAILED: \fBepx imports streams files requeue\fR queues it again from the content Emporix holds, or upload it again). SIZE is in bytes, QUEUED when the file was uploaded, PROCESSED when its import ended and READ the records read from it. A file\(aqs load rank and run are only in \fB\-o json\fR, as is lastProcessed, the newest file the stream imported, which Emporix sends whatever \fB\-\-history\-limit\fR is. STREAM_ID is the ID that \fBepx imports configurations streams CONFIGURATION_ID\fR shows; an unknown one is not found.
 .PP
 Requires the importtool.import_trigger scope. Opt\-in: epx requests a write\-capable scope for a read only when given \fB\-\-allow\-write\-scope\fR.
 .PP
@@ -794,6 +794,39 @@ Send without asking (required without a terminal, or with \fB\-\-file\fR \-).
 epx imports streams files order 3fa85f64\-5717\-4562\-b3fc\-2c963f66afa6 \-\-id 9b1deb4d\-3b7d\-4bad\-9bdd\-2b0d7b3dcb6d \-\-id c56a4180\-65aa\-42ec\-a945\-5fd21dec0538
 .fi
 .RE
+.SS "epx imports streams files requeue"
+Queue a failed file of a stream again.
+.PP
+.RS "4"
+.nf
+epx imports streams files requeue STREAM_ID ID [flags]
+.fi
+.RE
+.PP
+Puts the file ID, whose import FAILED, back at the end of the queue of the stream STREAM_ID, so that its next run reads it again from the content Emporix holds: nothing is uploaded and nothing is imported now. Fix the cause of the failure first, such as a mapping. Emporix answers with the file, PENDING. Only a FAILED file is queued again: a PROCESSED one (also with records that failed, which \fBepx imports runs retry\fR imports again), one whose content Emporix no longer holds or one of another stream is a conflict (exit 5), as is a file of a SNAPSHOT stream after which a newer file arrived, imported, waiting or being read (queued again, the older snapshot would overwrite newer data), and any while the stream\(aqs job has a run QUEUED, RUNNING or RESUMABLE. STREAM_ID is the ID that \fBepx imports configurations streams CONFIGURATION_ID\fR shows; an unknown one is not found. ID is the ID that \fBepx imports streams files list STREAM_ID\fR shows; an unknown one is not found.
+.PP
+Changes data: on a terminal, epx asks before it sends POST. \fB\-\-yes\fR sends without asking (required without a terminal); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+Requires the importtool.import_trigger scope.
+.PP
+\fBOptions:\fR
+.TP
+\fB\-\-dry\-run\fR
+Print the request instead of sending it (excludes \fB\-o\fR).
+.TP
+\fB\-o, \-\-output <format>\fR
+Format of the response: json or yaml. Default: \fBjson\fR.
+.TP
+\fB\-\-yes\fR
+Send without asking (required without a terminal).
+.PP
+\fBExamples:\fR
+.PP
+.RS "4"
+.nf
+epx imports streams files requeue 3fa85f64\-5717\-4562\-b3fc\-2c963f66afa6 1b4e28ba\-2fa1\-41d2\-883f\-0016d3cca427
+.fi
+.RE
 .SS "epx imports streams files upload"
 Upload a file for a stream to import.
 .PP
@@ -803,7 +836,7 @@ epx imports streams files upload STREAM_ID [flags]
 .fi
 .RE
 .PP
-Uploads the delimited file (CSV or a variant) that \fB\-\-upload\fR names to the queue of the file\-based stream STREAM_ID, which imports it on its next run: nothing is imported now. The file\(aqs name is sent with it and tells Emporix a compression, such as .gz. Emporix answers with the file queued, whose id \fBepx imports streams files order\fR and \fBepx imports streams files delete\fR take. Which waiting files a run reads depends on the stream\(aqs fileMode, as \fBepx imports streams files list STREAM_ID\fR says. Emporix knows a file by its content, whatever its name, and never imports it twice: content that the stream imported or queued already is a conflict (exit 5), as is an upload to a stream that reads no files or one that would replace content that a run in flight reads; a file that FAILED is taken again. epx sends a file of up to 30 MB including the form, and the environment may take less (\fBepx imports streams files limits\fR): Emporix answers a larger one with 413 Request Entity Too Large (exit 1). A large file may need a longer \fB\-\-timeout\fR, e.g. \fB\-\-timeout\fR 5m, as it bounds the whole request. A 503 Service Unavailable (exit 1) comes from an environment that cannot store uploads (UPLOAD SUPPORTED false in \fBepx imports streams files limits\fR), which queued nothing, or from a gateway that failed, after which the file may have been queued: check \fBepx imports streams files list STREAM_ID\fR before you send it again; if it was queued, a resend is a conflict (exit 5), not a second import. STREAM_ID is the ID that \fBepx imports configurations streams CONFIGURATION_ID\fR shows; an unknown one is not found.
+Uploads the delimited file (CSV or a variant) that \fB\-\-upload\fR names to the queue of the file\-based stream STREAM_ID, which imports it on its next run: nothing is imported now. The file\(aqs name is sent with it and tells Emporix a compression, such as .gz. Emporix answers with the file queued, whose id \fBepx imports streams files order\fR and \fBepx imports streams files delete\fR take. Which waiting files a run reads depends on the stream\(aqs fileMode, as \fBepx imports streams files list STREAM_ID\fR says. Emporix knows a file by its content, whatever its name, and never imports it twice: content that the stream imported or queued already is a conflict (exit 5), as is an upload to a stream that reads no files or one that would replace content that a run in flight reads; a file that FAILED is taken again, and \fBepx imports streams files requeue\fR queues it again without sending it. epx sends a file of up to 30 MB including the form, and the environment may take less (\fBepx imports streams files limits\fR): Emporix answers a larger one with 413 Request Entity Too Large (exit 1). A large file may need a longer \fB\-\-timeout\fR, e.g. \fB\-\-timeout\fR 5m, as it bounds the whole request. A 503 Service Unavailable (exit 1) comes from an environment that cannot store uploads (UPLOAD SUPPORTED false in \fBepx imports streams files limits\fR), which queued nothing, or from a gateway that failed, after which the file may have been queued: check \fBepx imports streams files list STREAM_ID\fR before you send it again; if it was queued, a resend is a conflict (exit 5), not a second import. STREAM_ID is the ID that \fBepx imports configurations streams CONFIGURATION_ID\fR shows; an unknown one is not found.
 .PP
 Changes data: on a terminal, epx asks before it sends POST. \fB\-\-yes\fR sends without asking (required without a terminal); \fB\-\-dry\-run\fR prints the request instead of sending it.
 .PP

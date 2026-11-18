@@ -103,7 +103,7 @@ func newImportsCommand(a *app) *cobra.Command {
 			"type), the file queue of a file-based stream, schedules and runs, the errors and diagnostics of "+
 			"a run, the records imported, statistics, job groups, health thresholds and the tenant's import "+
 			"limits. Emporix allows these reads only with "+importScope+", with which epx "+
-			"also queues files for a stream, and starts, retries, cancels and schedules runs.",
+			"also queues files for a stream (and a failed one again), and starts, retries, cancels and schedules runs.",
 		reads...)
 }
 

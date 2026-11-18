@@ -7,6 +7,11 @@ change or remove commands, columns or flags, and its notes list each such change
 
 ## Unreleased
 
+### New
+
+- `epx imports streams files requeue STREAM_ID ID` queues a failed file again, from the content
+  Emporix holds, so the stream's next run reads it without an upload.
+
 ### Fixed
 
 - epx is built with Go 1.27.4, which fixes a vulnerability in the standard library's HTTP

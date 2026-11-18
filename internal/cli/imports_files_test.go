@@ -201,9 +201,10 @@ func TestImportFileWritesRefuseUsage(t *testing.T) {
 }
 
 // TestImportFileWritesOfRefusedInput checks that an order that is not
-// exactly the waiting files (400) exits 1, a delete of an unknown file (404)
-// exits 4, and an upload of content that the stream has (409) exits 5, each
-// with Emporix's message; the conflict says what the stream's list shows.
+// exactly the waiting files (400) exits 1, a delete or requeue of an unknown
+// file (404) exits 4, and an upload of content that the stream has or a
+// requeue of a file that did not fail (409) exits 5, each with Emporix's
+// message; the conflict says what the stream's list shows.
 func TestImportFileWritesOfRefusedInput(t *testing.T) {
 	for _, tt := range []struct {
 		args       []string
@@ -215,6 +216,11 @@ func TestImportFileWritesOfRefusedInput(t *testing.T) {
 			code: ExitError, want: "PUT " + filesPath + "/order: 400 Bad Request: refused\n"},
 		{args: []string{"delete", "s1", "f9"}, path: filesPath + "/f9", status: http.StatusNotFound, code: ExitNotFound,
 			want: "DELETE " + filesPath + "/f9: 404 Not Found: refused\n"},
+		{args: []string{"requeue", "s1", "f9"}, path: filesPath + "/f9/requeue", status: http.StatusNotFound,
+			code: ExitNotFound, want: "POST " + filesPath + "/f9/requeue: 404 Not Found: refused\n"},
+		{args: []string{"requeue", "s1", "f2"}, path: filesPath + "/f2/requeue", status: http.StatusConflict,
+			code: ExitConflict, want: "POST " + filesPath + "/f2/requeue: 409 Conflict: refused (" +
+				fileRequeueConflict(filesList) + ")\n"},
 		{
 			// The list shows files by name; Emporix matches their content.
 			args: []string{"upload", "s1", "--upload", "testdata/order.csv"}, path: filesPath,
@@ -241,7 +247,8 @@ func TestImportFileWritesOfRefusedInput(t *testing.T) {
 // and list say once how a stream reads its waiting files by its fileMode,
 // which upload and order refer to; that list says how a table shows a list
 // that Emporix cut; that upload says how Emporix may refuse it and what to do
-// after a 503; and which ID a delete takes.
+// after a 503; which ID a delete takes; and what a requeue takes, which
+// files it refuses, and where list and upload point to it.
 func TestImportFileHelp(t *testing.T) {
 	const stream = "STREAM_ID is the ID that `epx imports configurations streams CONFIGURATION_ID` shows; an " +
 		"unknown one is not found."
@@ -249,6 +256,7 @@ func TestImportFileHelp(t *testing.T) {
 		"A file-based stream reads its files by its fileMode, SNAPSHOT by default. A SNAPSHOT stream takes each " +
 			"file as the whole picture: its run reads only the most recently arrived waiting file",
 		"A stream without fileMode reads no files (" + fileModeShown + " shows it).",
+		"with no file waiting, it reads the last file it imported again",
 	}
 	for _, tt := range []struct {
 		args          []string
@@ -260,11 +268,15 @@ func TestImportFileHelp(t *testing.T) {
 			"LOAD ORDER is a file's place among all the files waiting, e.g. 1 of 3.",
 			"Emporix lists up to 2000 waiting files: where more wait, the last LOAD ORDER listed ends below the total, " +
 				"e.g. 2000 of 2500, and `epx imports streams files order` cannot reorder them.",
+			"(FAILED: `epx imports streams files requeue` queues it again from the content Emporix holds, or " +
+				"upload it again)",
+			"lastProcessed, the newest file the stream imported, which Emporix sends whatever --history-limit is",
 		}, modes...)},
 		{args: []string{"limits"}, want: []string{stream}},
 		{args: []string{"upload"}, without: modes, want: []string{
 			stream, "Which waiting files a run reads depends on the stream's fileMode, as " + filesList + " says.",
 			"413 Request Entity Too Large (exit 1). A large file may need a longer --timeout, e.g. --timeout 5m",
+			"a file that FAILED is taken again, and `epx imports streams files requeue` queues it again without sending it",
 			"the delimited file in PATH to queue (up to 30 MB including the form), sent with its name (required)",
 			"A 503 Service Unavailable (exit 1) comes from an environment that cannot store uploads (UPLOAD SUPPORTED " +
 				"false in `epx imports streams files limits`), which queued nothing, or from a gateway that failed",
@@ -276,6 +288,13 @@ func TestImportFileHelp(t *testing.T) {
 		}},
 		{args: []string{"delete"}, want: []string{
 			"Only a waiting file is removed",
+			stream + " ID is the ID that " + filesList + " shows; an unknown one is not found.",
+		}},
+		{args: []string{"requeue"}, want: []string{
+			"Puts the file ID, whose import FAILED, back at the end of the queue of the stream STREAM_ID",
+			"nothing is uploaded and nothing is imported now",
+			"Only a FAILED file is queued again",
+			"a file of a SNAPSHOT stream after which a newer file arrived",
 			stream + " ID is the ID that " + filesList + " shows; an unknown one is not found.",
 		}},
 	} {

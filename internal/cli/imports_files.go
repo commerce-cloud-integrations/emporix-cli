@@ -13,8 +13,9 @@ import (
 // The file queue of a file-based import stream: the files that it waits to
 // import, in the order it reads them, and those that it dealt with, which
 // files list reads; the most bytes an upload takes, which files limits
-// reads; and the writes that upload a file, set the load order and remove a
-// waiting file. Emporix allows each only with importScope.
+// reads; and the writes that upload a file, set the load order, remove
+// a waiting file and queue a failed one again. Emporix allows each only
+// with importScope.
 
 // filesUse is the name of the group of a stream's file queue.
 const filesUse = "files"
@@ -70,7 +71,8 @@ func fileModeShownBy(streams resource[importStream]) string {
 func fileModesHelp(shownBy string) string {
 	return "A file-based stream reads its files by its fileMode, SNAPSHOT by default. A SNAPSHOT stream " +
 		"takes each file as the whole picture: its run reads only the most recently arrived waiting " +
-		"file and may report the older ones superseded, in their MESSAGE. An INCREMENTAL stream takes " +
+		"file and may report the older ones superseded, in their MESSAGE; with no file waiting, it reads " +
+		"the last file it imported again. An INCREMENTAL stream takes " +
 		"each file as a change set: its run reads them all, in load order, a later file's values " +
 		"winning on a key that an earlier one carries too. A stream without fileMode reads no files " +
 		"(" + shownBy + " shows it)."
@@ -78,7 +80,7 @@ func fileModesHelp(shownBy string) string {
 
 // newImportFilesCommand returns the group of the file queue of a stream of
 // streams, nested in a group of its own (filesOf): list and limits, which
-// read it, and upload, order and delete.
+// read it, and upload, order, delete and requeue.
 func newImportFilesCommand(a *app, streams resource[importStream]) *cobra.Command {
 	filesOf, shownBy := streams.nested(filesUse), fileModeShownBy(streams)
 	modes := fileModesHelp(shownBy)
@@ -86,13 +88,14 @@ func newImportFilesCommand(a *app, streams resource[importStream]) *cobra.Comman
 	return newGroup(filesOf.use, "Read and change the files that a file-based stream imports",
 		"Reads the file queue of a file-based import stream: the files that it waits to import, in "+
 			"the order that its next run reads them, and those it dealt with; uploads a file to it, sets "+
-			"the order of the waiting files and removes one. Nothing is imported until a run starts "+
+			"the order of the waiting files, removes one and queues a failed one again. Nothing is imported until a run starts "+
 			"(`epx imports configurations trigger`). "+modes,
 		childCommand(a, filesOf, files),
 		childCommand(a, filesOf, fileUploadLimits(filesOf)),
 		fileUpload(filesOf, files, shownBy).command(a),
 		fileOrder(filesOf, files).command(a),
-		fileDelete(filesOf, files).command(a))
+		fileDelete(filesOf, files).command(a),
+		fileRequeue(filesOf, files).command(a))
 }
 
 // queueLine returns the command line of the command verb of the file queue
@@ -123,9 +126,11 @@ func streamFiles(filesOf resource[importStream], modes string) child[queuedFile[
 			"below the total, e.g. 2000 of 2500, and " + queueLine(filesOf, "order") + " cannot reorder " +
 			"them. Then comes the history, newest first and without LOAD ORDER: up to --history-limit " +
 			"files that a run claimed (STATUS IN_PROGRESS), read to the end (PROCESSED, also with " +
-			"records that failed, as MESSAGE says) or could not import (FAILED: it can be uploaded " +
-			"again). SIZE is in bytes, QUEUED when the file was uploaded, PROCESSED when its import " +
-			"ended and READ the records read from it. A file's load rank and run are only in `-o json`.",
+			"records that failed, as MESSAGE says) or could not import (FAILED: " + queueLine(filesOf, requeueUse) +
+			" queues it again from the content Emporix holds, or upload it again). SIZE is in bytes, QUEUED " +
+			"when the file was uploaded, PROCESSED when its import ended and READ the records read from it. " +
+			"A file's load rank and run are only in `-o json`, as is lastProcessed, the newest file the stream " +
+			"imported, which Emporix sends whatever --history-limit is.",
 		fetch: &paramRead{
 			params: queryFlags{optional: []paramFlag{{
 				param: "historyLimit", flag: "history-limit", check: fileHistoryLimit,
@@ -269,7 +274,8 @@ func fileUpload(filesOf resource[importStream], files child[queuedFile[importFil
 			"Emporix knows a file by its content, whatever its name, and never imports it twice: content " +
 			"that the stream imported or queued already is a conflict (exit 5), as is an upload to a " +
 			"stream that reads no files or one that would replace content that a run in flight reads; a " +
-			"file that FAILED is taken again. " +
+			"file that FAILED is taken again, and " + queueLine(filesOf, requeueUse) + " queues it again " +
+			"without sending it. " +
 			"epx sends a file of " + uploadLimitHelp + ", and the environment may take less " +
 			"(" + limits + "): Emporix answers a larger one with " +
 			"413 Request Entity Too Large (exit 1). A large file may need a longer --timeout, e.g. " +
@@ -323,4 +329,43 @@ func fileDelete(filesOf resource[importStream], files child[queuedFile[importFil
 		request{path: remove.path}, importScopes())
 	w.conflict = fileDeleteConflict(queueList(filesOf, files))
 	return w
+}
+
+// requeueUse is the name of the write that queues a failed file again, and
+// requeueSegment the path of that operation below the file.
+const (
+	requeueUse     = "requeue"
+	requeueSegment = "requeue"
+)
+
+// fileRequeueConflict says what a 409 Conflict of a requeue of a file means and
+// how to recover, where list is the stream's file list as help quotes it
+// (queueList).
+func fileRequeueConflict(list string) string {
+	return "only a FAILED file of this stream whose content Emporix still holds is queued again, and on a " +
+		"SNAPSHOT stream only while no newer file arrived after it (upload a corrected current file instead), " +
+		"never while the stream's job has a run in flight: " + list + " shows the file's STATUS; records that " +
+		"failed in a PROCESSED file are imported again with `epx imports runs retry`"
+}
+
+// fileRequeue queues a failed file of files, the file queue of a stream of
+// filesOf (nested), again, addressed as one item of it (childItemTarget).
+func fileRequeue(filesOf resource[importStream], files child[queuedFile[importFile]]) *write {
+	requeue := childItemTarget(filesOf, files, requeueUse, nil)
+	return &write{
+		use: requeue.use, short: "Queue a failed file of a stream again", method: http.MethodPost,
+		long: "Puts the file ID, whose import FAILED, back at the end of the queue of the stream " +
+			filesOf.argument() + ", so that its next run reads it again from the content Emporix holds: " +
+			"nothing is uploaded and nothing is imported now. Fix the cause of the failure first, such as a " +
+			"mapping. Emporix answers with the file, PENDING. Only a FAILED file is queued again: a PROCESSED " +
+			"one (also with records that failed, which `epx imports runs retry` imports again), one whose " +
+			"content Emporix no longer holds or one of another stream is a conflict (exit 5), as is a file of " +
+			"a SNAPSHOT stream after which a newer file arrived, imported, waiting or being read (queued " +
+			"again, the older snapshot would overwrite newer data), and any while the stream's job has a run " +
+			"QUEUED, RUNNING or RESUMABLE. " + childItemHelp(filesOf, files, &requeue),
+		example: "  epx imports streams files requeue 3fa85f64-5717-4562-b3fc-2c963f66afa6 " +
+			"1b4e28ba-2fa1-41d2-883f-0016d3cca427",
+		req: request{path: requeue.path + "/" + requeueSegment}, scopes: importScopes(), body: noBody{},
+		conflict: fileRequeueConflict(queueList(filesOf, files)),
+	}
 }

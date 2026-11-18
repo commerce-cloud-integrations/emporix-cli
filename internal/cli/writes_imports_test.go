@@ -90,8 +90,8 @@ func importWriteCases() []writeCase {
 }
 
 // importFileWriteCases are the writes of a stream's file queue: a file
-// uploaded in a form, the load order set by flags or by --file, and a waiting
-// file removed.
+// uploaded in a form, the load order set by flags or by --file, a waiting
+// file removed and a failed one queued again.
 func importFileWriteCases(trigger []string) []writeCase {
 	const order = `["f3","f2"]`
 	reordered := `[{"id":"f3","status":"PENDING","loadRank":1},{"id":"f2","status":"PENDING","loadRank":2}]`
@@ -122,6 +122,15 @@ func importFileWriteCases(trigger []string) []writeCase {
 			args: []string{"imports", "streams", "files", "delete", "s1", "f2"}, method: http.MethodDelete,
 			path: filesPath + "/f2", scopes: trigger, status: http.StatusNoContent, confirmBy: "f2",
 			conflict: fileDeleteConflict(filesList),
+		},
+		{
+			// No body: Emporix queues the content it holds and answers with the file, PENDING.
+			args: []string{"imports", "streams", "files", "requeue", "s1", "f2"}, method: http.MethodPost,
+			path: filesPath + "/f2/requeue", scopes: trigger, status: http.StatusOK,
+			body: `{"id":"f2","fileName":"order.csv","status":"PENDING","loadRank":3}`,
+			want: "{\n  \"fileName\": \"order.csv\",\n  \"id\": \"f2\",\n  \"loadRank\": 3,\n" +
+				"  \"status\": \"PENDING\"\n}\n",
+			conflict: fileRequeueConflict(filesList),
 		},
 	}
 }
