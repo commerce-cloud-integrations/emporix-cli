@@ -5,6 +5,13 @@ All notable changes to epx are listed here. epx follows
 change or remove commands, columns or flags, and its notes list each such change under
 **Breaking changes**.
 
+## Unreleased
+
+### Fixed
+
+- epx is built with Go 1.27.4, which fixes a vulnerability in the standard library's HTTP
+  package (GO-2026-6859).
+
 ## 0.3.0 (2026-11-05)
 
 ### New
