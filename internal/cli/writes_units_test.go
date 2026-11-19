@@ -67,8 +67,8 @@ func TestUnitWritesRefuseInvalidInput(t *testing.T) {
 		{args: []string{"units", "create"}, want: `required flag(s) "file" not set`},
 		{args: []string{"units", "update", "g"}, want: `required flag(s) "file" not set`},
 		{args: []string{"units", "create", "--content-language", "english"}, file: body,
-			want: `invalid argument "english" for "--content-language" flag: invalid language "english": use * or a ` +
-				"code such as nl or en"},
+			want: `invalid argument "english" for "--content-language" flag: invalid language "english": use * or ` +
+				languageShape},
 		{args: []string{"units", "create", "--content-language", ""}, file: body, want: `invalid language ""`},
 		{args: []string{"units", "update"}, file: body, want: "accepts 1 arg(s), received 0"},
 		{args: []string{"units", "update", ".."}, file: body, want: `invalid CODE ".."`},

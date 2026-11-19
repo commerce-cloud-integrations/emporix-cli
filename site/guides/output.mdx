@@ -109,7 +109,9 @@ and checked. Long lists start printing at once and aren't held in memory.
 Emporix stores many texts, such as names and descriptions, per language. epx requests
 every translation, so `-o json` shows them all. Commands whose tables show text take
 `--language` to choose the translation shown. It defaults to `en`, or to your profile's
-default language.
+default language. Any code that Emporix accepts works, in any letter case: two or three
+letters, then parts of 2 to 8 letters or digits, such as `en-gb`, `zh-hant` or a custom
+`de-ch-zh`.
 
 ```sh
 epx products list --language nl

@@ -14,6 +14,11 @@ func TestLanguageFlag(t *testing.T) {
 		{args: []string{"products", "list", "--language", "dutch!"}, message: `invalid language "dutch!"`},
 		{args: []string{"products", "list", "--language", "en-a"}, message: `invalid language "en-a"`},
 		{args: []string{"products", "list", "--language", "en-123456789"}, message: `invalid language "en-123456789"`},
+		{args: []string{"products", "list", "--language", "e"}, message: `invalid language "e"`},
+		{args: []string{"products", "list", "--language", "en_us"}, message: `invalid language "en_us"`},
+		{args: []string{"products", "list", "--language", "en-"}, message: `invalid language "en-"`},
+		{args: []string{"products", "list", "--language", "en-abcdefghi"}, message: `invalid language "en-abcdefghi"`},
+		{args: []string{"products", "list", "--language", "engl"}, message: `invalid language "engl": use ` + languageShape},
 		// A table without translations takes no --language (where it appears is checked by
 		// TestLanguageAndSiteFlagsFollowTheCases), and nothing takes it globally.
 		{args: []string{"sites", "list", "--language", "nl"}, message: "unknown flag: --language"},
@@ -26,7 +31,9 @@ func TestLanguageFlag(t *testing.T) {
 }
 
 func TestLanguageAcceptsWellFormedTags(t *testing.T) {
-	for _, tag := range []string{"nl", "EN-gb", "zh-Hant-TW", "es-419", "de-1996", "sl-rozaj"} {
+	// Emporix checks the shape only, so custom codes (de-ch-zh, en-12) are accepted as well as BCP-47 tags.
+	for _, tag := range []string{"nl", "EN-gb", "zh-Hant-TW", "es-419", "de-1996", "sl-rozaj", "en-NL", "de-ch-zh",
+		"zh-hant", "EN-us", "en-12"} {
 		var value language
 		if err := value.Set(tag); err != nil || value.String() != strings.ToLower(tag) {
 			t.Errorf("Set(%q) = %v, value %q", tag, err, value)

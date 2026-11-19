@@ -50,6 +50,10 @@ change or remove commands, columns or flags, and its notes list each such change
   credential with only a site-limited read scope fails with exit code 3, and that the reference
   now documents 404 for the delete of an unknown return.
 
+- `--language` and `--content-language` accept every code that Emporix accepts: two or three
+  letters, then parts of 2 to 8 letters or digits, in any letter case, so custom codes such as
+  `de-ch-zh` or `en-12`, refused before, now work. Codes accepted before are sent as before.
+
 ### Fixed
 
 - epx is built with Go 1.27.4, which fixes a vulnerability in the standard library's HTTP

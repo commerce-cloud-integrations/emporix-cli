@@ -131,7 +131,7 @@ func (l *contentLanguage) Set(value string) error {
 	}
 	var code language
 	if err := code.Set(value); err != nil {
-		return fmt.Errorf("invalid language %q: use %s or a code such as nl or en", value, everyLanguage)
+		return fmt.Errorf("invalid language %q: use %s or %s", value, everyLanguage, languageShape)
 	}
 	*l = contentLanguage(code)
 	return nil

@@ -10,10 +10,15 @@ import (
 	"strings"
 )
 
-// languagePattern matches lower-cased BCP-47 language tags (language, optional
-// script, region and variants), such as "nl", "en-gb" or "zh-hant-tw".
-var languagePattern = regexp.MustCompile(
-	`^[a-z]{2,3}(-[a-z]{4})?(-([a-z]{2}|[0-9]{3}))?(-([a-z0-9]{5,8}|[0-9][a-z0-9]{3}))*$`)
+// languagePattern matches lower-cased language codes as Emporix checks them:
+// a language of 2 or 3 letters, then any subtags of 2 to 8 letters or
+// digits, each after a hyphen, such as "nl", "en-gb", "zh-hant-tw" or a
+// custom "de-ch-zh"; whether the language or region exists is not checked.
+var languagePattern = regexp.MustCompile(`^[a-z]{2,3}(-[a-z0-9]{2,8})*$`)
+
+// languageShape says what a language code is, in an error message.
+const languageShape = "a code such as nl, en or en-gb: 2 or 3 letters, then any parts of 2 to 8 letters " +
+	"or digits, each after a hyphen"
 
 // localized is text that Emporix returns either as a plain string or, when
 // every translation is requested, as a map from language code to text.
@@ -80,7 +85,7 @@ const defaultLanguage language = "en"
 func (l *language) Set(value string) error {
 	value = strings.ToLower(value)
 	if !languagePattern.MatchString(value) {
-		return fmt.Errorf("invalid language %q: use a code such as nl or en", value)
+		return fmt.Errorf("invalid language %q: use %s", value, languageShape)
 	}
 	*l = language(value)
 	return nil
