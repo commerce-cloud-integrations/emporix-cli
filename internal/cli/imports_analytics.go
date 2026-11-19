@@ -19,6 +19,7 @@ type importStatistics struct {
 		Partial       json.Number `json:"partial"`
 		Failed        json.Number `json:"failed"`
 		Cancelled     json.Number `json:"cancelled"`
+		Aborted       json.Number `json:"aborted"`
 		ActiveRuns    json.Number `json:"activeRuns"`
 		RecordsRead   json.Number `json:"recordsRead"`
 		FailedRecords json.Number `json:"failedRecords"`
@@ -62,7 +63,8 @@ func importAnalyticsReads(a *app) []*cobra.Command {
 			use:   "statistics",
 			short: "Show the import statistics of the last 30 days",
 			long: "Reads the import statistics of the last 30 days for the whole tenant: RUNS counts the runs " +
-				"started, SUCCEEDED, PARTIAL, FAILED and CANCELLED how they ended, ACTIVE those queued or " +
+				"started, SUCCEEDED, PARTIAL, FAILED and CANCELLED how they ended, ABORTED those the service " +
+				"refused to run for their configuration, ACTIVE those queued or " +
 				"running now, and RECORDS READ and RECORDS FAILED the records. `-o json` adds the rates, a daily " +
 				"series, each stream's health, the failing streams, an error breakdown and the streams added " +
 				"or removed. Another window or scope, e.g. one configuration (`epx imports job-groups` lists " +
@@ -115,12 +117,14 @@ func importStatisticsView() view[importStatistics] {
 	return view[importStatistics]{
 		singular: "import statistics",
 		header: []string{
-			"RUNS", "SUCCEEDED", "PARTIAL", columnFailed, "CANCELLED", columnActive, "RECORDS READ", "RECORDS FAILED",
+			"RUNS", "SUCCEEDED", "PARTIAL", columnFailed, "CANCELLED", "ABORTED", columnActive, "RECORDS READ",
+			"RECORDS FAILED",
 		},
 		row: func(s importStatistics, _ language) []string {
 			sum := s.Summary
 			return []string{reported(sum.TotalRuns), sum.Succeeded.String(), sum.Partial.String(), sum.Failed.String(),
-				sum.Cancelled.String(), sum.ActiveRuns.String(), sum.RecordsRead.String(), sum.FailedRecords.String()}
+				sum.Cancelled.String(), sum.Aborted.String(), sum.ActiveRuns.String(), sum.RecordsRead.String(),
+				sum.FailedRecords.String()}
 		},
 	}
 }

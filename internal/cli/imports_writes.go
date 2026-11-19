@@ -12,10 +12,27 @@ import (
 // set or delete the schedule of a configuration. Emporix allows them with
 // importScope, the scope that its reads need too.
 
+// runInFlight is why Emporix refuses a write that starts a run of a
+// configuration: the configuration has a run that has not ended, which the
+// error names (activeRunId), or its data is being purged.
+const runInFlight = "the configuration has a run QUEUED, RUNNING or RESUMABLE, which activeRunId names, or a " +
+	"data purge in progress"
+
+// notRetryable is why Emporix refuses a retry of a run besides runInFlight.
+const notRetryable = "the run is still active, has no failed records that a retry can read again, has a failed " +
+	"stream that reads from a source that cannot fetch records by key (such as an HTTP source), or read a file " +
+	"that was removed or replaced since"
+
+// runInFlightRecovery is how to recover from runInFlight.
+const runInFlightRecovery = "wait until the run or the purge ends, or cancel the run"
+
 // activeRunConflict is what a 409 Conflict of a write that starts a run
-// means: the configuration has a run that has not ended.
-const activeRunConflict = "the configuration has a run QUEUED, RUNNING or RESUMABLE already: wait until it ends, " +
-	"or cancel it"
+// means, and how to recover.
+const activeRunConflict = runInFlight + ": " + runInFlightRecovery
+
+// retryConflict is what a 409 Conflict of a retry means, and how to recover.
+const retryConflict = runInFlight + ": " + runInFlightRecovery + "; or " + notRetryable + ": import it " +
+	"again with a new run (`epx imports configurations trigger`)"
 
 // importRunJob returns how --wait follows an import run that a write starts:
 // it reads the run as `imports runs get` does, in the run's details, until it
@@ -86,10 +103,14 @@ func importTrigger(configurations resource[importConfig], job *jobWait) *write {
 		long: "Starts an import run of the configuration " + configuration + ", a DELTA run unless --mode FULL, " +
 			"and prints the run, QUEUED until a worker of the Import Service takes it. --file gives the " +
 			"body instead, e.g. " + literal(`{"mode": "FULL", "dryRun": true, "streamIds": ["ID"]}`) + " for a dry run of " +
-			"some streams, which maps and checks records but writes none. A configuration that has a run " +
-			"QUEUED, RUNNING or RESUMABLE already is a conflict (exit 5). Emporix answers a run that it " +
-			"refuses, e.g. of streams whose mappings were never published, as any other: the run ends " +
-			"ABORTED, which --wait reports. " + configurations.argumentSource() + ".",
+			"some streams, which maps and checks records but writes none. It is a conflict (exit 5) where " +
+			runInFlight + ". " +
+			"Emporix answers a run that it refuses, e.g. of streams whose mappings were never published, as " +
+			"any other: the run ends ABORTED, which --wait reports. A run with nothing to import, as every " +
+			"stream it starts reads files and none has one to read, is refused with 400 Bad Request (exit 1), " +
+			"whose message names each stream and what to do: upload a file to its queue, or queue its failed " +
+			"file again (`epx imports streams files requeue`); a dry run is never refused for this. An unknown " +
+			"configuration is not found (exit 4). " + configurations.argumentSource() + ".",
 		example: "  epx imports configurations trigger 7c9e6679-7425-40de-944b-e07fc1f90ae7 --mode FULL --wait",
 		req:     request{path: configurations.itemPath() + "/runs"}, scopes: importScopes(), answer: job,
 		conflict: activeRunConflict,
@@ -108,7 +129,8 @@ func importRunWrites(a *app, runs resource[importRun], job *jobWait) []*cobra.Co
 				"cancellation. A QUEUED run is CANCELLED at once; a running one stops when it can, or with " +
 				"--force at once, which also unblocks its configuration. A RESUMABLE run stops only with " +
 				"--force: without it, a conflict (exit 5). Emporix answers a run that is unknown or ended " +
-				"already with 409 Conflict and \"accepted\": false, which epx prints as the answer (exit 5). " +
+				"already with 409 Conflict and \"accepted\": false, which epx prints as the answer (exit 5). The " +
+				"answer's cancelRequested, which Emporix deprecated, repeats accepted. " +
 				runSource(runs),
 			req: request{path: runs.itemPath() + "/cancel"}, scopes: importScopes(), body: noBody{},
 			switches: forceSwitch("stop the run at once"), answers: emporix.Answers{FailureAnswered: true},
@@ -130,10 +152,11 @@ func importRetry(runs resource[importRun], job *jobWait) *write {
 	return &write{
 		use: runs.itemUse("retry"), short: "Run the failed records of an import run again", method: http.MethodPost,
 		long: "Starts a run that imports again only the records that failed in the import run ID, and " +
-			"prints it, QUEUED until a worker takes it; the run ID keeps its counters. A configuration " +
-			"that has a run QUEUED, RUNNING or RESUMABLE already is a conflict (exit 5). " + runSource(runs),
+			"prints it, QUEUED until a worker takes it; its trigger is RETRY and its retryOfRunId the run " +
+			"ID, which keeps its counters. It is a conflict (exit 5) where " + notRetryable + ", or where " +
+			runInFlight + ". " + runSource(runs),
 		req: request{path: runs.itemPath() + "/retry"}, scopes: importScopes(), body: noBody{}, answer: job,
-		conflict: activeRunConflict,
+		conflict: retryConflict,
 	}
 }
 

@@ -140,8 +140,8 @@ func TestImportReadsOfPartialResponses(t *testing.T) {
 			want: "LEVEL             FAILURE RATIO AMBER  FAILURE RATIO RED  STALE HOURS AMBER  STALE HOURS RED  " +
 				"FAILED RUN RED\ntenant" + strings.Repeat(" ", 88) + "\nbuilt-in default" + strings.Repeat(" ", 78) + "false\n"},
 		{args: []string{"statistics"}, path: "/importtool/acme1/stats", body: `{"summary":null}`,
-			want: "RUNS          SUCCEEDED  PARTIAL  FAILED  CANCELLED  ACTIVE  RECORDS READ  RECORDS FAILED\n" +
-				"not reported" + strings.Repeat(" ", 63) + "\n"},
+			want: "RUNS          SUCCEEDED  PARTIAL  FAILED  CANCELLED  ABORTED  ACTIVE  RECORDS READ  RECORDS FAILED\n" +
+				"not reported" + strings.Repeat(" ", 72) + "\n"},
 		{args: []string{"license"}, path: "/importtool/acme1/license", body: `{"workers":1}`,
 			want: "MAX RECORDS PER TYPE  MAX CONCURRENT RUNS  BATCH SIZE  WORKERS\n" +
 				"not reported" + strings.Repeat(" ", 43) + "1\n"},
@@ -230,6 +230,8 @@ func TestImportHelpExplainsItsReads(t *testing.T) {
 		{args: nil, want: []string{"each imports one source, an entity or files, into an Emporix type"}},
 		{args: []string{"runs", "get"}, want: []string{
 			"a run's ID is the one that " + runs, "STATUS is QUEUED", sum, "`epx imports runs streams` shows.",
+			"how it started (trigger: MANUAL, SCHEDULED, or RETRY for a retry of the run that retryOfRunId names)",
+			"(streamIds, absent for all of them)",
 		}},
 		{args: []string{"configurations", "runs"}, want: []string{
 			"most recent first", "`epx imports runs streams` shows the counters", "STATUS is QUEUED", sum,
@@ -238,11 +240,19 @@ func TestImportHelpExplainsItsReads(t *testing.T) {
 			"RUN_ID is the ID that " + runs + "; an unknown one is not found.", "add up to READ", "UNRESOLVED (",
 			"COLLAPSED (", "EMBEDDED (", "STREAM followed by sweep", "duplicateKeys (", "capSkipped (", "keylessSeen (",
 			"(filesRead, fileNames)",
+			"STATUS is RUNNING, SUCCEEDED, PARTIAL, FAILED, ABORTED (", "or CANCELLED (the run was cancelled while the " +
+				"stream ran); older runs may show QUEUED or SKIPPED.",
+			"A file-based stream with nothing to read (no file waiting and, for a SNAPSHOT stream, none imported " +
+				"before) imports nothing; except in a dry run, a retry or for a file read from a URL, its MESSAGE says " +
+				"so and what to do (upload a file, or queue its failed file again).",
 		}},
 		{args: []string{"runs", "errors"}, want: []string{
 			"RUN_ID is the ID that " + runs + "; an unknown one lists nothing.", "VALIDATION (", "NO_KEY (", "UPSERT (",
 			"CONFIGURATION (", "EXTERNAL_SYSTEM (", "MERGE or PATCH_EMBED (", "NO_LINKING_VALUE (",
 			"MARKER_DELETE, TOMBSTONE_DELETE or TOMBSTONE_NO_KEY (", "REJECTED_BY_SOURCE (", "STREAM_ERROR (",
+			"FAN_OUT_REMOVE (", "(EXTRACT reading the source, MAP applying the mappings, VALIDATE checking the mapped " +
+				"record or UPSERT writing it; older errors may show other names, such as MAPPING)",
+			"as is payload, the source record that failed",
 		}},
 		{args: []string{"runs", "diagnostics"}, want: []string{"RUN_ID is the ID that " + runs, "up to 50000"}},
 		{args: []string{"streams", "get"}, want: []string{
@@ -250,8 +260,34 @@ func TestImportHelpExplainsItsReads(t *testing.T) {
 			"A stream's ID is the one that `epx imports configurations streams CONFIGURATION_ID` shows.",
 		}},
 		{args: []string{"configurations", "streams"}, want: []string{
-			"in their sequence", modes, "which may name no entity", "sourceDataset",
+			"in the order of their seq", modes, "which may name no entity", "sourceDataset",
+			"a FAN_OUT stream has no source of its own, so SOURCE names the stream it fans out from",
+			"(targetWriter emporix.customEntity)",
+			"PRODUCT for products and CATEGORY for categories by default, set by the service for a FAN_OUT stream",
+			"MODE is STANDALONE (a stream that writes its own objects)", "or FAN_OUT for one that writes further objects",
+			"(fanOut, fanOutPath, fanOutKey)", "(snapshotFiles)",
 		}},
+		{args: []string{"configurations", "stream-order"}, want: []string{
+			"that of a FAN_OUT stream on the stream it fans out from), their seq breaking ties",
+		}},
+		{args: []string{"records"}, want: []string{
+			"(UPSERTED, DELETED at the source, FAILED or DRY_RUN; older records may show DELETED_TARGET)",
+			"natural key (with or without its key name, e.g. ID:SKU-1001; case-sensitive) or Emporix id (in any " +
+				"case) starts with a text",
+			"(UPSERTED, DELETED, FAILED or DRY_RUN, in upper case)",
+		}},
+		{args: []string{"statistics"}, want: []string{"ABORTED those the service refused to run for their configuration"}},
+		{args: []string{"configurations", "trigger"}, want: []string{
+			"It is a conflict (exit 5) where " + runInFlight + ".",
+			"is refused with 400 Bad Request (exit 1), whose message names each stream and what to do",
+			"a dry run is never refused for this", "An unknown configuration is not found (exit 4).",
+			"queue its failed file again (`epx imports streams files requeue`)",
+		}},
+		{args: []string{"runs", "retry"}, want: []string{
+			"its trigger is RETRY and its retryOfRunId the run ID",
+			"It is a conflict (exit 5) where " + notRetryable + ", or where " + runInFlight + ".",
+		}},
+		{args: []string{"runs", "cancel"}, want: []string{"cancelRequested, which Emporix deprecated, repeats accepted"}},
 		{args: []string{"streams", "records"}, want: []string{
 			"STREAM_ID is the ID that `epx imports configurations streams CONFIGURATION_ID` shows; an unknown one lists",
 		}},

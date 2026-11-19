@@ -43,14 +43,25 @@ type importStream struct {
 	FileMode     string `json:"fileMode"` // SNAPSHOT or INCREMENTAL, for a file-based stream only
 	TargetType   string `json:"targetType"`
 	Mode         string `json:"mode"`
-	Enabled      *bool  `json:"enabled"`
+	// CompositeParent is the stream that a composite or FAN_OUT stream adds
+	// to or fans out from.
+	CompositeParent string `json:"compositeParent"`
+	Enabled         *bool  `json:"enabled"`
 }
 
-// source returns what s imports: its source entity, followed for a
-// file-based stream by how it reads its files, e.g. "SNAPSHOT files", as such
-// a stream may name no entity.
+// fanOutMode is the MODE of a stream that has no source of its own: it reads
+// the records of the stream it fans out from.
+const fanOutMode = "FAN_OUT"
+
+// source returns what s imports: for a FAN_OUT stream, the stream it fans
+// out from, e.g. "fan-out of Products", where it names one; else its source entity, followed for
+// a file-based stream by how it reads its files, e.g. "SNAPSHOT files", as
+// such a stream may name no entity.
 func (s *importStream) source() string {
-	if s.FileMode == "" {
+	switch {
+	case s.Mode == fanOutMode && s.CompositeParent != "":
+		return spaced("fan-out of", s.CompositeParent)
+	case s.FileMode == "":
 		return s.SourceEntity
 	}
 	return spaced(s.SourceEntity, s.FileMode, "files")
@@ -156,8 +167,9 @@ func newImportConfigurationsCommand(a *app, configurations resource[importConfig
 			use:   "stream-order",
 			short: "Show the order the streams of a configuration run in",
 			long: "Reads the order in which the streams of an import configuration run, which the service " +
-				"derives from their dependencies (also those their mappings add) and sequence: each STREAM " +
-				"runs after the streams that AFTER names.",
+				"derives from their dependencies (also those their mappings add, and that of a FAN_OUT stream on " +
+				"the stream it fans out from), their seq breaking ties: each STREAM runs after the streams that " +
+				"AFTER names.",
 			fetch:   single{items: streamOrderItems},
 			unknown: listsNothing,
 			view: view[orderedStream]{
@@ -178,8 +190,8 @@ func configurationStreams(v view[importStream]) child[importStream] {
 	return child[importStream]{
 		use:   streamsUse,
 		short: "List the streams of a configuration",
-		long: "Reads the streams of an import configuration, in their sequence. The service returns them " +
-			"whole, so they are read with one request.",
+		long: "Reads the streams of an import configuration, in the order of their seq. The service returns " +
+			"them whole, so they are read with one request.",
 		fetch:   listing{read: (*emporix.Client).GetUnpaged},
 		unknown: listsNothing,
 		view:    v,
@@ -221,12 +233,20 @@ func importStreamView(queue string) view[importStream] {
 		singular: "stream",
 		header:   []string{columnID, columnName, "SOURCE", "TARGET TYPE", "MODE", columnEnabled},
 		legend: "SOURCE is the stream's source entity, followed for a file-based stream (which may name no " +
-			"entity) by SNAPSHOT files or INCREMENTAL files, read as " + queue + " explains. " +
-			"TARGET TYPE is the Emporix type it writes to (a discriminator, in `-o json`, may route records " +
-			"to others), MODE STANDALONE, or COMPOSITE_CHILD or COMPOSITE_MERGE for a stream that adds to " +
-			"the records of another. A stream's source dataset (sourceDataset, such as the key column and " +
-			"the file format), connection, and delta, delete, write and health settings are only in " +
-			"`-o json`.",
+			"entity) by SNAPSHOT files or INCREMENTAL files, read as " + queue + " explains; a FAN_OUT stream " +
+			"has no source of its own, so SOURCE names the stream it fans out from. " +
+			"TARGET TYPE is the custom entity type that a stream writing custom entities (targetWriter " +
+			"emporix.customEntity) writes to (a discriminator, in `-o json`, may route records to others); " +
+			"for the other writers (products, categories, prices, stock, media and category assignments) it " +
+			"is a label that groups the records the stream imported: PRODUCT for products and CATEGORY for " +
+			"categories by default, set by the service for a FAN_OUT stream. MODE is STANDALONE (a stream " +
+			"that writes its own objects), COMPOSITE_CHILD or COMPOSITE_MERGE for one that adds to the records " +
+			"of another, " +
+			"or FAN_OUT for one that writes further objects, such as a product's prices, for each record of " +
+			"the stream it fans out from. A stream's writer (targetWriter), position (seq), fan-out settings " +
+			"(fanOut, fanOutPath, fanOutKey), target options (targetOptions), source dataset (sourceDataset, " +
+			"such as the key column and the file format), whether it takes each file as a snapshot " +
+			"(snapshotFiles), connection, and delta, delete, write and health settings are only in `-o json`.",
 		row: func(s importStream, _ language) []string {
 			return []string{s.ID, s.Name, s.source(), s.TargetType, s.Mode, formatBool(s.Enabled)}
 		},
@@ -276,12 +296,15 @@ func importDataReads(a *app) []*cobra.Command {
 			use:   "records TYPE",
 			short: "List the imported records of a type",
 			long: "Reads the records imported into a target type: KEY is a record's natural key in the source, " +
-				"OUTCOME how it was last imported (UPSERTED, DELETED at the source, DELETED_TARGET in " +
-				"Emporix, FAILED or DRY_RUN) and IMPORTED when. `-o json` adds its stored fields, the Emporix " +
-				"id it was written under, and its configuration, stream and run. TYPE is one that " +
-				"`epx imports types` shows; an unknown one lists nothing. To search keys or filter by " +
-				"outcome, one page at a time: `epx api get /importtool/{tenant}/data/records -p type=TYPE " +
-				"-p search=TEXT -p outcome=FAILED --scope " + importScope + "`.",
+				"OUTCOME how it was last imported (UPSERTED, DELETED at the source, FAILED or DRY_RUN; older " +
+				"records may show DELETED_TARGET) and IMPORTED when. `-o json` adds its stored fields, the " +
+				"Emporix id it was written under, and its configuration, stream and run. TYPE is one that " +
+				"`epx imports types` shows; an unknown one lists nothing. To find the records whose natural " +
+				"key (with or without its key name, e.g. ID:SKU-1001; case-sensitive) or Emporix id (in any case) " +
+				"starts with a text, or those of one outcome (UPSERTED, DELETED, FAILED or DRY_RUN, in upper " +
+				"case), one page at a time: " +
+				"`epx api get /importtool/{tenant}/data/records -p type=TYPE -p search=TEXT -p outcome=FAILED " +
+				"--scope " + importScope + "`.",
 			req:   request{path: "/importtool/{tenant}/data/records", query: url.Values{typeParam: {placeholderID}}},
 			fetch: listing{read: (*emporix.Client).GetAllContentPages},
 		}),

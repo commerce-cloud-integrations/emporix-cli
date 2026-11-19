@@ -84,7 +84,7 @@ func importWriteCases() []writeCase {
 		},
 		{
 			args: []string{"imports", "runs", "retry", "r1"}, method: http.MethodPost, path: run + "/retry",
-			scopes: trigger, status: http.StatusOK, body: queuedRun, want: queuedRunJSON, conflict: activeRunConflict,
+			scopes: trigger, status: http.StatusOK, body: queuedRun, want: queuedRunJSON, conflict: retryConflict,
 		},
 	}, importFileWriteCases(trigger))
 }
@@ -223,5 +223,46 @@ func TestImportWriteFlags(t *testing.T) {
 			t.Errorf("%q: exit %d, stdout %q, stderr %q; want exit 2 and %q", tt.args, code, stdout, stderr, tt.want)
 		}
 		fake.assertNothingSent(t)
+	}
+}
+
+// TestImportRunRefusals checks how a trigger that Emporix refuses ends: a
+// conflict with a run in flight exits 5 and prints the run the error names
+// (details, as the reference's example sends them), a run with nothing to
+// import exits 1 with Emporix's message, and an unknown configuration exits 4.
+func TestImportRunRefusals(t *testing.T) {
+	const runs = "/importtool/acme1/configs/c1/runs"
+	for _, tt := range []struct {
+		status int
+		body   string
+		code   int
+		want   string // in standard error
+	}{
+		{
+			status: http.StatusConflict, code: ExitConflict,
+			body: `{"resourceId":"c1","status":"Conflict","code":409,"message":"An import is already running for config c1",` +
+				`"details":[{"message":"Active run: r9","field":"activeRunId"}]}`,
+			want: "POST " + runs + ": 409 Conflict: An import is already running for config c1 (activeRunId: Active " +
+				"run: r9)",
+		},
+		{
+			status: http.StatusBadRequest, code: ExitError,
+			body: `{"resourceId":null,"status":"Bad Request","code":400,"message":"Nothing to import: no file has been ` +
+				`uploaded to 'Vendors'","details":[]}`,
+			want: "POST " + runs + ": 400 Bad Request: Nothing to import: no file has been uploaded to 'Vendors'",
+		},
+		{
+			status: http.StatusNotFound, code: ExitNotFound,
+			body: `{"resourceId":null,"status":"Not Found","code":404,"message":"config not found","details":[]}`,
+			want: "POST " + runs + ": 404 Not Found: config not found",
+		},
+	} {
+		fake := newFakeEmporix(t)
+		fake.route(runs, respond(tt.status, tt.body))
+		code, stdout, stderr := runIn(t, writeEnv(fake, false, ""), "imports", "configurations", "trigger", "c1", "--yes")
+		if code != tt.code || stdout != "" || !strings.Contains(stderr, tt.want) {
+			t.Errorf("%d: exit %d, stdout %q, stderr %q; want exit %d and %q", tt.status, code, stdout, stderr, tt.code,
+				tt.want)
+		}
 	}
 }

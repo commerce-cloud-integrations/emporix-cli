@@ -7,10 +7,30 @@ change or remove commands, columns or flags, and its notes list each such change
 
 ## Unreleased
 
+### Breaking changes
+
+- `epx imports statistics`: the ABORTED column comes after CANCELLED, so in the table and in
+  `-o csv` ACTIVE, RECORDS READ and RECORDS FAILED move from columns 6–8 to 7–9 (`--columns`
+  picks columns by name).
+
 ### New
 
 - `epx imports streams files requeue STREAM_ID ID` queues a failed file again, from the content
   Emporix holds, so the stream's next run reads it without an upload.
+- `epx imports statistics` shows ABORTED, the runs the Import Service refused to run for their
+  configuration.
+- `epx imports configurations streams` and `imports streams get` show a FAN_OUT stream, which
+  writes further objects such as a product's prices for each record of another stream, with
+  `fan-out of STREAM` as its SOURCE.
+
+### Changed
+
+- The Import Service help follows its reference of 2026-11-18: the statuses of a run's streams
+  (CANCELLED; QUEUED and SKIPPED only on older runs), the stages of a run's errors (EXTRACT, MAP,
+  VALIDATE, UPSERT) and the error code FAN_OUT_REMOVE, the outcomes of imported records
+  (DELETED_TARGET only on older records), how `search` matches imported records, the runs a
+  retry creates (trigger RETRY), and when Emporix refuses a run: 400 when there is nothing to
+  import, 409 also while a data purge runs or for a run that cannot be retried.
 
 ### Fixed
 

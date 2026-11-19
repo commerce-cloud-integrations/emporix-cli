@@ -164,7 +164,8 @@ func importConfigurationReads(optIn string, scopes []string, run string) []readC
 			want:   "ID   NAME            ENABLED  VERSION  MODIFIED\nc 1  Product master  true     3.0      \n",
 		},
 		{
-			// A file-based stream says how it reads its files, also when it names no entity.
+			// A file-based stream says how it reads its files, also when it names no entity; a FAN_OUT stream,
+			// which has no source of its own, names the stream it fans out from.
 			args:   []string{"imports", "configurations", "streams", "c1", optIn},
 			path:   "/importtool/acme1/configs/c1/streams",
 			scopes: scopes,
@@ -174,12 +175,17 @@ func importConfigurationReads(optIn string, scopes []string, run string) []readC
 				"targetType":"purchaseOrder","mode":"COMPOSITE_CHILD","childStrategy":"EMBED","compositeParent":"Orders"},
 				{"id":"s3","name":"Vendors","sourceDataset":{"keyField":"ID","delimiter":";"},"fileMode":"SNAPSHOT",
 				"targetType":"vendor","mode":"STANDALONE","enabled":true},{"id":"s4","name":"Stock","sourceEntity":"STOCK",
-				"sourceDataset":{"keyField":"SKU"},"fileMode":"INCREMENTAL","targetType":"stock","mode":"STANDALONE"}]`,
+				"sourceDataset":{"keyField":"SKU"},"fileMode":"INCREMENTAL","targetType":"stock","mode":"STANDALONE"},
+				{"id":"s5","name":"Prices","targetWriter":"emporix.price","targetType":"PRODUCT","mode":"FAN_OUT",
+				"compositeParent":"Products","fanOut":true,"fanOutPath":"prices[]","fanOutKey":"currency","seq":4},
+				{"id":"s6","name":"Images","mode":"FAN_OUT","sourceEntity":"","targetType":"PRODUCT"}]`,
 			want: "ID  NAME      SOURCE                   TARGET TYPE    MODE             ENABLED\n" +
 				"s1  Products  PRODUCT                  product        STANDALONE       true\n" +
 				"s2  Lines     PO_LINE                  purchaseOrder  COMPOSITE_CHILD  \n" +
 				"s3  Vendors   SNAPSHOT files           vendor         STANDALONE       true\n" +
-				"s4  Stock     STOCK INCREMENTAL files  stock          STANDALONE       \n",
+				"s4  Stock     STOCK INCREMENTAL files  stock          STANDALONE       \n" +
+				"s5  Prices    fan-out of Products      PRODUCT        FAN_OUT          \n" +
+				"s6  Images                             PRODUCT        FAN_OUT          \n",
 		},
 		{
 			args:   []string{"imports", "configurations", "schedule", "c1", optIn},
@@ -253,11 +259,11 @@ func importDataAndAnalyticsReads(optIn string, scopes []string) []readCase {
 			path:   "/importtool/acme1/stats",
 			scopes: scopes,
 			mode:   getWhole,
-			body: `{"summary":{"totalRuns":42,"succeeded":38,"partial":3,"failed":1,"cancelled":0,"recordsRead":125000,
-				"failedRecords":130,"successRate":0.905,"activeRuns":1},"series":[],"streamHealth":[],
+			body: `{"summary":{"totalRuns":42,"succeeded":38,"partial":3,"failed":1,"cancelled":0,"aborted":2,
+				"recordsRead":125000,"failedRecords":130,"successRate":0.905,"activeRuns":1},"series":[],"streamHealth":[],
 				"topFailingStreams":[],"errorBreakdown":[],"streamChanges":{"added":2,"removed":1}}`,
-			want: "RUNS  SUCCEEDED  PARTIAL  FAILED  CANCELLED  ACTIVE  RECORDS READ  RECORDS FAILED\n" +
-				"42    38         3        1       0          1       125000        130\n",
+			want: "RUNS  SUCCEEDED  PARTIAL  FAILED  CANCELLED  ABORTED  ACTIVE  RECORDS READ  RECORDS FAILED\n" +
+				"42    38         3        1       0          2        1       125000        130\n",
 		},
 		{
 			args:   []string{"imports", "job-groups", optIn},
