@@ -1,6 +1,9 @@
 package cli
 
-import "net/http"
+import (
+	"net/http"
+	"testing"
+)
 
 // The read cases of the Order, Shipping and Payment Gateway services (see TestReads).
 
@@ -436,4 +439,30 @@ func shoppingListReads() []readCase {
 			want:   "CUSTOMER  LISTS\nc/1       default (0 items)\n",
 		},
 	}
+}
+
+// TestReturnsHelpNamesTheirSiteAndAnswers checks that the reads of returns
+// say what SITE is, how to filter by site and that a site-limited read scope
+// fails, and that the writes say how Emporix treats siteCode and restriction
+// and what it answers for an unknown return.
+func TestReturnsHelpNamesTheirSiteAndAnswers(t *testing.T) {
+	assertHelpHolds(t, map[string][]string{
+		"returns list": {
+			"SITE is the site of the return's orders, which Emporix copies to it (siteCode;",
+			"`--query siteCode:DE` those of one site",
+			"so a credential that holds only a site-limited one, such as returns.returns_read--DE, fails with exit code 3",
+			"and for its writes returns.returns_manage",
+		},
+		"returns create": {
+			"Emporix copies siteCode and restriction from the orders, so the body may leave them out",
+			"orders of different sites or restrictions",
+			"`\"site does not match order\"`", "`\"orders belong to different sites\"`",
+		},
+		"returns update": {
+			"with siteCode and restriction left out, which stay as copied from the orders: its reference documents " +
+				"that an update does not accept them",
+		},
+		"returns patch":  {"a patch does not accept /siteCode or /restriction"},
+		"returns delete": {"its reference now documents 404 Not Found (exit 4)"},
+	})
 }

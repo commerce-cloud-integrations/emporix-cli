@@ -23,16 +23,13 @@ const notRetryable = "the run is still active, has no failed records that a retr
 	"stream that reads from a source that cannot fetch records by key (such as an HTTP source), or read a file " +
 	"that was removed or replaced since"
 
-// runInFlightRecovery is how to recover from runInFlight.
-const runInFlightRecovery = "wait until the run or the purge ends, or cancel the run"
-
 // activeRunConflict is what a 409 Conflict of a write that starts a run
 // means, and how to recover.
-const activeRunConflict = runInFlight + ": " + runInFlightRecovery
+const activeRunConflict = runInFlight + ": wait until the run or the purge ends, or cancel the run"
 
 // retryConflict is what a 409 Conflict of a retry means, and how to recover.
-const retryConflict = runInFlight + ": " + runInFlightRecovery + "; or " + notRetryable + ": import it " +
-	"again with a new run (`epx imports configurations trigger`)"
+const retryConflict = activeRunConflict + "; or " + notRetryable + ": import it again with a new run " +
+	"(`epx imports configurations trigger`)"
 
 // importRunJob returns how --wait follows an import run that a write starts:
 // it reads the run as `imports runs get` does, in the run's details, until it

@@ -13,7 +13,8 @@ change or remove commands, columns or flags, and its notes list each such change
   `-o csv` ACTIVE, RECORDS READ and RECORDS FAILED move from columns 6–8 to 7–9 (`--columns`
   picks columns by name).
 - `epx returns list|get`: the SITE column (siteCode) comes after STATUS, so in the table and in
-  `-o csv` RECEIVED, ORDERS, REQUESTOR, TOTAL and CREATED move from columns 3–7 to 4–8.
+  `-o csv` RECEIVED, ORDERS, REQUESTOR, TOTAL and CREATED move from columns 3–7 to 4–8
+  (`--columns` picks columns by name).
 
 ### New
 
@@ -24,38 +25,36 @@ change or remove commands, columns or flags, and its notes list each such change
   Emporix holds, so the stream's next run reads it without an upload.
 - `epx imports statistics` shows ABORTED, the runs the Import Service refused to run for their
   configuration.
-- `epx imports configurations streams` and `imports streams get` show a FAN_OUT stream, which
+- `epx imports configurations streams` and `epx imports streams get` show a FAN_OUT stream, which
   writes further objects such as a product's prices for each record of another stream, with
   `fan-out of STREAM` as its SOURCE.
-
-### Changed
-
-- The Import Service help follows its reference of 2026-11-18: the statuses of a run's streams
-  (CANCELLED; QUEUED and SKIPPED only on older runs), the stages of a run's errors (EXTRACT, MAP,
-  VALIDATE, UPSERT) and the error code FAN_OUT_REMOVE, the outcomes of imported records
-  (DELETED_TARGET only on older records), how `search` matches imported records, the runs a
-  retry creates (trigger RETRY), and when Emporix refuses a run: 400 when there is nothing to
-  import, 409 also while a data purge runs or for a run that cannot be retried.
-
-- `epx indexing providers` help names BatteryIncluded's apiUrl, enrichments and
-  siteAwareMixinsStrategy, and `update` says that a body without them sets them back to their
-  defaults, as Emporix replaces the configuration whole.
-
-- The AI help names the built-in file generator (`file_generator` in an agent's nativeTools,
-  not a tool), the mixins of agents and MCP servers (an update without them clears them), the
-  provenance in generated replies and texts, and the reply of an agent job.
-
-- The returns help says that Emporix copies a return's siteCode and restriction from its orders
-  and that update and patch do not take them, how `--query siteCode:DE` filters by site, that a
-  credential with only a site-limited read scope fails with exit code 3, and that the reference
-  now documents 404 for the delete of an unknown return.
-
 - `--language` and `--content-language` accept every code that Emporix accepts: two or three
   letters, then parts of 2 to 8 letters or digits, in any letter case, so custom codes such as
   `de-ch-zh` or `en-12`, refused before, now work. Codes accepted before are sent as before.
 
-- `epx prices match` says how Emporix ranks the price lists that apply, and `carts items create`
-  that an item whose itemType is EXTERNAL sends no priceId.
+### Changed
+
+- epx is checked against the Emporix API reference of 2026-11-18.
+- The Import Service help names, for example, the statuses of a run's streams (CANCELLED; QUEUED
+  and SKIPPED only on older runs), the stages of a run's errors (EXTRACT, MAP, VALIDATE, UPSERT),
+  the error code FAN_OUT_REMOVE and the failed record (payload), the outcomes of imported records
+  (DELETED_TARGET only on older records) and how `search` matches them, what TARGET TYPE means
+  for each writer, the stream order (seq, FAN_OUT), the trigger and streams of a run (RETRY,
+  streamIds), the newest imported file of a queue (lastProcessed), which a SNAPSHOT stream reads
+  again when no file waits, and when Emporix refuses a run: 400 when there is nothing to import,
+  409 also while a data purge runs or for a run that cannot be retried.
+- `epx indexing providers` help names BatteryIncluded's apiUrl, enrichments and
+  siteAwareMixinsStrategy, and `update` says that a body without them sets them back to their
+  defaults, as Emporix replaces the configuration whole.
+- The AI help names the built-in file generator (`file_generator` in an agent's nativeTools,
+  not a tool), the mixins of agents and MCP servers (an update without them clears them), the
+  provenance in generated replies and texts, and the reply of an agent job.
+- The returns help says that Emporix copies a return's siteCode and restriction from its orders
+  and that update and patch do not take them, how `--query siteCode:DE` filters by site, that a
+  credential with only a site-limited read scope fails with exit code 3, and that the reference
+  now documents 404 for the delete of an unknown return.
+- `epx prices match` says how Emporix ranks the price lists that apply, and
+  `epx carts items create` that an item whose itemType is EXTERNAL sends no priceId.
 
 ### Fixed
 

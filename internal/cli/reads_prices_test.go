@@ -1,9 +1,6 @@
 package cli
 
-import (
-	"strings"
-	"testing"
-)
+import "testing"
 
 // The read cases of the Price, Fee and Availability services (see TestReads).
 
@@ -258,17 +255,12 @@ func availabilityReads() []readCase {
 // the price lists that apply rank and that only the first rank with a price
 // is compared.
 func TestPriceMatchHelpSaysHowPriceListsRank(t *testing.T) {
-	help := helpText(t, "prices", "match")
-	for _, want := range []string{
+	assertHelpHolds(t, map[string][]string{"prices match": {
 		"Prices of price lists come before catalog prices",
 		"rank by customer (a list of one of the customer's groups, of its legal entity or of a parent of that " +
 			"entity first)",
 		"then by country (a list of the target country first), then by how many of the country's regions " +
 			"they name (more first)",
 		"Only the first rank that has a price for the product is compared",
-	} {
-		if !strings.Contains(help, want) {
-			t.Errorf("help %q; want %q in it", help, want)
-		}
-	}
+	}})
 }

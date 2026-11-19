@@ -108,11 +108,11 @@ func returnWrites(returns resource[returnRequest]) []*write {
 			use: returns.itemUse("update"), short: "Replace a return",
 			long: "Replaces the return ID with the return in --file, a JSON object as " +
 				"`epx returns get ID -o json` prints it, metadata.version included (Emporix refuses a body " +
-				"without metadata with 400 Bad Request), with siteCode and restriction left out: its reference " +
-				"documents that an update does not accept them, as they stay as copied from the orders, and refuses an order of " +
-				"another site or restriction as create does (400 Bad Request, exit 1). Emporix replaces only the " +
-				"latest version: an older " +
-				"metadata.version, like an unknown return, is not found (exit 4). " + source,
+				"without metadata with 400 Bad Request), with siteCode and restriction left out, which stay as " +
+				"copied from the orders: its reference documents that an update does not accept them. Emporix " +
+				"refuses an order of another site or restriction as create does (400 Bad Request, exit 1). It " +
+				"replaces only the latest version: an older metadata.version, like an unknown return, is not " +
+				"found (exit 4). " + source,
 			method: http.MethodPut, req: item, scopes: manage, body: &payload{}, ids: returns.itemIDs(),
 		},
 		{

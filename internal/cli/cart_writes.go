@@ -144,8 +144,8 @@ func cartItemWrites(a *app, itemsOf resource[cart], items child[cartItem]) []*co
 	about := itemsOf.argumentSentence(notFound)
 	item := childItemHelp(itemsOf, items, &update)
 	external := externalPrices("an item with an external price, product, fee or discount")
-	const takes = "product (its id) or itemYrn, quantity and price (priceId, left out when itemType " +
-		"is EXTERNAL, originalAmount, effectiveAmount and currency, as `epx prices match` finds them), " +
+	const takes = "product (its id) or itemYrn, quantity and price (priceId (left out when itemType " +
+		"is EXTERNAL), originalAmount, effectiveAmount and currency, as `epx prices match` finds them), " +
 		"and optionally itemType (EXTERNAL for an external price), keepAsSeparateLineItem, externalFees, " +
 		"externalDiscounts and mixins."
 	return []*cobra.Command{

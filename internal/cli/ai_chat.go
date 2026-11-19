@@ -105,11 +105,15 @@ func fileGeneration() queryChoice {
 	}}}
 }
 
+// provenanceMember names where a response holds the provenance of what was
+// generated, as help quotes it.
+const provenanceMember = "mixins.provenance, whose schema metadata.mixins names"
+
 // chatReplyHelp says what the reply of a chat holds besides its messages:
 // the provenance of what the agent generated and the files and images it
 // generated, which it does only with --allow-file-generation.
 const chatReplyHelp = "A message also holds the provenance of what the agent generated " +
-	"(mixins.provenance, whose schema metadata.mixins names) and, where it generated files or images, " +
+	"(" + provenanceMember + ") and, where it generated files or images, " +
 	"artifacts: each with kind (image or file), filename, mimeType, size and status (ready or failed), " +
 	"and for a ready one artifactId, the ID of the media asset that holds it (`epx media get`, " +
 	"`epx media download-url`). An agent generates them only with file_generator in its nativeTools and " +
@@ -152,8 +156,7 @@ func agentChat(use, short, answer string) *write {
 
 // generatedProvenance says that a generation's response holds the provenance
 // of what it generated.
-const generatedProvenance = "The response also holds the provenance of the generated text " +
-	"(mixins.provenance, whose schema metadata.mixins names)."
+const generatedProvenance = "The response also holds the provenance of the generated text (" + provenanceMember + ")."
 
 // textGeneration generates a text from a prompt, which consumes AI credits.
 func textGeneration() *write {

@@ -310,3 +310,17 @@ func TestFlatKeepsParagraphs(t *testing.T) {
 		}
 	}
 }
+
+// assertHelpHolds checks that the help of each command, named by its words,
+// holds each part.
+func assertHelpHolds(t *testing.T, parts map[string][]string) {
+	t.Helper()
+	for args, want := range parts {
+		_, help, _ := runCLI(t, nil, append(strings.Fields(args), "--help")...)
+		for _, part := range want {
+			if !containsFlat(help, part) {
+				t.Errorf("%s help %q; want %q", args, help, part)
+			}
+		}
+	}
+}

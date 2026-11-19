@@ -85,7 +85,7 @@ func newAIJobsCommand(a *app) *cobra.Command {
 			"agents), STATUS in_progress, success, failure or skipped, AGENT and SESSION the agent that " +
 			"ran and its session (`epx ai logs sessions get`) and EVENT the commerce event that started " +
 			"it. The message that started an agent's run (message), the agent's reply (response), the " +
-			"provenance of a successful run (mixins.provenance), and an import's or export's result are only " +
+			"provenance of a successful run (" + provenanceMember + "), and an import's or export's result are only " +
 			"in `-o json`.",
 		view: view[aiJob]{
 			singular: "agent job",

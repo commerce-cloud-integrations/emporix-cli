@@ -731,7 +731,7 @@ epx ai generate-text --prompt "Describe product 100200 in German" --max-tokens 5
 
 Read and delete agent jobs.
 
-Reads the jobs of the AI Service: TYPE is AGENT\_CHAT (an agent's run), IMPORT or EXPORT (of agents), STATUS in\_progress, success, failure or skipped, AGENT and SESSION the agent that ran and its session ([`epx ai logs sessions get`](/commands/ai#epx-ai-logs-sessions-get)) and EVENT the commerce event that started it. The message that started an agent's run (message), the agent's reply (response), the provenance of a successful run (mixins.provenance), and an import's or export's result are only in `-o json`.
+Reads the jobs of the AI Service: TYPE is AGENT\_CHAT (an agent's run), IMPORT or EXPORT (of agents), STATUS in\_progress, success, failure or skipped, AGENT and SESSION the agent that ran and its session ([`epx ai logs sessions get`](/commands/ai#epx-ai-logs-sessions-get)) and EVENT the commerce event that started it. The message that started an agent's run (message), the agent's reply (response), the provenance of a successful run (mixins.provenance, whose schema metadata.mixins names), and an import's or export's result are only in `-o json`.
 
 Its reads require the ai.agent\_read scope. Its writes require the ai.agent\_manage scope.
 
@@ -777,7 +777,7 @@ Also takes the [global flags](/commands#global-flags).
 
 Show one agent job.
 
-Reads the jobs of the AI Service: TYPE is AGENT\_CHAT (an agent's run), IMPORT or EXPORT (of agents), STATUS in\_progress, success, failure or skipped, AGENT and SESSION the agent that ran and its session ([`epx ai logs sessions get`](/commands/ai#epx-ai-logs-sessions-get)) and EVENT the commerce event that started it. The message that started an agent's run (message), the agent's reply (response), the provenance of a successful run (mixins.provenance), and an import's or export's result are only in `-o json`.
+Reads the jobs of the AI Service: TYPE is AGENT\_CHAT (an agent's run), IMPORT or EXPORT (of agents), STATUS in\_progress, success, failure or skipped, AGENT and SESSION the agent that ran and its session ([`epx ai logs sessions get`](/commands/ai#epx-ai-logs-sessions-get)) and EVENT the commerce event that started it. The message that started an agent's run (message), the agent's reply (response), the provenance of a successful run (mixins.provenance, whose schema metadata.mixins names), and an import's or export's result are only in `-o json`.
 
 Requires the ai.agent\_read scope.
 
@@ -798,7 +798,7 @@ Also takes the [global flags](/commands#global-flags).
 
 List agent jobs.
 
-Reads the jobs of the AI Service: TYPE is AGENT\_CHAT (an agent's run), IMPORT or EXPORT (of agents), STATUS in\_progress, success, failure or skipped, AGENT and SESSION the agent that ran and its session ([`epx ai logs sessions get`](/commands/ai#epx-ai-logs-sessions-get)) and EVENT the commerce event that started it. The message that started an agent's run (message), the agent's reply (response), the provenance of a successful run (mixins.provenance), and an import's or export's result are only in `-o json`.
+Reads the jobs of the AI Service: TYPE is AGENT\_CHAT (an agent's run), IMPORT or EXPORT (of agents), STATUS in\_progress, success, failure or skipped, AGENT and SESSION the agent that ran and its session ([`epx ai logs sessions get`](/commands/ai#epx-ai-logs-sessions-get)) and EVENT the commerce event that started it. The message that started an agent's run (message), the agent's reply (response), the provenance of a successful run (mixins.provenance, whose schema metadata.mixins names), and an import's or export's result are only in `-o json`.
 
 Requires the ai.agent\_read scope.
 

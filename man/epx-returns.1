@@ -161,7 +161,7 @@ epx returns update ID [flags]
 .fi
 .RE
 .PP
-Replaces the return ID with the return in \fB\-\-file\fR, a JSON object as \fBepx returns get ID \-o json\fR prints it, metadata.version included (Emporix refuses a body without metadata with 400 Bad Request), with siteCode and restriction left out: its reference documents that an update does not accept them, as they stay as copied from the orders, and refuses an order of another site or restriction as create does (400 Bad Request, exit 1). Emporix replaces only the latest version: an older metadata.version, like an unknown return, is not found (exit 4). ID is the ID that \fBepx returns list\fR shows.
+Replaces the return ID with the return in \fB\-\-file\fR, a JSON object as \fBepx returns get ID \-o json\fR prints it, metadata.version included (Emporix refuses a body without metadata with 400 Bad Request), with siteCode and restriction left out, which stay as copied from the orders: its reference documents that an update does not accept them. Emporix refuses an order of another site or restriction as create does (400 Bad Request, exit 1). It replaces only the latest version: an older metadata.version, like an unknown return, is not found (exit 4). ID is the ID that \fBepx returns list\fR shows.
 .PP
 Changes data: on a terminal, epx asks before it sends PUT. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
 .PP

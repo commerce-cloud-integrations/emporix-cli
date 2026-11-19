@@ -331,12 +331,8 @@ func fileDelete(filesOf resource[importStream], files child[queuedFile[importFil
 	return w
 }
 
-// requeueUse is the name of the write that queues a failed file again, and
-// requeueSegment the path of that operation below the file.
-const (
-	requeueUse     = "requeue"
-	requeueSegment = "requeue"
-)
+// requeueUse is the name of the write that queues a failed file again.
+const requeueUse = "requeue"
 
 // fileRequeueConflict says what a 409 Conflict of a requeue of a file means and
 // how to recover, where list is the stream's file list as help quotes it
@@ -362,10 +358,10 @@ func fileRequeue(filesOf resource[importStream], files child[queuedFile[importFi
 			"content Emporix no longer holds or one of another stream is a conflict (exit 5), as is a file of " +
 			"a SNAPSHOT stream after which a newer file arrived, imported, waiting or being read (queued " +
 			"again, the older snapshot would overwrite newer data), and any while the stream's job has a run " +
-			"QUEUED, RUNNING or RESUMABLE. " + childItemHelp(filesOf, files, &requeue),
+			"in flight (QUEUED, RUNNING or RESUMABLE). " + childItemHelp(filesOf, files, &requeue),
 		example: "  epx imports streams files requeue 3fa85f64-5717-4562-b3fc-2c963f66afa6 " +
 			"1b4e28ba-2fa1-41d2-883f-0016d3cca427",
-		req: request{path: requeue.path + "/" + requeueSegment}, scopes: importScopes(), body: noBody{},
+		req: request{path: requeue.path + "/requeue"}, scopes: importScopes(), body: noBody{},
 		conflict: fileRequeueConflict(queueList(filesOf, files)),
 	}
 }

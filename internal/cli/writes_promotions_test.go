@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"net/http"
 	"slices"
-	"strings"
 	"testing"
 )
 
@@ -240,18 +239,4 @@ func TestPromotionWritesHelp(t *testing.T) {
 		"shopping-lists update": {"or without a list of that name, is not found (exit 4)", "Update creates no list"},
 		"shopping-lists delete": {"its other lists stay", "or without a list of that name, is not found"},
 	})
-}
-
-// assertHelpHolds checks that the help of each command, named by its words,
-// holds each part.
-func assertHelpHolds(t *testing.T, parts map[string][]string) {
-	t.Helper()
-	for args, want := range parts {
-		_, help, _ := runCLI(t, nil, append(strings.Fields(args), "--help")...)
-		for _, part := range want {
-			if !containsFlat(help, part) {
-				t.Errorf("%s help %q; want %q", args, help, part)
-			}
-		}
-	}
 }

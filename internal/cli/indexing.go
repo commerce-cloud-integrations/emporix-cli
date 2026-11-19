@@ -142,7 +142,7 @@ func providerUpdate(providers resource[indexProvider]) *write {
 			"valid), so start from `epx indexing providers get PROVIDER -o json`. Change apiUrl while no " +
 			"product reindex runs; to apply a change of enrichments or siteAwareMixinsStrategy to every product at once, or " +
 			"after a change of apiUrl to an index that " +
-			"does not hold every product yet, reindex the products once it takes effect, within 10 minutes " +
+			"does not hold every product yet, reindex the products once it takes effect " +
 			"(`epx indexing reindex-jobs create --entity-type PRODUCT`). " + providerFields,
 		example: "  epx indexing providers update ALGOLIA --file algolia.json",
 		method:  http.MethodPut,

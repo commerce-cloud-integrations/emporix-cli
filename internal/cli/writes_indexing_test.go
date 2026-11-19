@@ -134,22 +134,12 @@ func TestIndexingWriteBodies(t *testing.T) {
 func TestIndexProviderHelpNamesBatteryIncludedSettings(t *testing.T) {
 	settings := []string{"apiUrl", "enrichments", "siteAwareMixinsStrategy", "FEE calls the Fee Service but adds nothing",
 		"for ALGOLIA", "an apiUrl of another host"}
-	for _, tt := range []struct {
-		args []string
-		want []string
-	}{
-		{args: []string{"create"}, want: settings},
-		{args: []string{"update"}, want: append([]string{
+	assertHelpHolds(t, map[string][]string{
+		"indexing providers create": settings,
+		"indexing providers update": append([]string{
 			"replaced whole", "goes back to its default", "`epx indexing providers get PROVIDER -o json`",
 			"`epx indexing reindex-jobs create --entity-type PRODUCT`",
-		}, settings...)},
-		{args: []string{"list"}, want: []string{"apiUrl, enrichments and siteAwareMixinsStrategy, where they are set"}},
-	} {
-		help := helpText(t, append([]string{"indexing", "providers"}, tt.args...)...)
-		for _, want := range tt.want {
-			if !strings.Contains(help, want) {
-				t.Errorf("%q: help %q; want %q in it", tt.args, help, want)
-			}
-		}
-	}
+		}, settings...),
+		"indexing providers list": {"apiUrl, enrichments and siteAwareMixinsStrategy, where they are set"},
+	})
 }

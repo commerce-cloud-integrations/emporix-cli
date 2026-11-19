@@ -176,8 +176,7 @@ func TestExternalPricesAreRequestedOnlyWithTheirFlag(t *testing.T) {
 // create, which update and the bulk writes refer to, says that an EXTERNAL
 // item's price names no priceId.
 func TestCartItemHelpSaysWhenAPriceNamesItsPriceID(t *testing.T) {
-	const want = "price (priceId, left out when itemType is EXTERNAL, originalAmount"
-	if help := helpText(t, "carts", "items", "create"); !strings.Contains(help, want) {
-		t.Errorf("help %q; want %q in it", help, want)
-	}
+	assertHelpHolds(t, map[string][]string{"carts items create": {
+		"price (priceId (left out when itemType is EXTERNAL), originalAmount",
+	}})
 }

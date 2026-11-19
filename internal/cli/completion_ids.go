@@ -185,7 +185,7 @@ func completeArguments(a *app, cmd *cobra.Command, site *siteCode, ids argumentI
 	rule typeRule) {
 	names := declaredArguments(cmd.Use)
 	fixed := rule.builtIn.values(cmd.Use, choices)
-	if !completesArguments(cmd, names, fixed, ids) {
+	if len(completedArguments(cmd, names, fixed, ids)) == 0 {
 		return
 	}
 	first := ids[names[0]].accepting(rule)
@@ -208,11 +208,11 @@ func completeArguments(a *app, cmd *cobra.Command, site *siteCode, ids argumentI
 	}
 }
 
-// completesArguments reports whether cmd completes any of its arguments names,
-// with the fixed values or the IDs of ids, and panics where it would complete an
-// argument it does not take, or from a list of a site without --site (see
-// completeArguments).
-func completesArguments(cmd *cobra.Command, names []string, fixed map[string][]string, ids argumentIDs) bool {
+// completedArguments returns the names of the arguments, among its argument
+// names, that cmd completes, with the fixed values or the IDs of ids, and
+// panics where it would complete an argument it does not take, or from a list
+// of a site without --site (see completeArguments).
+func completedArguments(cmd *cobra.Command, names []string, fixed map[string][]string, ids argumentIDs) []string {
 	completes := slices.Collect(maps.Keys(fixed))
 	for name, src := range ids {
 		if src == nil {
@@ -228,7 +228,7 @@ func completesArguments(cmd *cobra.Command, names []string, fixed map[string][]s
 			panic(fmt.Sprintf("%s: completes %s, which is not one of its arguments", cmd.Use, name))
 		}
 	}
-	return len(completes) > 0
+	return completes
 }
 
 // accepting returns src for the first argument of a command whose type
