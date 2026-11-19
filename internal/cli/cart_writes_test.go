@@ -171,3 +171,13 @@ func TestExternalPricesAreRequestedOnlyWithTheirFlag(t *testing.T) {
 		t.Errorf("group help %q; want the writes to require cart.cart_manage only", group)
 	}
 }
+
+// TestCartItemHelpSaysWhenAPriceNamesItsPriceID checks that a cart item's
+// create, which update and the bulk writes refer to, says that an EXTERNAL
+// item's price names no priceId.
+func TestCartItemHelpSaysWhenAPriceNamesItsPriceID(t *testing.T) {
+	const want = "price (priceId, left out when itemType is EXTERNAL, originalAmount"
+	if help := helpText(t, "carts", "items", "create"); !strings.Contains(help, want) {
+		t.Errorf("help %q; want %q in it", help, want)
+	}
+}

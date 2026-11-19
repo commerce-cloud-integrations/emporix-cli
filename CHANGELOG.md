@@ -54,6 +54,9 @@ change or remove commands, columns or flags, and its notes list each such change
   letters, then parts of 2 to 8 letters or digits, in any letter case, so custom codes such as
   `de-ch-zh` or `en-12`, refused before, now work. Codes accepted before are sent as before.
 
+- `epx prices match` says how Emporix ranks the price lists that apply, and `carts items create`
+  that an item whose itemType is EXTERNAL sends no priceId.
+
 ### Fixed
 
 - epx is built with Go 1.27.4, which fixes a vulnerability in the standard library's HTTP

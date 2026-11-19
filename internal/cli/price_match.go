@@ -50,7 +50,12 @@ func priceMatchCommand(a *app) *cobra.Command {
 			"`epx products list`) that Emporix would charge on the site --site names, for the country " +
 			"--country names, in the currency --currency names: of the prices that apply, the lowest " +
 			"after discounts, converted with the tenant's exchange rates and tax classes where the price " +
-			"is in another currency or for another country. ID is the matched price (of the price list " +
+			"is in another currency or for another country. Prices of price lists come before catalog " +
+			"prices: the price lists that apply rank by customer (a list of one of the customer's groups, " +
+			"of its legal entity or of a parent of that entity first), then by country (a list of the " +
+			"target country first), then by how many of the country's regions they name (more first). " +
+			"Only the first rank that has a price for the product is compared, so a lower price of a " +
+			"later rank is not taken. ID is the matched price (of the price list " +
 			"PRICE LIST, if any), ORIGINAL and EFFECTIVE (discounted) the price of one unit, TOTAL that " +
 			"of QUANTITY, gross where TAX is true. Other quantities and units, a customer or a legal " +
 			"entity go in --body.",
