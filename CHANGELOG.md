@@ -5,7 +5,7 @@ All notable changes to epx are listed here. epx follows
 change or remove commands, columns or flags, and its notes list each such change under
 **Breaking changes**.
 
-## Unreleased
+## 0.4.0 (2026-11-19)
 
 ### Breaking changes
 
