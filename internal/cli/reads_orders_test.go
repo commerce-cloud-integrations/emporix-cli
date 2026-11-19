@@ -296,12 +296,13 @@ func paymentTransactionReads() []readCase {
 func returnReads() []readCase {
 	return []readCase{
 		{
-			// REQUESTOR prefers the email, then the name, then the customer id; TOTAL keeps the value as sent.
+			// REQUESTOR prefers the email, then the name, then the customer id; TOTAL keeps the value as sent;
+			// SITE is the siteCode copied from the orders (older returns have none).
 			args:    []string{"returns", "list"},
 			path:    "/return/acme1/returns",
 			scopes:  []string{"returns.returns_read"},
 			filters: listFilters{kinds: filterable},
-			body: `[{"id":"r1","approvalStatus":"PENDING","received":false,
+			body: `[{"id":"r1","approvalStatus":"PENDING","siteCode":"DE","restriction":"DE","received":false,
 				"orders":[{"id":"EON1001","items":[{"id":"1","quantity":2}]},{"id":"EON1002","items":[]}],
 				"reason":{"code":"001"},"requestor":{"customerId":"c1","firstName":"Jane","lastName":"Doe",
 				"email":"jane@example.com"},"total":{"value":18.90,"currency":"EUR"},
@@ -310,20 +311,20 @@ func returnReads() []readCase {
 				"requestor":{"firstName":"John","lastName":"Roe"}},
 				{"id":"r3","requestor":{"customerId":"c3"}},
 				{"id":"r4","requestor":{"anonymous":true,"email":"guest@example.com"}}]`,
-			want: "ID  STATUS    RECEIVED  ORDERS            REQUESTOR          TOTAL      CREATED\n" +
-				"r1  PENDING   false     EON1001, EON1002  jane@example.com   18.90 EUR  2026-10-14T09:00:00.000Z\n" +
-				"r2  APPROVED  true      EON1003           John Roe                      \n" +
-				"r3                                        c3                            \n" +
-				"r4                                        guest@example.com             \n",
+			want: "ID  STATUS    SITE  RECEIVED  ORDERS            REQUESTOR          TOTAL      CREATED\n" +
+				"r1  PENDING   DE    false     EON1001, EON1002  jane@example.com   18.90 EUR  2026-10-14T09:00:00.000Z\n" +
+				"r2  APPROVED        true      EON1003           John Roe                      \n" +
+				"r3                                              c3                            \n" +
+				"r4                                              guest@example.com             \n",
 		},
 		{
 			args:   []string{"returns", "get", "r/1"},
 			path:   "/return/acme1/returns/r%2F1",
 			scopes: []string{"returns.returns_read"},
 			mode:   getWhole,
-			body:   `{"id":"r/1","approvalStatus":"CLOSED","orders":[{"id":"EON1001","items":[]}]}`,
-			want: "ID   STATUS  RECEIVED  ORDERS   REQUESTOR  TOTAL  CREATED\n" +
-				"r/1  CLOSED            EON1001                    \n",
+			body:   `{"id":"r/1","approvalStatus":"CLOSED","siteCode":"NL","orders":[{"id":"EON1001","items":[]}]}`,
+			want: "ID   STATUS  SITE  RECEIVED  ORDERS   REQUESTOR  TOTAL  CREATED\n" +
+				"r/1  CLOSED  NL              EON1001                    \n",
 		},
 	}
 }

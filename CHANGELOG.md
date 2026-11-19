@@ -12,6 +12,8 @@ change or remove commands, columns or flags, and its notes list each such change
 - `epx imports statistics`: the ABORTED column comes after CANCELLED, so in the table and in
   `-o csv` ACTIVE, RECORDS READ and RECORDS FAILED move from columns 6–8 to 7–9 (`--columns`
   picks columns by name).
+- `epx returns list|get`: the SITE column (siteCode) comes after STATUS, so in the table and in
+  `-o csv` RECEIVED, ORDERS, REQUESTOR, TOTAL and CREATED move from columns 3–7 to 4–8.
 
 ### New
 
@@ -42,6 +44,11 @@ change or remove commands, columns or flags, and its notes list each such change
 - The AI help names the built-in file generator (`file_generator` in an agent's nativeTools,
   not a tool), the mixins of agents and MCP servers (an update without them clears them), the
   provenance in generated replies and texts, and the reply of an agent job.
+
+- The returns help says that Emporix copies a return's siteCode and restriction from its orders
+  and that update and patch do not take them, how `--query siteCode:DE` filters by site, that a
+  credential with only a site-limited read scope fails with exit code 3, and that the reference
+  now documents 404 for the delete of an unknown return.
 
 ### Fixed
 

@@ -85,3 +85,38 @@ func TestQuoteExternalPricesRequestTheirScope(t *testing.T) {
 	assertRefused(t, []refusedWrite{{args: []string{"quotes", "patch", "Q1", "--allow-external-prices"}, file: `[]`,
 		want: "unknown flag: --allow-external-prices"}})
 }
+
+// TestReturnsHelpNamesTheirSiteAndAnswers checks that the reads of returns
+// say what SITE is, how to filter by site and that a site-limited read scope
+// fails, and that the writes say how Emporix treats siteCode and restriction
+// and what it answers for an unknown return.
+func TestReturnsHelpNamesTheirSiteAndAnswers(t *testing.T) {
+	for _, tt := range []struct {
+		args []string
+		want []string
+	}{
+		{args: []string{"list"}, want: []string{
+			"SITE is the site of the return's orders, which Emporix copies to it (siteCode;",
+			"`--query siteCode:DE` those of one site",
+			"so a credential that holds only a site-limited one, such as returns.returns_read--DE, fails with exit code 3",
+			"and for its writes returns.returns_manage",
+		}},
+		{args: []string{"create"}, want: []string{
+			"Emporix copies siteCode and restriction from the orders, so the body may leave them out",
+			"orders of different sites or restrictions",
+			"`\"site does not match order\"`", "`\"orders belong to different sites\"`",
+		}},
+		{args: []string{"update"}, want: []string{
+			"with siteCode and restriction left out: its reference documents that an update does not accept them",
+		}},
+		{args: []string{"patch"}, want: []string{"a patch does not accept /siteCode or /restriction"}},
+		{args: []string{"delete"}, want: []string{"its reference now documents 404 Not Found (exit 4)"}},
+	} {
+		help := helpText(t, append([]string{"returns"}, tt.args...)...)
+		for _, want := range tt.want {
+			if !strings.Contains(help, want) {
+				t.Errorf("%q: help %q; want %q in it", tt.args, help, want)
+			}
+		}
+	}
+}
