@@ -68,7 +68,9 @@ func newIndexingCommand(a *app) *cobra.Command {
 		use:   "providers",
 		noun:  "index providers",
 		short: "Read, create, update and delete index providers",
-		long: "Reads index provider configurations. Search and write keys are only in `-o json`; " +
+		long: "Reads index provider configurations. Search and write keys are only in `-o json`, as are " +
+			"the BatteryIncluded settings apiUrl, enrichments and siteAwareMixinsStrategy, where they are set " +
+			"(the default applies otherwise); " +
 			"`epx indexing providers public` shows what a storefront sees and needs no scope.",
 		path:   "/indexing/{tenant}/configurations",
 		scopes: []string{indexingScope},
@@ -88,12 +90,27 @@ func newIndexingCommand(a *app) *cobra.Command {
 	)
 }
 
+// batteryIncludedSettings says what the BatteryIncluded-only settings of a
+// provider configuration hold, when Emporix refuses them and when a change
+// reaches the index.
+const batteryIncludedSettings = "For BATTERY_INCLUDED only, it may hold excludedMixinKeys or " +
+	"includedMixinPaths, and: apiUrl, the BatteryIncluded API that holds the index, an https address of " +
+	"a host that Emporix allows, " +
+	"without path, query, fragment, port or user (the default host without it); enrichments, the Emporix " +
+	"services that product indexing calls besides Product, Site Settings and Configuration (AVAILABILITY, " +
+	"PRICE and CUSTOMER_SEGMENT add their data to the indexed document; FEE calls the Fee Service but adds " +
+	"nothing to it), the first three without it and none for an empty list; and siteAwareMixinsStrategy, " +
+	"how site-aware mixins are indexed (FAN_OUT, the default, or INHERITANCE). Emporix refuses apiUrl, " +
+	"enrichments (even an empty list) and siteAwareMixinsStrategy for ALGOLIA, and an apiUrl of another " +
+	"host (400 Bad Request, exit 1). A change of any of the three takes effect within 10 minutes; a new " +
+	"enrichments or siteAwareMixinsStrategy reaches a product when it is next updated or reindexed."
+
 // providerFields says what the body of a provider configuration holds.
 const providerFields = "The JSON in --file holds provider (ALGOLIA or BATTERY_INCLUDED, required), active, " +
-	"applicationId, indexName, searchKey, writeKey and, for BATTERY_INCLUDED, excludedMixinKeys " +
-	"or includedMixinPaths. Only one provider can be active at a time. Emporix checks the keys " +
-	"of BATTERY_INCLUDED before it stores them: it refuses invalid ones (400 Bad Request, exit 1) " +
-	"and stores nothing when it cannot check them (502 Bad Gateway)."
+	"applicationId, indexName, searchKey and writeKey. " + batteryIncludedSettings + " Only one provider " +
+	"can be active at a time. Emporix checks the keys of BATTERY_INCLUDED before it stores them, against " +
+	"the host of apiUrl: it refuses invalid ones (400 Bad Request, exit 1) and stores nothing when it " +
+	"cannot check them (502 Bad Gateway)."
 
 // providerCreate creates the configuration of an index provider in
 // providers, from --file.
@@ -119,7 +136,14 @@ func providerUpdate(providers resource[indexProvider]) *write {
 		long: "Replaces the configuration of PROVIDER, as `epx indexing providers list` shows it. The " +
 			"reference documents not found (exit 4) for an unknown one, as update creates none; for " +
 			"BATTERY_INCLUDED Emporix checks the write key first, so an invalid configuration is answered " +
-			"400 before that (the not-found answer was not checked with a valid key). " + providerFields,
+			"400 before that (the not-found answer was not checked with a valid key). The configuration " +
+			"is replaced whole: each of apiUrl, enrichments and siteAwareMixinsStrategy that the body leaves " +
+			"out goes back to its default (for apiUrl the default host, on which the write key must then be " +
+			"valid), so start from `epx indexing providers get PROVIDER -o json`. Change apiUrl while no " +
+			"product reindex runs; to apply a change of enrichments or siteAwareMixinsStrategy to every product at once, or " +
+			"after a change of apiUrl to an index that " +
+			"does not hold every product yet, reindex the products once it takes effect, within 10 minutes " +
+			"(`epx indexing reindex-jobs create --entity-type PRODUCT`). " + providerFields,
 		example: "  epx indexing providers update ALGOLIA --file algolia.json",
 		method:  http.MethodPut,
 		req:     request{path: providers.itemPath()},

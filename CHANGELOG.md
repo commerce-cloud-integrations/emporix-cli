@@ -32,6 +32,10 @@ change or remove commands, columns or flags, and its notes list each such change
   retry creates (trigger RETRY), and when Emporix refuses a run: 400 when there is nothing to
   import, 409 also while a data purge runs or for a run that cannot be retried.
 
+- `epx indexing providers` help names BatteryIncluded's apiUrl, enrichments and
+  siteAwareMixinsStrategy, and `update` says that a body without them sets them back to their
+  defaults, as Emporix replaces the configuration whole.
+
 ### Fixed
 
 - epx is built with Go 1.27.4, which fixes a vulnerability in the standard library's HTTP
