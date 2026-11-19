@@ -185,6 +185,15 @@ func aiCreditWrites() []writeCase {
 			want: "[]\n",
 		},
 		{
+			// The agent may generate files only with the Media Service's scope, which the flag requests.
+			args: []string{"ai", "chat", "--agent", "a1", "--message", "Draw a forest", "--allow-file-generation"},
+			sent: `{"agentId":"a1","message":"Draw a forest"}`, method: http.MethodPost, path: aiAgenticPath + "chat",
+			scopes: []string{"ai.agentexecution_manage", "media.asset_manage"}, status: http.StatusOK,
+			body: `[{"sessionId":"s1","artifacts":[{"artifactId":"m1","kind":"image","status":"ready"}]}]`,
+			want: "[\n  {\n    \"artifacts\": [\n      {\n        \"artifactId\": \"m1\",\n        \"kind\": \"image\",\n" +
+				"        \"status\": \"ready\"\n      }\n    ],\n    \"sessionId\": \"s1\"\n  }\n]\n",
+		},
+		{
 			args: []string{"ai", "chat-async", "--agent", "a1", "--message", "Hi"}, sent: `{"agentId":"a1","message":"Hi"}`,
 			method: http.MethodPost, path: aiAgenticPath + "chat-async", scopes: chat, status: http.StatusCreated,
 			body: `{"jobId":"j3"}`, want: "{\n  \"jobId\": \"j3\"\n}\n",

@@ -88,9 +88,49 @@ func chatBody() bodyBinder {
 
 // chatHelp says how a chat goes on in a session, and with attachments.
 const chatHelp = "With --session, the chat goes on in that session, which the agent remembers where its " +
-	"enabledMemory is true; an attachment must be one of the session, attached to the same agent " +
+	"memory is enabled (enableMemory, as Emporix sends it); an attachment must be one of the session, " +
+	"attached to the same agent " +
 	"(`epx ai agents attach`). --file gives the body instead, with the caption and purpose of " +
 	"each attachment."
+
+// fileGeneration is the choice of a chat whose agent may generate files and
+// images with the built-in file generator, which Emporix lets it do only with
+// the Media Service's media.asset_manage: --allow-file-generation requests
+// it; epx requests it only when told so.
+func fileGeneration() queryChoice {
+	return queryChoice{options: []choiceOption{{
+		flag:   "allow-file-generation",
+		usage:  "let an agent whose nativeTools hold the built-in file_generator create files and images",
+		scopes: []string{mediaManage},
+	}}}
+}
+
+// chatReplyHelp says what the reply of a chat holds besides its messages:
+// the provenance of what the agent generated and the files and images it
+// generated, which it does only with --allow-file-generation.
+const chatReplyHelp = "A message also holds the provenance of what the agent generated " +
+	"(mixins.provenance, whose schema metadata.mixins names) and, where it generated files or images, " +
+	"artifacts: each with kind (image or file), filename, mimeType, size and status (ready or failed), " +
+	"and for a ready one artifactId, the ID of the media asset that holds it (`epx media get`, " +
+	"`epx media download-url`). An agent generates them only with file_generator in its nativeTools and " +
+	"with --allow-file-generation; without it, Emporix creates no files or images."
+
+// agentReplyChat is chat, which prints the agent's reply, with the files and
+// images that it may generate (fileGeneration).
+func agentReplyChat() *write {
+	w := agentChat("chat", "Send a message to an agent and print its reply", "and prints its reply: the "+
+		"messages of the agent and of those it collaborates with, each with the sessionId that --session "+
+		"takes to go on. "+chatReplyHelp+" "+replyTimeout()+", or use chat-async (which generates no files).")
+	w.choice = fileGeneration()
+	return w
+}
+
+// agentJobChat is chat-async, which Emporix answers with the job in which
+// the agent replies.
+func agentJobChat() *write {
+	return agentChat("chat-async", "Send a message to an agent, which replies in a job", "which replies in a "+
+		"job of type AGENT_CHAT: Emporix answers with its jobId, which `epx ai jobs get JOB_ID` reads.")
+}
 
 // agentChat sends a message to an agent at agentic/<use>, which Emporix
 // answers as answer says, following "Sends the message ... to the agent
@@ -110,13 +150,18 @@ func agentChat(use, short, answer string) *write {
 	}
 }
 
+// generatedProvenance says that a generation's response holds the provenance
+// of what it generated.
+const generatedProvenance = "The response also holds the provenance of the generated text " +
+	"(mixins.provenance, whose schema metadata.mixins names)."
+
 // textGeneration generates a text from a prompt, which consumes AI credits.
 func textGeneration() *write {
 	return &write{
 		use:   "generate-text",
 		short: "Generate a text from a prompt (consumes AI credits)",
 		long: "Generates a text from the prompt that --prompt gives, such as a product description, and " +
-			"prints it as result. " + openAICredits + " " + replyTimeout() + ".",
+			"prints it as result. " + generatedProvenance + " " + openAICredits + " " + replyTimeout() + ".",
 		example: "  epx ai generate-text --prompt \"Describe product 100200 in German\" --max-tokens 500",
 		method:  http.MethodPost,
 		req:     request{path: aiPath + "texts"},
@@ -135,7 +180,8 @@ func completionGeneration() *write {
 		use:   "generate-completion",
 		short: "Generate the next message of a chat history (consumes AI credits)",
 		long: "Generates the next message of the chat history that --message gives, one message per " +
-			"--message in their order, and prints it as result. " + openAICredits + " " + replyTimeout() + ".",
+			"--message in their order, and prints it as result. " + generatedProvenance + " " + openAICredits + " " +
+			replyTimeout() + ".",
 		example: "  epx ai generate-completion --message \"SYSTEM:You write product texts\" \\\n" +
 			"    --message \"USER:Describe product 100200\"",
 		method: http.MethodPost,

@@ -12,8 +12,8 @@ import (
 // Microsoft Teams, and the logs of their requests and sessions.
 
 // aiJob is the part of an AI Service job shown in tables: an agent's run, or
-// an import or export of agents. The agent's message and the import's or
-// export's result are only in -o json.
+// an import or export of agents. The run's message and reply and the
+// import's or export's result are only in -o json.
 type aiJob struct {
 	ID            string       `json:"id"`
 	Type          string       `json:"type"`
@@ -84,7 +84,9 @@ func newAIJobsCommand(a *app) *cobra.Command {
 		long: "Reads the jobs of the AI Service: TYPE is AGENT_CHAT (an agent's run), IMPORT or EXPORT (of " +
 			"agents), STATUS in_progress, success, failure or skipped, AGENT and SESSION the agent that " +
 			"ran and its session (`epx ai logs sessions get`) and EVENT the commerce event that started " +
-			"it. The agent's message and an import's or export's result are only in `-o json`.",
+			"it. The message that started an agent's run (message), the agent's reply (response), the " +
+			"provenance of a successful run (mixins.provenance), and an import's or export's result are only " +
+			"in `-o json`.",
 		view: view[aiJob]{
 			singular: "agent job",
 			header:   []string{columnID, columnType, columnStatus, columnAgent, columnSession, "EVENT", columnCreated},

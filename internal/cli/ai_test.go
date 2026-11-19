@@ -121,3 +121,17 @@ func TestAIToolsHelpNamesTheSearchToolAndItsReindex(t *testing.T) {
 		}
 	}
 }
+
+// TestAIChatGeneratesFilesOnlyWhenAsked checks that chat says that an agent
+// generates files and images only with --allow-file-generation, which the
+// write cases show adds media.asset_manage, and that chat-async does not take
+// the flag (a job's answer names no generated files).
+func TestAIChatGeneratesFilesOnlyWhenAsked(t *testing.T) {
+	const rule = "An agent generates them only with file_generator in its nativeTools and with " +
+		"--allow-file-generation; without it, Emporix creates no files or images."
+	if help := helpText(t, "ai", "chat"); !strings.Contains(help, rule) {
+		t.Errorf("ai chat: help %q; want %q in it", help, rule)
+	}
+	assertRefused(t, []refusedWrite{{args: []string{"ai", "chat-async", "--agent", "a1", "--message", "Hi",
+		"--allow-file-generation"}, want: "unknown flag: --allow-file-generation"}})
+}

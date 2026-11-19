@@ -356,7 +356,7 @@ epx ai agents update ID [flags]
 .fi
 .RE
 .PP
-Replaces the agent ID with the JSON in \fB\-\-file\fR, or creates it with that ID where none exists (an upsert): Emporix answers with the id of one it created and nothing for one it replaced. With metadata.version, as \fBepx ai agents get ID \-o json\fR prints it, Emporix replaces only that version: another is a conflict (exit 5). The JSON holds its name and description, userPrompt, llmConfig, triggers and mcpServers, and its nativeTools, agentCollaborations, enabledMemory and maxRecursionLimit. ID is the ID that \fBepx ai agents list\fR shows.
+Replaces the agent ID with the JSON in \fB\-\-file\fR, or creates it with that ID where none exists (an upsert): Emporix answers with the id of one it created and nothing for one it replaced. With metadata.version, as \fBepx ai agents get ID \-o json\fR prints it, Emporix replaces only that version: another is a conflict (exit 5). The JSON holds its name and description, userPrompt, llmConfig, triggers and mcpServers, and its nativeTools, agentCollaborations, enabledMemory (so the reference names it; a read shows enableMemory) and maxRecursionLimit (up to 100). nativeTools may hold file_generator, the built\-in file generator, which is not a tool of \fBepx ai tools\fR: its ID in nativeTools lets the agent create files and images. Its mixins hold custom values by name, and metadata.mixins the URLs of the JSON schemas that Emporix checks them against; an update replaces them, so a body without mixins clears the stored ones: send them again, with metadata.mixins. ID is the ID that \fBepx ai agents list\fR shows.
 .PP
 Localized text in the body, such as a name, is a map of translations, e.g. \fB{"en": "gram", "de": "Gramm"}\fR, as \fB\-o json\fR of a read prints it, or with \fB\-\-content\-language\fR LANGUAGE a string in that language, e.g. \fB"gram"\fR with \fB\-\-content\-language\fR en.
 .PP
@@ -474,9 +474,11 @@ epx ai chat [flags]
 .fi
 .RE
 .PP
-Sends the message that \fB\-\-message\fR gives to the agent \fB\-\-agent\fR, and prints its reply: the messages of the agent and of those it collaborates with, each with the sessionId that \fB\-\-session\fR takes to go on. A reply may take longer than the \fB\-\-timeout\fR of a request (30s by default): then give a longer one, e.g. \fB\-\-timeout\fR 5m, or use chat\-async. It consumes AI credits: the LLM tokens of the agent\(aqs model, and of the agents it collaborates with. With \fB\-\-session\fR, the chat goes on in that session, which the agent remembers where its enabledMemory is true; an attachment must be one of the session, attached to the same agent (\fBepx ai agents attach\fR). \fB\-\-file\fR gives the body instead, with the caption and purpose of each attachment.
+Sends the message that \fB\-\-message\fR gives to the agent \fB\-\-agent\fR, and prints its reply: the messages of the agent and of those it collaborates with, each with the sessionId that \fB\-\-session\fR takes to go on. A message also holds the provenance of what the agent generated (mixins.provenance, whose schema metadata.mixins names) and, where it generated files or images, artifacts: each with kind (image or file), filename, mimeType, size and status (ready or failed), and for a ready one artifactId, the ID of the media asset that holds it (\fBepx media get\fR, \fBepx media download\-url\fR). An agent generates them only with file_generator in its nativeTools and with \fB\-\-allow\-file\-generation\fR; without it, Emporix creates no files or images. A reply may take longer than the \fB\-\-timeout\fR of a request (30s by default): then give a longer one, e.g. \fB\-\-timeout\fR 5m, or use chat\-async (which generates no files). It consumes AI credits: the LLM tokens of the agent\(aqs model, and of the agents it collaborates with. With \fB\-\-session\fR, the chat goes on in that session, which the agent remembers where its memory is enabled (enableMemory, as Emporix sends it); an attachment must be one of the session, attached to the same agent (\fBepx ai agents attach\fR). \fB\-\-file\fR gives the body instead, with the caption and purpose of each attachment.
 .PP
 Changes data: on a terminal, epx asks before it sends POST. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
+.PP
+\fB\-\-allow\-file\-generation\fR also requests the media.asset_manage scope.
 .PP
 Requires the ai.agentexecution_manage scope.
 .PP
@@ -484,6 +486,9 @@ Requires the ai.agentexecution_manage scope.
 .TP
 \fB\-\-agent <ID>\fR
 The ID of the agent, as \fBepx ai agents list\fR shows it (required without \fB\-\-file\fR).
+.TP
+\fB\-\-allow\-file\-generation\fR
+Let an agent whose nativeTools hold the built\-in file_generator create files and images (requests media.asset_manage too).
 .TP
 \fB\-\-attachment <ID>\fR
 The ID of an attachment of the session to send with the message, as \fBepx ai agents attach\fR prints it (repeatable) (only with \fB\-\-session\fR).
@@ -522,7 +527,7 @@ epx ai chat\-async [flags]
 .fi
 .RE
 .PP
-Sends the message that \fB\-\-message\fR gives to the agent \fB\-\-agent\fR, which replies in a job of type AGENT_CHAT: Emporix answers with its jobId, which \fBepx ai jobs get JOB_ID\fR reads. It consumes AI credits: the LLM tokens of the agent\(aqs model, and of the agents it collaborates with. With \fB\-\-session\fR, the chat goes on in that session, which the agent remembers where its enabledMemory is true; an attachment must be one of the session, attached to the same agent (\fBepx ai agents attach\fR). \fB\-\-file\fR gives the body instead, with the caption and purpose of each attachment.
+Sends the message that \fB\-\-message\fR gives to the agent \fB\-\-agent\fR, which replies in a job of type AGENT_CHAT: Emporix answers with its jobId, which \fBepx ai jobs get JOB_ID\fR reads. It consumes AI credits: the LLM tokens of the agent\(aqs model, and of the agents it collaborates with. With \fB\-\-session\fR, the chat goes on in that session, which the agent remembers where its memory is enabled (enableMemory, as Emporix sends it); an attachment must be one of the session, attached to the same agent (\fBepx ai agents attach\fR). \fB\-\-file\fR gives the body instead, with the caption and purpose of each attachment.
 .PP
 Changes data: on a terminal, epx asks before it sends POST. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
 .PP
@@ -681,7 +686,7 @@ epx ai generate\-completion [flags]
 .fi
 .RE
 .PP
-Generates the next message of the chat history that \fB\-\-message\fR gives, one message per \fB\-\-message\fR in their order, and prints it as result. It consumes AI credits: the LLM tokens of the tenant\(aqs own OpenAI account where the tenant configuration openAiApiToken holds its token, or else Emporix\(aqs, of which a tenant may use 3 million input and 1 million output tokens. A reply may take longer than the \fB\-\-timeout\fR of a request (30s by default): then give a longer one, e.g. \fB\-\-timeout\fR 5m.
+Generates the next message of the chat history that \fB\-\-message\fR gives, one message per \fB\-\-message\fR in their order, and prints it as result. The response also holds the provenance of the generated text (mixins.provenance, whose schema metadata.mixins names). It consumes AI credits: the LLM tokens of the tenant\(aqs own OpenAI account where the tenant configuration openAiApiToken holds its token, or else Emporix\(aqs, of which a tenant may use 3 million input and 1 million output tokens. A reply may take longer than the \fB\-\-timeout\fR of a request (30s by default): then give a longer one, e.g. \fB\-\-timeout\fR 5m.
 .PP
 Changes data: on a terminal, epx asks before it sends POST. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
 .PP
@@ -721,7 +726,7 @@ epx ai generate\-text [flags]
 .fi
 .RE
 .PP
-Generates a text from the prompt that \fB\-\-prompt\fR gives, such as a product description, and prints it as result. It consumes AI credits: the LLM tokens of the tenant\(aqs own OpenAI account where the tenant configuration openAiApiToken holds its token, or else Emporix\(aqs, of which a tenant may use 3 million input and 1 million output tokens. A reply may take longer than the \fB\-\-timeout\fR of a request (30s by default): then give a longer one, e.g. \fB\-\-timeout\fR 5m.
+Generates a text from the prompt that \fB\-\-prompt\fR gives, such as a product description, and prints it as result. The response also holds the provenance of the generated text (mixins.provenance, whose schema metadata.mixins names). It consumes AI credits: the LLM tokens of the tenant\(aqs own OpenAI account where the tenant configuration openAiApiToken holds its token, or else Emporix\(aqs, of which a tenant may use 3 million input and 1 million output tokens. A reply may take longer than the \fB\-\-timeout\fR of a request (30s by default): then give a longer one, e.g. \fB\-\-timeout\fR 5m.
 .PP
 Changes data: on a terminal, epx asks before it sends POST. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
 .PP
@@ -764,7 +769,7 @@ epx ai jobs [command]
 .fi
 .RE
 .PP
-Reads the jobs of the AI Service: TYPE is AGENT_CHAT (an agent\(aqs run), IMPORT or EXPORT (of agents), STATUS in_progress, success, failure or skipped, AGENT and SESSION the agent that ran and its session (\fBepx ai logs sessions get\fR) and EVENT the commerce event that started it. The agent\(aqs message and an import\(aqs or export\(aqs result are only in \fB\-o json\fR.
+Reads the jobs of the AI Service: TYPE is AGENT_CHAT (an agent\(aqs run), IMPORT or EXPORT (of agents), STATUS in_progress, success, failure or skipped, AGENT and SESSION the agent that ran and its session (\fBepx ai logs sessions get\fR) and EVENT the commerce event that started it. The message that started an agent\(aqs run (message), the agent\(aqs reply (response), the provenance of a successful run (mixins.provenance), and an import\(aqs or export\(aqs result are only in \fB\-o json\fR.
 .PP
 Its reads require the ai.agent_read scope. Its writes require the ai.agent_manage scope.
 .SS "epx ai jobs delete"
@@ -801,7 +806,7 @@ epx ai jobs get ID [flags]
 .fi
 .RE
 .PP
-Reads the jobs of the AI Service: TYPE is AGENT_CHAT (an agent\(aqs run), IMPORT or EXPORT (of agents), STATUS in_progress, success, failure or skipped, AGENT and SESSION the agent that ran and its session (\fBepx ai logs sessions get\fR) and EVENT the commerce event that started it. The agent\(aqs message and an import\(aqs or export\(aqs result are only in \fB\-o json\fR.
+Reads the jobs of the AI Service: TYPE is AGENT_CHAT (an agent\(aqs run), IMPORT or EXPORT (of agents), STATUS in_progress, success, failure or skipped, AGENT and SESSION the agent that ran and its session (\fBepx ai logs sessions get\fR) and EVENT the commerce event that started it. The message that started an agent\(aqs run (message), the agent\(aqs reply (response), the provenance of a successful run (mixins.provenance), and an import\(aqs or export\(aqs result are only in \fB\-o json\fR.
 .PP
 Requires the ai.agent_read scope.
 .PP
@@ -824,7 +829,7 @@ epx ai jobs list [flags]
 .fi
 .RE
 .PP
-Reads the jobs of the AI Service: TYPE is AGENT_CHAT (an agent\(aqs run), IMPORT or EXPORT (of agents), STATUS in_progress, success, failure or skipped, AGENT and SESSION the agent that ran and its session (\fBepx ai logs sessions get\fR) and EVENT the commerce event that started it. The agent\(aqs message and an import\(aqs or export\(aqs result are only in \fB\-o json\fR.
+Reads the jobs of the AI Service: TYPE is AGENT_CHAT (an agent\(aqs run), IMPORT or EXPORT (of agents), STATUS in_progress, success, failure or skipped, AGENT and SESSION the agent that ran and its session (\fBepx ai logs sessions get\fR) and EVENT the commerce event that started it. The message that started an agent\(aqs run (message), the agent\(aqs reply (response), the provenance of a successful run (mixins.provenance), and an import\(aqs or export\(aqs result are only in \fB\-o json\fR.
 .PP
 Requires the ai.agent_read scope.
 .PP
@@ -1304,7 +1309,7 @@ epx ai mcp\-servers update ID [flags]
 .fi
 .RE
 .PP
-Replaces the MCP server ID with the JSON in \fB\-\-file\fR, or creates it with that ID where none exists (an upsert): Emporix answers with the id of one it created and nothing for one it replaced. With metadata.version, as \fBepx ai mcp\-servers get ID \-o json\fR prints it, Emporix replaces only that version: another is a conflict (exit 5). The JSON holds its type (custom: config with the server\(aqs url; dynamic: its tools), name and transport, and whether it is enabled. ID is the ID that \fBepx ai mcp\-servers list\fR shows.
+Replaces the MCP server ID with the JSON in \fB\-\-file\fR, or creates it with that ID where none exists (an upsert): Emporix answers with the id of one it created and nothing for one it replaced. With metadata.version, as \fBepx ai mcp\-servers get ID \-o json\fR prints it, Emporix replaces only that version: another is a conflict (exit 5). The JSON holds its type (custom: config with the server\(aqs url; dynamic: its tools), name and transport, and whether it is enabled. Its mixins hold custom values by name, and metadata.mixins the URLs of the JSON schemas that Emporix checks them against; an update replaces them, so a body without mixins clears the stored ones: send them again, with metadata.mixins. ID is the ID that \fBepx ai mcp\-servers list\fR shows.
 .PP
 Changes data: on a terminal, epx asks before it sends PUT. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
 .PP
@@ -1953,7 +1958,7 @@ epx ai tools [command]
 .fi
 .RE
 .PP
-Reads the native tools that agents can use: TYPE is slack, teams, rag_custom (retrieval\-augmented generation over the tenant\(aqs own vector database), rag_emporix (over Emporix data) or search (customers or legal entities, found without embeddings in a search index that Emporix keeps); their configuration is only in \fB\-o json\fR. The first search tool of an entity type (customer or legal\-entity) finds nothing until a reindex job of that type (\fBepx indexing reindex\-jobs create \-\-entity\-type CUSTOMER\fR or LEGAL\-ENTITY), started after the tool is saved, ends.
+Reads the native tools that agents can use: TYPE is slack, teams, rag_custom (retrieval\-augmented generation over the tenant\(aqs own vector database), rag_emporix (over Emporix data) or search (customers or legal entities, found without embeddings in a search index that Emporix keeps); their configuration is only in \fB\-o json\fR. The first search tool of an entity type (customer or legal\-entity) finds nothing until a reindex job of that type (\fBepx indexing reindex\-jobs create \-\-entity\-type CUSTOMER\fR or LEGAL\-ENTITY), started after the tool is saved, ends. The built\-in file generator (type file) is not stored as a tool: an agent enables it with the reserved ID file_generator in its nativeTools, and Emporix refuses a tool with that ID (400 Bad Request, exit 1).
 .PP
 Its reads require the ai.agent_read scope. Its writes require the ai.agent_manage scope.
 .SS "epx ai tools delete"
@@ -1993,7 +1998,7 @@ epx ai tools get ID [flags]
 .fi
 .RE
 .PP
-Reads the native tools that agents can use: TYPE is slack, teams, rag_custom (retrieval\-augmented generation over the tenant\(aqs own vector database), rag_emporix (over Emporix data) or search (customers or legal entities, found without embeddings in a search index that Emporix keeps); their configuration is only in \fB\-o json\fR. The first search tool of an entity type (customer or legal\-entity) finds nothing until a reindex job of that type (\fBepx indexing reindex\-jobs create \-\-entity\-type CUSTOMER\fR or LEGAL\-ENTITY), started after the tool is saved, ends.
+Reads the native tools that agents can use: TYPE is slack, teams, rag_custom (retrieval\-augmented generation over the tenant\(aqs own vector database), rag_emporix (over Emporix data) or search (customers or legal entities, found without embeddings in a search index that Emporix keeps); their configuration is only in \fB\-o json\fR. The first search tool of an entity type (customer or legal\-entity) finds nothing until a reindex job of that type (\fBepx indexing reindex\-jobs create \-\-entity\-type CUSTOMER\fR or LEGAL\-ENTITY), started after the tool is saved, ends. The built\-in file generator (type file) is not stored as a tool: an agent enables it with the reserved ID file_generator in its nativeTools, and Emporix refuses a tool with that ID (400 Bad Request, exit 1).
 .PP
 Requires the ai.agent_read scope.
 .PP
@@ -2016,7 +2021,7 @@ epx ai tools list [flags]
 .fi
 .RE
 .PP
-Reads the native tools that agents can use: TYPE is slack, teams, rag_custom (retrieval\-augmented generation over the tenant\(aqs own vector database), rag_emporix (over Emporix data) or search (customers or legal entities, found without embeddings in a search index that Emporix keeps); their configuration is only in \fB\-o json\fR. The first search tool of an entity type (customer or legal\-entity) finds nothing until a reindex job of that type (\fBepx indexing reindex\-jobs create \-\-entity\-type CUSTOMER\fR or LEGAL\-ENTITY), started after the tool is saved, ends.
+Reads the native tools that agents can use: TYPE is slack, teams, rag_custom (retrieval\-augmented generation over the tenant\(aqs own vector database), rag_emporix (over Emporix data) or search (customers or legal entities, found without embeddings in a search index that Emporix keeps); their configuration is only in \fB\-o json\fR. The first search tool of an entity type (customer or legal\-entity) finds nothing until a reindex job of that type (\fBepx indexing reindex\-jobs create \-\-entity\-type CUSTOMER\fR or LEGAL\-ENTITY), started after the tool is saved, ends. The built\-in file generator (type file) is not stored as a tool: an agent enables it with the reserved ID file_generator in its nativeTools, and Emporix refuses a tool with that ID (400 Bad Request, exit 1).
 .PP
 Requires the ai.agent_read scope.
 .PP
@@ -2122,7 +2127,7 @@ epx ai tools update ID [flags]
 .fi
 .RE
 .PP
-Replaces the tool ID with the JSON in \fB\-\-file\fR, or creates it with that ID where none exists (an upsert): Emporix answers with the id of one it created and nothing for one it replaced. With metadata.version, as \fBepx ai tools get ID \-o json\fR prints it, Emporix replaces only that version: another is a conflict (exit 5). The JSON holds its type (slack, teams, rag_custom, rag_emporix or search), name and config, and whether it is enabled. The first search tool of an entity type (customer or legal\-entity) finds nothing until a reindex job of that type (\fBepx indexing reindex\-jobs create \-\-entity\-type CUSTOMER\fR or LEGAL\-ENTITY), started after the tool is saved, ends. ID is the ID that \fBepx ai tools list\fR shows.
+Replaces the tool ID with the JSON in \fB\-\-file\fR, or creates it with that ID where none exists (an upsert): Emporix answers with the id of one it created and nothing for one it replaced. With metadata.version, as \fBepx ai tools get ID \-o json\fR prints it, Emporix replaces only that version: another is a conflict (exit 5). The JSON holds its type (slack, teams, rag_custom, rag_emporix or search), name and config, and whether it is enabled. The first search tool of an entity type (customer or legal\-entity) finds nothing until a reindex job of that type (\fBepx indexing reindex\-jobs create \-\-entity\-type CUSTOMER\fR or LEGAL\-ENTITY), started after the tool is saved, ends. The built\-in file generator (type file) is not stored as a tool: an agent enables it with the reserved ID file_generator in its nativeTools, and Emporix refuses a tool with that ID (400 Bad Request, exit 1). ID is the ID that \fBepx ai tools list\fR shows.
 .PP
 Changes data: on a terminal, epx asks before it sends PUT. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
 .PP

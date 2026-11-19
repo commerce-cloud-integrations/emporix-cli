@@ -15,6 +15,9 @@ change or remove commands, columns or flags, and its notes list each such change
 
 ### New
 
+- `epx ai chat --allow-file-generation` requests the Media Service's media.asset_manage, which an
+  agent with the built-in file generator needs to create files and images; the reply lists them
+  as artifacts.
 - `epx imports streams files requeue STREAM_ID ID` queues a failed file again, from the content
   Emporix holds, so the stream's next run reads it without an upload.
 - `epx imports statistics` shows ABORTED, the runs the Import Service refused to run for their
@@ -35,6 +38,10 @@ change or remove commands, columns or flags, and its notes list each such change
 - `epx indexing providers` help names BatteryIncluded's apiUrl, enrichments and
   siteAwareMixinsStrategy, and `update` says that a body without them sets them back to their
   defaults, as Emporix replaces the configuration whole.
+
+- The AI help names the built-in file generator (`file_generator` in an agent's nativeTools,
+  not a tool), the mixins of agents and MCP servers (an update without them clears them), the
+  provenance in generated replies and texts, and the reply of an agent job.
 
 ### Fixed
 

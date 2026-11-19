@@ -363,7 +363,7 @@ Also takes the [global flags](/commands#global-flags).
 
 Upsert an agent.
 
-Replaces the agent ID with the JSON in `--file`, or creates it with that ID where none exists (an upsert): Emporix answers with the id of one it created and nothing for one it replaced. With metadata.version, as [`epx ai agents get ID -o json`](/commands/ai#epx-ai-agents-get) prints it, Emporix replaces only that version: another is a conflict (exit 5). The JSON holds its name and description, userPrompt, llmConfig, triggers and mcpServers, and its nativeTools, agentCollaborations, enabledMemory and maxRecursionLimit. ID is the ID that [`epx ai agents list`](/commands/ai#epx-ai-agents-list) shows.
+Replaces the agent ID with the JSON in `--file`, or creates it with that ID where none exists (an upsert): Emporix answers with the id of one it created and nothing for one it replaced. With metadata.version, as [`epx ai agents get ID -o json`](/commands/ai#epx-ai-agents-get) prints it, Emporix replaces only that version: another is a conflict (exit 5). The JSON holds its name and description, userPrompt, llmConfig, triggers and mcpServers, and its nativeTools, agentCollaborations, enabledMemory (so the reference names it; a read shows enableMemory) and maxRecursionLimit (up to 100). nativeTools may hold file\_generator, the built-in file generator, which is not a tool of [`epx ai tools`](/commands/ai#epx-ai-tools): its ID in nativeTools lets the agent create files and images. Its mixins hold custom values by name, and metadata.mixins the URLs of the JSON schemas that Emporix checks them against; an update replaces them, so a body without mixins clears the stored ones: send them again, with metadata.mixins. ID is the ID that [`epx ai agents list`](/commands/ai#epx-ai-agents-list) shows.
 
 Localized text in the body, such as a name, is a map of translations, e.g. `{"en": "gram", "de": "Gramm"}`, as `-o json` of a read prints it, or with `--content-language` LANGUAGE a string in that language, e.g. `"gram"` with `--content-language` en.
 
@@ -478,9 +478,11 @@ Also takes the [global flags](/commands#global-flags).
 
 Send a message to an agent and print its reply (consumes AI credits).
 
-Sends the message that `--message` gives to the agent `--agent`, and prints its reply: the messages of the agent and of those it collaborates with, each with the sessionId that `--session` takes to go on. A reply may take longer than the `--timeout` of a request (30s by default): then give a longer one, e.g. `--timeout` 5m, or use chat-async. It consumes AI credits: the LLM tokens of the agent's model, and of the agents it collaborates with. With `--session`, the chat goes on in that session, which the agent remembers where its enabledMemory is true; an attachment must be one of the session, attached to the same agent ([`epx ai agents attach`](/commands/ai#epx-ai-agents-attach)). `--file` gives the body instead, with the caption and purpose of each attachment.
+Sends the message that `--message` gives to the agent `--agent`, and prints its reply: the messages of the agent and of those it collaborates with, each with the sessionId that `--session` takes to go on. A message also holds the provenance of what the agent generated (mixins.provenance, whose schema metadata.mixins names) and, where it generated files or images, artifacts: each with kind (image or file), filename, mimeType, size and status (ready or failed), and for a ready one artifactId, the ID of the media asset that holds it ([`epx media get`](/commands/media#epx-media-get), [`epx media download-url`](/commands/media#epx-media-download-url)). An agent generates them only with file\_generator in its nativeTools and with `--allow-file-generation`; without it, Emporix creates no files or images. A reply may take longer than the `--timeout` of a request (30s by default): then give a longer one, e.g. `--timeout` 5m, or use chat-async (which generates no files). It consumes AI credits: the LLM tokens of the agent's model, and of the agents it collaborates with. With `--session`, the chat goes on in that session, which the agent remembers where its memory is enabled (enableMemory, as Emporix sends it); an attachment must be one of the session, attached to the same agent ([`epx ai agents attach`](/commands/ai#epx-ai-agents-attach)). `--file` gives the body instead, with the caption and purpose of each attachment.
 
 Changes data: on a terminal, epx asks before it sends POST. `--yes` sends without asking (required without a terminal, or with `--file` -); `--dry-run` prints the request instead of sending it.
+
+`--allow-file-generation` also requests the media.asset\_manage scope.
 
 Requires the ai.agentexecution\_manage scope.
 
@@ -490,6 +492,8 @@ Requires the ai.agentexecution\_manage scope.
 
 - `--agent <ID>`\
   The ID of the agent, as [`epx ai agents list`](/commands/ai#epx-ai-agents-list) shows it (required without `--file`).
+- `--allow-file-generation`\
+  Let an agent whose nativeTools hold the built-in file\_generator create files and images (requests media.asset\_manage too).
 - `--attachment <ID>`\
   The ID of an attachment of the session to send with the message, as [`epx ai agents attach`](/commands/ai#epx-ai-agents-attach) prints it (repeatable) (only with `--session`).
 - `--dry-run`\
@@ -517,7 +521,7 @@ epx ai chat --agent complaint-agent --message "Find order EON1243" --yes
 
 Send a message to an agent, which replies in a job (consumes AI credits).
 
-Sends the message that `--message` gives to the agent `--agent`, which replies in a job of type AGENT\_CHAT: Emporix answers with its jobId, which [`epx ai jobs get JOB_ID`](/commands/ai#epx-ai-jobs-get) reads. It consumes AI credits: the LLM tokens of the agent's model, and of the agents it collaborates with. With `--session`, the chat goes on in that session, which the agent remembers where its enabledMemory is true; an attachment must be one of the session, attached to the same agent ([`epx ai agents attach`](/commands/ai#epx-ai-agents-attach)). `--file` gives the body instead, with the caption and purpose of each attachment.
+Sends the message that `--message` gives to the agent `--agent`, which replies in a job of type AGENT\_CHAT: Emporix answers with its jobId, which [`epx ai jobs get JOB_ID`](/commands/ai#epx-ai-jobs-get) reads. It consumes AI credits: the LLM tokens of the agent's model, and of the agents it collaborates with. With `--session`, the chat goes on in that session, which the agent remembers where its memory is enabled (enableMemory, as Emporix sends it); an attachment must be one of the session, attached to the same agent ([`epx ai agents attach`](/commands/ai#epx-ai-agents-attach)). `--file` gives the body instead, with the caption and purpose of each attachment.
 
 Changes data: on a terminal, epx asks before it sends POST. `--yes` sends without asking (required without a terminal, or with `--file` -); `--dry-run` prints the request instead of sending it.
 
@@ -658,7 +662,7 @@ Also takes the [global flags](/commands#global-flags).
 
 Generate the next message of a chat history (consumes AI credits).
 
-Generates the next message of the chat history that `--message` gives, one message per `--message` in their order, and prints it as result. It consumes AI credits: the LLM tokens of the tenant's own OpenAI account where the tenant configuration openAiApiToken holds its token, or else Emporix's, of which a tenant may use 3 million input and 1 million output tokens. A reply may take longer than the `--timeout` of a request (30s by default): then give a longer one, e.g. `--timeout` 5m.
+Generates the next message of the chat history that `--message` gives, one message per `--message` in their order, and prints it as result. The response also holds the provenance of the generated text (mixins.provenance, whose schema metadata.mixins names). It consumes AI credits: the LLM tokens of the tenant's own OpenAI account where the tenant configuration openAiApiToken holds its token, or else Emporix's, of which a tenant may use 3 million input and 1 million output tokens. A reply may take longer than the `--timeout` of a request (30s by default): then give a longer one, e.g. `--timeout` 5m.
 
 Changes data: on a terminal, epx asks before it sends POST. `--yes` sends without asking (required without a terminal, or with `--file` -); `--dry-run` prints the request instead of sending it.
 
@@ -692,7 +696,7 @@ epx ai generate-completion --message "SYSTEM:You write product texts" \
 
 Generate a text from a prompt (consumes AI credits).
 
-Generates a text from the prompt that `--prompt` gives, such as a product description, and prints it as result. It consumes AI credits: the LLM tokens of the tenant's own OpenAI account where the tenant configuration openAiApiToken holds its token, or else Emporix's, of which a tenant may use 3 million input and 1 million output tokens. A reply may take longer than the `--timeout` of a request (30s by default): then give a longer one, e.g. `--timeout` 5m.
+Generates a text from the prompt that `--prompt` gives, such as a product description, and prints it as result. The response also holds the provenance of the generated text (mixins.provenance, whose schema metadata.mixins names). It consumes AI credits: the LLM tokens of the tenant's own OpenAI account where the tenant configuration openAiApiToken holds its token, or else Emporix's, of which a tenant may use 3 million input and 1 million output tokens. A reply may take longer than the `--timeout` of a request (30s by default): then give a longer one, e.g. `--timeout` 5m.
 
 Changes data: on a terminal, epx asks before it sends POST. `--yes` sends without asking (required without a terminal, or with `--file` -); `--dry-run` prints the request instead of sending it.
 
@@ -727,7 +731,7 @@ epx ai generate-text --prompt "Describe product 100200 in German" --max-tokens 5
 
 Read and delete agent jobs.
 
-Reads the jobs of the AI Service: TYPE is AGENT\_CHAT (an agent's run), IMPORT or EXPORT (of agents), STATUS in\_progress, success, failure or skipped, AGENT and SESSION the agent that ran and its session ([`epx ai logs sessions get`](/commands/ai#epx-ai-logs-sessions-get)) and EVENT the commerce event that started it. The agent's message and an import's or export's result are only in `-o json`.
+Reads the jobs of the AI Service: TYPE is AGENT\_CHAT (an agent's run), IMPORT or EXPORT (of agents), STATUS in\_progress, success, failure or skipped, AGENT and SESSION the agent that ran and its session ([`epx ai logs sessions get`](/commands/ai#epx-ai-logs-sessions-get)) and EVENT the commerce event that started it. The message that started an agent's run (message), the agent's reply (response), the provenance of a successful run (mixins.provenance), and an import's or export's result are only in `-o json`.
 
 Its reads require the ai.agent\_read scope. Its writes require the ai.agent\_manage scope.
 
@@ -773,7 +777,7 @@ Also takes the [global flags](/commands#global-flags).
 
 Show one agent job.
 
-Reads the jobs of the AI Service: TYPE is AGENT\_CHAT (an agent's run), IMPORT or EXPORT (of agents), STATUS in\_progress, success, failure or skipped, AGENT and SESSION the agent that ran and its session ([`epx ai logs sessions get`](/commands/ai#epx-ai-logs-sessions-get)) and EVENT the commerce event that started it. The agent's message and an import's or export's result are only in `-o json`.
+Reads the jobs of the AI Service: TYPE is AGENT\_CHAT (an agent's run), IMPORT or EXPORT (of agents), STATUS in\_progress, success, failure or skipped, AGENT and SESSION the agent that ran and its session ([`epx ai logs sessions get`](/commands/ai#epx-ai-logs-sessions-get)) and EVENT the commerce event that started it. The message that started an agent's run (message), the agent's reply (response), the provenance of a successful run (mixins.provenance), and an import's or export's result are only in `-o json`.
 
 Requires the ai.agent\_read scope.
 
@@ -794,7 +798,7 @@ Also takes the [global flags](/commands#global-flags).
 
 List agent jobs.
 
-Reads the jobs of the AI Service: TYPE is AGENT\_CHAT (an agent's run), IMPORT or EXPORT (of agents), STATUS in\_progress, success, failure or skipped, AGENT and SESSION the agent that ran and its session ([`epx ai logs sessions get`](/commands/ai#epx-ai-logs-sessions-get)) and EVENT the commerce event that started it. The agent's message and an import's or export's result are only in `-o json`.
+Reads the jobs of the AI Service: TYPE is AGENT\_CHAT (an agent's run), IMPORT or EXPORT (of agents), STATUS in\_progress, success, failure or skipped, AGENT and SESSION the agent that ran and its session ([`epx ai logs sessions get`](/commands/ai#epx-ai-logs-sessions-get)) and EVENT the commerce event that started it. The message that started an agent's run (message), the agent's reply (response), the provenance of a successful run (mixins.provenance), and an import's or export's result are only in `-o json`.
 
 Requires the ai.agent\_read scope.
 
@@ -1245,7 +1249,7 @@ Also takes the [global flags](/commands#global-flags).
 
 Upsert an MCP server.
 
-Replaces the MCP server ID with the JSON in `--file`, or creates it with that ID where none exists (an upsert): Emporix answers with the id of one it created and nothing for one it replaced. With metadata.version, as [`epx ai mcp-servers get ID -o json`](/commands/ai#epx-ai-mcp-servers-get) prints it, Emporix replaces only that version: another is a conflict (exit 5). The JSON holds its type (custom: config with the server's url; dynamic: its tools), name and transport, and whether it is enabled. ID is the ID that [`epx ai mcp-servers list`](/commands/ai#epx-ai-mcp-servers-list) shows.
+Replaces the MCP server ID with the JSON in `--file`, or creates it with that ID where none exists (an upsert): Emporix answers with the id of one it created and nothing for one it replaced. With metadata.version, as [`epx ai mcp-servers get ID -o json`](/commands/ai#epx-ai-mcp-servers-get) prints it, Emporix replaces only that version: another is a conflict (exit 5). The JSON holds its type (custom: config with the server's url; dynamic: its tools), name and transport, and whether it is enabled. Its mixins hold custom values by name, and metadata.mixins the URLs of the JSON schemas that Emporix checks them against; an update replaces them, so a body without mixins clears the stored ones: send them again, with metadata.mixins. ID is the ID that [`epx ai mcp-servers list`](/commands/ai#epx-ai-mcp-servers-list) shows.
 
 Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without asking (required without a terminal, or with `--file` -); `--dry-run` prints the request instead of sending it.
 
@@ -1852,7 +1856,7 @@ Also takes the [global flags](/commands#global-flags).
 
 Read, upsert, change and delete agent tools.
 
-Reads the native tools that agents can use: TYPE is slack, teams, rag\_custom (retrieval-augmented generation over the tenant's own vector database), rag\_emporix (over Emporix data) or search (customers or legal entities, found without embeddings in a search index that Emporix keeps); their configuration is only in `-o json`. The first search tool of an entity type (customer or legal-entity) finds nothing until a reindex job of that type ([`epx indexing reindex-jobs create --entity-type CUSTOMER`](/commands/indexing#epx-indexing-reindex-jobs-create) or LEGAL-ENTITY), started after the tool is saved, ends.
+Reads the native tools that agents can use: TYPE is slack, teams, rag\_custom (retrieval-augmented generation over the tenant's own vector database), rag\_emporix (over Emporix data) or search (customers or legal entities, found without embeddings in a search index that Emporix keeps); their configuration is only in `-o json`. The first search tool of an entity type (customer or legal-entity) finds nothing until a reindex job of that type ([`epx indexing reindex-jobs create --entity-type CUSTOMER`](/commands/indexing#epx-indexing-reindex-jobs-create) or LEGAL-ENTITY), started after the tool is saved, ends. The built-in file generator (type file) is not stored as a tool: an agent enables it with the reserved ID file\_generator in its nativeTools, and Emporix refuses a tool with that ID (400 Bad Request, exit 1).
 
 Its reads require the ai.agent\_read scope. Its writes require the ai.agent\_manage scope.
 
@@ -1904,7 +1908,7 @@ Also takes the [global flags](/commands#global-flags).
 
 Show one tool.
 
-Reads the native tools that agents can use: TYPE is slack, teams, rag\_custom (retrieval-augmented generation over the tenant's own vector database), rag\_emporix (over Emporix data) or search (customers or legal entities, found without embeddings in a search index that Emporix keeps); their configuration is only in `-o json`. The first search tool of an entity type (customer or legal-entity) finds nothing until a reindex job of that type ([`epx indexing reindex-jobs create --entity-type CUSTOMER`](/commands/indexing#epx-indexing-reindex-jobs-create) or LEGAL-ENTITY), started after the tool is saved, ends.
+Reads the native tools that agents can use: TYPE is slack, teams, rag\_custom (retrieval-augmented generation over the tenant's own vector database), rag\_emporix (over Emporix data) or search (customers or legal entities, found without embeddings in a search index that Emporix keeps); their configuration is only in `-o json`. The first search tool of an entity type (customer or legal-entity) finds nothing until a reindex job of that type ([`epx indexing reindex-jobs create --entity-type CUSTOMER`](/commands/indexing#epx-indexing-reindex-jobs-create) or LEGAL-ENTITY), started after the tool is saved, ends. The built-in file generator (type file) is not stored as a tool: an agent enables it with the reserved ID file\_generator in its nativeTools, and Emporix refuses a tool with that ID (400 Bad Request, exit 1).
 
 Requires the ai.agent\_read scope.
 
@@ -1925,7 +1929,7 @@ Also takes the [global flags](/commands#global-flags).
 
 List agent tools.
 
-Reads the native tools that agents can use: TYPE is slack, teams, rag\_custom (retrieval-augmented generation over the tenant's own vector database), rag\_emporix (over Emporix data) or search (customers or legal entities, found without embeddings in a search index that Emporix keeps); their configuration is only in `-o json`. The first search tool of an entity type (customer or legal-entity) finds nothing until a reindex job of that type ([`epx indexing reindex-jobs create --entity-type CUSTOMER`](/commands/indexing#epx-indexing-reindex-jobs-create) or LEGAL-ENTITY), started after the tool is saved, ends.
+Reads the native tools that agents can use: TYPE is slack, teams, rag\_custom (retrieval-augmented generation over the tenant's own vector database), rag\_emporix (over Emporix data) or search (customers or legal entities, found without embeddings in a search index that Emporix keeps); their configuration is only in `-o json`. The first search tool of an entity type (customer or legal-entity) finds nothing until a reindex job of that type ([`epx indexing reindex-jobs create --entity-type CUSTOMER`](/commands/indexing#epx-indexing-reindex-jobs-create) or LEGAL-ENTITY), started after the tool is saved, ends. The built-in file generator (type file) is not stored as a tool: an agent enables it with the reserved ID file\_generator in its nativeTools, and Emporix refuses a tool with that ID (400 Bad Request, exit 1).
 
 Requires the ai.agent\_read scope.
 
@@ -2014,7 +2018,7 @@ Also takes the [global flags](/commands#global-flags).
 
 Upsert an agent tool.
 
-Replaces the tool ID with the JSON in `--file`, or creates it with that ID where none exists (an upsert): Emporix answers with the id of one it created and nothing for one it replaced. With metadata.version, as [`epx ai tools get ID -o json`](/commands/ai#epx-ai-tools-get) prints it, Emporix replaces only that version: another is a conflict (exit 5). The JSON holds its type (slack, teams, rag\_custom, rag\_emporix or search), name and config, and whether it is enabled. The first search tool of an entity type (customer or legal-entity) finds nothing until a reindex job of that type ([`epx indexing reindex-jobs create --entity-type CUSTOMER`](/commands/indexing#epx-indexing-reindex-jobs-create) or LEGAL-ENTITY), started after the tool is saved, ends. ID is the ID that [`epx ai tools list`](/commands/ai#epx-ai-tools-list) shows.
+Replaces the tool ID with the JSON in `--file`, or creates it with that ID where none exists (an upsert): Emporix answers with the id of one it created and nothing for one it replaced. With metadata.version, as [`epx ai tools get ID -o json`](/commands/ai#epx-ai-tools-get) prints it, Emporix replaces only that version: another is a conflict (exit 5). The JSON holds its type (slack, teams, rag\_custom, rag\_emporix or search), name and config, and whether it is enabled. The first search tool of an entity type (customer or legal-entity) finds nothing until a reindex job of that type ([`epx indexing reindex-jobs create --entity-type CUSTOMER`](/commands/indexing#epx-indexing-reindex-jobs-create) or LEGAL-ENTITY), started after the tool is saved, ends. The built-in file generator (type file) is not stored as a tool: an agent enables it with the reserved ID file\_generator in its nativeTools, and Emporix refuses a tool with that ID (400 Bad Request, exit 1). ID is the ID that [`epx ai tools list`](/commands/ai#epx-ai-tools-list) shows.
 
 Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without asking (required without a terminal, or with `--file` -); `--dry-run` prints the request instead of sending it.
 

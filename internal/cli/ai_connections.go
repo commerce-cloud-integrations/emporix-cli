@@ -55,6 +55,18 @@ const searchToolNeedsReindex = "The first search tool of an entity type (custome
 	"until a reindex job of that type (`epx indexing reindex-jobs create --entity-type CUSTOMER` or " +
 	"LEGAL-ENTITY), started after the tool is saved, ends."
 
+// fileGeneratorNotATool says that the built-in file generator, which an
+// agent's nativeTools may name, is not a tool.
+const fileGeneratorNotATool = "The built-in file generator (type file) is not stored as a tool: an agent " +
+	"enables it with the reserved ID file_generator in its nativeTools, and Emporix refuses a tool with " +
+	"that ID (400 Bad Request, exit 1)."
+
+// mixinsHelp says what the mixins of an agent or MCP server hold and that an
+// upsert replaces them.
+const mixinsHelp = "Its mixins hold custom values by name, and metadata.mixins the URLs of the JSON schemas " +
+	"that Emporix checks them against; an update replaces them, so a body without mixins clears the stored " +
+	"ones: send them again, with metadata.mixins."
+
 // newAIToolsCommand reads and writes the native tools of agents.
 func newAIToolsCommand(a *app) *cobra.Command {
 	r := agentic(resource[aiTool]{
@@ -62,7 +74,8 @@ func newAIToolsCommand(a *app) *cobra.Command {
 		long: "Reads the native tools that agents can use: TYPE is slack, teams, rag_custom " +
 			"(retrieval-augmented generation over the tenant's own vector database), rag_emporix (over Emporix " +
 			"data) or search (customers or legal entities, found without embeddings in a search index " +
-			"that Emporix keeps); their configuration is only in `-o json`. " + searchToolNeedsReindex,
+			"that Emporix keeps); their configuration is only in `-o json`. " + searchToolNeedsReindex + " " +
+			fileGeneratorNotATool,
 		view: view[aiTool]{
 			singular: "tool",
 			header:   []string{columnID, columnType, columnEnabled, columnName},
@@ -74,7 +87,7 @@ func newAIToolsCommand(a *app) *cobra.Command {
 	return aiManagedGroup(a, r, aiItemWrites{
 		one: "an agent tool",
 		members: "The JSON holds its type (slack, teams, rag_custom, rag_emporix or search), name and config, " +
-			"and whether it is enabled. " + searchToolNeedsReindex,
+			"and whether it is enabled. " + searchToolNeedsReindex + " " + fileGeneratorNotATool,
 		disable: usedByAgents, remove: removeFromAgents,
 	})
 }
@@ -147,7 +160,7 @@ func newAIMCPServersCommand(a *app) *cobra.Command {
 	return aiManagedGroup(a, r, aiItemWrites{
 		one: "an MCP server",
 		members: "The JSON holds its type (custom: config with the server's url; dynamic: its tools), name " +
-			"and transport, and whether it is enabled.",
+			"and transport, and whether it is enabled. " + mixinsHelp,
 		disable: usedByAgents, remove: removeFromAgents,
 	})
 }

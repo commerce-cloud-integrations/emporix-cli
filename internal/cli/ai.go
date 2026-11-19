@@ -126,11 +126,7 @@ func newAICommand(a *app) *cobra.Command {
 			req:   request{path: agenticPath + "commerce-events"},
 			fetch: single{items: commerceEventItems},
 		}),
-		agentChat("chat", "Send a message to an agent and print its reply", "and prints its reply: the messages "+
-			"of the agent and of those it collaborates with, each with the sessionId that --session takes to "+
-			"go on. "+replyTimeout()+", or use chat-async.").command(a),
-		agentChat("chat-async", "Send a message to an agent, which replies in a job", "which replies in a job of type "+
-			"AGENT_CHAT: Emporix answers with its jobId, which `epx ai jobs get JOB_ID` reads.").command(a),
+		agentReplyChat().command(a), agentJobChat().command(a),
 		textGeneration().command(a), completionGeneration().command(a),
 	)
 }
@@ -153,7 +149,10 @@ func newAIAgentsCommand(a *app) *cobra.Command {
 	return aiManagedGroup(a, r, aiItemWrites{
 		one: "an agent", language: stringsOrMaps,
 		members: "The JSON holds its name and description, userPrompt, llmConfig, triggers and mcpServers, " +
-			"and its nativeTools, agentCollaborations, enabledMemory and maxRecursionLimit.",
+			"and its nativeTools, agentCollaborations, enabledMemory (so the reference names it; a read shows " +
+			"enableMemory) and maxRecursionLimit (up to 100). nativeTools may " +
+			"hold file_generator, the built-in file generator, which is not a tool of `epx ai tools`: its ID " +
+			"in nativeTools lets the agent create files and images. " + mixinsHelp,
 		remove: "delete it even where other agents collaborate with it",
 	}, agentWrites(a)...)
 }
