@@ -21,7 +21,7 @@ func unitWrites() []writeCase {
 			args: []string{"units", "update", "kg m", "--content-language", "EN"},
 			file: "{\"code\":\"kg m\",\"name\":\"kilogram metre\",\"type\":\"torque\",\"baseUnit\":true,\"factor\":1,\n" +
 				"  \"metadata\":{\"version\":2}}\n",
-			method: http.MethodPut, path: "/unit-handling/acme1/units/kg%20m", scopes: scopes, lang: "en",
+			method: http.MethodPut, path: "/unit-handling/acme1/units/kg%20m", scopes: scopes, lang: "EN",
 			status: http.StatusNoContent,
 		},
 	}

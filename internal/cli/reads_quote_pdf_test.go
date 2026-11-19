@@ -32,7 +32,9 @@ func TestQuotePDFIsSaved(t *testing.T) {
 		language string // the Accept-Language that the fake must get
 	}{
 		{language: ""},
-		{flags: []string{"--language", "DE"}, language: "de"},
+		// Sent as typed: Emporix matches it against the tenant's configuration as written.
+		{flags: []string{"--language", "DE"}, language: "DE"},
+		{flags: []string{"--language", "de-CH"}, language: "de-CH"},
 	} {
 		fake := newFakeEmporix(t)
 		var accept, language []string

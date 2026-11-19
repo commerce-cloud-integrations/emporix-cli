@@ -5,6 +5,22 @@ All notable changes to epx are listed here. epx follows
 change or remove commands, columns or flags, and its notes list each such change under
 **Breaking changes**.
 
+## Unreleased
+
+### Breaking changes
+
+- `--content-language` and `epx quotes pdf --language` send a language code as you type it,
+  where epx sent it in lower case before: `--content-language EN-gb` now sends `EN-gb`. Emporix
+  matches codes regardless of letter case in the Product, Brand, Label and Site Settings
+  services, but other services need the code as the tenant's language configuration writes it.
+  A table still finds a translation in any letter case, and a profile keeps its language as
+  typed.
+
+### Fixed
+
+- A language code is checked as typed: only ASCII letters and digits, so a letter that only
+  becomes ASCII in lower case, such as the Kelvin sign, is refused.
+
 ## 0.4.0 (2026-11-19)
 
 ### Breaking changes

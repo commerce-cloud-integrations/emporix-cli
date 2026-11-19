@@ -64,7 +64,8 @@ translations, as `-o json` prints it:
 ```
 
 With a language code, such as `--content-language en`, each text is a string in that
-language. Some services refuse strings, so their writes take maps only and have no
+language. epx sends the code as you type it, so write it as your tenant's language
+configuration does (the Product, Brand, Label and Site Settings services ignore letter case). Some services refuse strings, so their writes take maps only and have no
 `--content-language`. A few, such as the Shipping Service, refuse `Content-Language: *`,
 so their writes send maps without the header. Each command's help says how it sends
 text.

@@ -10,24 +10,30 @@ import (
 	"strings"
 )
 
-// languagePattern matches lower-cased language codes as Emporix checks them:
-// a language of 2 or 3 letters, then any subtags of 2 to 8 letters or
-// digits, each after a hyphen, such as "nl", "en-gb", "zh-hant-tw" or a
-// custom "de-ch-zh"; whether the language or region exists is not checked.
-var languagePattern = regexp.MustCompile(`^[a-z]{2,3}(-[a-z0-9]{2,8})*$`)
+// languagePattern matches language codes as Emporix checks them, in any
+// letter case: a language of 2 or 3 ASCII letters, then any subtags of 2 to 8
+// ASCII letters or digits, each after a hyphen, such as "nl", "en-GB",
+// "zh-Hant-TW" or a custom "de-CH-ZH"; whether the language or region exists
+// is not checked. It checks the value as typed; where epx sends a code
+// (--content-language, quotes pdf --language), it sends it as typed.
+var languagePattern = regexp.MustCompile(`^[A-Za-z]{2,3}(-[A-Za-z0-9]{2,8})*$`)
 
 // languageShape says what a language code is, in an error message.
-const languageShape = "a code such as nl, en or en-gb: 2 or 3 letters, then any parts of 2 to 8 letters " +
-	"or digits, each after a hyphen"
+const languageShape = "a code such as nl, en or en-GB: 2 or 3 letters a to z, then any parts of 2 to 8 " +
+	"letters a to z or digits, each after a hyphen"
+
+// translationKey returns the key under which localized keeps the translation
+// of code: lower-cased, so a table finds it in any letter case.
+func translationKey(code string) string { return strings.ToLower(code) }
 
 // localized is text that Emporix returns either as a plain string or, when
 // every translation is requested, as a map from language code to text.
 type localized map[string]string
 
 // UnmarshalJSON accepts both shapes; a plain string is stored under "".
-// Language codes are lower-cased (tags compare case-insensitively; on a clash
-// the alphabetically first original key wins), and null or empty translations
-// are dropped, so they never hide another one.
+// Language codes are keyed by translationKey (on a clash the alphabetically
+// first original key wins), and null or empty translations are dropped, so
+// they never hide another one.
 func (l *localized) UnmarshalJSON(data []byte) error {
 	var texts map[string]string
 	if err := json.Unmarshal(data, &texts); err != nil {
@@ -39,19 +45,19 @@ func (l *localized) UnmarshalJSON(data []byte) error {
 	}
 	*l = localized{}
 	for _, key := range slices.Sorted(maps.Keys(texts)) {
-		lower := strings.ToLower(key)
-		if _, taken := (*l)[lower]; !taken && texts[key] != "" {
-			(*l)[lower] = texts[key]
+		code := translationKey(key)
+		if _, taken := (*l)[code]; !taken && texts[key] != "" {
+			(*l)[code] = texts[key]
 		}
 	}
 	return nil
 }
 
-// in returns the text for language, else the plain text, else the
-// alphabetically first translation labeled with its language, so a
-// substitute is never mistaken for the requested language.
+// in returns the text for language in any letter case (translationKey), else
+// the plain text, else the alphabetically first translation labeled with its
+// language, so a substitute is never mistaken for the requested language.
 func (l localized) in(lang language) string {
-	if text := cmp.Or(l[string(lang)], l[""]); text != "" {
+	if text := cmp.Or(l[translationKey(string(lang))], l[""]); text != "" {
 		return text
 	}
 	if len(l) == 0 {
@@ -74,8 +80,8 @@ func (n plainAndLocalizedName) displayName(lang language) string {
 	return cmp.Or(n.LocalizedName.in(lang), n.Name)
 }
 
-// language is a --language value; it implements pflag.Value, so codes are
-// validated and lower-cased while flags are parsed.
+// language is a --language value, as typed; it implements pflag.Value, so
+// codes are validated while flags are parsed.
 type language string
 
 // defaultLanguage is the --language default of every resource that has one.
@@ -83,7 +89,6 @@ const defaultLanguage language = "en"
 
 // Set implements pflag.Value.
 func (l *language) Set(value string) error {
-	value = strings.ToLower(value)
 	if !languagePattern.MatchString(value) {
 		return fmt.Errorf("invalid language %q: use %s", value, languageShape)
 	}

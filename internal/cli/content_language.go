@@ -69,7 +69,8 @@ func (w *write) languageHeader(lang contentLanguage) string {
 }
 
 // languageUsage is the usage of --content-language.
-const languageUsage = "the `LANGUAGE` of localized text in the body, or " + everyLanguage + " for maps of translations"
+const languageUsage = "the `LANGUAGE` of localized text in the body, sent as typed: write it as the tenant's " +
+	"language configuration does; or " + everyLanguage + " for maps of translations"
 
 // contentLanguageFlag is the flag of a write whose body holds localized text,
 // which Emporix reads in the language that its Content-Language header names.
@@ -119,8 +120,8 @@ func mapsOnlyHelp() string {
 }
 
 // contentLanguage is a --content-language value: everyLanguage, or a language
-// code, lower-cased as a --language value is; it implements pflag.Value, so
-// another value is rejected while flags are parsed.
+// code, sent as typed; it implements pflag.Value, so another value is
+// rejected while flags are parsed.
 type contentLanguage string
 
 // Set implements pflag.Value.

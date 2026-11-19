@@ -24,7 +24,7 @@ epx price\-lists create [flags]
 .PP
 Creates the price list in \fB\-\-file\fR, a JSON object with name, currency, siteCode and validity (from and to), and optionally countries or regions, and customerGroups or legalEntityId, e.g. \fB{"name": {"en": "Wholesale"}, "currency": "EUR", "siteCode": "AcmeStore_NL", "countries": ["NL"], "validity": {"from": "2026\-01\-01T00:00:00.000Z"}}\fR. Without an id, Emporix makes one, which the response gives.
 .PP
-Localized text in the body, such as a name, is a map of translations, e.g. \fB{"en": "Wholesale", "nl": "Groothandel"}\fR, as \fB\-o json\fR of a read prints it, also with \fB\-\-content\-language\fR LANGUAGE: then a map of that language only, e.g. \fB{"en": "Wholesale"}\fR with \fB\-\-content\-language\fR en.
+Localized text in the body, such as a name, is a map of translations, e.g. \fB{"en": "Wholesale", "nl": "Groothandel"}\fR, as \fB\-o json\fR of a read prints it, also with \fB\-\-content\-language\fR LANGUAGE: then a map of that language only, its key written as \fB\-\-content\-language\fR gives it, e.g. \fB{"en": "Wholesale"}\fR with \fB\-\-content\-language\fR en.
 .PP
 Changes data: on a terminal, epx asks before it sends POST. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
 .PP
@@ -33,7 +33,7 @@ Requires the price.pricelist_manage scope.
 \fBOptions:\fR
 .TP
 \fB\-\-content\-language <LANGUAGE>\fR
-The LANGUAGE of localized text in the body, or * for maps of translations. Default: \fB*\fR.
+The LANGUAGE of localized text in the body, sent as typed: write it as the tenant\(aqs language configuration does; or * for maps of translations. Default: \fB*\fR.
 .TP
 \fB\-\-dry\-run\fR
 Print the request instead of sending it (excludes \fB\-o\fR).
@@ -471,7 +471,7 @@ epx price\-lists update ID [flags]
 .PP
 Replaces the price list ID with the one in \fB\-\-file\fR, a JSON object as \fBepx price\-lists get ID \-o json\fR prints it, or creates it with that id where none exists (an upsert).
 .PP
-Localized text in the body, such as a name, is a map of translations, e.g. \fB{"en": "Wholesale", "nl": "Groothandel"}\fR, as \fB\-o json\fR of a read prints it, also with \fB\-\-content\-language\fR LANGUAGE: then a map of that language only, e.g. \fB{"en": "Wholesale"}\fR with \fB\-\-content\-language\fR en.
+Localized text in the body, such as a name, is a map of translations, e.g. \fB{"en": "Wholesale", "nl": "Groothandel"}\fR, as \fB\-o json\fR of a read prints it, also with \fB\-\-content\-language\fR LANGUAGE: then a map of that language only, its key written as \fB\-\-content\-language\fR gives it, e.g. \fB{"en": "Wholesale"}\fR with \fB\-\-content\-language\fR en.
 .PP
 Changes data: on a terminal, epx asks before it sends PUT. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
 .PP
@@ -480,7 +480,7 @@ Requires the price.pricelist_manage scope.
 \fBOptions:\fR
 .TP
 \fB\-\-content\-language <LANGUAGE>\fR
-The LANGUAGE of localized text in the body, or * for maps of translations. Default: \fB*\fR.
+The LANGUAGE of localized text in the body, sent as typed: write it as the tenant\(aqs language configuration does; or * for maps of translations. Default: \fB*\fR.
 .TP
 \fB\-\-dry\-run\fR
 Print the request instead of sending it (excludes \fB\-o\fR).

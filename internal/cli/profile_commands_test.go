@@ -22,7 +22,21 @@ func devProfile() config.Profile {
 // addDev is the command line that adds devProfile.
 func addDev() []string {
 	return []string{"profile", "add", "dev", "--tenant", "acme1", "--client-id", "client", "--site", "AcmeStore_NL",
-		"--language", "NL"}
+		"--language", "nl"}
+}
+
+// TestProfileAddKeepsTheLanguageAsTyped checks that a profile stores its
+// language as typed (a table finds the translation in any case).
+func TestProfileAddKeepsTheLanguageAsTyped(t *testing.T) {
+	setup := newProfileSetup(t, nil, nil)
+	args := addDev()
+	args[len(args)-1] = "EN-us"
+	if code, _, stderr := runIn(t, setup.env(nil, testSecret+"\n", false), args...); code != ExitOK {
+		t.Fatalf("exit %d, stderr %q", code, stderr)
+	}
+	if got := setup.load(t).Profiles["dev"].Language; got != "EN-us" {
+		t.Errorf("saved language %q; want EN-us, as typed", got)
+	}
 }
 
 func TestProfileAddStoresTheSecretInTheKeychainOnly(t *testing.T) {

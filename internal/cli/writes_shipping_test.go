@@ -29,10 +29,11 @@ func shippingWrites() []writeCase {
 			status: http.StatusCreated, body: `{"id":"nl"}`, want: "{\n  \"id\": \"nl\"\n}\n",
 		},
 		{
-			// The ID is escaped as a path segment; Emporix answers without a body.
-			args:   []string{"shipping", "zones", "update", "nl 1", "--site", "AcmeStore_NL", "--content-language", "en"},
+			// The ID is escaped as a path segment; Emporix answers without a body. The language goes as typed.
+			args: []string{"shipping", "zones", "update", "nl 1", "--site", "AcmeStore_NL", "--content-language",
+				"en-NL"},
 			file:   `{"id":"nl 1","name":"Netherlands","shipTo":[{"country":"NL","postalCode":"10*"}]}`,
-			method: http.MethodPut, path: "/shipping/acme1/AcmeStore_NL/zones/nl%201", scopes: manage, lang: "en",
+			method: http.MethodPut, path: "/shipping/acme1/AcmeStore_NL/zones/nl%201", scopes: manage, lang: "en-NL",
 			status: http.StatusOK,
 		},
 		{

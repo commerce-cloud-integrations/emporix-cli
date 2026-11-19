@@ -15,7 +15,8 @@ const priceListManage = "price.pricelist_manage"
 func priceListLanguageHelp() string {
 	return "Localized text in the body, such as a name, is a map of translations, e.g. " +
 		literal(`{"en": "Wholesale", "nl": "Groothandel"}`) + ", as `-o json` of a read prints it, also with --" +
-		contentLanguageFlag + " LANGUAGE: then a map of that language only, e.g. " +
+		contentLanguageFlag + " LANGUAGE: then a map of that language only, its key written as --" + contentLanguageFlag +
+		" gives it, e.g. " +
 		literal(`{"en": "Wholesale"}`) + " with --" +
 		contentLanguageFlag + " en."
 }

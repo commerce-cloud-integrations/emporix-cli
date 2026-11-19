@@ -79,7 +79,8 @@ func newProfileAddCommand(a *app) *cobra.Command {
 	flags.StringVar(&profile.ClientID, "client-id", "", "client ID of the API key")
 	flags.StringVar(&profile.APIURL, "api-url", "", "API host (default "+emporix.DefaultBaseURL+")")
 	flags.Var(&site, siteFlag, "default site code, for commands that need a site")
-	flags.Var(&lang, languageFlag, "default language of localized table text, for commands that take --language")
+	flags.Var(&lang, languageFlag,
+		"default language of localized table text, kept as typed, for the tables of commands that take --language")
 	requireFlag(cmd, "tenant")
 	requireFlag(cmd, "client-id")
 	return cmd

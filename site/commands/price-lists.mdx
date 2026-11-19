@@ -37,7 +37,7 @@ Create a price list.
 
 Creates the price list in `--file`, a JSON object with name, currency, siteCode and validity (from and to), and optionally countries or regions, and customerGroups or legalEntityId, e.g. `{"name": {"en": "Wholesale"}, "currency": "EUR", "siteCode": "AcmeStore_NL", "countries": ["NL"], "validity": {"from": "2026-01-01T00:00:00.000Z"}}`. Without an id, Emporix makes one, which the response gives.
 
-Localized text in the body, such as a name, is a map of translations, e.g. `{"en": "Wholesale", "nl": "Groothandel"}`, as `-o json` of a read prints it, also with `--content-language` LANGUAGE: then a map of that language only, e.g. `{"en": "Wholesale"}` with `--content-language` en.
+Localized text in the body, such as a name, is a map of translations, e.g. `{"en": "Wholesale", "nl": "Groothandel"}`, as `-o json` of a read prints it, also with `--content-language` LANGUAGE: then a map of that language only, its key written as `--content-language` gives it, e.g. `{"en": "Wholesale"}` with `--content-language` en.
 
 Changes data: on a terminal, epx asks before it sends POST. `--yes` sends without asking (required without a terminal, or with `--file` -); `--dry-run` prints the request instead of sending it.
 
@@ -48,7 +48,7 @@ Requires the price.pricelist\_manage scope.
 **Flags**
 
 - `--content-language <LANGUAGE>`\
-  The LANGUAGE of localized text in the body, or \* for maps of translations. Default: `*`.
+  The LANGUAGE of localized text in the body, sent as typed: write it as the tenant's language configuration does; or \* for maps of translations. Default: `*`.
 - `--dry-run`\
   Print the request instead of sending it (excludes `-o`).
 - `--file <PATH>`\
@@ -448,7 +448,7 @@ Upsert a price list.
 
 Replaces the price list ID with the one in `--file`, a JSON object as [`epx price-lists get ID -o json`](/commands/price-lists#epx-price-lists-get) prints it, or creates it with that id where none exists (an upsert).
 
-Localized text in the body, such as a name, is a map of translations, e.g. `{"en": "Wholesale", "nl": "Groothandel"}`, as `-o json` of a read prints it, also with `--content-language` LANGUAGE: then a map of that language only, e.g. `{"en": "Wholesale"}` with `--content-language` en.
+Localized text in the body, such as a name, is a map of translations, e.g. `{"en": "Wholesale", "nl": "Groothandel"}`, as `-o json` of a read prints it, also with `--content-language` LANGUAGE: then a map of that language only, its key written as `--content-language` gives it, e.g. `{"en": "Wholesale"}` with `--content-language` en.
 
 Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without asking (required without a terminal, or with `--file` -); `--dry-run` prints the request instead of sending it.
 
@@ -459,7 +459,7 @@ Requires the price.pricelist\_manage scope.
 **Flags**
 
 - `--content-language <LANGUAGE>`\
-  The LANGUAGE of localized text in the body, or \* for maps of translations. Default: `*`.
+  The LANGUAGE of localized text in the body, sent as typed: write it as the tenant's language configuration does; or \* for maps of translations. Default: `*`.
 - `--dry-run`\
   Print the request instead of sending it (excludes `-o`).
 - `--file <PATH>`\
