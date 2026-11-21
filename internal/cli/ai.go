@@ -149,8 +149,9 @@ func newAIAgentsCommand(a *app) *cobra.Command {
 	return aiManagedGroup(a, r, aiItemWrites{
 		one: "an agent", language: stringsOrMaps,
 		members: "The JSON holds its name and description, userPrompt, llmConfig, triggers and mcpServers, " +
-			"and its nativeTools, agentCollaborations, enabledMemory (so the reference names it; a read shows " +
-			"enableMemory) and maxRecursionLimit (up to 100). nativeTools may " +
+			"and its nativeTools, agentCollaborations, enableMemory (as a read shows it: Emporix ignores " +
+			"enabledMemory, the name the reference gives) and maxRecursionLimit (up to 100); the JSON that " +
+			"`epx ai agents get ID -o json` prints can be sent back as it is. nativeTools may " +
 			"hold file_generator, the built-in file generator, which is not a tool of `epx ai tools`: its ID " +
 			"in nativeTools lets the agent create files and images. " + mixinsHelp,
 		remove: "delete it even where other agents collaborate with it",

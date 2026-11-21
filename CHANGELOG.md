@@ -5,6 +5,15 @@ All notable changes to epx are listed here. epx follows
 change or remove commands, columns or flags, and its notes list each such change under
 **Breaking changes**.
 
+## Unreleased
+
+### Fixed
+
+- `epx ai agents update` help names `enableMemory`, the member Emporix keeps: it ignores
+  `enabledMemory`, the name its API reference gives, and says the JSON that `epx ai agents get ID -o json`
+  prints can be sent back as it is. `epx ai chat` help says a reply can be one message, not only a
+  list.
+
 ## 0.5.0 (2026-11-19)
 
 ### Breaking changes

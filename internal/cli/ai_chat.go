@@ -122,9 +122,11 @@ const chatReplyHelp = "A message also holds the provenance of what the agent gen
 // agentReplyChat is chat, which prints the agent's reply, with the files and
 // images that it may generate (fileGeneration).
 func agentReplyChat() *write {
-	w := agentChat("chat", "Send a message to an agent and print its reply", "and prints its reply: the "+
-		"messages of the agent and of those it collaborates with, each with the sessionId that --session "+
-		"takes to go on. "+chatReplyHelp+" "+replyTimeout()+", or use chat-async (which generates no files).")
+	w := agentChat("chat", "Send a message to an agent and print its reply", "and prints its reply: a "+
+		"message of the agent, or, as the reference documents, a list with those of the agents it "+
+		"collaborates with too, each with "+
+		"the sessionId that --session takes to go on. "+chatReplyHelp+" "+replyTimeout()+
+		", or use chat-async (which generates no files).")
 	w.choice = fileGeneration()
 	return w
 }
