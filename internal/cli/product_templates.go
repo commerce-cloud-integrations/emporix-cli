@@ -7,7 +7,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// productTemplate is the part of a Product Service product template shown in tables.
 type productTemplate struct {
 	ID         string            `json:"id"`
 	Name       localized         `json:"name"`
@@ -15,9 +14,6 @@ type productTemplate struct {
 	Metadata   itemMetadata      `json:"metadata"`
 }
 
-// newProductTemplatesCommand reads product templates, which need the
-// product.product_template_read scope (Emporix answers 403 without it), and
-// holds their writes, deletes included.
 func newProductTemplatesCommand(a *app) *cobra.Command {
 	templates := resource[productTemplate]{
 		use:   "product-templates",

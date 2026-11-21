@@ -10,8 +10,6 @@ import (
 	"github.com/commerce-cloud-integrations/emporix-cli/internal/emporix"
 )
 
-// feeAssignment is the part of a Fee Service item fee shown in tables: the
-// fees assigned to one item on a site.
 type feeAssignment struct {
 	ID       string   `json:"id"`
 	ItemYrn  string   `json:"itemYrn"`
@@ -19,15 +17,6 @@ type feeAssignment struct {
 	FeeIDs   []string `json:"feeIds"`
 }
 
-// newFeeAssignmentsCommand reads and changes item fees (feeAssignmentWrites),
-// which say which fees apply to which item on a site. It reads every one of a
-// site (list) or those that the Fee Service's searches find by item or
-// product, which Emporix serves as POST.
-// The searches by product page in their body, not in their query. Emporix
-// requires each member of their bodies (it rejects a body without one with
-// 400, seen live), so their flags are required, unless --body is given.
-// Tables identify an item fee by its item, which the reference requires, as
-// it does not require the id.
 func newFeeAssignmentsCommand(a *app) *cobra.Command {
 	rd := reader[feeAssignment]{view: view[feeAssignment]{
 		singular: "item fee",

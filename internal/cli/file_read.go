@@ -11,28 +11,17 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// outFlag is the flag of a read that Emporix answers with a file
-// (fileRead), which names where the file is saved.
 const outFlag = "out"
 
-// standardOutput is the --out that writes the file to standard output.
 const standardOutput = "-"
 
-// fileRead declares a read that Emporix answers with a file instead of JSON,
-// such as the PDF of a quote, which Emporix serves as POST without a body
-// although it changes nothing (emporix.Client.Posting): its command
-// (reader.fileCommand) saves the file where --out names instead of printing
-// it, in the language of --language. Its fetch is none: it reads the file.
 type fileRead struct {
 	command
-	example string // command lines that show it, each indented by two spaces
-	noun    string // the file in help and messages, e.g. "PDF"
-	media   string // its media type, e.g. application/pdf
+	example string
+	noun    string
+	media   string
 }
 
-// fileCommand returns the read command f of rd's scopes (newRead), with
-// --out, required, and --language, which reads the file
-// (emporix.Client.GetFile) and saves it where --out names (outPath.save).
 func (rd reader[T]) fileCommand(a *app, f *fileRead) *cobra.Command {
 	cmd, target := newRead(a, &f.command, rd.scopes)
 	cmd.Example = f.example
@@ -62,15 +51,12 @@ func (rd reader[T]) fileCommand(a *app, f *fileRead) *cobra.Command {
 	return cmd
 }
 
-// replaceFile writes body to the file at path, replacing any file there only
-// once body is written whole: it writes a new file in the same directory,
-// readable by its owner only, and renames it to path.
 func replaceFile(path string, body []byte) error {
 	temp, err := os.CreateTemp(filepath.Dir(path), "."+filepath.Base(path)+".*")
 	if err != nil {
 		return err
 	}
-	defer func() { _ = os.Remove(temp.Name()) }() // fails once renamed, as nothing is left to remove
+	defer func() { _ = os.Remove(temp.Name()) }()
 	_, err = temp.Write(body)
 	if closed := temp.Close(); err == nil {
 		err = closed
@@ -81,16 +67,11 @@ func replaceFile(path string, body []byte) error {
 	return os.Rename(temp.Name(), path)
 }
 
-// outPath is the value of --out: - for standard output, which is refused
-// where standard output is a terminal, or the path of a file that replaceFile
-// can save (savable); it implements pflag.Value, so another value is
-// rejected while flags are parsed, before anything is sent.
 type outPath struct {
 	path     string
-	terminal bool // standard output is a terminal
+	terminal bool
 }
 
-// Set implements pflag.Value.
 func (o *outPath) Set(value string) error {
 	switch {
 	case value == "":
@@ -99,7 +80,7 @@ func (o *outPath) Set(value string) error {
 		return errors.New("standard output is a terminal: name a file, or redirect standard output")
 	case value != standardOutput:
 		if err := savable(value); err != nil {
-			return err // the flag parser names the flag and the value
+			return err
 		}
 	}
 	o.path = value
@@ -108,12 +89,8 @@ func (o *outPath) Set(value string) error {
 
 func (o *outPath) String() string { return o.path }
 
-// Type implements pflag.Value.
 func (o *outPath) Type() string { return "path" }
 
-// save saves body, the noun that Emporix answered with, such as a PDF, where
-// o names: to standard output, or to a file, after which it says so on
-// standard error.
 func (o *outPath) save(cmd *cobra.Command, noun string, body []byte) error {
 	if o.path == standardOutput {
 		_, err := cmd.OutOrStdout().Write(body)
@@ -126,10 +103,6 @@ func (o *outPath) save(cmd *cobra.Command, noun string, body []byte) error {
 	return err
 }
 
-// savable fails for a path where replaceFile would not save a file in place:
-// one whose directory does not exist, or that names something other than a
-// regular file, such as a directory, a device or a symbolic link, which it
-// would replace (or fail to replace) rather than write to.
 func savable(path string) error {
 	info, err := os.Lstat(path)
 	switch {
@@ -148,7 +121,6 @@ func savable(path string) error {
 	}
 }
 
-// fileKind names what mode, not that of a regular file, is the mode of.
 func fileKind(mode fs.FileMode) string {
 	switch {
 	case mode.IsDir():

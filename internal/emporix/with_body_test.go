@@ -12,7 +12,6 @@ import (
 
 const searchBody = `{"q":"code:(A1,A2)"}`
 
-// withBody returns the copy of c that reads with method and body (WithBody).
 func withBody(t *testing.T, c *Client, method, body string) *Client {
 	t.Helper()
 	sending, err := c.WithBody(method, jsonBody(t, body))
@@ -22,9 +21,6 @@ func withBody(t *testing.T, c *Client, method, body string) *Client {
 	return sending
 }
 
-// TestWithBodyPagesASearch checks that a search reads every page as GetAll
-// reads a collection: each page sends the method and body as JSON, with
-// pageNumber and pageSize in the query and the total asked for.
 func TestWithBodyPagesASearch(t *testing.T) {
 	fake := newFakeEmporix(t)
 	fake.route("/items/search", pagedRoute(5, 0, "5"))
@@ -44,7 +40,6 @@ func TestWithBodyPagesASearch(t *testing.T) {
 				fake.bodies[i], req.Header)
 		}
 	}
-	// The client it was made from still reads with GET, without a body.
 	fake.route("/items", pagedRoute(1, 0, "1"))
 	if _, err := client.GetAll(context.Background(), "/items", nil, ListOptions{}); err != nil {
 		t.Fatal(err)
@@ -55,8 +50,6 @@ func TestWithBodyPagesASearch(t *testing.T) {
 	}
 }
 
-// TestWithBodyChecksPagesAsCollections checks that the paging checks of a
-// collection hold for a search, naming its method.
 func TestWithBodyChecksPagesAsCollections(t *testing.T) {
 	for name, tt := range map[string]struct {
 		route func(http.ResponseWriter, *http.Request)
@@ -92,10 +85,6 @@ func TestWithBodyChecksPagesAsCollections(t *testing.T) {
 	}
 }
 
-// TestWithBodyReadsOneResponse checks the single form, for a calculation
-// that Emporix serves as PUT and that answers one object; its path may hold
-// a query, as a GET's; a failure is classified as for a GET, and an empty
-// response is not found, naming the method.
 func TestWithBodyReadsOneResponse(t *testing.T) {
 	fake := newFakeEmporix(t)
 	fake.route("/tax/acme1/calculate", respond(http.StatusOK, `{"grossPrice":12.1}`))
@@ -126,8 +115,6 @@ func TestWithBodyReadsOneResponse(t *testing.T) {
 	}
 }
 
-// TestWithBodyRetriesWithTheBody checks that a throttled search is sent
-// again, body included: it changes nothing, so a retry is safe.
 func TestWithBodyRetriesWithTheBody(t *testing.T) {
 	fake := newFakeEmporix(t)
 	calls := 0
@@ -148,10 +135,6 @@ func TestWithBodyRetriesWithTheBody(t *testing.T) {
 	}
 }
 
-// TestWithBodyRefusesWhatIsNotARead checks that a client with another method
-// or without a body is never made, and that a collection read with a
-// body sends nothing for a path with a query or for a q option, which its
-// body replaces.
 func TestWithBodyRefusesWhatIsNotARead(t *testing.T) {
 	fake := newFakeEmporix(t)
 	client := fake.client(t)
@@ -187,10 +170,6 @@ func TestWithBodyRefusesWhatIsNotARead(t *testing.T) {
 	}
 }
 
-// TestWithBodyRefusesPathsThatMayAddressAnotherOperation checks that a read
-// with a body sends nothing, not even a token request, to a path with a
-// segment that a service or a proxy might decode into another path, while a
-// GET may read it; the message names the path as given, without its query.
 func TestWithBodyRefusesPathsThatMayAddressAnotherOperation(t *testing.T) {
 	fake := newFakeEmporix(t)
 	client := fake.client(t)
@@ -214,7 +193,6 @@ func TestWithBodyRefusesPathsThatMayAddressAnotherOperation(t *testing.T) {
 	if len(fake.requests) != 0 || fake.tokenCalls != 0 {
 		t.Fatalf("requests %d, token calls %d; want none", len(fake.requests), fake.tokenCalls)
 	}
-	// Spaces, colons and other escaped characters keep their segment; a GET is not checked.
 	fake.route("/search/acme1/search/a b:c", respond(http.StatusOK, `{"id":"i1"}`))
 	fake.route("/x/a/b", respond(http.StatusOK, `{"id":"i1"}`))
 	if _, err := search.Get(context.Background(), "/search/{tenant}/search/a%20b:c", nil); err != nil {

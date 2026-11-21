@@ -9,12 +9,6 @@ import (
 	"testing"
 )
 
-// confirmation returns answers to the confirmation of the case's write on a
-// terminal, each with whether it confirms the write, and the question that
-// follows the prompt's "Send METHOD URL to tenant acme1? ": [y/N] for a write
-// but a delete, which y or yes confirms, and for a delete, which cannot be
-// undone, what it deletes with one request, if more than one item (tt.many), and the
-// word to type, tt.confirmBy, which alone confirms it.
 func (tt *writeCase) confirmation(t *testing.T) (answers map[string]bool, question string) {
 	t.Helper()
 	if tt.method != http.MethodDelete {
@@ -32,9 +26,6 @@ func (tt *writeCase) confirmation(t *testing.T) (answers map[string]bool, questi
 		"x" + word + "\n": false, " " + word + " \n": true, word: true}, deletes + ": type " + word + " to confirm: "
 }
 
-// TestDeletesSayWhatConfirmsThem checks that the help of every delete says
-// that it cannot be undone and what to type to confirm it: the name in its
-// usage of the argument that its case types (confirmBy), or the tenant.
 func TestDeletesSayWhatConfirmsThem(t *testing.T) {
 	for _, tt := range writeCases() {
 		if tt.method != http.MethodDelete {
@@ -64,8 +55,6 @@ func TestDeletesSayWhatConfirmsThem(t *testing.T) {
 	}
 }
 
-// TestDeletesOfManySaySo checks that the help of a delete of many items at
-// once, always or with a flag, says what it deletes.
 func TestDeletesOfManySaySo(t *testing.T) {
 	for _, tt := range []struct {
 		args []string
@@ -107,8 +96,6 @@ func TestDeletesOfManySaySo(t *testing.T) {
 	}
 }
 
-// partDelete is a delete whose request names two arguments and the site, and
-// that deletes many items with one request.
 func partDelete() *write {
 	w := deleteWrite("delete-all THING_ID ID", "", "", request{path: "/things/{parent}/parts/{id}",
 		query: url.Values{"siteCode": {"{site}"}}}, []string{"thing.manage"})
@@ -116,10 +103,6 @@ func partDelete() *write {
 	return w
 }
 
-// TestDeleteConfirmationNamesWhatItDeletes checks the prompt of a delete:
-// it says what a delete of many items deletes and that it cannot be undone,
-// and only the argument that fills its request's last placeholder, as given
-// but for spaces around it, confirms it.
 func TestDeleteConfirmationNamesWhatItDeletes(t *testing.T) {
 	fake := newFakeEmporix(t)
 	args := []string{"delete-all", "t1", "Part 1", "--site", "AcmeStore_NL"}
@@ -146,9 +129,6 @@ func TestDeleteConfirmationNamesWhatItDeletes(t *testing.T) {
 	fake.assertRequests(t, "/things/t1/parts/Part%201?siteCode=AcmeStore_NL")
 }
 
-// TestDeleteOfNoItemIsConfirmedByTheTenant checks that a delete whose
-// request names no argument, such as a bulk-delete, asks for the tenant, as
-// its help says.
 func TestDeleteOfNoItemIsConfirmedByTheTenant(t *testing.T) {
 	fake := newFakeEmporix(t)
 	tenantWide := deleteWrite(bulkDeleteUse, "", "", request{path: "/things"}, []string{"thing.manage"})
@@ -169,10 +149,6 @@ func TestDeleteOfNoItemIsConfirmedByTheTenant(t *testing.T) {
 	fake.assertRequests(t, "/things")
 }
 
-// TestDeleteConfirmationShowsWhatItCompares checks that a delete of an ID
-// with a character that a terminal hides asks to type the ID as shown, which
-// confirms it as the ID as given does, and that an ID shown as nothing but
-// spaces cannot be confirmed by an empty answer.
 func TestDeleteConfirmationShowsWhatItCompares(t *testing.T) {
 	for _, tt := range []struct {
 		id, answer string
@@ -197,9 +173,6 @@ func TestDeleteConfirmationShowsWhatItCompares(t *testing.T) {
 	}
 }
 
-// TestBlankIDsAreRefused checks that an ID that is nothing but spaces, which
-// addresses no item and could not be confirmed, is refused as a usage error
-// before anything is sent.
 func TestBlankIDsAreRefused(t *testing.T) {
 	fake := newFakeEmporix(t)
 	code, _, stderr := runIn(t, writeEnv(fake, false, ""), "units", "delete", " ", "--yes")
@@ -209,11 +182,6 @@ func TestBlankIDsAreRefused(t *testing.T) {
 	fake.assertNothingSent(t)
 }
 
-// TestDeletionsAreDeclaredOnDeletes checks that a write whose deletion is a
-// mistake of its declaration panics while the command tree is built: one of
-// a write that is not a delete, a cascade without what it deletes or without
-// its switch, and a delete of no one item that does not say what it deletes;
-// a cascade of a flag of the write's choice is declared (no panic).
 func TestDeletionsAreDeclaredOnDeletes(t *testing.T) {
 	force := []paramFlag{{param: "force", flag: "force"}}
 	forceChoice := queryChoice{param: "force", options: []choiceOption{{flag: "force", value: queryTrue,
@@ -249,9 +217,6 @@ func TestDeletionsAreDeclaredOnDeletes(t *testing.T) {
 	}
 }
 
-// TestConfirmationFailsWhereItCannotAsk checks that a write, a delete or
-// another, whose question cannot be written on standard error fails (exit 1)
-// and sends nothing, whatever standard input answers.
 func TestConfirmationFailsWhereItCannotAsk(t *testing.T) {
 	for _, method := range []string{"delete", "post"} {
 		fake := newFakeEmporix(t)

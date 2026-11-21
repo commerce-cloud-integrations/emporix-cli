@@ -6,29 +6,12 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// The writes of a site's shipping configuration: its zones, the methods of a
-// zone, its shipping groups and the shipping group of each customer. Each
-// sends the JSON of --file (a delete sends none) to the site that --site
-// names, with the scope that the reference names for every one of them. The
-// writes of zones, methods and groups send their maps of translations
-// without a Content-Language header, as the reference documents: Emporix
-// refuses them sent with Content-Language: * (headerlessMaps).
-
-// shippingManageScope is the scope of the Shipping Service's writes.
 const shippingManageScope = "shipping.shipping_manage"
 
-// unknownGroup is what a 409 Conflict to an update of a shipping group means:
-// Emporix answers an unknown group so (live), and a group has no version that
-// could conflict.
 const unknownGroup = "the site has no shipping group with this ID: `epx shipping groups list --site S` lists them"
 
-// noGroup is what a 409 Conflict to an update of a customer's shipping group
-// means: Emporix answers so (live) for a customer without one, as update
-// creates no assignment, and an assignment has no version that could conflict.
 const noGroup = "the customer has no shipping group on the site: assign it one with `epx shipping customers create`"
 
-// zoneWrites returns the writes of zones: create, update ID, patch ID and
-// delete ID.
 func zoneWrites(a *app, zones resource[shippingZone]) []*cobra.Command {
 	manage := []string{shippingManageScope}
 	return []*cobra.Command{
@@ -71,10 +54,6 @@ func zoneWrites(a *app, zones resource[shippingZone]) []*cobra.Command {
 	}
 }
 
-// methodWrites returns the writes of the shipping methods of a zone, below
-// methodsOf (the zones nested in the methods group), methods being their list:
-// create SHIPPING_ZONE_ID, and update, patch and delete SHIPPING_ZONE_ID ID,
-// which address one method as get reads it.
 func methodWrites(a *app, methodsOf resource[shippingZone], methods child[shippingMethod]) []*cobra.Command {
 	manage := []string{shippingManageScope}
 	method := func(verb string) childTarget { return childItemTarget(methodsOf, methods, verb, nil) }
@@ -114,8 +93,6 @@ func methodWrites(a *app, methodsOf resource[shippingZone], methods child[shippi
 	}
 }
 
-// groupWrites returns the writes of shipping groups: create, update ID and
-// delete ID.
 func groupWrites(a *app, groups resource[shippingGroup]) []*cobra.Command {
 	manage := []string{shippingManageScope}
 	return []*cobra.Command{
@@ -146,9 +123,6 @@ func groupWrites(a *app, groups resource[shippingGroup]) []*cobra.Command {
 	}
 }
 
-// customerGroupWrites returns the writes of the shipping group of each
-// customer (customer-group relations): create, update CUSTOMER and delete
-// CUSTOMER.
 func customerGroupWrites(a *app, customers resource[shippingCustomer]) []*cobra.Command {
 	manage := []string{shippingManageScope}
 	relation := literal(`{"customerId": "C001", "groupId": "vip"}`)

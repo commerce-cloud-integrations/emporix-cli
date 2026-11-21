@@ -8,7 +8,6 @@ import (
 	"github.com/commerce-cloud-integrations/emporix-cli/internal/emporix"
 )
 
-// sequenceSchema is the part of a Sequential ID Service schema shown in tables.
 type sequenceSchema struct {
 	ID       string      `json:"id"`
 	Type     string      `json:"schemaType"`
@@ -21,18 +20,13 @@ type sequenceSchema struct {
 	Max      json.Number `json:"maxValue"`
 }
 
-// The scopes of the Sequential ID Service: of its reads and of the writes
-// that issue IDs (write.readScoped), and of the writes that create, activate
-// and delete schemas.
 const (
 	sequenceViewScope   = "sequentialid.schema_view"
 	sequenceManageScope = "sequentialid.schema_manage"
 )
 
-// newSequentialIDsCommand reads and changes the schemas that number orders,
-// invoices, customers and similar records, and issues IDs from them. The
-// service returns them whole (live, it ignores pageNumber and pageSize and
-// sends no total), so each list is read with one request.
+// The service returns schemas whole (live, it ignores pageNumber and
+// pageSize and sends no total), so each list is read with one request.
 func newSequentialIDsCommand(a *app) *cobra.Command {
 	const columns = "TYPE is what a schema numbers, PREFIX and SUFFIX the text around the number " +
 		"(placeholders such as __year__ are filled in when an ID is issued), DIGITS the number's " +

@@ -20,8 +20,8 @@ type Part struct {
 
 // FormBody returns the multipart/form-data body (a form) that sends parts,
 // in their order, separated by a random boundary that its Content-Type
-// names. A form without parts, or with a part that cannot be sent
-// (checkPart), is ErrInvalidInput.
+// names. A form without parts, or with a part that cannot be sent, is
+// ErrInvalidInput.
 func FormBody(parts []Part) (Body, error) {
 	if len(parts) == 0 {
 		return Body{}, fmt.Errorf("%w: a form without parts", ErrInvalidInput)
@@ -37,7 +37,6 @@ func FormBody(parts []Part) (Body, error) {
 		if part.ContentType != "" {
 			header.Set("Content-Type", part.ContentType)
 		}
-		// Writes to a bytes.Buffer do not fail; an error would be the encoder's own.
 		content, err := form.CreatePart(header)
 		if err == nil {
 			_, err = content.Write(part.Content)
@@ -52,12 +51,6 @@ func FormBody(parts []Part) (Body, error) {
 	return Body{data: encoded.Bytes(), contentType: form.FormDataContentType()}, nil
 }
 
-// checkPart fails, as ErrInvalidInput, a part whose name is empty or holds a
-// character that its header would have to escape, a quote, a backslash or a
-// control character (a name is declared, never given), or whose file name
-// holds a control character, which no header carries (a strict server
-// rejects it). A file name, which comes from a path, is otherwise sent
-// escaped as browsers escape it (disposition).
 func checkPart(part Part) error {
 	switch {
 	case part.Name == "" || strings.ContainsAny(part.Name, `"\`) || strings.ContainsFunc(part.Name, isControl):
@@ -69,9 +62,7 @@ func checkPart(part Part) error {
 	return nil
 }
 
-// disposition returns the Content-Disposition of part: a field named after
-// it, with the name of its file if it sends one, quoted, with a quote or a
-// backslash in it escaped (RFC 7578 rules out the filename* of RFC 5987).
+// RFC 7578 rules out the filename* of RFC 5987.
 func disposition(part Part) string {
 	if part.FileName != "" {
 		return multipart.FileContentDisposition(part.Name, part.FileName)
@@ -79,5 +70,4 @@ func disposition(part Part) string {
 	return `form-data; name="` + part.Name + `"`
 }
 
-// isControl reports whether r is a control character.
 func isControl(r rune) bool { return r < ' ' || r == 0x7f }

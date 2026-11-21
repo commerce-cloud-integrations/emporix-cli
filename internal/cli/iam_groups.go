@@ -7,24 +7,20 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// iamGroup is the part of an IAM user group shown in tables.
 type iamGroup struct {
 	ID             string            `json:"id"`
 	Code           string            `json:"code"`
 	Name           localized         `json:"name"`
 	UserType       string            `json:"userType"`
-	AccessControls []json.RawMessage `json:"accessControls"` // counted only
+	AccessControls []json.RawMessage `json:"accessControls"`
 }
 
-// groupMember is a user's membership of a group.
 type groupMember struct {
 	ID       string `json:"id"`
 	UserID   string `json:"userId"`
 	UserType string `json:"userType"`
 }
 
-// iamGroups returns the tenant's user groups, which a user's groups are read
-// as too.
 func iamGroups() resource[iamGroup] {
 	return iamList(groupsUse, "iam.group_read",
 		"Reads the tenant's user groups. TYPE is the kind of user a group is for (e.g. EMPLOYEE, "+
@@ -40,9 +36,6 @@ func iamGroups() resource[iamGroup] {
 		})
 }
 
-// newIAMGroupsCommand reads, creates, upserts and deletes the tenant's user
-// groups, reads and changes their members and reads the access controls they
-// grant.
 func newIAMGroupsCommand(a *app) *cobra.Command {
 	groups, accessControls := iamGroups(), iamAccessControls().reader()
 	groups.short = "Read, create, upsert and delete IAM groups and their users"
@@ -62,8 +55,6 @@ func newIAMGroupsCommand(a *app) *cobra.Command {
 	return newResourceCommand(a, groups, extra...)
 }
 
-// newGroupUsersCommand returns `users`, the group of the reads and writes of
-// the members of a group of groups.
 func newGroupUsersCommand(a *app, groups resource[iamGroup]) *cobra.Command {
 	membersOf := groups.nested("users")
 	members := child[groupMember]{

@@ -6,13 +6,8 @@ import (
 	"testing"
 )
 
-// productSwitches is the query of a write of products without its flags:
-// the switches, sent false.
 const productSwitches = "skipRelatedItemsValidation=false&skipVariantGeneration=false"
 
-// productWriteCases are the writes of products and product templates, with
-// the scopes that the reference names for them and the Content-Language of
-// their localized text.
 func productWriteCases() []writeCase {
 	manage := []string{productManageScope}
 	const products, bulk = "/product/acme1/products", "/product/acme1/products/bulk"
@@ -96,13 +91,6 @@ func productWriteCases() []writeCase {
 	}
 }
 
-// TestProductWritesStateTheirOptionalScopes checks the help of the product
-// writes: each that may publish a product names --allow-publish and the
-// scope it adds, those that replace or change products --allow-unpublish
-// too, with what Emporix refuses without them, before the scope that each
-// requests, and so do the flags' usages;
-// recalculate names neither. The products group states the scopes of its
-// reads, with their opt-in, and those of its writes.
 func TestProductWritesStateTheirOptionalScopes(t *testing.T) {
 	const publish = "\n\n--allow-publish also requests the product.product_publish scope. Without it, Emporix " +
 		"refuses a product that the write publishes (403 Forbidden, exit 3)."
@@ -138,10 +126,6 @@ func TestProductWritesStateTheirOptionalScopes(t *testing.T) {
 	}
 }
 
-// TestProductWritesRefuseInvalidInput checks that a product write without a
-// body, recalculate without --product or --file, an update whose ID is the
-// bulk endpoint, --allow-unpublish on a create and an invalid --do-index
-// are usage errors (exit 2) that send nothing, also for a dry run.
 func TestProductWritesRefuseInvalidInput(t *testing.T) {
 	body := writeBody(t, `{"id":"100200"}`)
 	for _, tt := range []struct {

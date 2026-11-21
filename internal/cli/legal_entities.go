@@ -8,7 +8,6 @@ import (
 	"github.com/commerce-cloud-integrations/emporix-cli/internal/emporix"
 )
 
-// legalEntity is the part of a Customer Management legal entity shown in tables.
 type legalEntity struct {
 	ID           string      `json:"id"`
 	Name         string      `json:"name"`
@@ -21,14 +20,8 @@ type legalEntity struct {
 	} `json:"legalInfo"`
 }
 
-// legalEntityReadScope reads every legal entity, as legal-entities and a
-// search of the legal-entity documents of the Search Service (searchDocumentTypes)
-// request it.
 const legalEntityReadScope = "customermanagement.legalentity_read"
 
-// newLegalEntitiesCommand reads legal entities, the companies of B2B
-// customers and their subsidiaries, also those a search finds, and the
-// parents of one; and creates, upserts and deletes them.
 func newLegalEntitiesCommand(a *app) *cobra.Command {
 	entities := resource[legalEntity]{
 		use:   "legal-entities",
@@ -74,7 +67,6 @@ func newLegalEntitiesCommand(a *app) *cobra.Command {
 	return newResourceCommand(a, entities, slices.Concat(reads, writes)...)
 }
 
-// legalEntityMembers are the members of the body of a legal entity's create.
 func legalEntityMembers() string {
 	return "name (required), type (COMPANY, the default, or SUBSIDIARY), parentId (the legal " +
 		"entity a subsidiary belongs to), legalInfo, accountLimit, customerGroups (IAM groups), " +
@@ -84,7 +76,6 @@ func legalEntityMembers() string {
 		literal(`{"id": ...}`) + " or in full, as get prints it."
 }
 
-// legalEntityView is the table of legal entities.
 func legalEntityView() view[legalEntity] {
 	return view[legalEntity]{
 		singular: "legal entity",

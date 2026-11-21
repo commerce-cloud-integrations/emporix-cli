@@ -12,17 +12,14 @@ import (
 	"github.com/commerce-cloud-integrations/emporix-cli/internal/config"
 )
 
-// fakeKeychain holds client secrets in memory, never in a real keychain.
 type fakeKeychain struct {
 	mu      sync.Mutex
 	secrets map[string]string
-	fail    map[string]error // by call (Secret, SetSecret or DeleteSecret); under "*", every call fails
-	block   chan struct{}    // where set, every call waits until it is closed
-	waiting chan struct{}    // where set, a call blocked by block first tells it here
+	fail    map[string]error
+	block   chan struct{}
+	waiting chan struct{}
 }
 
-// failure returns the error of call, if it fails, once the keychain stops
-// blocking; it holds the lock until done is called.
 func (k *fakeKeychain) failure(call string) (done func(), err error) {
 	if k.block != nil {
 		select {
@@ -70,8 +67,6 @@ func (k *fakeKeychain) DeleteSecret(profile string) error {
 	return nil
 }
 
-// noProfiles is the ProfileEnv of a run without profiles: no configuration
-// directory, and a keychain that holds no secret.
 func noProfiles() *ProfileEnv {
 	return &ProfileEnv{
 		ConfigDir:  func() (string, error) { return "", errors.New("$HOME is not defined") },
@@ -80,15 +75,11 @@ func noProfiles() *ProfileEnv {
 	}
 }
 
-// profileSetup is the configuration directory, a temporary one, and the
-// fake keychain of a test.
 type profileSetup struct {
 	dir      string
 	keychain *fakeKeychain
 }
 
-// newProfileSetup saves file, unless nil, in a new configuration directory
-// whose keychain holds secrets.
 func newProfileSetup(t *testing.T, file *config.File, secrets map[string]string) *profileSetup {
 	t.Helper()
 	s := &profileSetup{dir: t.TempDir(), keychain: &fakeKeychain{secrets: map[string]string{}}}
@@ -105,8 +96,6 @@ func newProfileSetup(t *testing.T, file *config.File, secrets map[string]string)
 
 func (s *profileSetup) store() config.Store { return config.In(s.dir) }
 
-// env returns the environment of a run with vars, stdin as its standard input
-// (a terminal or not), the setup's configuration directory and keychain.
 func (s *profileSetup) env(vars map[string]string, stdin string, terminal bool) Env {
 	profiles := noProfiles()
 	profiles.ConfigDir, profiles.Keychain = func() (string, error) { return s.dir, nil }, s.keychain
@@ -116,7 +105,6 @@ func (s *profileSetup) env(vars map[string]string, stdin string, terminal bool) 
 	}
 }
 
-// load returns the saved configuration.
 func (s *profileSetup) load(t *testing.T) config.File {
 	t.Helper()
 	file, err := s.store().Load()
@@ -126,8 +114,6 @@ func (s *profileSetup) load(t *testing.T) config.File {
 	return file
 }
 
-// twoProfiles returns a configuration whose default profile dev, and prod,
-// address fake (API URL), each with its own default site.
 func twoProfiles(fake *fakeEmporix) *config.File {
 	return &config.File{Default: "dev", Profiles: map[string]config.Profile{
 		"dev":  {Tenant: "acme1", APIURL: fake.server.URL, ClientID: "client", Site: "AcmeStore_NL", Language: "nl"},
@@ -159,11 +145,6 @@ func TestAProfileGivesTheCredentials(t *testing.T) {
 	}
 }
 
-// TestTheEnvironmentOrAProfileGivesTheWholeKey checks that the settings of an
-// API key come from the environment, where it sets an EMPORIX_ variable, or
-// from a profile, never from both: no client secret goes to an API URL or
-// with a client ID of the other, and naming a profile while the environment
-// gives the key is refused.
 func TestTheEnvironmentOrAProfileGivesTheWholeKey(t *testing.T) {
 	envFake, profileFake := newFakeEmporix(t), newFakeEmporix(t)
 	setup := newProfileSetup(t, twoProfiles(profileFake), map[string]string{"dev": testSecret})
@@ -179,7 +160,7 @@ func TestTheEnvironmentOrAProfileGivesTheWholeKey(t *testing.T) {
 		args    []string
 		code    int
 		message string
-		tokens  int // token requests at the environment's API URL
+		tokens  int
 	}{
 		{name: "environment", vars: envFake.env(), code: ExitOK, tokens: 1},
 		{name: "--profile", vars: envFake.env(), args: []string{"--profile", "dev"}, code: ExitUsage,
@@ -264,7 +245,6 @@ func TestAConfigurationEpxRefusesFailsEveryCommandThatReadsIt(t *testing.T) {
 	fake := newFakeEmporix(t)
 	setup := newProfileSetup(t, nil, nil)
 	writeConfiguration(t, setup, `{"default":"dev","profiles":{}}`)
-	// The environment gives the key, so no profile is read.
 	if code, _, stderr := runIn(t, setup.env(fake.env(), "", false), "auth", "status"); code != ExitOK {
 		t.Fatalf("with the environment's key: exit %d, stderr %q", code, stderr)
 	}
@@ -274,7 +254,6 @@ func TestAConfigurationEpxRefusesFailsEveryCommandThatReadsIt(t *testing.T) {
 	}
 }
 
-// writeConfiguration writes content as the configuration file of setup.
 func writeConfiguration(t *testing.T, setup *profileSetup, content string) {
 	t.Helper()
 	if err := setup.store().Save(config.File{}); err != nil {
@@ -297,7 +276,6 @@ func TestProfileNamesComplete(t *testing.T) {
 			t.Errorf("%q: exit %d, stdout %q; want the profile names", args, code, stdout)
 		}
 	}
-	// Without a configuration, nothing is offered.
 	code, stdout, _ := runCLI(t, nil, "__complete", "profile", "use", "")
 	if code != ExitOK || !strings.HasPrefix(stdout, ":4\n") {
 		t.Errorf("exit %d, stdout %q; want no names", code, stdout)

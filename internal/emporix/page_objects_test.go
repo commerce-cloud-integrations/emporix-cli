@@ -9,15 +9,10 @@ import (
 	"testing"
 )
 
-// pageObjectRoute serves count items ({"id":"i<n>"}) by page (the first is 1)
-// and size, each page an object with the items and, when total is not empty,
-// totalElements. With ignorePaging, every page holds every item.
 func pageObjectRoute(count int, total string, ignorePaging bool) func(http.ResponseWriter, *http.Request) {
 	return pagesFrom(1, "items", count, total, ignorePaging)
 }
 
-// pagesFrom is pageObjectRoute for pages numbered from first that hold their
-// items in member.
 func pagesFrom(first int, member string, count int, total string, ignorePaging bool) func(http.ResponseWriter,
 	*http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -89,8 +84,6 @@ func TestGetAllPageObjectsFailures(t *testing.T) {
 	}
 }
 
-// TestGetAllPageObjectsWithoutATotal checks that pages without a usable total
-// are read until an empty page, and that --limit stops early.
 func TestGetAllPageObjectsWithoutATotal(t *testing.T) {
 	for _, total := range []string{"", "-1", "null"} {
 		fake := newFakeEmporix(t)
@@ -133,7 +126,6 @@ func TestGetAllContentPagesFailures(t *testing.T) {
 		route func(http.ResponseWriter, *http.Request)
 		want  string
 	}{
-		// Messages name a page by its number in the request, the first 0.
 		{name: "paging ignored", route: pagesFrom(0, "content", 3, "", true),
 			want: "GET /runs: page 1 repeats an item of page 0; the collection is inconsistent"},
 		{name: "total larger than the collection", route: pagesFrom(0, "content", 3, "7", false),
@@ -155,8 +147,6 @@ func TestGetAllContentPagesFailures(t *testing.T) {
 	}
 }
 
-// pageSequenceFrom0 serves bodies as the pages 0, 1, … that page selects, and
-// pages without content after them.
 func pageSequenceFrom0(bodies ...string) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		body := `{"content":[]}`

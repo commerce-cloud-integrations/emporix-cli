@@ -9,30 +9,20 @@ import (
 	"testing"
 )
 
-// quotePDF stands in for the PDF of a quote, as Emporix answers with it.
 const quotePDF = "%PDF-1.7\n1 0 obj << /Type /Catalog >> endobj\n%%EOF\n"
 
-// readEnv returns the environment of a read from fake (writeEnv, without a
-// terminal to confirm on), whose standard output is a terminal where
-// outTerminal says so.
 func readEnv(fake *fakeEmporix, outTerminal bool) Env {
 	env := writeEnv(fake, false, "")
 	env.OutTerminal = outTerminal
 	return env
 }
 
-// TestQuotePDFIsSaved checks that quotes pdf, a read, sends POST without a
-// body with a token of quote.quote_read, asks for the PDF in the language of
-// --language, else without Accept-Language, saves it to the file that --out
-// names, replacing one there, readable by its owner only, and says so on
-// standard error, printing nothing; it asks for no confirmation.
 func TestQuotePDFIsSaved(t *testing.T) {
 	for _, tt := range []struct {
 		flags    []string
-		language string // the Accept-Language that the fake must get
+		language string
 	}{
 		{language: ""},
-		// Sent as typed: Emporix matches it against the tenant's configuration as written.
 		{flags: []string{"--language", "DE"}, language: "DE"},
 		{flags: []string{"--language", "de-CH"}, language: "de-CH"},
 	} {
@@ -70,12 +60,6 @@ func TestQuotePDFIsSaved(t *testing.T) {
 	}
 }
 
-// TestQuotePDFRefusesWhereItCannotSave checks that quotes pdf refuses, as
-// its flags are parsed and so before anything is sent (exit 2), an --out
-// that it cannot save the PDF to: - where standard output is a terminal, an
-// empty path, one whose directory does not exist, and a directory, a device
-// or a symbolic link, which it would replace rather than write to; and that
-// it takes no flag of a write.
 func TestQuotePDFRefusesWhereItCannotSave(t *testing.T) {
 	dir := t.TempDir()
 	target, link := filepath.Join(dir, "target.pdf"), filepath.Join(dir, "link.pdf")
@@ -112,10 +96,6 @@ func TestQuotePDFRefusesWhereItCannotSave(t *testing.T) {
 	}
 }
 
-// TestQuotePDFFailures checks that quotes pdf saves nothing where Emporix
-// answers with no PDF (by its Content-Type; exit 1), with an error status
-// (exit 4 for an unknown quote, 1 otherwise), or where the PDF cannot be
-// saved (exit 1): here as its directory is removed while Emporix answers.
 func TestQuotePDFFailures(t *testing.T) {
 	dir := t.TempDir()
 	gone := filepath.Join(dir, "gone")
@@ -162,9 +142,6 @@ func TestQuotePDFFailures(t *testing.T) {
 	}
 }
 
-// TestQuotePDFIsARead checks the help of quotes pdf: a read of
-// quote.quote_read that says how it saves the PDF, without a confirmation
-// or a claim that it changes data.
 func TestQuotePDFIsARead(t *testing.T) {
 	_, help, _ := runCLI(t, nil, "quotes", "pdf", "--help")
 	for _, want := range []string{

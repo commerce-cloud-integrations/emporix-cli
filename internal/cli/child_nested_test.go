@@ -8,13 +8,6 @@ import (
 	"testing"
 )
 
-// TestNestedChildSearchAndWrites checks a child collection listed by `list`
-// below a group of its own (resource.nested), as one with writes is: its
-// search is named search, takes the parent's argument and names the list as
-// that group's; its writes (childAt) send below one item of the parent,
-// whose argument they take first, and name one item as get does; and those
-// of a resource (resource.at) send to its collection. Both complete the
-// arguments of one item.
 func TestNestedChildSearchAndWrites(t *testing.T) {
 	stores := resource[thing]{use: "stores", under: "things", path: "/stores/{site}", view: thingView()}
 	shelvesOf := stores.nested("shelves")
@@ -27,8 +20,8 @@ func TestNestedChildSearchAndWrites(t *testing.T) {
 	}
 	for _, tt := range []struct {
 		at, want  collectionAt
-		uses      [2]string // create and update, as at names them
-		completes []string  // the arguments of one item that complete
+		uses      [2]string
+		completes []string
 	}{
 		{
 			at: childAt(shelvesOf, shelves),
@@ -55,12 +48,6 @@ func TestNestedChildSearchAndWrites(t *testing.T) {
 	}
 }
 
-// TestNestedKeepsWhereItsItemsAreListed checks that a resource nested in a
-// group of its own (resource.nested) moves its commands below that group and
-// still names the command line that lists its items, and that it completes
-// their IDs from its own list only where it has one: one that another command
-// lists at another path, such as the import streams of a configuration, is
-// not claimed to be listed at its path, and completes none.
 func TestNestedKeepsWhereItsItemsAreListed(t *testing.T) {
 	stores := resource[thing]{use: "stores", under: "things", path: "/stores", view: thingView()}
 	elsewhere := stores
@@ -82,9 +69,6 @@ func TestNestedKeepsWhereItsItemsAreListed(t *testing.T) {
 	}
 }
 
-// TestChildListedByListNamesItsPath checks that a child listed by `list`
-// without sub, which would send to .../list, a mistake in its declaration,
-// fails while the command tree is built.
 func TestChildListedByListNamesItsPath(t *testing.T) {
 	defer func() {
 		if got, want := fmt.Sprint(recover()), "thing: a child listed by list names its path in sub"; got != want {

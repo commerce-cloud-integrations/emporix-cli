@@ -9,7 +9,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// searchIndex is the part of a Search Service index shown in tables.
 type searchIndex struct {
 	ID       string       `json:"id"`
 	Type     string       `json:"type"`
@@ -19,20 +18,14 @@ type searchIndex struct {
 	Metadata itemMetadata `json:"metadata"`
 }
 
-// indexField is an indexed field; tables show its path, -o json also how it
-// is searched.
 type indexField struct {
 	Path string `json:"path"`
 }
 
-// fieldPaths returns the paths of indexed fields (a long value, which
-// tables cut).
 func fieldPaths(fields []indexField) string {
 	return joinEach(fields, ", ", func(f indexField) string { return f.Path })
 }
 
-// savedSearch is the part of a saved search shown in tables; its queries and
-// filters are only in -o json.
 type savedSearch struct {
 	ID       string       `json:"id"`
 	Type     string       `json:"type"`
@@ -41,7 +34,6 @@ type savedSearch struct {
 	Metadata itemMetadata `json:"metadata"`
 }
 
-// indexJob is the part of a Search Service index job shown in tables.
 type indexJob struct {
 	ID       string       `json:"id"`
 	Type     string       `json:"type"`
@@ -51,49 +43,30 @@ type indexJob struct {
 	Metadata itemMetadata `json:"metadata"`
 }
 
-// searchDocument is the part of a document that a search finds shown in
-// tables; its other fields are only in -o json.
 type searchDocument struct {
 	ID    string      `json:"id"`
 	Name  localized   `json:"name"`
-	Score json.Number `json:"_score"` // kept as sent
+	Score json.Number `json:"_score"`
 }
 
-// Name, paths and scopes of the Search Service: searchScope of its reads,
-// searchManageScope of its writes and of the export of search indexes, a
-// read that Emporix allows only with it.
 const (
 	searchUse         = "search"
 	searchService     = "/search/{tenant}"
-	searchPerType     = searchService + "/search/" // the collections kept per type (perTypeCommand)
+	searchPerType     = searchService + "/search/"
 	searchScope       = "search.search_read"
 	searchManageScope = "search.search_manage"
 )
 
-// searchDocumentTypes returns the types that Emporix defines whose
-// documents the Search Service searches besides the instances of custom
-// entity types, exactly as written, as Emporix keeps indexes and saved
-// searches under a type as written (live: CUSTOMER addresses other indexes
-// than customer), each with the read scope that finds all of its documents,
-// which a search of them requires in place of the read scope of a custom
-// entity type (documentsCommand).
 func searchDocumentTypes() builtInTypes {
 	return spelledTypes(builtInType{name: "customer", scopes: []string{customerReadScope}},
 		builtInType{name: "legal-entity", scopes: []string{legalEntityReadScope}})
 }
 
-// searchTypes returns searchDocumentTypes without their scopes, as the
-// commands of indexes and saved searches take them.
 func searchTypes() builtInTypes { return searchDocumentTypes().withoutScopes() }
 
-// badQuery says how the Search Service answers a malformed --query (live).
 const badQuery = "Emporix answers a list's malformed --query with an internal error (500 Internal Server " +
 	"Error, exit 1)."
 
-// newSearchCommand reads the Search Service, which searches customers, legal
-// entities and the instances of custom entity types: its indexes and saved
-// searches, kept per type, and the jobs that create, update and delete the
-// indexes.
 func newSearchCommand(a *app) *cobra.Command {
 	types := newExactTypes(searchTypes(), searchUse)
 	queries := resource[savedSearch]{
@@ -127,9 +100,6 @@ func newSearchCommand(a *app) *cobra.Command {
 		newResourceCommand(a, jobs))
 }
 
-// indexesCommand returns the group of search indexes, whose TYPE is one of
-// types or a custom entity type, whose writes start the index jobs that job
-// follows.
 func indexesCommand(a *app, job *jobWait, types exactTypes) *cobra.Command {
 	indexes := resource[searchIndex]{
 		use:   "indexes",
@@ -166,8 +136,6 @@ func indexesCommand(a *app, job *jobWait, types exactTypes) *cobra.Command {
 		searchIndexImport(a, indexes, job))
 }
 
-// indexJobs is the collection of the jobs that create, update and delete
-// search indexes.
 func indexJobs() resource[indexJob] {
 	return resource[indexJob]{
 		use:   "jobs",
@@ -195,9 +163,6 @@ func indexJobs() resource[indexJob] {
 	}
 }
 
-// documentsCommand returns `documents TYPE`, which reads the documents of a
-// type, one of types or a custom entity type, that a saved search finds, or
-// the search --body gives.
 func documentsCommand(a *app, types builtInTypes) *cobra.Command {
 	documents := reader[searchDocument]{
 		scopes: []string{searchScope, customTypeReadScope}, // the reference also requires one that reads the documents
@@ -233,16 +198,11 @@ func documentsCommand(a *app, types builtInTypes) *cobra.Command {
 	})
 }
 
-// indexRef selects one search index to export: its type and its id.
 type indexRef struct {
 	Type string `json:"type"`
 	ID   string `json:"id"`
 }
 
-// indexSelection returns how one search index given as TYPE/ID is read as
-// its indexRef. Its ID holds no slash; its type may. A type that rule, that
-// of the TYPE argument of the commands of search indexes, does not accept is
-// refused, as that argument refuses it (typeRule.accepts).
 func indexSelection(rule typeRule) func(value string) (indexRef, error) {
 	return func(value string) (indexRef, error) {
 		slash := strings.LastIndex(value, "/")
@@ -256,14 +216,6 @@ func indexSelection(rule typeRule) func(value string) (indexRef, error) {
 	}
 }
 
-// perTypeCommand returns the group of a Search Service collection kept per
-// type: list (of every type, at r.path), for-type TYPE, get TYPE ID and the
-// writes of one item, update TYPE ID and delete TYPE ID, whose paths name the
-// type before the collection, and extra commands. TYPE is one of types or
-// one that list shows, and completes with those, ID one that for-type shows;
-// the help of the group and of its reads ends r.long with what a type is
-// (builtInTypes.sentence), as the writes add it to theirs, and with how to
-// reach an item kept under another spelling of one of types (exactTypes).
 func perTypeCommand[T any](a *app, r resource[T], writes perTypeWrites, types exactTypes,
 	extra ...*cobra.Command) *cobra.Command {
 	ofType := request{path: searchPerType + placeholderID + "/" + r.use}
@@ -301,10 +253,6 @@ func perTypeCommand[T any](a *app, r resource[T], writes perTypeWrites, types ex
 	}, writes.commands(a, target, types), extra)...)
 }
 
-// perTypeTarget is one item of a Search Service collection kept per type,
-// which get, update and delete address: singular names it, req is its
-// request, whose path names its type ({parent}) and ID, arguments says what
-// TYPE and ID are, and ids lists them for completion.
 type perTypeTarget struct {
 	singular  string
 	req       request
@@ -312,23 +260,11 @@ type perTypeTarget struct {
 	ids       argumentIDs
 }
 
-// exactTypes are the built-in types that the TYPE of the collections kept per
-// type of a service takes exactly as written, such as those of the Search
-// Service, which keeps items under another spelling too, although TYPE
-// refuses it; the help says how to reach such an item. otherSpelling is the
-// first of builtIn in upper case, such a spelling (newExactTypes checks that
-// TYPE refuses it).
 type exactTypes struct {
 	builtIn       builtInTypes
 	otherSpelling string
 }
 
-// newExactTypes returns builtIn as the exactTypes of the collections of use.
-// Where TYPE does not refuse the other spelling, as without built-in types,
-// with types taken in any case or with a first one named in upper case,
-// saying how to reach an item under it is a mistake in the declaration of
-// use, which panics while the command tree is built, which every test of the
-// tree does.
 func newExactTypes(builtIn builtInTypes, use string) exactTypes {
 	other := ""
 	if len(builtIn.types) > 0 {
@@ -341,18 +277,10 @@ func newExactTypes(builtIn builtInTypes, use string) exactTypes {
 	return exactTypes{builtIn: builtIn, otherSpelling: other}
 }
 
-// kept returns, for help, subject, such as "A saved search", kept under
-// another spelling of one of t, which its caller's sentence goes on from:
-// "A saved search kept under another spelling of a built-in type, such as
-// CUSTOMER,".
 func (t exactTypes) kept(subject string) string {
 	return subject + " kept under another spelling of a built-in type, such as " + t.otherSpelling + ","
 }
 
-// api returns, quoted, the `epx api` command line that sends method to the
-// item of item, the request of one item of the collection, with another
-// spelling of one of t as its type ({parent}) and the ID ID, with scopes and
-// flags (none when empty).
 func (t exactTypes) api(method string, item request, scopes []string, flags string) string {
 	path := strings.NewReplacer(placeholderParent, t.otherSpelling, placeholderID, "ID").Replace(item.path)
 	return "`epx api " + method + " " + path + " --scope " + strings.Join(scopes, " --scope ") + flags + "`"

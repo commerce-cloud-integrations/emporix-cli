@@ -11,8 +11,7 @@ import (
 // and hands each response to ended, until ended reports that it ends the
 // polling or fails, which Poll then returns; a read that fails ends it too,
 // with that read's error, and so does ctx, with ctx's error, also while Poll
-// waits. It waits interval before its first read: the caller has read once
-// already, such as the job that a write started and answered with.
+// waits. It waits interval before its first read.
 func (c *Client) Poll(ctx context.Context, path string, query url.Values, interval time.Duration,
 	ended func(body json.RawMessage) (bool, error)) error {
 	for {

@@ -8,10 +8,6 @@ import (
 	"testing"
 )
 
-// TestParamScopesFollowTheQuery checks that a write requests the scopes of
-// its parameter only where the query that it sends needs them: with the
-// value that needs them, or without the parameter where Emporix then acts
-// as with it.
 func TestParamScopesFollowTheQuery(t *testing.T) {
 	flag := paramFlag{param: "check", flag: "check", choices: []string{queryTrue, queryFalse}, usage: "whether to check"}
 	for _, tt := range []struct {
@@ -33,10 +29,6 @@ func TestParamScopesFollowTheQuery(t *testing.T) {
 	}
 }
 
-// TestParamScopesNameTheirFlag checks that the flag of a write's parameter
-// with scopes sets the parameter, is annotated with them, says when the
-// write requests them in its usage, as the help does before its scope
-// sentence.
 func TestParamScopesNameTheirFlag(t *testing.T) {
 	check := paramFlag{param: "check", flag: "check", choices: []string{queryTrue, queryFalse}, usage: "whether to check"}
 	cmd := (&write{

@@ -7,18 +7,14 @@ import (
 	"testing"
 )
 
-// forbiddenAnswer is a 403 Forbidden answer of a service, and the error that
-// it makes.
 type forbiddenAnswer struct {
 	name    string
 	status  int
 	body    string
-	refusal bool   // a refusal of the input where the request declares one: no class
-	want    string // the error's message, as sent
+	refusal bool
+	want    string
 }
 
-// forbiddenAnswers are the 403 answers seen live, and others that are no
-// refusals: a 403 that names a scope, one without a message and a 401.
 func forbiddenAnswers() []forbiddenAnswer {
 	long := strings.Repeat("x", 320)
 	return []forbiddenAnswer{
@@ -55,8 +51,6 @@ func forbiddenAnswers() []forbiddenAnswer {
 	}
 }
 
-// check fails t unless err is the error of a, of no class where refused and
-// ErrAuth otherwise.
 func (a forbiddenAnswer) check(t *testing.T, err error, refused bool, route string) {
 	t.Helper()
 	var apiErr *APIError
@@ -72,10 +66,6 @@ func (a forbiddenAnswer) check(t *testing.T, err error, refused bool, route stri
 	}
 }
 
-// TestWritesDeclaredSoTakeForbiddenAsRefusal checks that a 403 Forbidden to
-// a write that declares that its service refuses an input so
-// (Write.ForbiddenIsRefusal) is of no class where its message names no scope,
-// and ErrAuth otherwise, as every 403 to a write that declares none is.
 func TestWritesDeclaredSoTakeForbiddenAsRefusal(t *testing.T) {
 	for _, a := range forbiddenAnswers() {
 		for _, declared := range []bool{true, false} {
@@ -89,9 +79,6 @@ func TestWritesDeclaredSoTakeForbiddenAsRefusal(t *testing.T) {
 	}
 }
 
-// TestReadsDeclaredSoTakeForbiddenAsRefusal checks the same of reads: those
-// of a client made by ForbiddenIsRefusal, a check with a body included, but
-// not those of the client that it was made of.
 func TestReadsDeclaredSoTakeForbiddenAsRefusal(t *testing.T) {
 	const path = "/coupon/{tenant}/coupons/SAVE7/validation"
 	for _, a := range forbiddenAnswers() {

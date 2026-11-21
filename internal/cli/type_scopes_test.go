@@ -10,12 +10,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// typeScopeNote is what the scope sentence of the read scope of a custom
-// entity type says after naming it (typeNote).
 const typeScopeNote = " <type> is the custom entity type in lower case (custom.document_read for DOCUMENT)."
 
-// instanceReads returns a read of the instances of the custom entity type
-// typ through each command that reads them.
 func instanceReads(typ string) [][]string {
 	return [][]string{
 		{"custom-entities", "instances", "list", typ},
@@ -25,10 +21,6 @@ func instanceReads(typ string) [][]string {
 	}
 }
 
-// TestInstanceReadsRequestTheScopeOfTheirType checks that every read of the
-// instances of a custom entity type requests the scope of the type that its
-// first argument names, in lower case, as Emporix names it, also for a type
-// given in mixed case (the read cases give upper case).
 func TestInstanceReadsRequestTheScopeOfTheirType(t *testing.T) {
 	for _, args := range instanceReads("Tech_Sheet2") {
 		fake := newFakeEmporix(t)
@@ -37,16 +29,12 @@ func TestInstanceReadsRequestTheScopeOfTheirType(t *testing.T) {
 		if args[0] == searchUse {
 			want = "tenant=acme1 search.search_read custom.tech_sheet2_read"
 		}
-		// The fake knows no instance, so a read is not found or lists nothing.
 		if code != ExitOK && code != ExitNotFound || !slices.Equal(fake.tokenScopes, []string{want}) {
 			t.Errorf("%q: exit %d, stderr %q, token scopes %q; want %q", args, code, stderr, fake.tokenScopes, want)
 		}
 	}
 }
 
-// TestInstanceReadsWithoutTheScopeOfTheirType checks that a credential
-// without the scope of the type, as for a type that does not exist, fails with
-// exit code 3 naming it, before any read is sent.
 func TestInstanceReadsWithoutTheScopeOfTheirType(t *testing.T) {
 	for _, args := range instanceReads("DOCUMENT") {
 		fake := newFakeEmporix(t, "custom.document_read")
@@ -59,12 +47,6 @@ func TestInstanceReadsWithoutTheScopeOfTheirType(t *testing.T) {
 	}
 }
 
-// TestTypedCommandsRefuseWhatNoTypeIs checks every command of the tree whose
-// scopes name a custom entity type, the reads of instances among them: its
-// first argument must be an ID that a type can have, as it is part of a scope
-// too (letters, digits and underscores, the first a letter), and nothing is
-// sent otherwise, not even a token request. The help of such a read says that
-// an unknown type has no scope (unknownFor, typeSentence).
 func TestTypedCommandsRefuseWhatNoTypeIs(t *testing.T) {
 	var typed []string
 	walkCommands(newTestRoot(), func(cmd *cobra.Command) {
@@ -97,16 +79,11 @@ func TestTypedCommandsRefuseWhatNoTypeIs(t *testing.T) {
 	}
 }
 
-// typedArguments returns the arguments that run cmd with typ as its first
-// argument and 123 as each further one that its use names.
 func typedArguments(cmd *cobra.Command, typ string) []string {
 	further := slices.Repeat([]string{"123"}, len(strings.Fields(cmd.Use))-2)
 	return slices.Concat(strings.Fields(cmd.CommandPath())[1:], []string{typ}, further)
 }
 
-// TestTypeScopeSentences checks that the help of a command, and of a group,
-// with the scopes of a custom entity type says what the type stands for, with
-// the scopes of an example type.
 func TestTypeScopeSentences(t *testing.T) {
 	read, manage := customTypeReadScope, "custom.<type>_manage"
 	manageNote := " <type> is the custom entity type in lower case (custom.document_manage for DOCUMENT)."
@@ -120,7 +97,6 @@ func TestTypeScopeSentences(t *testing.T) {
 			"<type> is the custom entity type in lower case (custom.document_manage, custom.document_read for DOCUMENT)."},
 		{groupScopeSentence(scopedGroup(map[string]string{scopesAnnotation: read})),
 			"Requires the custom.<type>_read scope." + typeScopeNote},
-		// A group explains <type> once, for the scopes its sentences name.
 		{groupScopeSentence(scopedGroup(map[string]string{scopesAnnotation: read},
 			map[string]string{writeScopesAnnotation: manage})),
 			"Its reads require the custom.<type>_read scope. Its writes require the custom.<type>_manage scope. " +
@@ -130,7 +106,6 @@ func TestTypeScopeSentences(t *testing.T) {
 			"Its reads require the custom.<type>_read scope. Its writes require the custom.<type>_manage, " +
 				"custom.<type>_read scopes. <type> is the custom entity type in lower case " +
 				"(custom.document_manage, custom.document_read for DOCUMENT)."},
-		// Nor where the sentences name none: the help of each read does.
 		{groupScopeSentence(scopedGroup(map[string]string{scopesAnnotation: read},
 			map[string]string{scopesAnnotation: ""})),
 			"Its reads require different OAuth scopes; the help of each names them."},
@@ -144,8 +119,6 @@ func TestTypeScopeSentences(t *testing.T) {
 	}
 }
 
-// scopedGroup returns a group holding two commands per annotation, which
-// request the same scopes, as the reads of the instances of a type do.
 func scopedGroup(annotations ...map[string]string) *cobra.Command {
 	group := &cobra.Command{Use: "g"}
 	for i, annotation := range annotations {
@@ -156,9 +129,6 @@ func scopedGroup(annotations ...map[string]string) *cobra.Command {
 	return group
 }
 
-// TestWriteRequestsTheScopeOfItsType checks that a write whose scopes name a
-// custom entity type requests them with the type that its first argument
-// names, in lower case, says so in its help, and refuses what no type is.
 func TestWriteRequestsTheScopeOfItsType(t *testing.T) {
 	create := func() *write {
 		return &write{
@@ -187,9 +157,6 @@ func TestWriteRequestsTheScopeOfItsType(t *testing.T) {
 	refused.assertNothingSent(t)
 }
 
-// TestTypeScopesNeedTheTypeArgument checks that a command whose scopes name a
-// custom entity type but whose request takes no argument, which would leave
-// the type unknown, is refused while the command tree is built.
 func TestTypeScopesNeedTheTypeArgument(t *testing.T) {
 	defer func() {
 		if recovered, _ := recover().(string); !strings.Contains(recovered, "a scope that names <type>") {
@@ -200,15 +167,10 @@ func TestTypeScopesNeedTheTypeArgument(t *testing.T) {
 	rd.command(&app{}, &command{use: listUse, req: request{path: "/things"}, fetch: listing{}})
 }
 
-// scopedBody is a body that a write reads with the read scope of a custom
-// entity type, which it requests as declared.
 type scopedBody struct{ noBody }
 
 func (scopedBody) scopes() []string { return []string{customTypeReadScope} }
 
-// TestOnlyTheirOwnScopesNameAType checks that a write whose body, choice or
-// job requests scopes that name a custom entity type, which nothing would
-// fill in, is refused while the command tree is built (refuseTypeScopes).
 func TestOnlyTheirOwnScopesNameAType(t *testing.T) {
 	for name, w := range map[string]*write{
 		"body": {use: "create-instance TYPE", body: scopedBody{}},

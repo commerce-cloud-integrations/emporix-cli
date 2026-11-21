@@ -2,8 +2,6 @@ package cli
 
 import "github.com/spf13/cobra"
 
-// newCustomerLocationsCommand reads the locations of B2B customers, such as
-// their headquarters and warehouses, and creates, upserts and deletes them.
 func newCustomerLocationsCommand(a *app) *cobra.Command {
 	locations := resource[location]{
 		use:   "customer-locations",

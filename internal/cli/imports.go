@@ -12,51 +12,35 @@ import (
 	"github.com/commerce-cloud-integrations/emporix-cli/internal/emporix"
 )
 
-// importScope is the one scope that reads the Import Service. It also starts,
-// schedules and cancels import runs, so every read of the service is opt-in.
 const importScope = "importtool.import_trigger"
 
-// importsUse is the name of the group of Import Service reads.
 const importsUse = "imports"
 
-// importScopes returns the scopes of an Import Service read.
 func importScopes() []string { return []string{importScope} }
 
-// importReader returns the reader of an Import Service read whose items v
-// shows.
 func importReader[T any](v view[T]) reader[T] { return reader[T]{view: v, scopes: importScopes()} }
 
-// importConfig is the part of an import configuration shown in tables.
 type importConfig struct {
 	ID        string      `json:"id"`
 	Name      string      `json:"name"`
 	Enabled   *bool       `json:"enabled"`
-	Version   json.Number `json:"version"` // kept as sent
+	Version   json.Number `json:"version"`
 	UpdatedAt string      `json:"updatedAt"`
 }
 
-// importStream is the part of an import stream shown in tables.
 type importStream struct {
-	ID           string `json:"id"`
-	Name         string `json:"name"`
-	SourceEntity string `json:"sourceEntity"`
-	FileMode     string `json:"fileMode"` // SNAPSHOT or INCREMENTAL, for a file-based stream only
-	TargetType   string `json:"targetType"`
-	Mode         string `json:"mode"`
-	// CompositeParent is the stream that a composite or FAN_OUT stream adds
-	// to or fans out from.
+	ID              string `json:"id"`
+	Name            string `json:"name"`
+	SourceEntity    string `json:"sourceEntity"`
+	FileMode        string `json:"fileMode"`
+	TargetType      string `json:"targetType"`
+	Mode            string `json:"mode"`
 	CompositeParent string `json:"compositeParent"`
 	Enabled         *bool  `json:"enabled"`
 }
 
-// fanOutMode is the MODE of a stream that has no source of its own: it reads
-// the records of the stream it fans out from.
 const fanOutMode = "FAN_OUT"
 
-// source returns what s imports: for a FAN_OUT stream, the stream it fans
-// out from, e.g. "fan-out of Products", where it names one; else its source entity, followed for
-// a file-based stream by how it reads its files, e.g. "SNAPSHOT files", as
-// such a stream may name no entity.
 func (s *importStream) source() string {
 	switch {
 	case s.Mode == fanOutMode && s.CompositeParent != "":
@@ -67,7 +51,6 @@ func (s *importStream) source() string {
 	return spaced(s.SourceEntity, s.FileMode, "files")
 }
 
-// importSchedule is the part of a configuration's run schedule shown in tables.
 type importSchedule struct {
 	Cron       string `json:"cron"`
 	Timezone   string `json:"timezone"`
@@ -75,14 +58,11 @@ type importSchedule struct {
 	NextFireAt string `json:"nextFireAt"`
 }
 
-// orderedStream is a stream of a configuration, in the order the streams run
-// in, with the streams that must run before it (streamOrderItems).
 type orderedStream struct {
 	Stream string   `json:"stream"`
 	After  []string `json:"after"`
 }
 
-// importedRecord is the part of an imported record shown in tables.
 type importedRecord struct {
 	ID         string `json:"id"`
 	NaturalKey string `json:"naturalKey"`
@@ -91,12 +71,6 @@ type importedRecord struct {
 	ImportedAt string `json:"importedAt"`
 }
 
-// newImportsCommand reads the Import Service: its configurations, streams
-// and their file queues, runs, imported records and statistics. Emporix reads
-// them only with the write-capable importtool.import_trigger scope, so every
-// read is opt-in. With that scope, it also queues files for a stream
-// (newImportFilesCommand), starts, retries and cancels runs and schedules
-// them (importConfigurationWrites, importRunWrites).
 func newImportsCommand(a *app) *cobra.Command {
 	configurations, runsOf := importConfigurations(), configurationRuns()
 	streams, streamsOf := importStreams(configurations)
@@ -118,7 +92,6 @@ func newImportsCommand(a *app) *cobra.Command {
 		reads...)
 }
 
-// importConfigurations returns import configurations.
 func importConfigurations() resource[importConfig] {
 	return resource[importConfig]{
 		use:   configurationsUse,
@@ -142,8 +115,6 @@ func importConfigurations() resource[importConfig] {
 	}
 }
 
-// newImportConfigurationsCommand reads import configurations with their
-// streams, schedule, stream order and runs, followed by writes.
 func newImportConfigurationsCommand(a *app, configurations resource[importConfig], streams child[importStream],
 	runs child[importRun], writes ...*cobra.Command) *cobra.Command {
 	return newResourceCommand(a, configurations, append([]*cobra.Command{
@@ -184,8 +155,6 @@ func newImportConfigurationsCommand(a *app, configurations resource[importConfig
 	}, writes...)...)
 }
 
-// configurationStreams declares the streams of an import configuration,
-// shown in v, the table of streams.
 func configurationStreams(v view[importStream]) child[importStream] {
 	return child[importStream]{
 		use:   streamsUse,
@@ -198,13 +167,8 @@ func configurationStreams(v view[importStream]) child[importStream] {
 	}
 }
 
-// streamsUse names import streams, and the streams of a configuration.
 const streamsUse = "streams"
 
-// importStreams returns import streams, which the service reads one at a time
-// by their own id, and the streams of a configuration of configurations
-// (configurationStreams), which list them, both with the table of streams,
-// which names the command of their file queue (queue).
 func importStreams(configurations resource[importConfig]) (resource[importStream], child[importStream]) {
 	queue := "`epx " + strings.Join([]string{importsUse, streamsUse, filesUse}, " ") + "`"
 	v := importStreamView(queue)
@@ -226,8 +190,6 @@ func importStreams(configurations resource[importConfig]) (resource[importStream
 	}, streamsOf
 }
 
-// importStreamView is the table of import streams, whose legend names queue,
-// the command of their file queue, as help quotes it.
 func importStreamView(queue string) view[importStream] {
 	return view[importStream]{
 		singular: "stream",
@@ -253,8 +215,6 @@ func importStreamView(queue string) view[importStream] {
 	}
 }
 
-// newImportStreamsCommand reads one import stream and the records a stream
-// imported, followed by the group of a stream's file queue.
 func newImportStreamsCommand(a *app, streams resource[importStream]) *cobra.Command {
 	return newGroup(streams.use, streams.summary(), streams.groupHelp(),
 		streams.getCommand(a),
@@ -269,7 +229,6 @@ func newImportStreamsCommand(a *app, streams resource[importStream]) *cobra.Comm
 		newImportFilesCommand(a, streams))
 }
 
-// importedRecordView is the table of imported records.
 func importedRecordView() view[importedRecord] {
 	return view[importedRecord]{
 		singular: "imported record",
@@ -280,8 +239,6 @@ func importedRecordView() view[importedRecord] {
 	}
 }
 
-// importDataReads returns the reads of the imported records: the types that
-// hold them and the records of one type.
 func importDataReads(a *app) []*cobra.Command {
 	return []*cobra.Command{
 		importReader(stringsView("imported type", columnType)).command(a, &command{
@@ -311,9 +268,6 @@ func importDataReads(a *app) []*cobra.Command {
 	}
 }
 
-// streamOrderItems returns the streams of a stream order response
-// ({"order": [names], "prereqs": {name: [names]}}) in the order they run, each
-// with the streams that must run before it (orderedStream).
 func streamOrderItems(body json.RawMessage) ([]json.RawMessage, error) {
 	var order *struct {
 		Order   []string            `json:"order"`

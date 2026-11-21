@@ -12,10 +12,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// TestChildItemRead checks that one item of a child collection is read with
-// the child's scopes and query, not its list query, its arguments filling
-// {parent}, {inner} and {id} in that order, each escaped as a path segment,
-// and that an unknown one is not found.
 func TestChildItemRead(t *testing.T) {
 	fake := newFakeEmporix(t)
 	fake.route("/things/a%2Fb/parts/big%20one/007", respond(http.StatusOK, `{"id":"007","name":"Bolt"}`))
@@ -31,10 +27,6 @@ func TestChildItemRead(t *testing.T) {
 	}
 }
 
-// TestChildItemReadOnASite checks the read of one item of a child collection
-// whose parent's path names the site: it takes the parent's argument and the
-// item's ID, reads like the child (the parent's scopes here, the child's path
-// and query) with --site, and its help names --site on both lists.
 func TestChildItemReadOnASite(t *testing.T) {
 	fake := newFakeEmporix(t)
 	fake.route("/stores/main/s%2F1/racks/x1", respond(http.StatusOK, `{"id":"x1","name":"X"}`))
@@ -68,12 +60,6 @@ func TestChildItemReadOnASite(t *testing.T) {
 	}
 }
 
-// TestChildSearch checks the search of a child collection
-// (childSearchCommand): it takes the parent's argument, sends a POST to the
-// search below the child's path with the child's query, the parent's scopes
-// here and --site where the parent's path names the site, reads as the child
-// lists (here with --sort but without a --query of the URL: --query fills
-// the body), and its help names the list it reads like.
 func TestChildSearch(t *testing.T) {
 	fake := newFakeEmporix(t)
 	fake.route("/stores/main/s%201/racks/search", firstPage(`[{"id":"x1","name":"X"}]`))
@@ -111,9 +97,6 @@ func TestChildSearch(t *testing.T) {
 	fake.assertScopes(t, "store.read")
 }
 
-// TestChildSearchNeedsAListedChild checks that the search of a child that is
-// not listed, a mistake in its declaration, fails while the command tree is
-// built.
 func TestChildSearchNeedsAListedChild(t *testing.T) {
 	defer func() {
 		if got := recover(); got != "search-shelves: only a listed child collection has a search" {
@@ -125,8 +108,6 @@ func TestChildSearchNeedsAListedChild(t *testing.T) {
 	childSearchCommand(&app{}, stores, shelves, "", "")
 }
 
-// TestChildItemReadsWithTheChildsScopes checks that the read of one item of
-// a child that declares its own scopes requests those, not the parent's.
 func TestChildItemReadsWithTheChildsScopes(t *testing.T) {
 	fake := newFakeEmporix(t)
 	fake.route("/things/t1/parts/x1", respond(http.StatusOK, `{"id":"x1","name":"X"}`))
@@ -137,8 +118,6 @@ func TestChildItemReadsWithTheChildsScopes(t *testing.T) {
 	}
 }
 
-// TestChildListSendsBothQueries checks that the list of a child collection
-// sends its query and its list query.
 func TestChildListSendsBothQueries(t *testing.T) {
 	fake := newFakeEmporix(t)
 	fake.route("/things/t%2F1/parts", firstPage(`[{"id":"x1","name":"X"}]`))
@@ -148,9 +127,6 @@ func TestChildListSendsBothQueries(t *testing.T) {
 	assertQueries(t, fake.gets, "/things/t%2F1/parts", url.Values{"all": {"true"}, "expand": {"tags"}})
 }
 
-// TestChildItemHelp checks that the help of one item of a child collection
-// says where each argument comes from, then what the columns mean and which
-// scope it requires.
 func TestChildItemHelp(t *testing.T) {
 	_, help, _ := runThings(t, newFakeEmporix(t), "named-part", "--help")
 	want := "Reads one part of a thing by name. " +
@@ -163,9 +139,6 @@ func TestChildItemHelp(t *testing.T) {
 	}
 }
 
-// TestArgumentOfAGroupWithoutList checks that the argument of a child read of
-// a group without list comes from the read that listedBy names, and otherwise
-// from the group's list.
 func TestArgumentOfAGroupWithoutList(t *testing.T) {
 	runs := resource[thing]{use: "runs", under: "things", view: thingView()}
 	runs.singular = "run"
@@ -180,9 +153,6 @@ func TestArgumentOfAGroupWithoutList(t *testing.T) {
 	}
 }
 
-// TestNestedParentNamesItsGroup checks that the commands of a child below a
-// nested parent, such as the mixins of a site, are named below the group of
-// their own, while the parent's argument still comes from the parent's list.
 func TestNestedParentNamesItsGroup(t *testing.T) {
 	stores := resource[thing]{use: "stores", under: "things", path: "/stores", view: thingView()}
 	shelves := stores.nested("shelves")
@@ -206,10 +176,6 @@ func TestNestedParentNamesItsGroup(t *testing.T) {
 	}
 }
 
-// TestItemArgumentsNameColumns checks that the arguments of an item read take
-// the names of columns of the child's table, a space as an underscore, and
-// fill in its path in order, and that a declaration naming a column the table
-// lacks, or more than two, fails while the command tree is built.
 func TestItemArgumentsNameColumns(t *testing.T) {
 	c := child[thing]{view: view[thing]{singular: "part", header: []string{"ID", "LEGAL ENTITY"}}}
 	args, key := c.itemArguments("x", []string{"LEGAL ENTITY", "ID"})
@@ -258,9 +224,6 @@ func TestChildItemUsageErrorsSendNothing(t *testing.T) {
 	}
 }
 
-// TestSegmentItemTypeIsAChoice checks that `segments items get` takes only the TYPE
-// values Emporix accepts, in capitals (it answers others with 400 Bad
-// Request), and refuses another as a usage error without contacting the API.
 func TestSegmentItemTypeIsAChoice(t *testing.T) {
 	fake := newFakeEmporix(t)
 	for _, kind := range []string{"product", "Category", "BRAND"} {
@@ -281,9 +244,6 @@ func TestSegmentItemTypeIsAChoice(t *testing.T) {
 	}
 }
 
-// TestChildGroupNeedsANestedParent checks that a group of a child below a
-// parent that is not nested (resource.nested) is refused as the command tree
-// is built: its help would name commands in a group that does not exist.
 func TestChildGroupNeedsANestedParent(t *testing.T) {
 	defer func() {
 		if got := recover(); got != "thing: a child in a group of its own is below a nested parent" {

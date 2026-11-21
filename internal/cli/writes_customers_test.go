@@ -6,14 +6,11 @@ import (
 	"testing"
 )
 
-// A customer profile as create takes it, and an address of one.
 const (
 	customerJSON = `{"contactEmail":"ada@example.com","firstName":"Ada","lastName":"Example"}`
 	addressJSON  = `{"contactName":"Ada Example","street":"Main Street","city":"Amsterdam","country":"NL"}`
 )
 
-// bulkCreated is the answer to a bulk write of two items that Emporix
-// created, and createdJSON the answer as epx prints it.
 const (
 	bulkCreated = `[{"index":0,"id":"c1","code":201,"status":"Created"},` +
 		`{"index":1,"id":"c2","code":201,"status":"Created"}]`
@@ -22,15 +19,12 @@ const (
 		"    \"status\": \"Created\"\n  }\n]\n"
 )
 
-// customerServiceWrites are the writes of the Customer Service: customer
-// profiles, their addresses, imports and the password migration retention.
 func customerServiceWrites() []writeCase {
 	manage := []string{customerManageScope}
 	imports := []string{customerImportScope}
 	const retention = `{"retentionEndDate":"2027-01-31","emailReminderDate":"2027-01-24","emailNotificationsEnabled":true}`
 	return []writeCase{
 		{
-			// Without --password-reset-email, Emporix is told to send no email.
 			args: []string{"customers", "create"}, file: customerJSON, method: http.MethodPost,
 			path: "/customer/acme1/customers", query: "sendPasswordResetNotifications=false", scopes: manage,
 			status: http.StatusCreated, body: `{"id":"0100"}`, want: "{\n  \"id\": \"0100\"\n}\n",
@@ -41,7 +35,6 @@ func customerServiceWrites() []writeCase {
 			status: http.StatusCreated, body: `{"id":"0101"}`, want: "{\n  \"id\": \"0101\"\n}\n",
 		},
 		{
-			// The customer number keeps its leading zero.
 			args: []string{"customers", "update", "0100"}, file: customerJSON, method: http.MethodPut,
 			path: "/customer/acme1/customers/0100", query: "sendPasswordResetNotifications=false", scopes: manage,
 			status: http.StatusNoContent,
@@ -79,7 +72,6 @@ func customerServiceWrites() []writeCase {
 			status: http.StatusNoContent,
 		},
 		{
-			// The tags go in the query, separated by commas, as given.
 			args:   []string{"customers", "addresses", "add-tags", "0100", "a1", "--tags", "BILLING,SHIPPING"},
 			method: http.MethodPost, path: "/customer/acme1/customers/0100/addresses/a1/tags",
 			query: "tags=BILLING%2CSHIPPING", scopes: manage, status: http.StatusNoContent,
@@ -99,8 +91,6 @@ func customerServiceWrites() []writeCase {
 				"  \"retentionEndDate\": \"2027-01-31\"\n}\n",
 		},
 		{
-			// Without --emails, epx sends false, also where the retention replaced had emails on: Emporix's
-			// default is true.
 			args: []string{"customers", "password-migration", "update", "--ends", "2027-01-31"},
 			sent: `{"emailNotificationsEnabled":false,"retentionEndDate":"2027-01-31"}`, method: http.MethodPost,
 			path: "/customer/acme1/config/password-migration-retention", scopes: imports, status: http.StatusOK,
@@ -117,12 +107,6 @@ func customerServiceWrites() []writeCase {
 	}
 }
 
-// TestCustomerWriteUsageErrorsSendNothing checks that the customer writes
-// refuse what they cannot send as usage errors (exit 2) that send nothing,
-// also for a dry run: a tag write without --tags or with an empty one, a
-// retention without its end date (--ends, else --file) or with --file and a
-// flag that sets a member, an import of more customers than Emporix takes in
-// one request and a delete given a body.
 func TestCustomerWriteUsageErrorsSendNothing(t *testing.T) {
 	const retention = `{"retentionEndDate":"2027-01-31"}`
 	assertRefused(t, []refusedWrite{
@@ -140,13 +124,6 @@ func TestCustomerWriteUsageErrorsSendNothing(t *testing.T) {
 	})
 }
 
-// TestCustomerGroupsStateTheirScopes checks the help of the customer groups
-// with writes: their reads' and writes' scopes, that create and update say
-// that Emporix emails a new customer only with --password-reset-email, and
-// what Emporix does, as tried: the PUTs of profiles and addresses keep the
-// members left out, a contactEmail is not the account's email, a delete is
-// accepted (202), a retention is replaced whole and a customerNumber in a
-// profile is ignored.
 func TestCustomerGroupsStateTheirScopes(t *testing.T) {
 	for _, tt := range []struct {
 		args []string

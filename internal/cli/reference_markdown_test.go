@@ -10,12 +10,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// Help text becomes Markdown that shows the same text as --help: prose is
-// escaped, backquoted spans become code spans and indented lines text blocks.
-
-// helpBlocks renders help text as Markdown blocks showing the same text:
-// runs of prose lines as paragraphs (proseBlock), and runs of indented lines
-// as text blocks.
 func helpBlocks(text string, root *cobra.Command) []string {
 	var blocks []string
 	for _, run := range helpRuns(text) {
@@ -28,15 +22,11 @@ func helpBlocks(text string, root *cobra.Command) []string {
 	return blocks
 }
 
-// helpRun is a run of help lines: prose lines, or indented lines, which help
-// shows as written.
 type helpRun struct {
 	lines    []string
 	indented bool
 }
 
-// helpRuns splits help text into its runs of prose and of indented lines; a
-// blank line ends a run.
 func helpRuns(text string) []helpRun {
 	var runs []helpRun
 	var run helpRun
@@ -60,10 +50,6 @@ func helpRuns(text string) []helpRun {
 	return runs
 }
 
-// proseBlock renders run, lines of prose, as one paragraph, its lines joined
-// by spaces, so that where help breaks its lines changes nothing on the site;
-// or, where run is one line that is a Markdown heading, such as Cobra's
-// "#### Linux:", as a bold line. A heading among other lines is prose.
 func proseBlock(run []string, root *cobra.Command) string {
 	if len(run) == 1 {
 		if title, isHeading := helpHeading(run[0]); isHeading {
@@ -73,8 +59,6 @@ func proseBlock(run []string, root *cobra.Command) string {
 	return paragraph(strings.Join(run, " "), root)
 }
 
-// helpHeading returns the title of a Markdown heading line in help text, such
-// as Cobra's "#### Linux:", which the site shows as a bold line.
 func helpHeading(line string) (string, bool) {
 	level := len(line) - len(strings.TrimLeft(line, "#"))
 	if level == 0 || level > 6 || !strings.HasPrefix(line[level:], " ") {
@@ -83,10 +67,6 @@ func helpHeading(line string) (string, bool) {
 	return strings.TrimSpace(line[level:]), true
 }
 
-// paragraph renders prose as Markdown that shows the same text: backquoted
-// spans become code spans (linked to the command they cite, if any), literals
-// such as --file or a JSON value become code spans too (markLiterals), and
-// every other character Markdown or HTML would interpret is escaped.
 func paragraph(text string, root *cobra.Command) string {
 	parts := strings.Split(text, "`")
 	var b strings.Builder
@@ -95,7 +75,7 @@ func paragraph(text string, root *cobra.Command) string {
 		case i%2 == 0:
 			b.WriteString(markLiterals(part))
 		case i == len(parts)-1:
-			b.WriteString("\\`" + escapeMarkdown(part)) // an unmatched backquote
+			b.WriteString("\\`" + escapeMarkdown(part))
 		case part == "":
 			b.WriteString("\\`\\`")
 		default:
@@ -105,8 +85,6 @@ func paragraph(text string, root *cobra.Command) string {
 	return escapeLineStart(b.String())
 }
 
-// citation renders a backquoted span of help as a code span, linked to the
-// section of the command it cites when it is a command line of root.
 func citation(code string, root *cobra.Command) string {
 	span := codeSpan(code)
 	words := strings.Fields(code)
@@ -120,10 +98,6 @@ func citation(code string, root *cobra.Command) string {
 	return "[" + span + "](" + pageURL(cmd) + "#" + anchorOf(cmd) + ")"
 }
 
-// citedCommand returns the command that words, a command line of root without
-// the program name, cites: each word names a subcommand until an argument (a
-// flag, a quoted or an uppercase word) or a command without subcommands. It
-// returns nil when a word names no subcommand or none is named.
 func citedCommand(root *cobra.Command, words []string) *cobra.Command {
 	cmd := root
 	for _, word := range words {
@@ -144,11 +118,6 @@ func citedCommand(root *cobra.Command, words []string) *cobra.Command {
 	return cmd
 }
 
-// markLiterals renders prose with its literals as code spans and the rest
-// escaped. The site sets prose in typography, turning -- into an em dash and
-// straight quotes into curly ones, which would change what a reader copies:
-// flags (--file, --active=false, -o), a bare --, JSON values and quoted
-// values are therefore code.
 func markLiterals(text string) string {
 	var b strings.Builder
 	last := 0
@@ -159,8 +128,6 @@ func markLiterals(text string) string {
 	return b.String() + escapeMarkdown(text[last:])
 }
 
-// literalSpans yields the start and end of each literal of prose text
-// (literalEnd), in order, which markLiterals shows as code.
 func literalSpans(text string) iter.Seq2[int, int] {
 	return func(yield func(int, int) bool) {
 		for i := 0; i < len(text); i++ {
@@ -176,8 +143,6 @@ func literalSpans(text string) iter.Seq2[int, int] {
 	}
 }
 
-// literalEnd returns the end of the literal that starts at text[i], or i when
-// none does; a literal never starts inside a word.
 func literalEnd(text string, i int) int {
 	if i > 0 && isWordByte(text[i-1]) {
 		return i
@@ -193,8 +158,6 @@ func literalEnd(text string, i int) int {
 	return i
 }
 
-// flagEnd returns the end of a flag at text[i]: --name with an optional
-// =value, a bare -- (or one before a digit), or a one-letter -x.
 func flagEnd(text string, i int) int {
 	switch {
 	case strings.HasPrefix(text[i:], "--"):
@@ -212,8 +175,6 @@ func flagEnd(text string, i int) int {
 	return i
 }
 
-// formatEnd returns the end of the output format that follows -o at text[end]
-// (as in -o json), so that the two read as one; end when none follows.
 func formatEnd(text string, end int) int {
 	if text[end-1] != 'o' {
 		return end
@@ -227,8 +188,6 @@ func formatEnd(text string, end int) int {
 	return end
 }
 
-// valueEnd returns the end of the =value that may follow a flag ending at
-// text[end]: up to a space or a , ; or ), without a final period.
 func valueEnd(text string, end int) int {
 	if end >= len(text) || text[end] != '=' {
 		return end
@@ -243,8 +202,6 @@ func valueEnd(text string, end int) int {
 	return value
 }
 
-// jsonEnd returns the end of a JSON object or array at text[i], one that
-// starts with {" [{ or [" and closes before the text ends; i otherwise.
 func jsonEnd(text string, i int) int {
 	if i+1 >= len(text) || !strings.ContainsRune(map[byte]string{'{': "\"", '[': "{\""}[text[i]], rune(text[i+1])) {
 		return i
@@ -268,9 +225,6 @@ func jsonEnd(text string, i int) int {
 	return i
 }
 
-// quotedEnd returns the end of a quoted value at text[i]: a non-empty run in
-// double or single quotes within the paragraph, the closing quote not
-// followed by a letter (an apostrophe); i otherwise.
 func quotedEnd(text string, i int) int {
 	quote := text[i]
 	closing := strings.IndexByte(text[i+1:], quote)
@@ -290,12 +244,10 @@ func isLower(c byte) bool { return 'a' <= c && c <= 'z' }
 
 func isDigit(c byte) bool { return '0' <= c && c <= '9' }
 
-// isWordByte reports whether c continues a word or a flag: a letter, digit, "_" or "-".
 func isWordByte(c byte) bool {
 	return isLetter(c) || isDigit(c) || c == '_' || c == '-'
 }
 
-// escapeMarkdown escapes the characters of text that Markdown or HTML would interpret.
 func escapeMarkdown(text string) string {
 	var b strings.Builder
 	for _, r := range text {
@@ -314,9 +266,6 @@ func escapeMarkdown(text string) string {
 	return b.String()
 }
 
-// escapeLineStart escapes what would start a block at the start of a
-// paragraph, text: a list item, a setext underline, an admonition or a
-// numbered item.
 func escapeLineStart(text string) string {
 	switch {
 	case text == "":
@@ -335,7 +284,6 @@ func escapeLineStart(text string) string {
 	return text
 }
 
-// codeSpan renders text as a code span, delimited by more backquotes than it holds.
 func codeSpan(text string) string {
 	ticks := "`"
 	for strings.Contains(text, ticks) {
@@ -355,10 +303,8 @@ func codeList(items []string) string {
 	return strings.Join(spans, ", ")
 }
 
-// fence renders text as a fenced text block, delimited by more backquotes than it holds.
 func fence(text string) string { return fenced("text", text) }
 
-// shellFence renders commands as a fenced shell block.
 func shellFence(text string) string { return fenced("sh", text) }
 
 func fenced(language, text string) string {
@@ -369,7 +315,6 @@ func fenced(language, text string) string {
 	return marks + language + "\n" + text + "\n" + marks
 }
 
-// dedent joins lines without the leading white space they all share (blank lines aside).
 func dedent(lines []string) string {
 	text := slices.DeleteFunc(slices.Clone(lines), isBlank)
 	prefix := ""
@@ -390,9 +335,6 @@ func dedent(lines []string) string {
 
 func isBlank(line string) bool { return strings.TrimSpace(line) == "" }
 
-// TestReferenceRendersHelpFaithfully checks that help text shows as written:
-// Markdown and HTML characters are escaped, backquoted command lines link to
-// their section and indented lines keep their layout.
 func TestReferenceRendersHelpFaithfully(t *testing.T) {
 	root := newTestRoot()
 	for _, tt := range []struct{ help, want string }{

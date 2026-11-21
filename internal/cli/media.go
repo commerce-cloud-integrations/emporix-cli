@@ -6,7 +6,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// mediaAsset is the part of a Media Service asset shown in tables.
 type mediaAsset struct {
 	ID      string `json:"id"`
 	Type    string `json:"type"`
@@ -15,12 +14,11 @@ type mediaAsset struct {
 	Details struct {
 		Filename string      `json:"filename"`
 		MimeType string      `json:"mimeType"`
-		Bytes    json.Number `json:"bytes"` // kept as sent
+		Bytes    json.Number `json:"bytes"`
 	} `json:"details"`
 	RefIDs []assetReference `json:"refIds"`
 }
 
-// assetReference is an item an asset belongs to, such as a product.
 type assetReference struct {
 	Type string `json:"type"`
 	ID   string `json:"id"`
@@ -28,15 +26,12 @@ type assetReference struct {
 
 func (r assetReference) String() string { return spaced(r.Type, r.ID) }
 
-// downloadURL is a URL that downloads an asset.
 type downloadURL struct {
 	URL       string `json:"url"`
 	Provider  string `json:"provider"`
 	ExpiresAt string `json:"expiresAt"`
 }
 
-// newMediaCommand reads media assets and a URL to download one, and creates,
-// uploads and changes them (mediaWrites).
 func newMediaCommand(a *app) *cobra.Command {
 	assets := resource[mediaAsset]{
 		use:   "media",

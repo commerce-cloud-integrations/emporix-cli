@@ -8,13 +8,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// The analytics of the AI Service's agents: what Emporix counts of their
-// requests and sessions.
-
-// logMetrics is the part of the request or session totals of agent
-// analytics shown in tables. Each count is kept as sent, and one that
-// Emporix leaves out is omitted from the item (logTotals), so that it stays
-// empty instead of becoming 0.
 type logMetrics struct {
 	Total      json.Number `json:"total,omitempty"`
 	BySeverity struct {
@@ -24,35 +17,25 @@ type logMetrics struct {
 	ErrorRate json.Number `json:"errorRate,omitempty"`
 }
 
-// logTotals is a row of agent analytics: the totals of requests or of
-// sessions (analyticsItems).
 type logTotals struct {
 	Of      string     `json:"of"`
 	Metrics logMetrics `json:"metrics"`
 }
 
-// agentExecutions is how often an agent ran in one period: an item of the
-// executions read (executionItems).
 type agentExecutions struct {
 	AgentID string          `json:"agentId"`
 	Period  analyticsPeriod `json:"period"`
-	Count   json.Number     `json:"count,omitempty"` // kept as sent; omitted, like a logMetrics count, when null
+	Count   json.Number     `json:"count,omitempty"`
 }
 
-// analyticsPeriod is a period of agent executions, from start (inclusive)
-// to end (exclusive).
 type analyticsPeriod struct {
 	Label string `json:"label"`
 	Start string `json:"start"`
 	End   string `json:"end"`
 }
 
-// granularityParam is the query parameter, and the flag, that sets the
-// calendar period of agent executions.
 const granularityParam = "granularity"
 
-// newAIAnalyticsCommand reads the analytics of agents: request and session
-// totals, of every agent or of one, and executions per period.
 func newAIAnalyticsCommand(a *app) *cobra.Command {
 	totals := reader[logTotals]{view: view[logTotals]{
 		singular: "agent analytics",
@@ -113,8 +96,6 @@ func newAIAnalyticsCommand(a *app) *cobra.Command {
 	)
 }
 
-// analyticsItems returns the rows of an analytics response: the totals of
-// its requests, then of its sessions (logTotals).
 func analyticsItems(body json.RawMessage) ([]json.RawMessage, error) {
 	var bundle struct {
 		Requests *logMetrics `json:"requests"`
@@ -129,9 +110,6 @@ func analyticsItems(body json.RawMessage) ([]json.RawMessage, error) {
 	})
 }
 
-// executionItems returns the items of an executions response, which holds
-// the periods and, per agent, a count for each: one agentExecutions per
-// agent and period, in their order.
 func executionItems(body json.RawMessage) ([]json.RawMessage, error) {
 	var answer struct {
 		Periods *[]analyticsPeriod `json:"periods"`
@@ -144,7 +122,7 @@ func executionItems(body json.RawMessage) ([]json.RawMessage, error) {
 		return nil, errors.New("expected an object with periods and series")
 	}
 	periods := *answer.Periods
-	var rows []agentExecutions // grown as counts are checked, not sized from the response up front
+	var rows []agentExecutions
 	for _, series := range *answer.Series {
 		if len(series.Counts) != len(periods) {
 			return nil, errors.New("expected one count per period for each agent")

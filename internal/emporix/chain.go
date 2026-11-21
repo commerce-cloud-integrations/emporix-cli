@@ -15,27 +15,18 @@ import (
 // as AddCartItemsBatch) is answered with the result of each item as data, as
 // a bulk write is, also with a code that succeeded (207) when items failed.
 
-// The query parameter of a chain, and its value, with which Emporix runs
-// every command, also after one that failed.
 const (
 	onErrorParam  = "onError"
 	resumeOnError = "resume"
 )
 
-// commandResult is what readCommands reads of the result of one command of
-// a chain.
 type commandResult struct {
-	Index *int            `json:"index"` // the command's position in the body sent, from 0
+	Index *int            `json:"index"`
 	Type  string          `json:"type"`
 	Code  int             `json:"code"`
-	Data  json.RawMessage `json:"data"` // the response of the command, its error where it failed
+	Data  json.RawMessage `json:"data"`
 }
 
-// readCommands reads the results of the commands of a chain, sent: the
-// result of each command that ran, in order, each naming it by its index:
-// with onError=resume, of every command; else up to the first that failed,
-// the last that ran then. False for anything else, as then which commands
-// ran is unknown.
 func readCommands(sent *sentParts, results []json.RawMessage) ([]ItemFailure, int, bool) {
 	commands, ran := len(sent.parts), len(results)
 	resume := sent.query.Get(onErrorParam) == resumeOnError
@@ -43,7 +34,7 @@ func readCommands(sent *sentParts, results []json.RawMessage) ([]ItemFailure, in
 		return nil, 0, false
 	}
 	var failed []ItemFailure
-	stopped := false // a command failed, after which Emporix ran none without resume
+	stopped := false
 	for position, raw := range results {
 		var result commandResult
 		if stopped || json.Unmarshal(raw, &result) != nil || !result.at(position) {
@@ -57,23 +48,15 @@ func readCommands(sent *sentParts, results []json.RawMessage) ([]ItemFailure, in
 		stopped = !resume && !succeeded(result.Code)
 	}
 	if ran < commands && !stopped {
-		return nil, 0, false // the chain stopped although no command failed
+		return nil, 0, false
 	}
 	return failed, commands - ran, true
 }
 
-// at reports whether r is the result of the command at position: it names
-// that index and gives a status code.
 func (r commandResult) at(position int) bool {
 	return r.Index != nil && *r.Index == position && isStatus(r.Code)
 }
 
-// failures returns the failures of r, the result of command, sent at
-// position: none when it succeeded; for a command whose data is a list of
-// items (batchItems), whose result then gives the result of each item as
-// data, the items that failed; else the command. False when the result of a
-// batch that succeeded does not give the result of each item, as then which
-// ones Emporix carried out is unknown.
 func (r commandResult) failures(position int, command json.RawMessage) ([]ItemFailure, bool) {
 	items, isBatch := within(command, "data")
 	entries, isList := within(r.Data, "")
@@ -89,11 +72,6 @@ func (r commandResult) failures(position int, command json.RawMessage) ([]ItemFa
 	}
 }
 
-// itemFailures returns the failures of r, the result of a command at
-// position that sends items, whose data, entries, gives the result of each
-// (itemFailures): each item that failed, or the command where it failed
-// although none of them did; false when entries do not give the result of
-// each item.
 func (r commandResult) itemFailures(position int, items sentItems, entries []json.RawMessage) ([]ItemFailure,
 	bool) {
 	failed, ok := itemFailures(items, entries)
@@ -110,8 +88,6 @@ func (r commandResult) itemFailures(position int, items sentItems, entries []jso
 	return lines, true
 }
 
-// failure returns the failure of r, the result of the command at position
-// that failed, with the message of its data.
 func (r commandResult) failure(position int) ItemFailure {
 	return ItemFailure{Index: position, Type: r.Type, Status: r.Code, Message: errorMessage(r.Data)}
 }

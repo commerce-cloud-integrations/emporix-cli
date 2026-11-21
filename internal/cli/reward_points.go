@@ -9,17 +9,15 @@ import (
 	"github.com/commerce-cloud-integrations/emporix-cli/internal/emporix"
 )
 
-// rewardSummary is the part of a customer's reward points summary shown in tables.
 type rewardSummary struct {
 	CustomerID   string      `json:"customerId"`
 	ActivePoints json.Number `json:"activePoints"`
 	Summary      *struct {
-		Added    *[]rewardPoints `json:"addedPointsList"` // required: missing, ADDED is unknown
+		Added    *[]rewardPoints `json:"addedPointsList"`
 		Redeemed []rewardPoints  `json:"redeemedPointsList"`
 	} `json:"summary"`
 }
 
-// added returns the points added so far, or "" when the summary leaves them out.
 func (r *rewardSummary) added() string {
 	if r.Summary == nil || r.Summary.Added == nil {
 		return ""
@@ -27,7 +25,6 @@ func (r *rewardSummary) added() string {
 	return totalPoints(*r.Summary.Added)
 }
 
-// redeemed returns the points redeemed so far, or "" without a summary.
 func (r *rewardSummary) redeemed() string {
 	if r.Summary == nil {
 		return ""
@@ -35,13 +32,10 @@ func (r *rewardSummary) redeemed() string {
 	return totalPoints(r.Summary.Redeemed)
 }
 
-// rewardPoints is an addition or redemption of reward points.
 type rewardPoints struct {
 	Points json.Number `json:"points"`
 }
 
-// totalPoints returns the exact sum of the points of entries, or "" when one
-// is not a number or the sum is not whole.
 func totalPoints(entries []rewardPoints) string {
 	total := new(big.Rat)
 	for _, e := range entries {
@@ -57,7 +51,6 @@ func totalPoints(entries []rewardPoints) string {
 	return total.Num().String()
 }
 
-// redeemOption is a way to redeem reward points, such as a coupon.
 type redeemOption struct {
 	ID     string      `json:"id"`
 	Type   string      `json:"type"`
@@ -65,22 +58,14 @@ type redeemOption struct {
 	Points json.Number `json:"points"`
 }
 
-// rewardCustomerPath is the reward points of the customer that a command's
-// argument, CUSTOMER, names (customerSentence).
 const rewardCustomerPath = "/reward-points/customer/" + placeholderID
 
-// customerSentence says where the CUSTOMER argument of a reward points
-// command comes from.
 const customerSentence = "CUSTOMER is the customer id that `epx reward-points list` shows"
 
-// redeemOptionsPath is the collection of the ways to redeem reward points.
 const redeemOptionsPath = "/reward-points/{tenant}/redeemOptions"
 
-// newRewardPointsCommand reads and changes customers' reward points and the
-// ways to redeem them (rewardPointWrites). The reference documents no paging, so the summaries and the
-// redeem options are read with one request.
 func newRewardPointsCommand(a *app) *cobra.Command {
-	const scope = "rewardspoints.rewardpoints_view" // reads customers' reward points
+	const scope = "rewardspoints.rewardpoints_view"
 	const long = "Reads customers' reward points, personal data included: ACTIVE is the number of points " +
 		"a customer can redeem now (expired points are left out), ADDED and REDEEMED the points added " +
 		"and redeemed so far, expired ones included (a failed redemption is refunded as an " +

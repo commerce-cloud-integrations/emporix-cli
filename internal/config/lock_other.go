@@ -14,5 +14,4 @@ func tryLock(*os.File) (bool, error) {
 	return false, fmt.Errorf("locking the configuration file: %w", errors.ErrUnsupported)
 }
 
-// unlockFile releases no lock, as tryLock takes none.
 func unlockFile(*os.File) error { return nil }

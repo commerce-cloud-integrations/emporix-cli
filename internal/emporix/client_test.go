@@ -146,12 +146,10 @@ func TestGetRejectsPathsThatLeaveTheAPIHost(t *testing.T) {
 }
 
 func TestGetReportsAnEmptyItemAsNotFound(t *testing.T) {
-	// Some services answer a read of a missing item with 200 and no body, or with 204 No Content.
 	for _, status := range []int{http.StatusOK, http.StatusNoContent} {
 		fake := newFakeEmporix(t)
 		fake.route("/product/acme1/products/x", respond(status, " \n"))
 		_, err := fake.client(t).Get(context.Background(), "/product/{tenant}/products/x?token=SENTINEL", nil)
-		// An inline query is left out of the message, as it may hold a credential.
 		if !errors.Is(err, ErrNotFound) || err.Error() != "GET /product/acme1/products/x: empty response: not found" {
 			t.Fatalf("%d: error = %v; want an empty response classified not found, without the query", status, err)
 		}
@@ -160,7 +158,7 @@ func TestGetReportsAnEmptyItemAsNotFound(t *testing.T) {
 
 func TestGetNamesAnEmptyItemByItsEscapedPath(t *testing.T) {
 	fake := newFakeEmporix(t)
-	fake.route("/product/acme1/products/a b/c?d", respond(http.StatusOK, "")) // routed unescaped
+	fake.route("/product/acme1/products/a b/c?d", respond(http.StatusOK, ""))
 	query := url.Values{"secret": {"SENTINEL2"}}
 	_, err := fake.client(t).Get(context.Background(), "/product/{tenant}/products/a%20b%2Fc%3Fd?token=SENTINEL", query)
 	const want = "GET /product/acme1/products/a%20b%2Fc%3Fd: empty response: not found"
@@ -183,7 +181,6 @@ func TestGetMapsErrorResponses(t *testing.T) {
 		{name: "plain text", status: 400, body: "  bad request  ", want: "400 Bad Request: bad request"},
 		{name: "empty body", status: 403, body: "", want: "403 Forbidden", class: ErrAuth},
 		{name: "redirect not followed", status: 302, body: "", want: "302 Found"},
-		// A read answered 409 is no conflict of its own: only a write's is ErrConflict.
 		{name: "conflict", status: 409, body: `{"message":"no such group"}`, want: "409 Conflict: no such group"},
 	}
 	for _, tt := range tests {
@@ -204,8 +201,6 @@ func TestGetMapsErrorResponses(t *testing.T) {
 	}
 }
 
-// cutShort answers with status and a body cut short of the length it
-// declares, which cannot be read whole.
 func cutShort(status int) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, _ *http.Request) {
 		w.Header().Set("Content-Length", "1000")
@@ -215,10 +210,6 @@ func cutShort(status int) func(http.ResponseWriter, *http.Request) {
 	}
 }
 
-// TestFailuresWhoseBodyIsCutShortKeepTheirStatus checks that a failure whose
-// body cannot be read whole is classified by its status, without a message:
-// a write's 409 stays a conflict, a read's 404 not found, and a read's 503 is
-// sent again. A success that cannot be read whole fails.
 func TestFailuresWhoseBodyIsCutShortKeepTheirStatus(t *testing.T) {
 	fake := newFakeEmporix(t)
 	for path, status := range map[string]int{
@@ -247,9 +238,6 @@ func TestFailuresWhoseBodyIsCutShortKeepTheirStatus(t *testing.T) {
 	}
 }
 
-// TestFailuresToSendLeaveTheQueryOut checks that a failure to send, a write's
-// or a read's, names the URL without its query, which may hold values a log
-// must not keep, and keeps the failure it wraps.
 func TestFailuresToSendLeaveTheQueryOut(t *testing.T) {
 	fake := newFakeEmporix(t)
 	client := fake.client(t)

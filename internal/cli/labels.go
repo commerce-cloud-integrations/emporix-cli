@@ -7,25 +7,17 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// label is the part of a Label Service label shown in tables.
 type label struct {
 	ID          string    `json:"id"`
-	Name        localized `json:"name"` // a string in the reference; translations are accepted too
+	Name        localized `json:"name"`
 	Description localized `json:"description"`
 	MediaID     string    `json:"mediaId"`
 	Overlay     struct {
 		IsTrue   *bool       `json:"isTrue"`
-		Position json.Number `json:"position"` // kept as sent
+		Position json.Number `json:"position"`
 	} `json:"overlay"`
 }
 
-// newLabelsCommand reads, creates, changes and deletes the tenant's labels, the
-// badges shown on products. The Label Service has no tenant path segment: the
-// tenant comes from the token. Its reference names the scope of label writes
-// only among its OAuth scopes (label.label_manage, "needed to manage labels
-// and label medias") and in the message of its 403 Forbidden answer. Emporix
-// refuses a delete with that scope, though: it answers 403 naming
-// label.label_delete, with which the delete succeeds.
 func newLabelsCommand(a *app) *cobra.Command {
 	labels := resource[label]{
 		use:   "labels",
@@ -71,6 +63,8 @@ func newLabelsCommand(a *app) *cobra.Command {
 				"Emporix does not check a metadata.version in it. An unknown ID is not found. " + answer,
 			req: request{path: labels.itemPath()}, scopes: manage, body: &payload{}, ids: labels.itemIDs(),
 		}).command(a),
+		// The reference names label.label_manage for label writes, but Emporix answers a delete with
+		// it 403 naming label.label_delete.
 		itemDelete(labels, "Delete a label", "Deletes the label ID.", []string{"label.label_delete"}).command(a),
 	)
 }

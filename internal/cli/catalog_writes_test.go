@@ -7,20 +7,13 @@ import (
 	"testing"
 )
 
-// TestBulkAssignmentsAreAnsweredPerItem checks that both bulk writes of
-// category assignments, each to its own path, read the result of each item:
-// a response that names items that failed is printed, those items are listed
-// on standard error (one that failed with a server error may have been
-// assigned all the same, and is not sent again) and the write exits with the
-// code that their failures share, else 1; a response that does not give the
-// result of each item exactly once fails (exit 1) too.
 func TestBulkAssignmentsAreAnsweredPerItem(t *testing.T) {
 	const unknown = "the response does not give the result of each of the 2 items, which may have been carried " +
 		"out all the same: read them before you send them again\n"
 	for _, tt := range []struct {
 		results string
 		code    int
-		stderr  string // what standard error ends with, after the method and path for the error
+		stderr  string
 	}{
 		{
 			results: `[{"index":0,"code":201,"status":"CREATED"},
@@ -56,10 +49,6 @@ func TestBulkAssignmentsAreAnsweredPerItem(t *testing.T) {
 	}
 }
 
-// TestCategoryPublishFlags checks that --publish and --unpublish exclude each
-// other, that patch, which Emporix publishes as its body says, takes neither,
-// and that --publish=false publishes nothing: the category is sent without the
-// publish parameter, with category_manage only.
 func TestCategoryPublishFlags(t *testing.T) {
 	fake := newFakeEmporix(t)
 	body := writeBody(t, `{"published":false}`)
@@ -88,9 +77,6 @@ func TestCategoryPublishFlags(t *testing.T) {
 	fake.assertTokens(t, tokenScope([]string{categoryManageScope}))
 }
 
-// TestCatalogWriteUsageErrorsSendNothing checks that the arguments and bodies
-// of the writes of catalogs and categories are checked before anything is
-// sent: a usage error (exit 2).
 func TestCatalogWriteUsageErrorsSendNothing(t *testing.T) {
 	body := writeBody(t, `{}`)
 	for _, tt := range []struct {
@@ -120,7 +106,6 @@ func TestCatalogWriteUsageErrorsSendNothing(t *testing.T) {
 		}
 		fake.assertNothingSent(t)
 	}
-	// The products assigned to a category are listed with assignments list.
 	code, _, stderr := runIn(t, writeEnv(newFakeEmporix(t), false, ""), "categories", "assignments", "c1")
 	if want := `unknown command "c1" for "epx categories assignments"`; code != ExitUsage ||
 		!strings.Contains(stderr, want) {
@@ -128,11 +113,6 @@ func TestCatalogWriteUsageErrorsSendNothing(t *testing.T) {
 	}
 }
 
-// TestCatalogWriteHelp checks the help of the writes of catalogs and
-// categories: the scope that each flag of a choice adds, before the scope
-// sentence and in its usage; the arguments of a write below a category, in
-// order, and where they come from; how a bulk write is answered; and the
-// scopes of the reads and writes of each group.
 func TestCatalogWriteHelp(t *testing.T) {
 	for _, tt := range []struct {
 		args []string
@@ -184,9 +164,6 @@ func TestCatalogWriteHelp(t *testing.T) {
 	}
 }
 
-// TestChoiceThatItsRequestSetsPanics checks that a write declared with a
-// choice that sets a parameter that its request sends already panics as the
-// command tree is built.
 func TestChoiceThatItsRequestSetsPanics(t *testing.T) {
 	defer func() {
 		const want = "update ID: its choice sets publish, which its request sends already"
@@ -209,7 +186,7 @@ func TestCatalogPatchReportsAStaleVersionAsAConflict(t *testing.T) {
 	for _, tt := range []struct {
 		file string
 		code int
-		want string // the end of standard error
+		want string
 	}{
 		{file: `{"name":{"en":"Acme"},"metadata":{"version":2}}`, code: ExitConflict,
 			want: "404 Not Found: " + message + " (the item changed since it was read, or exists already: read it " +

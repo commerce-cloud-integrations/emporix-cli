@@ -1,12 +1,8 @@
 package cli
 
-// couponReads returns the Coupon Service reads.
 func couponReads() []readCase {
 	return []readCase{
 		{
-			// DISCOUNT follows the discount type (a percentage may be missing); REDEEMED shows the
-			// maximum when there is one (-1 is unlimited). Coupons send their total only as
-			// hybris-count, when asked with totalCount=true.
 			args:    []string{"coupons", "list"},
 			path:    "/coupon/acme1/coupons",
 			mode:    getAllHybrisCounted,
@@ -35,7 +31,6 @@ func couponReads() []readCase {
 				"SAVE 7  Save 7%  7.5%      VALID             \n",
 		},
 		{
-			// Opt-in: the write-capable scope is requested only with --allow-write-scope.
 			args:    []string{"coupons", "redemptions", "SAVE 7", "--allow-write-scope"},
 			path:    "/coupon/acme1/coupons/SAVE%207/redemptions",
 			scopes:  []string{"coupon.coupon_manage"},
@@ -61,7 +56,6 @@ func couponReads() []readCase {
 				"r/1  O-100  C0123                   100 EUR      7 EUR     2026-04-02T17:18:53.701Z\n",
 		},
 		{
-			// A referral coupon is a coupon issued to the customer; the reference declares no scope.
 			args: []string{"coupons", "referral", "100/01"},
 			path: "/coupon/acme1/referral-coupons/100%2F01",
 			mode: getWhole,
@@ -73,12 +67,9 @@ func couponReads() []readCase {
 	}
 }
 
-// rewardPointReads returns the Reward Points Service reads.
 func rewardPointReads() []readCase {
 	return []readCase{
 		{
-			// ADDED and REDEEMED sum the points exactly (5.0 and 5e0 are whole; a sum that is not
-			// whole stays empty); a summary without additions leaves ADDED unknown.
 			args:   []string{"reward-points", "list"},
 			path:   "/reward-points/summaryBatch",
 			scopes: []string{"rewardspoints.rewardpoints_view"},
@@ -105,7 +96,6 @@ func rewardPointReads() []readCase {
 			want:   "CUSTOMER  ACTIVE  ADDED  REDEEMED\nc/1       5       5      0\n",
 		},
 		{
-			// The balance is one number, shown as sent.
 			args:   []string{"reward-points", "balance", "c/1"},
 			path:   "/reward-points/customer/c%2F1",
 			scopes: []string{"rewardspoints.rewardpoints_view"},

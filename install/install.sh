@@ -20,7 +20,6 @@
 set -eu
 
 repo=https://github.com/commerce-cloud-integrations/emporix-cli
-# curl's --proto and --proto-redir: https only, for the first request and every redirect.
 https_only='=https'
 
 say() { printf 'epx installer: %s\n' "$*"; }
@@ -29,7 +28,6 @@ fail() {
 	exit 1
 }
 
-# fetch writes the body of an https URL into a file: fetch URL FILE.
 fetch() {
 	fetch_url=$1
 	fetch_file=$2
@@ -42,9 +40,6 @@ fetch() {
 	fi
 }
 
-# latest_tag prints the tag of the latest release: with curl from the redirect of
-# /releases/latest (no API rate limit), with wget (BusyBox too) from the GitHub API, read
-# into $tmp.
 latest_tag() {
 	if command -v curl >/dev/null 2>&1; then
 		url=$(curl -fsSLI --proto "$https_only" --proto-redir "$https_only" --tlsv1.2 -o /dev/null -w '%{url_effective}' \
@@ -58,7 +53,6 @@ latest_tag() {
 	case $tag in v[0-9]*) printf '%s\n' "$tag" ;; *) fail "cannot find the latest release at $repo/releases" ;; esac
 }
 
-# target prints <os>_<arch> of this machine as the release archives name it.
 target() {
 	case $(uname -s) in
 	Darwin) os=darwin ;;
@@ -78,7 +72,6 @@ target() {
 	printf '%s_%s\n' "$os" "$arch"
 }
 
-# sha256 prints the SHA-256 of a file: sha256 FILE.
 sha256() {
 	sum_file=$1
 	if command -v sha256sum >/dev/null 2>&1; then
@@ -92,7 +85,6 @@ sha256() {
 	fi
 }
 
-# profile prints the startup file of the user's shell that should set PATH.
 profile() {
 	case ${SHELL:-} in
 	*/zsh) if [ "$(uname -s)" = Darwin ]; then echo "$HOME/.zprofile"; else echo "${ZDOTDIR:-$HOME}/.zshrc"; fi ;;
@@ -101,7 +93,6 @@ profile() {
 	esac
 }
 
-# add_to_path makes sure that new shells find epx in a directory: add_to_path DIR.
 add_to_path() {
 	bin_dir=$1
 	case ":$PATH:" in *":$bin_dir:"*) return ;; esac
@@ -159,10 +150,6 @@ main() {
 	fi
 }
 
-# install_man copies the man pages of a release (from v0.3.0) into share/man/man1 beside
-# the bin directory of the binary, where man finds them for a directory on PATH:
-# install_man PAGES_DIR BIN_DIR (absolute, without a trailing slash). Nothing is copied for
-# a directory not named bin.
 install_man() {
 	pages=$1
 	case $2 in */bin) man_dir=${2%/bin}/share/man/man1 ;; *) return 0 ;; esac

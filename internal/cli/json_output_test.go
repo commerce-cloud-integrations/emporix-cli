@@ -6,11 +6,6 @@ import (
 	"testing"
 )
 
-// TestJSONPrintsResponsesAsSent checks that -o json prints what reads that
-// once hid values print as Emporix sends them: changed values in a page of
-// changes, card tokens and provider requests and responses kept as JSON text,
-// webhook headers and destination URLs; and, whole, what tables leave out or
-// cut: the webhook dashboard's token and an export package's data.
 func TestJSONPrintsResponsesAsSent(t *testing.T) {
 	for _, tt := range []struct {
 		args []string

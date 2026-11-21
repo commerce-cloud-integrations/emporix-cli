@@ -27,9 +27,7 @@ SITE = Path(__file__).resolve().parents[3] / "site"
 FENCE = re.compile(r"^\s*```")
 IMPORT = re.compile(r"import\s")
 FROM = re.compile(r"\sfrom\s")
-# A line that is only a JSX tag, such as <Info> or </Card>; its content stays.
 JSX_TAG = re.compile(r"^\s*</?[A-Z][\w.]*(\s[^<>]*)?/?>\s*$")
-# An opening tag with string attributes, such as <Step title="Set your API key"> or <Card href="/x">.
 OPEN_TAG = re.compile(r'^\s*<([A-Z][\w.]*)((?:\s+[\w-]+="[^"]*")*)\s*/?>\s*$')
 MD_LINK = re.compile(r"\]\((/[^)\s]*)\)")
 FRONT = re.compile(r"^---\n(.*?)\n---\n", re.S)
@@ -84,7 +82,7 @@ def heading_of(attributes: dict) -> str:
         return ""
     href = attributes.get("href")
     if href:
-        return "### [%s](%s)" % (title, href)  # its href gains BASE with the other links
+        return "### [%s](%s)" % (title, href)
     return "### " + title
 
 
@@ -173,7 +171,7 @@ def write_pages(export: str, source: str, base: str, host: str) -> int:
     """Writes the Markdown copies and head tags of the pages in export, then the indexes."""
     docs = json.loads(Path(source, "docs.json").read_text(encoding="utf-8"))
     site = {"name": docs.get("name", ""), "url": host + base + "/"}
-    entries = []  # (group, page, title, description, canonical, markdown URL, markdown text)
+    entries = []
     seen = set()
     for group, page in pages_of(docs["navigation"]):
         if page in seen:

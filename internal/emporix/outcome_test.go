@@ -13,8 +13,6 @@ const (
 	capturedRequest = "POST /payment-gateway/acme1/payment/T1/capture: "
 )
 
-// sendCapture sends a capture that reports its outcome to a fake that answers
-// it with status and response, and returns what Send returns.
 func sendCapture(t *testing.T, status int, response string, reportsOutcome bool) (json.RawMessage, error) {
 	t.Helper()
 	fake := newFakeEmporix(t)
@@ -23,10 +21,6 @@ func sendCapture(t *testing.T, status int, response string, reportsOutcome bool)
 		Body: jsonBody(t, `{"amount":1,"currency":"EUR"}`), Answers: Answers{ReportsOutcome: reportsOutcome}})
 }
 
-// TestSendReadsTheOutcome checks a write that reports its outcome: a response
-// that says that it succeeded is returned as sent; one that says that it
-// failed is returned with an unclassified error that names the request and
-// Emporix's message, if a string, bounded as an APIError's.
 func TestSendReadsTheOutcome(t *testing.T) {
 	const failed = "Emporix answered that it failed (successful false)"
 	long := strings.Repeat("x", maxMessageBytes+10)
@@ -52,9 +46,6 @@ func TestSendReadsTheOutcome(t *testing.T) {
 	}
 }
 
-// TestSendWithoutTheOutcome checks that a write that reports its outcome
-// fails, unclassified, with the response, if any, where the response does
-// not say whether it succeeded: it may have been carried out all the same.
 func TestSendWithoutTheOutcome(t *testing.T) {
 	want := capturedRequest + "the response does not say whether it succeeded (successful true or false), so " +
 		carriedOutNote
@@ -75,10 +66,6 @@ func TestSendWithoutTheOutcome(t *testing.T) {
 	}
 }
 
-// TestSendLeavesTheOutcomeOfOtherWrites checks that a write that does not
-// report its outcome succeeds with any 2xx response, successful false
-// included, and that a failure status of one that does is an APIError, as
-// any write's.
 func TestSendLeavesTheOutcomeOfOtherWrites(t *testing.T) {
 	if body, err := sendCapture(t, http.StatusOK, `{"successful":false}`, false); err != nil ||
 		string(body) != `{"successful":false}` {
@@ -91,10 +78,6 @@ func TestSendLeavesTheOutcomeOfOtherWrites(t *testing.T) {
 	}
 }
 
-// TestSendReturnsAFailureAnswer checks that a conflict of a write that
-// declares FailureAnswered comes with its body, which says why, and that
-// one that does not declare it, or another failure of one that does, comes
-// without a body.
 func TestSendReturnsAFailureAnswer(t *testing.T) {
 	const answer = `{"accepted":false,"runId":"r1"}`
 	for _, tt := range []struct {

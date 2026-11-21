@@ -7,31 +7,21 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// segmentManageScope is the scope of every write of the Customer Segment
-// Service.
 const segmentManageScope = "customersegment.segment_manage"
 
-// maxSegmentBulk is the most items that a bulk write of the Customer Segment
-// Service takes in one request.
 const maxSegmentBulk = 200
 
-// withAssignments is the switch of a delete of segments that deletes their
-// assignments too (forceDelete).
 func withAssignments() []paramFlag {
 	return []paramFlag{{param: forceDeleteParam, flag: "with-assignments",
 		usage: "delete the item and customer assignments of a segment with it (its IAM group assignments " +
 			"go either way)"}}
 }
 
-// segmentPatchLanguageHelp says, in the help of segments patch, how its
-// operations give localized text: as every write of mapsOnly, but for the
-// value of a path to one translation.
 func segmentPatchLanguageHelp() string {
 	return mapsOnlyHelp() + " In an operation, a path to one translation, such as /name/de, " +
 		"takes a string in that language."
 }
 
-// withAssignmentsNote follows what a delete of segments sends, in its help.
 const withAssignmentsNote = "Emporix refuses to delete a segment that has items or customers assigned to it " +
 	"(400 Bad Request, exit 1) unless --with-assignments deletes those assignments with it. It " +
 	"deletes the IAM group assignments of a segment with it either way: a segment with only " +
@@ -92,37 +82,24 @@ func segmentWrites(a *app, segments resource[segment]) []*cobra.Command {
 	}, bulk.commands(a)...)
 }
 
-// assignmentNote follows what a write that assigns something to a segment
-// sends, in its help.
 const assignmentNote = "--file may give the assignment's mixins and metadata (its version and the schemas of " +
 	"its mixins); without it, epx sends an empty object."
 
-// segmentAssignment declares one kind of item assigned to a segment, such as a
-// customer without a legal entity, as segmentAssignmentWrites writes it.
 type segmentAssignment struct {
-	suffix  string              // of the names of its writes, e.g. "-b2b" in update-b2b; none when empty
-	columns []string            // the columns of the child's table whose values name one; its first when empty
-	noun    string              // one of them in summaries, e.g. "an IAM group"
-	what    string              // one of them in help, by its arguments, e.g. "the IAM group GROUP"
-	note    string              // what update's help adds after about, e.g. what Emporix refuses
-	about   string              // where its arguments come from, a sentence
-	choices map[string][]string // the only values of its arguments, by name; any when nil
+	suffix  string
+	columns []string
+	noun    string
+	what    string
+	note    string
+	about   string
+	choices map[string][]string
 }
 
-// segmentAssignmentWrites returns the writes of kind, items of c below a segment of
-// segments: update, which assigns one (a PUT that creates the assignment or
-// replaces it, an upsert), whose body --file gives, else an empty object,
-// and delete, which removes it, each named with kind's suffix and addressing
-// its item as a read of it does (childItemTarget). Where its ID would address
-// a bulk write of bulk, the bulk writes of c, if any, they refuse it
-// (bulkWrites.reserved).
 func segmentAssignmentWrites[T any](a *app, segments resource[segment], c child[T], bulk *bulkWrites,
 	kind *segmentAssignment) []*cobra.Command {
 	assign := childItemTarget(segments, c, "update"+kind.suffix, kind.columns)
 	remove := childItemTarget(segments, c, "delete"+kind.suffix, kind.columns)
 	scopes, segment := []string{segmentManageScope}, segments.argument()
-	// update completes the segment only, as it may assign any item of its kind;
-	// delete completes the items assigned too.
 	ofSegment := argumentIDs{segment: segments.ids()}
 	return []*cobra.Command{
 		(&write{
@@ -142,14 +119,9 @@ func segmentAssignmentWrites[T any](a *app, segments resource[segment], c child[
 	}
 }
 
-// oneCustomerKindNote is what Emporix refuses to assign to a segment of
-// customers, in the help of the writes that assign them.
 const oneCustomerKindNote = "A segment holds customers without a legal entity (B2C) or with one (B2B), never " +
 	"both: Emporix refuses to assign one of the other kind."
 
-// segmentCustomerWrites returns the writes of the customers of a segment of
-// segments: update and delete, of a customer without (B2C) and with a legal
-// entity (B2B: update-b2b, delete-b2b), and both in bulk, for either.
 func segmentCustomerWrites(a *app, segments resource[segment], customers child[segmentCustomer]) []*cobra.Command {
 	segment := segments.argument()
 	bulk := &bulkWrites{
@@ -179,8 +151,6 @@ func segmentCustomerWrites(a *app, segments resource[segment], customers child[s
 	)
 }
 
-// segmentGroupWrites returns the writes of the IAM groups of a segment of
-// segments: update and delete.
 func segmentGroupWrites(a *app, segments resource[segment], groups child[segmentGroup]) []*cobra.Command {
 	return segmentAssignmentWrites(a, segments, groups, nil, &segmentAssignment{
 		noun: "an IAM group", what: "the IAM group GROUP, a group of customers (userType CUSTOMER),",
@@ -188,13 +158,8 @@ func segmentGroupWrites(a *app, segments resource[segment], groups child[segment
 	})
 }
 
-// unknownItemNote is what Emporix refuses to assign to a segment as its item,
-// in the help of the writes that assign them.
 const unknownItemNote = "Emporix refuses an ID of no product or category of TYPE."
 
-// segmentItemWrites returns the writes of the items of a segment of
-// segments, products or categories: update and delete, and both in bulk,
-// each of one TYPE.
 func segmentItemWrites(a *app, segments resource[segment], items child[segmentItem]) []*cobra.Command {
 	types := segments.argumentSource() + ", and " + segmentItemTypeSentence() + "."
 	bulk := &bulkWrites{

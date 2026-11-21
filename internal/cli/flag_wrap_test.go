@@ -11,16 +11,8 @@ import (
 	"github.com/spf13/pflag"
 )
 
-// usageSections returns the sections of help that Cobra's usage template
-// writes and that TestUsageFitsTheWidth checks: the usage lines and the
-// flags. The other sections hold text that epx writes, checked where it is
-// written (the long help and its examples) or as written (the summaries of
-// subcommands).
 func usageSections() []string { return []string{"Usage:", "Flags:", "Global Flags:"} }
 
-// TestFlagUsageTemplateWrapsOnlyTheFlags checks that the usage template of
-// epx is Cobra's with both lists of flags wrapped to helpWidth, and nothing
-// else changed.
 func TestFlagUsageTemplateWrapsOnlyTheFlags(t *testing.T) {
 	cobraUsage := (&cobra.Command{}).UsageTemplate()
 	usage := newTestRoot().UsageTemplate()
@@ -32,11 +24,6 @@ func TestFlagUsageTemplateWrapsOnlyTheFlags(t *testing.T) {
 	}
 }
 
-// TestUsageFitsTheWidth checks the help of every command of the tree as
-// --help shows it, with the flag -h, --help that Cobra adds when it runs: no
-// line of its usage, flags or global flags is wider than helpWidth unless it
-// is one word (overWidthUsage), and each flag shows the words of its usage as
-// pflag writes them unwrapped, in the same order.
 func TestUsageFitsTheWidth(t *testing.T) {
 	root := newTestRoot()
 	var out strings.Builder
@@ -62,11 +49,6 @@ func TestUsageFitsTheWidth(t *testing.T) {
 	})
 }
 
-// TestUsageWrapsAWideFlagList checks the help of a command whose flags are
-// wider than helpWidth: each usage wraps under itself, and a flag that fits
-// stays on one line. A word wider than the room left stays whole: at the end
-// of a usage on a line of its own, within one with the rest of the usage on
-// its line, as pflag wraps, which overWidthUsage reports.
 func TestUsageWrapsAWideFlagList(t *testing.T) {
 	root := &cobra.Command{Use: "epx"}
 	root.PersistentFlags().String("tenant", "", strings.Repeat("tenant words ", 10))
@@ -108,7 +90,6 @@ func TestUsageWrapsAWideFlagList(t *testing.T) {
 	}
 }
 
-// TestOverWidthUsageFindsWideLines checks the check of TestUsageFitsTheWidth.
 func TestOverWidthUsageFindsWideLines(t *testing.T) {
 	word := strings.Repeat("x", 40)
 	for _, tt := range []struct {
@@ -134,7 +115,6 @@ func TestOverWidthUsageFindsWideLines(t *testing.T) {
 	}
 }
 
-// TestHelpSectionsSplitsAtHeadings checks the parsing of TestUsageFitsTheWidth.
 func TestHelpSectionsSplitsAtHeadings(t *testing.T) {
 	help := "Long help.\n\nUsage:\n  epx a [flags]\n\nFlags:\n  -h, --help   help for a\n" +
 		"      --x int  an x\n               more\n\nGlobal Flags:\n      --tenant string   tenant\n\n" +

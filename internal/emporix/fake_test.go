@@ -18,8 +18,6 @@ const (
 	testToken  = "tok-123"
 )
 
-// fakeEmporix is an httptest server that issues tokens and serves canned
-// responses, recording what the client sent.
 type fakeEmporix struct {
 	t      *testing.T
 	server *httptest.Server
@@ -30,7 +28,7 @@ type fakeEmporix struct {
 	tokenStatus int
 	tokenBody   string
 	requests    []*http.Request
-	bodies      []string // the body of every request in requests
+	bodies      []string
 	routes      map[string]func(http.ResponseWriter, *http.Request)
 }
 

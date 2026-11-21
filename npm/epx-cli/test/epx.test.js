@@ -1,6 +1,3 @@
-// Tests of the launcher: it runs from a node_modules tree laid out as npm installs
-// it, with a shell script standing in for the epx binary of this platform.
-// Run with: node --test npm/epx-cli/test/*.test.js
 "use strict";
 
 const assert = require("node:assert/strict");
@@ -16,8 +13,6 @@ const host = `epx-cli-${process.platform}-${process.arch}`;
 const version = `1.2.3-${process.platform}-${process.arch}`;
 const skip = process.platform === "win32" ? "the stand-in binary is a shell script" : false;
 
-// The stand-in binary: "args" prints its arguments one per line, "exit N" ends with N,
-// "kill SIG" ends by SIG, "trap" prints "ready" and exits 7 on SIGTERM.
 const fake = String.raw`#!/bin/sh
 case "$1" in
 args) shift; printf '%s\n' "$@" ;;
@@ -27,9 +22,6 @@ trap) trap 'exit 7' TERM; echo ready; while :; do sleep 0.05; done ;;
 esac
 `;
 
-// install lays out node_modules/<name> (the launcher, a manifest listing the given
-// platforms as aliases of name@version) and, if platformPackage is set,
-// node_modules/<host>, the version found of name, with the stand-in binary as bin/epx.
 function install(t, { platforms = [host], platformPackage = true, mode = 0o755, found = version } = {}) {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "epx-cli-"));
   t.after(() => fs.rmSync(root, { recursive: true, force: true }));
@@ -76,8 +68,6 @@ test("exits 128 + n for a signal that Node ignores", { skip }, (t) => {
 });
 
 test("forwards SIGTERM to epx and waits for it", { skip, timeout: 5000 }, async (t) => {
-  // Its own process group, so that a launcher that fails to forward is still cleaned up
-  // with the stand-in binary when the test times out.
   const child = spawn(process.execPath, [install(t), "trap"], {
     detached: true,
     stdio: ["ignore", "pipe", "inherit"],
@@ -86,7 +76,6 @@ test("forwards SIGTERM to epx and waits for it", { skip, timeout: 5000 }, async 
     try {
       process.kill(-child.pid, "SIGKILL");
     } catch {
-      // The group already ended.
     }
   });
   await new Promise((resolve) => child.stdout.once("data", resolve));

@@ -11,7 +11,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// price is the part of a Price Service price shown in tables.
 type price struct {
 	ID       string    `json:"id"`
 	ItemID   priceItem `json:"itemId"`
@@ -26,34 +25,23 @@ type price struct {
 	TierValues priceTiers `json:"tierValues"`
 }
 
-// priceItem is the item a price is for, such as a product.
 type priceItem struct {
 	ItemType string `json:"itemType"`
 	ID       string `json:"id"`
 }
 
-// productItemType is the item type of a product, as a price's item and a
-// segment's item name it.
 const productItemType = "PRODUCT"
 
-// priceTiers are the values of a price's tiers, in the order sent; each
-// refers to a tier of the price model by an id that only -o json shows.
 type priceTiers []priceTier
 
-// priceTier is the value of one price tier.
 type priceTier struct {
-	PriceValue json.Number `json:"priceValue"` // kept as sent, e.g. 15.90
+	PriceValue json.Number `json:"priceValue"`
 }
 
 func (t priceTier) String() string { return trimAmount(t.PriceValue.String()) }
 
-// String joins the tier values with commas.
 func (t priceTiers) String() string { return joinEach(t, ",", priceTier.String) }
 
-// newPricesCommand reads and changes prices. Lists are filtered by site: the
-// Price Service, although it documents siteCode with the default main, lists
-// the prices of every site without it, so --site is required rather than
-// leaving the filter implicit.
 func newPricesCommand(a *app) *cobra.Command {
 	r := resource[price]{
 		use:   "prices",
@@ -100,24 +88,14 @@ func newPricesCommand(a *app) *cobra.Command {
 	return newResourceCommand(a, r, append(reads, priceWrites(a, r)...)...)
 }
 
-// tierValuesHelp says, in the help of a create of the Price Service, what
-// the tierValues of a price hold: Emporix requires each tier's id where
-// priceModelId names a price model.
 const tierValuesHelp = "tierValues: the id of each tier of the price model that priceModelId names, as " +
 	"`epx price-models get ID -o json` prints it, with a priceValue"
 
-// staleBulkItemHelp ends the help of a bulk-update of the Price Service,
-// which answers an item whose metadata.version is stale with code 500, where
-// its update of one item answers 409 Conflict.
 const staleBulkItemHelp = "An item that failed with 500 may be one whose metadata.version is stale: Emporix " +
 	"reports it so, not as 409 Conflict. Read it again before you retry it."
 
-// priceManageScope is the scope of the Price Service's writes of prices (the
-// *_by_vendor scopes are those of a vendor's own prices).
 const priceManageScope = "price.price_manage"
 
-// priceWrites returns the writes of prices: create, update (an upsert), both
-// in bulk, and delete.
 func priceWrites(a *app, prices resource[price]) []*cobra.Command {
 	scopes := []string{priceManageScope}
 	bulk := &bulkWrites{
@@ -153,8 +131,6 @@ func priceWrites(a *app, prices resource[price]) []*cobra.Command {
 	}, bulk.commands(a)...)
 }
 
-// priceSearchCommand returns `search`, which reads the prices of the products
-// --product names, in one response, shown as list shows prices.
 func priceSearchCommand(a *app, prices resource[price]) *cobra.Command {
 	return reader[price]{view: prices.view, scopes: []string{priceReadScope}}.command(a, &command{
 		use:   collectionSearch,
@@ -172,12 +148,8 @@ func priceSearchCommand(a *app, prices resource[price]) *cobra.Command {
 	})
 }
 
-// priceReadScope is the scope of the Price Service's price search and price
-// matching (the price reads need none).
 const priceReadScope = "price.price_read"
 
-// pricesOfProducts returns the prices of a price search's response, which
-// lists each product's prices ({"itemId": …, "prices": […]}), in the order sent.
 func pricesOfProducts(body json.RawMessage) ([]json.RawMessage, error) {
 	var products []struct {
 		Prices *[]json.RawMessage `json:"prices"`

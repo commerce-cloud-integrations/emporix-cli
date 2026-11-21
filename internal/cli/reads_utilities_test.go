@@ -1,7 +1,5 @@
 package cli
 
-// utilityReads returns the reads of the utility services: sequential IDs and
-// the change history.
 func utilityReads() []readCase {
 	const scope = "sequentialid.schema_view"
 	schemas := `[{"id":"6512a0f3c1d2e3f4a5b6c7d8","name":"Orders","schemaType":"orderNoSequence","active":true,
@@ -10,7 +8,6 @@ func utilityReads() []readCase {
 		"preText":null,"postText":null,"numberOfDigits":4,"counter":109,"maxValue":null,"metadata":null,"placeholders":null}]`
 	return []readCase{
 		{
-			// The schemas come whole; PREFIX and SUFFIX keep placeholders as sent, null as empty.
 			args:   []string{"sequential-ids", "list"},
 			path:   "/sequential-id/acme1/schemas",
 			scopes: []string{scope},
@@ -44,8 +41,6 @@ func utilityReads() []readCase {
 				"6512a0f3c1d2e3f4a5b6c7d8  orderNoSequence  Orders  true            9               7        \n",
 		},
 		{
-			// The changes come in pages that hold their total; FIELDS names the changed fields, sorted
-			// (their values are only in -o json).
 			args:    []string{"changelog", "list"},
 			path:    "/changelog/acme1/changelogs",
 			scopes:  []string{"changelog.changelog_read"},

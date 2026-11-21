@@ -14,17 +14,6 @@ import (
 	"github.com/spf13/pflag"
 )
 
-// TestDeclaredWritesStateTheirScopes checks every write command but those of
-// api, which take theirs from --scope: its help ends with the scopes that its
-// write case requests, those of a read first included and those that its
-// flags add (annotated on the flag: of its choice or its parameter, which
-// TestWrites checks per case) left out, and so does its
-// annotation (groupScopeSentence), those of a custom entity type as declared
-// (typeScopes); it is no read (no scopes annotation, no
-// --columns) and no opt-in; and it takes its body from --file exactly where
-// one of its cases gives a file, which it then requires, as its usage says,
-// unless one of its cases sends a body without a file (typed flags), and
-// otherwise from its arguments or not at all.
 func TestDeclaredWritesStateTheirScopes(t *testing.T) {
 	root := newTestRoot()
 	withFile, typed := map[*cobra.Command]bool{}, map[*cobra.Command]bool{}
@@ -39,9 +28,6 @@ func TestDeclaredWritesStateTheirScopes(t *testing.T) {
 	}
 }
 
-// checkDeclaredWrite checks that the write of the case tt, which api get is not
-// part of, states its scopes, and that its --file is required and present
-// exactly as its cases give it (withFile, typed).
 func checkDeclaredWrite(t *testing.T, root *cobra.Command, tt *writeCase, withFile, typed map[*cobra.Command]bool) {
 	t.Helper()
 	if tt.args[0] == "api" {
@@ -67,8 +53,6 @@ func checkDeclaredWrite(t *testing.T, root *cobra.Command, tt *writeCase, withFi
 	checkFileFlag(t, cmd, withFile[cmd], typed[cmd])
 }
 
-// checkFileFlag checks the --file of cmd: present where a case gives a file,
-// and required unless a case sends without one (typed).
 func checkFileFlag(t *testing.T, cmd *cobra.Command, withFile, typed bool) {
 	t.Helper()
 	file := cmd.Flags().Lookup(fileFlag)
@@ -79,9 +63,6 @@ func checkFileFlag(t *testing.T, cmd *cobra.Command, withFile, typed bool) {
 	}
 }
 
-// typeOfRun returns how the scopes of a scope annotation are filled in for a
-// run of cmd with rest, its arguments and flags, as typeScopes fills them in
-// (typeRule.fill) with the built-in types of cmd (builtInTypesOf).
 func typeOfRun(cmd *cobra.Command, rest []string) func(scopes []string) []string {
 	var args []string
 	if cmd.ParseFlags(rest) == nil {
@@ -95,9 +76,6 @@ func typeOfRun(cmd *cobra.Command, rest []string) func(scopes []string) []string
 	}
 }
 
-// builtInTypesOf returns the built-in types that request scopes of their own
-// that cmd takes: those of the Search Service for search documents, the one
-// command that has them, as its help says (TestOnlySearchDocumentsHasScopedBuiltInTypes).
 func builtInTypesOf(cmd *cobra.Command) builtInTypes {
 	if cmd.CommandPath() == "epx search documents" {
 		return searchDocumentTypes()
@@ -105,10 +83,6 @@ func builtInTypesOf(cmd *cobra.Command) builtInTypes {
 	return builtInTypes{}
 }
 
-// TestOnlySearchDocumentsHasScopedBuiltInTypes checks that no command but
-// search documents names in its help scopes that built-in types request in
-// place of those of a custom entity type (builtInTypes.inPlaceOf), which
-// builtInTypesOf would not know.
 func TestOnlySearchDocumentsHasScopedBuiltInTypes(t *testing.T) {
 	var noted []string
 	walkCommands(newTestRoot(), func(cmd *cobra.Command) {
@@ -121,8 +95,6 @@ func TestOnlySearchDocumentsHasScopedBuiltInTypes(t *testing.T) {
 	}
 }
 
-// flagScope returns whether a scope is one that a flag of cmd adds, given or
-// not, as the flag's annotation names it, filled in by fill (typeOfRun).
 func flagScope(cmd *cobra.Command, fill func([]string) []string) func(scope string) bool {
 	var added []string
 	cmd.Flags().VisitAll(func(flag *pflag.Flag) { added = append(added, flag.Annotations[writeScopesAnnotation]...) })
@@ -130,12 +102,8 @@ func flagScope(cmd *cobra.Command, fill func([]string) []string) func(scope stri
 	return func(scope string) bool { return slices.Contains(added, scope) }
 }
 
-// writeRoot returns a root holding only the write command of w, which runs
-// against fake where standard input is not a terminal.
 func writeRoot(fake *fakeEmporix, w *write) *cobra.Command { return writeRootOn(fake, w, false) }
 
-// writeRootOn returns a root holding only the write command of w, which runs
-// against fake where standard input is a terminal or not.
 func writeRootOn(fake *fakeEmporix, w *write, terminal bool) *cobra.Command {
 	a := &app{getenv: func(key string) string { return fake.env()[key] }, timeout: defaultTimeout, terminal: terminal}
 	root := &cobra.Command{Use: "epx", SilenceErrors: true, SilenceUsage: true}
@@ -144,8 +112,6 @@ func writeRootOn(fake *fakeEmporix, w *write, terminal bool) *cobra.Command {
 	return root
 }
 
-// runWrite runs `epx <args>` in ctx on root (writeRoot) and returns the exit
-// code, stdout and stderr, which ends with the error, if any, as Run writes it.
 func runWrite(ctx context.Context, root *cobra.Command, args ...string) (code int, stdout, stderr string) {
 	var out, errOut bytes.Buffer
 	root.SetOut(&out)
@@ -157,8 +123,6 @@ func runWrite(ctx context.Context, root *cobra.Command, args ...string) (code in
 	return ExitOK, out.String(), errOut.String()
 }
 
-// partPatch is a write whose request names every placeholder: two arguments
-// and the site; it sends no body.
 func partPatch() *write {
 	return &write{
 		use: "patch THING_ID ID", method: http.MethodPatch, scopes: []string{"thing.manage"},
@@ -166,9 +130,6 @@ func partPatch() *write {
 	}
 }
 
-// TestWriteCommandFillsItsRequest checks that a write fills in its request
-// as a read does: its arguments, escaped as path segments, and its required
-// --site, in the path and the query.
 func TestWriteCommandFillsItsRequest(t *testing.T) {
 	fake := newFakeEmporix(t)
 	code, stdout, stderr := runWrite(t.Context(), writeRoot(fake, partPatch()), "patch", "t 1", "p:2", "--site",
@@ -194,10 +155,6 @@ func TestWriteCommandFillsItsRequest(t *testing.T) {
 	fake.assertNothingSent(t)
 }
 
-// TestDeclaredWriteUsageErrorsSendNothing checks that a declared write
-// without its arguments, --file or a required flag, with a value that a flag
-// refuses, or with an ID that would leave its path segment, is a usage error
-// (exit 2), also for a dry run, that sends nothing.
 func TestDeclaredWriteUsageErrorsSendNothing(t *testing.T) {
 	const file = `{"name":"Acme"}`
 	assertRefused(t, []refusedWrite{
@@ -222,24 +179,18 @@ func TestDeclaredWriteUsageErrorsSendNothing(t *testing.T) {
 	})
 }
 
-// TestFormFilesCompleteFileNames checks that a flag that names a file of a
-// form completes file names, as --file does.
 func TestFormFilesCompleteFileNames(t *testing.T) {
 	for _, args := range [][]string{
 		{"schemas", "references", "create", "--json-schema", ""},
 		{"schemas", "parse", "--json-schema", "s"},
 	} {
 		code, stdout, _ := runCLI(t, nil, append([]string{cobra.ShellCompRequestCmd}, args...)...)
-		if code != ExitOK || !strings.HasSuffix(stdout, ":0\n") { // cobra.ShellCompDirectiveDefault
+		if code != ExitOK || !strings.HasSuffix(stdout, ":0\n") {
 			t.Errorf("%v: exit %d, completions %q; want file names", args, code, stdout)
 		}
 	}
 }
 
-// TestFileUsageSaysWhetherItIsRequired checks that the --file of a declared
-// write says that it is required, after how standard input gives it, and
-// that of api, which sends no body without it, does not, nor that of a write
-// whose flags make the body, which says that it replaces that body.
 func TestFileUsageSaysWhetherItIsRequired(t *testing.T) {
 	root := newTestRoot()
 	for _, tt := range []struct {
@@ -262,9 +213,6 @@ func TestFileUsageSaysWhetherItIsRequired(t *testing.T) {
 	}
 }
 
-// TestOptInNamesReadsOnly checks that the opt-in sentence of a group that
-// holds opt-in reads and writes names reads only, as writes take no
-// --allow-write-scope, and that a write's help ends with its scope alone.
 func TestOptInNamesReadsOnly(t *testing.T) {
 	_, help, _ := runCLI(t, nil, "schemas", "--help")
 	if want := "Its reads require different OAuth scopes; the help of each names them. Opt-in: epx requests a " +
@@ -278,9 +226,6 @@ func TestOptInNamesReadsOnly(t *testing.T) {
 	}
 }
 
-// TestArgumentFieldNeedsItsArgument checks that a body member that repeats an
-// argument fails as the command is built, not as it runs, when the command's
-// usage does not name that argument.
 func TestArgumentFieldNeedsItsArgument(t *testing.T) {
 	defer func() {
 		if recovered := recover(); !strings.Contains(fmt.Sprint(recovered),
@@ -294,9 +239,6 @@ func TestArgumentFieldNeedsItsArgument(t *testing.T) {
 	}).command(&app{})
 }
 
-// TestArgumentFieldsRepeatTheirArguments checks that members of a typed body
-// repeat the arguments that their usage names, each by its name, also the
-// second one.
 func TestArgumentFieldsRepeatTheirArguments(t *testing.T) {
 	fake := newFakeEmporix(t)
 	root := writeRoot(fake, &write{

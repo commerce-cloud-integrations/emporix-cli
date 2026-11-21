@@ -8,25 +8,21 @@ import (
 	"github.com/commerce-cloud-integrations/emporix-cli/internal/emporix"
 )
 
-// recalculationJob is the part of a Product Service variant recalculation job
-// shown in tables.
 type recalculationJob struct {
 	ID         string      `json:"id"`
 	ParentRoot string      `json:"parentRoot"`
 	Status     string      `json:"status"`
-	Attempts   json.Number `json:"attempts"` // kept as sent
+	Attempts   json.Number `json:"attempts"`
 	CreatedAt  string      `json:"createdAt"`
 	FinishedAt string      `json:"finishedAt"`
 	Error      string      `json:"error"`
 }
 
-// newRecalculationJobsCommand reads the jobs that recalculate the variant
-// trees of dynamic variant products. Emporix reads them only with the
-// write-capable product.product_manage scope, so they are opt-in, and the
-// reference documents no paging for them (it returns every job), so they are
-// read with one request.
+// Emporix reads recalculation jobs only with the write-capable product.product_manage scope, so they
+// are opt-in, and the reference documents no paging for them (it returns every job), so they are read
+// with one request.
 func newRecalculationJobsCommand(a *app) *cobra.Command {
-	const columnError = "ERROR" // why a job failed: a long value
+	const columnError = "ERROR"
 	return newResourceCommand(a, resource[recalculationJob]{
 		use:   "recalculation-jobs",
 		noun:  "variant recalculation jobs",

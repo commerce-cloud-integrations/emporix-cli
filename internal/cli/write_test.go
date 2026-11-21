@@ -12,13 +12,9 @@ import (
 	"time"
 )
 
-// TestWriteDryRunShowsTheExactRequest checks the whole text of a dry run,
-// which asks nothing, also on a terminal: the method and URL with the tenant,
-// every header but Authorization, sorted, and the body byte for byte, or
-// none without --file.
 func TestWriteDryRunShowsTheExactRequest(t *testing.T) {
 	fake := newFakeEmporix(t)
-	version := regexp.MustCompile(`(?m)^User-Agent: emporix-cli/\S+$`) // the version of the test binary
+	version := regexp.MustCompile(`(?m)^User-Agent: emporix-cli/\S+$`)
 	for body, ending := range map[string]string{"{\"name\": \"A\"}\n": "", `[1, 2]`: "\n"} {
 		code, stdout, stderr := runIn(t, writeEnv(fake, true, "y\n"), "api", "post", "/brand/brands", "--scope",
 			"brand.brand_manage", "--file", writeBody(t, body), "--dry-run")
@@ -40,12 +36,9 @@ func TestWriteDryRunShowsTheExactRequest(t *testing.T) {
 	fake.assertNothingSent(t)
 }
 
-// TestWriteBodyFailuresSendNothing checks that a body that cannot be read or
-// is not JSON, and a body on standard input without --yes, are usage errors
-// (exit 2) found before anything is sent, also before standard input is read.
 func TestWriteBodyFailuresSendNothing(t *testing.T) {
 	directory := t.TempDir()
-	untouched := iotest.ErrReader(os.ErrClosed) // fails any read of standard input
+	untouched := iotest.ErrReader(os.ErrClosed)
 	for _, tt := range []struct {
 		file  string
 		stdin io.Reader
@@ -72,7 +65,6 @@ func TestWriteBodyFailuresSendNothing(t *testing.T) {
 		}
 		fake.assertNothingSent(t)
 	}
-	// Standard input that gives the body cannot confirm it: --yes is required, on a terminal too.
 	fake := newFakeEmporix(t)
 	env := writeEnv(fake, true, "")
 	env.In = untouched
@@ -84,9 +76,6 @@ func TestWriteBodyFailuresSendNothing(t *testing.T) {
 	fake.assertNothingSent(t)
 }
 
-// TestWriteUsageErrorsSendNothing checks that invalid arguments, flags,
-// scopes or configuration, and a path that leaves the API host or its
-// segments, are usage errors (exit 2), also for a dry run, that send nothing.
 func TestWriteUsageErrorsSendNothing(t *testing.T) {
 	fake := newFakeEmporix(t)
 	for _, tt := range []struct {
@@ -94,7 +83,6 @@ func TestWriteUsageErrorsSendNothing(t *testing.T) {
 		want string
 	}{
 		{args: []string{"delete"}, want: "accepts 1 arg(s), received 0"},
-		// A path segment that a service, or a proxy before it, might decode into other segments.
 		{args: []string{"delete", "/things/t%2F..%2Fx"}, want: "DELETE /things/t%2F..%2Fx: a path segment of a write"},
 		{args: []string{"patch", "/things/.."}, want: "PATCH /things/..: a path segment of a write"},
 		{args: []string{"put", "/things/t%252Fx"}, want: "PUT /things/t%252Fx: a path segment of a write"},
@@ -119,9 +107,6 @@ func TestWriteUsageErrorsSendNothing(t *testing.T) {
 	}
 }
 
-// answering answers the requests in turn with statuses, the last one again
-// for any further request, each with the message canned and no wait before
-// a request is sent again.
 func answering(statuses ...int) http.HandlerFunc {
 	answers := make([]http.HandlerFunc, len(statuses))
 	for i, status := range statuses {
@@ -130,11 +115,6 @@ func answering(statuses ...int) http.HandlerFunc {
 	return inTurn(answers...)
 }
 
-// TestWriteFailuresKeepTheirExitCodes checks that a write refused for its
-// scopes exits with 3, one of an unknown item with 4, that only a conflict
-// exits with 5, and that a write that may have been carried out although it
-// failed says so and exits with 1: it is not sent again, so whatever would
-// answer it then (a 409, 404 or 403) decides nothing.
 func TestWriteFailuresKeepTheirExitCodes(t *testing.T) {
 	const note = " (it may have been carried out all the same: read the item before you send it again)\n"
 	for _, tt := range []struct {
@@ -142,7 +122,7 @@ func TestWriteFailuresKeepTheirExitCodes(t *testing.T) {
 		denied   []string
 		statuses []int
 		code     int
-		want     string // the end of standard error
+		want     string
 	}{
 		{method: "delete", denied: []string{"thing.manage"}, code: ExitAuth, want: "lacks required scopes: thing.manage\n"},
 		{method: "delete", statuses: []int{404}, code: ExitNotFound, want: "DELETE /things/t1: 404 Not Found: canned\n"},
@@ -169,8 +149,6 @@ func TestWriteFailuresKeepTheirExitCodes(t *testing.T) {
 	}
 }
 
-// TestWriteResponsesThatAreNotJSON checks that a write answered with a body
-// that is not JSON succeeds, printing nothing but a note on standard error.
 func TestWriteResponsesThatAreNotJSON(t *testing.T) {
 	fake := newFakeEmporix(t)
 	fake.route("/things/t1", respond(http.StatusOK, "deleted\x1b]0;"))
@@ -180,9 +158,6 @@ func TestWriteResponsesThatAreNotJSON(t *testing.T) {
 	}
 }
 
-// TestWriteHelp checks what the help of a write says: what it sends, how it
-// is sent, then its scopes, its flags and an example with a scope that the
-// reference names for the endpoint.
 func TestWriteHelp(t *testing.T) {
 	_, help, _ := runCLI(t, nil, "api", "post", "--help")
 	for _, want := range []string{
@@ -198,9 +173,6 @@ func TestWriteHelp(t *testing.T) {
 	}
 }
 
-// TestWriteConfirmationStopsOnInterrupt checks that an interrupt, which ends
-// the command's context, ends a write waiting for its confirmation: an error
-// (exit 1) that sends nothing.
 func TestWriteConfirmationStopsOnInterrupt(t *testing.T) {
 	fake := newFakeEmporix(t)
 	exited, errOut := runUntilReading(t, []string{"api", "delete", "/x"}, fake.env(), true)
@@ -215,10 +187,6 @@ func TestWriteConfirmationStopsOnInterrupt(t *testing.T) {
 	}
 }
 
-// TestMisdeclaredLanguageHelpPanics checks that a write with a languageHelp
-// of its own panics as the command tree is built unless it sends strings or
-// maps (stringsOrMaps) or maps only (mapsOnly), whose help alone it replaces:
-// on another write it would not say how the write sends its localized text.
 func TestMisdeclaredLanguageHelpPanics(t *testing.T) {
 	const want = "create: a write of headerless maps or without localized text has no language help of its own"
 	for _, mode := range []languageMode{notLocalized, headerlessMaps} {

@@ -10,24 +10,12 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// The file queue of a file-based import stream: the files that it waits to
-// import, in the order it reads them, and those that it dealt with, which
-// files list reads; the most bytes an upload takes, which files limits
-// reads; and the writes that upload a file, set the load order, remove
-// a waiting file and queue a failed one again. Emporix allows each only
-// with importScope.
-
-// filesUse is the name of the group of a stream's file queue.
 const filesUse = "files"
 
-// filesSegment is the path of a stream's file queue below the stream.
 const filesSegment = "files"
 
-// maxFileHistory is the most files of a stream's history that the Import
-// Service lists (historyLimit).
 const maxFileHistory = 500
 
-// importFile is the part of a file of a stream's file queue shown in tables.
 type importFile struct {
 	ID          string      `json:"id"`
 	FileName    string      `json:"fileName"`
@@ -39,35 +27,21 @@ type importFile struct {
 	Message     string      `json:"message"`
 }
 
-// queuedFile is a file of a stream's file queue as fileQueueItems lists it:
-// the file, F, and its place in the load order among all the files waiting,
-// e.g. "1 of 3", for a waiting one; none for one of the history. The shape
-// keeps the file as sent (json.RawMessage), a table row decodes it
-// (importFile).
 type queuedFile[F any] struct {
 	Order string `json:"order"`
 	File  F      `json:"file"`
 }
 
-// fileLimits is what the environment takes in an upload to a stream: the
-// most bytes, whether the API gateway in front of the service sets that
-// limit, and whether it can store an uploaded file at all.
 type fileLimits struct {
 	MaxUploadBytes  json.Number `json:"maxUploadBytes"`
 	GatewayLimited  *bool       `json:"gatewayLimited"`
 	UploadSupported *bool       `json:"uploadSupported"`
 }
 
-// fileModeShownBy returns where a stream of streams shows its fileMode, as
-// help quotes it: the SOURCE of its get, e.g. "SOURCE of `epx imports streams
-// get ID`".
 func fileModeShownBy(streams resource[importStream]) string {
 	return "SOURCE of `epx " + streams.getLine() + "`"
 }
 
-// fileModesHelp says how a stream's run reads its waiting files, by the
-// stream's fileMode, in the help of the file queue and of its list, where
-// shownBy is where a stream shows its fileMode (fileModeShownBy).
 func fileModesHelp(shownBy string) string {
 	return "A file-based stream reads its files by its fileMode, SNAPSHOT by default. A SNAPSHOT stream " +
 		"takes each file as the whole picture: its run reads only the most recently arrived waiting " +
@@ -78,9 +52,6 @@ func fileModesHelp(shownBy string) string {
 		"(" + shownBy + " shows it)."
 }
 
-// newImportFilesCommand returns the group of the file queue of a stream of
-// streams, nested in a group of its own (filesOf): list and limits, which
-// read it, and upload, order, delete and requeue.
 func newImportFilesCommand(a *app, streams resource[importStream]) *cobra.Command {
 	filesOf, shownBy := streams.nested(filesUse), fileModeShownBy(streams)
 	modes := fileModesHelp(shownBy)
@@ -98,22 +69,14 @@ func newImportFilesCommand(a *app, streams resource[importStream]) *cobra.Comman
 		fileRequeue(filesOf, files).command(a))
 }
 
-// queueLine returns the command line of the command verb of the file queue
-// of a stream of filesOf (nested), without its arguments, as help quotes it,
-// e.g. "`epx imports streams files order`".
 func queueLine(filesOf resource[importStream], verb string) string {
 	return "`epx " + filesOf.commandLine(verb, request{}) + "`"
 }
 
-// queueList returns the command line of the list of files, the file queue of
-// a stream of filesOf (nested), with its argument, as help quotes it, e.g.
-// "`epx imports streams files list STREAM_ID`".
 func queueList(filesOf resource[importStream], files child[queuedFile[importFile]]) string {
 	return "`epx " + childListLine(filesOf, files) + "`"
 }
 
-// streamFiles declares the file queue of a stream of filesOf (nested), which
-// list reads; modes says how a stream reads its files (fileModesHelp).
 func streamFiles(filesOf resource[importStream], modes string) child[queuedFile[importFile]] {
 	return child[queuedFile[importFile]]{
 		use:   listUse,
@@ -154,8 +117,6 @@ func streamFiles(filesOf resource[importStream], modes string) child[queuedFile[
 	}
 }
 
-// fileUploadLimits declares what the environment takes in an upload to a
-// stream of filesOf (nested), which limits reads.
 func fileUploadLimits(filesOf resource[importStream]) child[fileLimits] {
 	return child[fileLimits]{
 		use:   "limits",
@@ -179,10 +140,6 @@ func fileUploadLimits(filesOf resource[importStream]) child[fileLimits] {
 	}
 }
 
-// uploadConflict says what a 409 Conflict of an upload means and how to
-// recover, where list is the stream's file list, as help quotes it
-// (queueList), and shownBy where the stream shows its fileMode
-// (fileModeShownBy).
 func uploadConflict(list, shownBy string) string {
 	return "the stream imported or queued this content already, reads no files, or has a run in flight that " +
 		"reads what it would replace: " + list + " shows the files queued and the latest it dealt with " +
@@ -191,26 +148,17 @@ func uploadConflict(list, shownBy string) string {
 		"otherwise wait until the run ends"
 }
 
-// fileOrderConflict says what a 409 Conflict of an order of a stream's
-// waiting files means and how to recover, where list is the stream's file
-// list as help quotes it (queueList).
 func fileOrderConflict(list string) string {
 	return "the stream's job has a run in flight, or more files wait than one request orders: " + list +
 		" shows a last LOAD ORDER below the total where more wait, and those cannot be reordered until fewer " +
 		"wait; otherwise wait until the run ends"
 }
 
-// fileDeleteConflict says what a 409 Conflict of a delete of a waiting file
-// means and how to recover, where list is the stream's file list as help
-// quotes it (queueList).
 func fileDeleteConflict(list string) string {
 	return "the file no longer waits, as a run claimed or imported it, or the stream's job has a run in flight: " +
 		list + " shows its STATUS; otherwise wait until the run ends"
 }
 
-// fileHistoryLimit refuses a history limit that is not a whole number from 1
-// to maxFileHistory, which Emporix would change to the nearest of those
-// (paramFlag.check).
 func fileHistoryLimit(value string) error {
 	if n, err := strconv.ParseUint(value, 10, 63); err != nil || n == 0 || n > maxFileHistory {
 		return fmt.Errorf("use a whole number from 1 to %d", maxFileHistory)
@@ -218,10 +166,6 @@ func fileHistoryLimit(value string) error {
 	return nil
 }
 
-// fileQueueItems returns the files of a file queue response ({"pending":
-// [files], "history": [files], "pendingTotal": n, "pendingTruncated": b}) as
-// items (queuedFile): the waiting files in their load order, each with its
-// place among all the files waiting, then the history as sent.
 func fileQueueItems(body json.RawMessage) ([]json.RawMessage, error) {
 	var queue *struct {
 		Pending          []json.RawMessage `json:"pending"`
@@ -245,9 +189,6 @@ func fileQueueItems(body json.RawMessage) ([]json.RawMessage, error) {
 	return marshalEach(files)
 }
 
-// waitingTotal returns how many files wait, of which a file queue lists
-// listed: its pendingTotal, where it sends one; else, where it says that it
-// lists only some (pendingTruncated), more than those; else those.
 func waitingTotal(listed int, total *int64, truncated bool) string {
 	switch {
 	case total != nil:
@@ -259,8 +200,6 @@ func waitingTotal(listed int, total *int64, truncated bool) string {
 	}
 }
 
-// fileUpload uploads a file to files, the file queue of a stream of filesOf
-// (nested); shownBy is where a stream shows its fileMode (fileModeShownBy).
 func fileUpload(filesOf resource[importStream], files child[queuedFile[importFile]], shownBy string) *write {
 	stream, limits, list := filesOf.argument(), queueLine(filesOf, "limits"), queueList(filesOf, files)
 	return &write{
@@ -294,8 +233,6 @@ func fileUpload(filesOf resource[importStream], files child[queuedFile[importFil
 	}
 }
 
-// fileOrder sets the order in which a stream of filesOf (nested) reads the
-// waiting files of files, its file queue.
 func fileOrder(filesOf resource[importStream], files child[queuedFile[importFile]]) *write {
 	stream, list := filesOf.argument(), queueList(filesOf, files)
 	return &write{
@@ -318,8 +255,6 @@ func fileOrder(filesOf resource[importStream], files child[queuedFile[importFile
 	}
 }
 
-// fileDelete removes a waiting file from files, the file queue of a stream of
-// filesOf (nested), addressed as one item of it (childItemTarget).
 func fileDelete(filesOf resource[importStream], files child[queuedFile[importFile]]) *write {
 	remove := childItemTarget(filesOf, files, deleteUse, nil)
 	w := deleteWrite(remove.use, "Remove a waiting file from a stream's queue",
@@ -331,12 +266,8 @@ func fileDelete(filesOf resource[importStream], files child[queuedFile[importFil
 	return w
 }
 
-// requeueUse is the name of the write that queues a failed file again.
 const requeueUse = "requeue"
 
-// fileRequeueConflict says what a 409 Conflict of a requeue of a file means and
-// how to recover, where list is the stream's file list as help quotes it
-// (queueList).
 func fileRequeueConflict(list string) string {
 	return "only a FAILED file of this stream whose content Emporix still holds is queued again, and on a " +
 		"SNAPSHOT stream only while no newer file arrived after it (upload a corrected current file instead), " +
@@ -344,8 +275,6 @@ func fileRequeueConflict(list string) string {
 		"failed in a PROCESSED file are imported again with `epx imports runs retry`"
 }
 
-// fileRequeue queues a failed file of files, the file queue of a stream of
-// filesOf (nested), again, addressed as one item of it (childItemTarget).
 func fileRequeue(filesOf resource[importStream], files child[queuedFile[importFile]]) *write {
 	requeue := childItemTarget(filesOf, files, requeueUse, nil)
 	return &write{

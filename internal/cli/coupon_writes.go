@@ -10,17 +10,10 @@ import (
 	"github.com/commerce-cloud-integrations/emporix-cli/internal/emporix"
 )
 
-// couponManage is the scope of the Coupon Service's writes of coupons and
-// their redemptions.
 const couponManage = "coupon.coupon_manage"
 
-// couponRedeemOnBehalf is the scope with which a coupon is redeemed, or its
-// redemption checked, for the customer that the body names.
 const couponRedeemOnBehalf = "coupon.coupon_redeem_on_behalf"
 
-// redemptionBody is the body of a coupon's redemption and of its check
-// (validate): the order's total and the discount, which Emporix requires, and
-// the customer, their legal entity and the order where given.
 func redemptionBody() objectBody {
 	return objectBody{
 		moneyField("orderTotal", "order-total", "the order's total as `AMOUNT CURRENCY`, e.g. \"100 EUR\"").require(),
@@ -31,34 +24,19 @@ func redemptionBody() objectBody {
 	}
 }
 
-// legalEntityNote says, in the help of a redemption and of its check, how
-// Emporix refuses --legal-entity (live: a customer assigned to the legal
-// entity redeems with it).
 const legalEntityNote = "--legal-entity names the legal entity that the customer is assigned to: Emporix " +
 	"refuses it, with 400 Bad Request (exit 1), for a customer without a legal entity and for an " +
 	"unknown one."
 
-// redemptionRefusals says how Emporix refuses to redeem a coupon (live).
 const redemptionRefusals = "Emporix refuses a coupon that cannot be redeemed and says why: " +
 	"one redeemed as often as it may be with 400 Bad Request (exit 1); one that the customer may " +
 	"not redeem, or that needs a customer where --customer is not given, with " +
 	forbiddenRefusal + ". An unknown coupon is not found (exit 4)."
 
-// deletedCouponNote ends the help of the writes of one coupon: Emporix keeps
-// a deleted coupon, and refuses to change or delete it again (live), with a
-// 403 that is a refusal (forbiddenIsRefusal).
 const deletedCouponNote = "Emporix refuses a deleted coupon with " + forbiddenRefusal + "."
 
-// couponVersionNote ends the help of the writes that send a whole or partial
-// coupon.
 const couponVersionNote = ifUnchangedNote + " Without one, Emporix changes the coupon anyway."
 
-// couponWrites returns the writes of coupons: create, update CODE (a PUT,
-// which replaces the coupon; Emporix creates no missing one), patch CODE and
-// delete CODE, the redemption of a coupon and the deletion of one, sent to
-// the collection of redemptions and to one of its items, and the creation of
-// a customer's referral coupon, which Emporix carries out for a token without
-// scopes (live), as its reference names none.
 func couponWrites(a *app, coupons resource[coupon], redemptions child[redemption]) []*cobra.Command {
 	manage := []string{couponManage}
 	const deleteRedemption = "redemption-delete"
@@ -125,6 +103,8 @@ func couponWrites(a *app, coupons resource[coupon], redemptions child[redemption
 			req: request{path: redemptions.below(coupons.path) + "/" + key}, scopes: manage, body: noBody{},
 			ids: ofCoupon,
 		}).command(a),
+		// Emporix creates a customer's referral coupon for a token without scopes (live), as its reference
+		// names none.
 		(&write{
 			use: "referral-create " + profiles.argument(), short: "Create the referral coupon of a customer",
 			method: http.MethodPost,

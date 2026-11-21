@@ -8,11 +8,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// The writes of the Fee Service: fees, and which items have which fees (item
-// fees), which it also addresses by product. Each operation has a scope of
-// its own; the deletes of a product's item fees name fee.fee_delete and
-// fee.item_delete, of which fee.item_delete, the one for item fees, is
-// requested.
 const (
 	feeCreate     = "fee.fee_create"
 	feeUpdate     = "fee.fee_update"
@@ -22,24 +17,14 @@ const (
 	itemFeeDelete = "fee.item_delete"
 )
 
-// feeLanguageHelp says, in the help of the writes of fees, how the Fee
-// Service stores localized text: it ignores Content-Language, so a string is
-// stored as sent, in no language, in place of the translations.
 func feeLanguageHelp() string {
 	return mapsSent() + " The Fee Service ignores Content-Language: it stores a string as sent, " +
 		"in no language, in place of any translations."
 }
 
-// feeUpdateConflict is what a 409 Conflict of fees update means: a code that
-// another fee has, as the reference documents, or an unknown ID, which
-// Emporix answers so, not with 404 Not Found.
 const feeUpdateConflict = "another fee has the code already, or the fee ID does not exist (Emporix answers that " +
 	"with 409, not 404): check it with `epx fees get ID`"
 
-// feeWrites returns the writes of fees: create, update ID (with --partial)
-// and delete ID, each with the scope of its own operation. Their maps of
-// translations go with Content-Language: *, which the Fee Service ignores
-// (mapsOnly, feeLanguageHelp).
 func feeWrites(a *app, fees resource[fee]) []*cobra.Command {
 	create, update, remove := (&collectionWrites{
 		at: fees.at(), one: "a fee", language: mapsOnly, languageHelp: feeLanguageHelp(),
@@ -62,28 +47,22 @@ func feeWrites(a *app, fees resource[fee]) []*cobra.Command {
 	return writeCommands(a, []write{*create, *update, *remove})
 }
 
-// feeIDsField is the body of a write that gives an item its fees: their ids,
-// each set by one --fee.
 func feeIDsField() bodyField {
 	return listField("feeIds", "fee", "the `ID` of a fee, as `epx fees list` shows it (repeatable)").require()
 }
 
-// feeOwner is what item fees are of, as the Fee Service addresses them: an
-// item, by its YRN, or a product, by its id. Each has the same writes, named
-// after it (suffix) and taking its argument first.
 type feeOwner struct {
-	segment string    // the path segment of its item fees: itemFees or productFees
-	arg     string    // its argument, e.g. YRN
-	suffix  string    // of the names of its writes, e.g. -product in update-product
-	one     string    // it in summaries, e.g. "an item"
-	the     string    // it in help, e.g. "the item YRN"
-	note    string    // where its argument comes from: a sentence of help
-	site    bool      // its update requires --site, as the reference names siteCode for it
-	feeSite string    // where delete-fee removes a fee, in its help; none where not known
-	ids     *idSource // what its argument completes with; none for an item's YRN
+	segment string
+	arg     string
+	suffix  string
+	one     string
+	the     string
+	note    string
+	site    bool
+	feeSite string
+	ids     *idSource
 }
 
-// feeOwners returns the owners of item fees: an item and a product.
 func feeOwners() (item, product feeOwner) {
 	return feeOwner{segment: "itemFees", arg: "YRN", one: "an item", the: "the item YRN",
 			note: "YRN names the item, " + yrnNote + "."},
@@ -92,31 +71,18 @@ func feeOwners() (item, product feeOwner) {
 			ids: products().ids()}
 }
 
-// fees returns the path of the fees of the item fee of o that placeholder
-// names, e.g. /fee/{tenant}/itemFees/{id}/fees.
 func (o *feeOwner) fees(placeholder string) string {
 	return feeService + "/" + o.segment + "/" + placeholder + "/fees"
 }
 
-// siteOrMain is the optional --site of a write of item fees that Emporix
-// carries out on site main unless the siteCode query parameter, which the
-// reference does not document, names another site.
 func siteOrMain() queryFlags {
 	return queryFlags{optional: []paramFlag{
 		optionalSiteParam("the site `CODE` of the item fee, sent as siteCode"),
 	}}
 }
 
-// mainUnlessSite says, in the help of a write that takes siteOrMain, which
-// site it acts on without --site.
 const mainUnlessSite = "Without --site, Emporix acts on the item fee on site main."
 
-// writes returns the writes of o's item fees: update, which adds fees (with
-// partial=true or, without --partial, false), delete, and delete-fee, which
-// removes one fee. Update requires
-// --site where the reference names siteCode for it (o.site) and otherwise
-// takes it optionally (siteOrMain); delete always takes it optionally;
-// delete-fee takes none.
 func (o *feeOwner) writes() []*write {
 	update := request{path: o.fees(placeholderID)}
 	updateSite := siteOrMain()
@@ -160,9 +126,6 @@ func (o *feeOwner) writes() []*write {
 	}
 }
 
-// feeAssignmentWrites returns the writes of item fees, which assign fees to
-// an item, named by its YRN, or to a product: create, and the writes of each
-// owner (feeOwner.writes).
 func feeAssignmentWrites(a *app) []*cobra.Command {
 	item, product := feeOwners()
 	commands := []*cobra.Command{

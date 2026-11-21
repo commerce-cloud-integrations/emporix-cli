@@ -6,9 +6,6 @@ import (
 	"testing"
 )
 
-// paymentGatewayWrites are the writes of the Payment Gateway: payment modes,
-// and the payment operations, each with the scope that the reference names
-// for it.
 func paymentGatewayWrites() []writeCase {
 	const (
 		mode     = `{"code":"invoice","active":true,"provider":"INVOICE","configuration":{}}`
@@ -72,11 +69,6 @@ func paymentGatewayWrites() []writeCase {
 	}
 }
 
-// TestPaymentOperationsFailUnlessEmporixSaysTheySucceeded checks that a
-// payment operation that Emporix answers with successful false, or with a
-// response that does not say whether it succeeded, prints the response and
-// exits with 1, naming the request and Emporix's message, if any, sanitized
-// for the terminal.
 func TestPaymentOperationsFailUnlessEmporixSaysTheySucceeded(t *testing.T) {
 	const (
 		payments = "/payment-gateway/acme1/payment"
@@ -88,7 +80,7 @@ func TestPaymentOperationsFailUnlessEmporixSaysTheySucceeded(t *testing.T) {
 		args       []string
 		path, body string
 		stdout     string
-		stderr     string // the end of standard error
+		stderr     string
 	}{
 		{
 			args: []string{"capture", "T1", "--amount", "5", "--currency", "EUR"}, path: "/T1/capture",
@@ -130,9 +122,6 @@ func TestPaymentOperationsFailUnlessEmporixSaysTheySucceeded(t *testing.T) {
 	}
 }
 
-// TestReportedOutcomeEndsEveryWrite checks that a write whose response says
-// whether it succeeded fails where it says that it did not, also where it
-// starts a job: the response is printed, and --wait does not follow the job.
 func TestReportedOutcomeEndsEveryWrite(t *testing.T) {
 	created := `{"id":"j1","status":"PENDING","successful":false}`
 	for _, flags := range [][]string{nil, {"--wait", "--poll-interval", "1ms"}} {
@@ -151,10 +140,6 @@ func TestReportedOutcomeEndsEveryWrite(t *testing.T) {
 	}
 }
 
-// TestPaymentWritesRefuseInvalidInput checks that a payment write without
-// the body it needs, with both --file and typed flags, with an amount that
-// is not a number, or with a body that Emporix takes none for, is a usage
-// error (exit 2) that sends nothing, also for a dry run.
 func TestPaymentWritesRefuseInvalidInput(t *testing.T) {
 	body := writeBody(t, `{"amount":1,"currency":"EUR"}`)
 	for _, tt := range []struct {
@@ -190,10 +175,6 @@ func TestPaymentWritesRefuseInvalidInput(t *testing.T) {
 	}
 }
 
-// TestPaymentOperationsSayTheyMoveMoney checks that the help of capture,
-// refund and cancel says that they move money, that the help of every
-// payment operation says how its outcome sets the exit code, and that their
-// confirmation names the transaction.
 func TestPaymentOperationsSayTheyMoveMoney(t *testing.T) {
 	for _, op := range []string{"authorize", "capture", "refund", "cancel"} {
 		_, help, _ := runCLI(t, nil, "payment-transactions", op, "--help")

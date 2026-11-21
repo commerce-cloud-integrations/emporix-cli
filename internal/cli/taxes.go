@@ -9,7 +9,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// taxConfiguration is the part of a Tax Service configuration shown in tables.
 // locationCode is optional in the spec, whose examples identify a location by
 // its country code only.
 type taxConfiguration struct {
@@ -20,17 +19,14 @@ type taxConfiguration struct {
 	TaxClasses taxClasses `json:"taxClasses"`
 }
 
-// taxClasses are the tax classes of a location, in the order Emporix sends them.
 type taxClasses []taxClass
 
-// taxClass is a tax class of a location.
 type taxClass struct {
 	Code      string      `json:"code"`
-	Rate      json.Number `json:"rate"` // percent, kept as sent
+	Rate      json.Number `json:"rate"`
 	IsDefault bool        `json:"isDefault"`
 }
 
-// String shows the class with its rate and marks the default class.
 func (c taxClass) String() string {
 	text := c.Code + " " + c.Rate.String()
 	if c.IsDefault {
@@ -39,14 +35,10 @@ func (c taxClass) String() string {
 	return text
 }
 
-// String joins the classes.
 func (t taxClasses) String() string { return joinEach(t, ", ", taxClass.String) }
 
-// location returns the location code, or the country code when it is missing.
 func (t taxConfiguration) location() string { return cmp.Or(t.LocationCode, t.Location.CountryCode) }
 
-// newTaxesCommand reads, creates, changes and deletes tax configurations, one
-// per location, and calculates prices with them.
 func newTaxesCommand(a *app) *cobra.Command {
 	taxes := resource[taxConfiguration]{
 		use:   "taxes",
@@ -68,14 +60,8 @@ func newTaxesCommand(a *app) *cobra.Command {
 		taxWrites(a, taxes))...)
 }
 
-// taxCalculationSegment is the path segment, below the tax configurations,
-// of the tax calculation, which a PUT sends (calculate).
 const taxCalculationSegment = "calculation-commands"
 
-// taxWrites returns the writes of tax configurations, with the scope that the
-// reference names for them: create, update LOCATION (which creates no missing
-// one) and delete LOCATION. update refuses the LOCATION calculation-commands,
-// whose PUT is the calculation that calculate sends.
 func taxWrites(a *app, taxes resource[taxConfiguration]) []*cobra.Command {
 	manage := []string{"tax.tax_manage"}
 	item := request{path: taxes.itemPath()}
@@ -106,7 +92,6 @@ func taxWrites(a *app, taxes resource[taxConfiguration]) []*cobra.Command {
 	}
 }
 
-// taxCalculation is the part of a tax calculation shown in tables.
 type taxCalculation struct {
 	Output struct {
 		NetPrice      json.Number `json:"netPrice"`
@@ -116,17 +101,14 @@ type taxCalculation struct {
 	} `json:"output"`
 }
 
-// The flags of a tax calculation that name a gross price and the tax it
-// includes: the source is given whole, and only for a gross price.
 const (
 	grossFlag          = "gross"
 	sourceCountryFlag  = "source-country"
 	sourceTaxClassFlag = "source-tax-class"
 )
 
-// newTaxCalculationCommand returns `calculate`, the net and gross value of a
-// price: a calculation that Emporix serves as PUT without changing data,
-// with no scope (live; the reference names none).
+// Emporix serves the calculation as PUT without changing data, with no scope
+// (live; the reference names none).
 func newTaxCalculationCommand(a *app) *cobra.Command {
 	calculation := reader[taxCalculation]{view: view[taxCalculation]{
 		singular: "tax calculation",

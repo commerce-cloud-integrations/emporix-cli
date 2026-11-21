@@ -49,7 +49,6 @@ func TestAuthStatusFailures(t *testing.T) {
 		{name: "missing configuration", env: map[string]string{}, code: ExitUsage,
 			message: "missing configuration: set EMPORIX_TENANT (or --tenant), EMPORIX_CLIENT_ID, EMPORIX_CLIENT_SECRET"},
 		{name: "invalid tenant", env: with(envTenant, "a/b"), code: ExitUsage, message: "invalid tenant: use letters"},
-		// An empty --tenant (as from an unset shell variable) never falls back to the environment.
 		{name: "empty tenant flag", env: fake.env(), args: []string{"--tenant", ""}, code: ExitUsage,
 			message: "missing configuration: set a non-empty --tenant"},
 		{name: "tenant flag over the environment", env: fake.env(), args: []string{"--tenant", "other"}, code: ExitAuth,

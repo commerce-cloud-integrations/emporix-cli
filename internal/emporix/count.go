@@ -8,9 +8,9 @@ import (
 )
 
 // Count returns the number of items in the collection at path that the
-// service reports for a HEAD request, which reads no items, in X-Total-Count,
-// as the Order Service counts orders. filter, an Emporix q filter, narrows the
-// count as ListOptions.Query narrows a list, together with the q of query; the
+// service reports for a HEAD request, which reads no items, in X-Total-Count.
+// filter, an Emporix q filter, narrows the count as ListOptions.Query narrows
+// a list, together with the q of query; the
 // path holds no query, as a collection read's. A client made by WithBody
 // counts with HEAD too, without its body. A response without a valid total
 // fails.

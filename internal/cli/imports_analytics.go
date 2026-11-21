@@ -10,8 +10,6 @@ import (
 	"github.com/commerce-cloud-integrations/emporix-cli/internal/emporix"
 )
 
-// importStatistics is the part of the import statistics shown in tables: the
-// headline counters of the window.
 type importStatistics struct {
 	Summary struct {
 		TotalRuns     json.Number `json:"totalRuns"`
@@ -26,16 +24,13 @@ type importStatistics struct {
 	} `json:"summary"`
 }
 
-// jobGroup is the part of an import job group shown in tables.
 type jobGroup struct {
 	ID        string            `json:"id"`
 	Name      string            `json:"name"`
-	ConfigIDs []json.RawMessage `json:"configIds"` // counted only
+	ConfigIDs []json.RawMessage `json:"configIds"`
 	UpdatedAt string            `json:"updatedAt"`
 }
 
-// healthLevel is the health thresholds of one level, the tenant's or the
-// built-in defaults (healthLevels).
 type healthLevel struct {
 	Level      string `json:"level"`
 	Thresholds struct {
@@ -47,7 +42,6 @@ type healthLevel struct {
 	} `json:"thresholds"`
 }
 
-// importLicense is the tenant's import limits.
 type importLicense struct {
 	MaxRecordsPerEntity  json.Number `json:"maxRecordsPerEntity"`
 	MaxConcurrentImports json.Number `json:"maxConcurrentImports"`
@@ -55,8 +49,6 @@ type importLicense struct {
 	Workers              json.Number `json:"workers"`
 }
 
-// importAnalyticsReads returns the reads of the import statistics, the job
-// groups that scope them, the health thresholds and the import limits.
 func importAnalyticsReads(a *app) []*cobra.Command {
 	return []*cobra.Command{
 		importReader(importStatisticsView()).command(a, &command{
@@ -112,7 +104,6 @@ func importAnalyticsReads(a *app) []*cobra.Command {
 	}
 }
 
-// importStatisticsView is the table of the headline of the import statistics.
 func importStatisticsView() view[importStatistics] {
 	return view[importStatistics]{
 		singular: "import statistics",
@@ -129,8 +120,6 @@ func importStatisticsView() view[importStatistics] {
 	}
 }
 
-// healthLevelView is the table of the health thresholds of the tenant and
-// their built-in defaults.
 func healthLevelView() view[healthLevel] {
 	return view[healthLevel]{
 		singular: "health thresholds",
@@ -146,7 +135,6 @@ func healthLevelView() view[healthLevel] {
 	}
 }
 
-// importLicenseView is the table of the tenant's import limits.
 func importLicenseView() view[importLicense] {
 	return view[importLicense]{
 		singular: "import limits",
@@ -158,9 +146,6 @@ func importLicenseView() view[importLicense] {
 	}
 }
 
-// healthLevels returns the health thresholds of a response
-// ({"thresholds": …, "builtInDefaults": …}) as two items (healthLevel): the
-// tenant's, then the built-in defaults.
 func healthLevels(body json.RawMessage) ([]json.RawMessage, error) {
 	var settings *struct {
 		Thresholds      json.RawMessage `json:"thresholds"`
@@ -171,7 +156,7 @@ func healthLevels(body json.RawMessage) ([]json.RawMessage, error) {
 	}
 	type level struct {
 		Level      string          `json:"level"`
-		Thresholds json.RawMessage `json:"thresholds"` // null when missing
+		Thresholds json.RawMessage `json:"thresholds"`
 	}
 	return marshalEach([]level{
 		{Level: "tenant", Thresholds: settings.Thresholds},

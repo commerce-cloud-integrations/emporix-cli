@@ -11,23 +11,20 @@ import (
 	"github.com/commerce-cloud-integrations/emporix-cli/internal/emporix"
 )
 
-// site is the part of a Site Settings Service site shown in tables.
 type site struct {
 	Code            string       `json:"code"`
 	Name            string       `json:"name"`
-	Default         *bool        `json:"default"` // nil when the service omits it
+	Default         *bool        `json:"default"`
 	Languages       []string     `json:"languages"`
 	Currency        string       `json:"currency"`
 	HomeBase        siteHomeBase `json:"homeBase"`
 	ShipToCountries []string     `json:"shipToCountries"`
 }
 
-// siteHomeBase is the home base of a site, which places it by its address.
 type siteHomeBase struct {
 	Address siteAddress `json:"address"`
 }
 
-// siteAddress is the address of a site's home base; its country is shown.
 type siteAddress struct {
 	Country string `json:"country"`
 }
@@ -39,8 +36,6 @@ const siteManageScope = "site.site_manage"
 // siteReadScope is the scope that the codes of inactive sites need beside siteManageScope.
 const siteReadScope = "site.site_read"
 
-// sites declares the sites, which every --site completes with
-// (completeSites).
 func sites() resource[site] {
 	return resource[site]{
 		use:   "sites",
@@ -52,7 +47,7 @@ func sites() resource[site] {
 			"`epx api get '/site/{tenant}/sites?includeInactive=true' --scope " + siteManageScope + "`.",
 		path:    "/site/{tenant}/sites",
 		filters: listFilters{kinds: filterable},
-		read:    (*emporix.Client).GetAllHybrisCounted, // the total comes only as hybris-count
+		read:    (*emporix.Client).GetAllHybrisCounted,
 		view: view[site]{
 			singular: "site",
 			header:   []string{columnCode, columnName, columnDefault, "LANGUAGES", columnCurrency, "HOME", columnShipsTo},
@@ -66,10 +61,6 @@ func sites() resource[site] {
 	}
 }
 
-// newSitesCommand reads and changes site settings and the mixins of a site.
-// Inactive sites need the write-capable site.site_manage scope, so only the
-// read of every site's code, which exists to show them, requests it, with
-// site.site_read (opt-in).
 func newSitesCommand(a *app) *cobra.Command {
 	r := sites()
 	codes := reader[string]{view: stringsView("site code", columnCode), scopes: []string{siteReadScope, siteManageScope}}
@@ -89,9 +80,6 @@ func newSitesCommand(a *app) *cobra.Command {
 	return newResourceCommand(a, r, slices.Concat(reads, siteWrites(a, r))...)
 }
 
-// siteWrites returns the writes of sites, with the scope that the reference
-// names for them: create, update CODE (which creates no missing site), patch
-// CODE and delete CODE.
 func siteWrites(a *app, sites resource[site]) []*cobra.Command {
 	manage := []string{siteManageScope}
 	item := request{path: sites.itemPath()}
@@ -131,10 +119,6 @@ func siteWrites(a *app, sites resource[site]) []*cobra.Command {
 	}
 }
 
-// newSiteMixinsCommand returns the group of the mixins of a site of sites,
-// the custom settings that extend it: list SITE_CODE and get SITE_CODE NAME,
-// which Emporix serves without a scope (live), and the writes, which need
-// site.site_manage (siteMixinWrites).
 func newSiteMixinsCommand(a *app, sites resource[site]) *cobra.Command {
 	mixinsOf := sites.nested("mixins")
 	mixins := child[namedValue]{
@@ -163,16 +147,12 @@ func newSiteMixinsCommand(a *app, sites resource[site]) *cobra.Command {
 			use:   getUse,
 			short: "Show one mixin of a site",
 			long:  "Reads one mixin of a site: its fields by NAME, each VALUE cut (`-o json` prints them whole).",
-			items: members, // a mixin is an object too: the table shows its fields
+			items: members,
 		}},
 		writes: siteMixinWrites(a, mixinsOf, mixins),
 	})
 }
 
-// siteMixinWrites returns the writes of the mixins of a site, below
-// mixinsOf, with the scope that the reference names for them: create
-// SITE_CODE, which adds mixins, and update, patch and delete SITE_CODE NAME,
-// which address one mixin as get reads it.
 func siteMixinWrites(a *app, mixinsOf resource[site], mixins child[namedValue]) []*cobra.Command {
 	siteCode := mixinsOf.argument()
 	mixin := func(verb string) childTarget { return childItemTarget(mixinsOf, mixins, verb, nil) }

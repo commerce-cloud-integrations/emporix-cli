@@ -6,20 +6,16 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// issuesIDs says, in the help of a write that issues IDs, what it changes,
-// which Emporix allows with the read scope (write.readScoped).
+// Emporix allows the writes that issue IDs with the read scope
+// (write.readScoped).
 const issuesIDs = "Each ID issued advances the schema's counter."
 
-// issuedForSite is the optional --site of a write that issues IDs.
 func issuedForSite() queryFlags {
 	return queryFlags{optional: []paramFlag{
 		optionalSiteParam("the site `CODE` whose data fills in the placeholders that the body leaves out"),
 	}}
 }
 
-// sequenceSchemaWrites returns the writes of sequence schemas: create, delete
-// ID and activate ID, and the writes that issue IDs, next-id TYPE and
-// next-ids.
 func sequenceSchemaWrites(a *app, schemas resource[sequenceSchema]) []*cobra.Command {
 	manage := []string{sequenceManageScope}
 	id := "ID is the ID that `epx " + schemas.listLine() + "` shows."

@@ -9,8 +9,6 @@ import (
 	"github.com/commerce-cloud-integrations/emporix-cli/internal/emporix"
 )
 
-// configuration is the part of a Configuration Service tenant setting shown in
-// tables.
 type configuration struct {
 	Key      string          `json:"key"`
 	Value    json.RawMessage `json:"value"`
@@ -19,8 +17,6 @@ type configuration struct {
 	ReadOnly *bool           `json:"readOnly"`
 }
 
-// configurationView shows a setting by its key, value (long: tables cut it)
-// and flags.
 func configurationView(singular string) view[configuration] {
 	return view[configuration]{
 		singular: singular,
@@ -32,26 +28,18 @@ func configurationView(singular string) view[configuration] {
 	}
 }
 
-// configurationScope reads tenant and client configurations.
 const configurationScope = "configuration.configuration_view"
 
-// The collections of tenant configurations, of the clients that have
-// configurations, and of the configurations of the client that a command's
-// first argument, CLIENT, names.
 const (
 	tenantConfigurationsPath = "/configuration/{tenant}/configurations"
 	configurationClientsPath = "/configuration/{tenant}/clients"
 	clientConfigurationsPath = configurationClientsPath + "/" + placeholderParent + "/configurations"
 )
 
-// configurationClient is the column of the clients that have configurations,
-// and the argument that names one.
 const configurationClient = "CLIENT"
 
-// newConfigurationsCommand reads tenant configurations, the global ones and
-// those of clients, and writes those of the tenant and of clients
-// (newConfigurationWrites). The service returns each list whole (live, it
-// ignores pageNumber and pageSize), so each is read with one request.
+// The service returns each list whole (live, it ignores pageNumber and
+// pageSize), so each is read with one request.
 func newConfigurationsCommand(a *app) *cobra.Command {
 	const values = "Tables show values as sent, secured ones included, and cut long ones (`-o json` prints " +
 		"them whole)."

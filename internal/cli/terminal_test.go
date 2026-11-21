@@ -6,9 +6,6 @@ import (
 	"testing"
 )
 
-// TestIsTerminal checks that neither a file, open or closed, nor the null
-// device, which scripts give as input (and Windows reports as the same file
-// as a console), nor a pipe is a terminal; nor can ReadHidden read one.
 func TestIsTerminal(t *testing.T) {
 	file, err := os.Open(writeBody(t, "{}"))
 	if err != nil {

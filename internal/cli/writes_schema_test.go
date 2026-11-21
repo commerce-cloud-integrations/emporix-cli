@@ -6,12 +6,8 @@ import (
 	"github.com/commerce-cloud-integrations/emporix-cli/internal/emporix"
 )
 
-// referenceBody is the JSON of a schema reference that the cases send as the
-// body field of a form.
 const referenceBody = `{"name":{"en":"Specifications"},"types":["PRODUCT"],"metadata":{"version":1}}`
 
-// schemaServiceWrites are the writes of the Schema Service: schemas, the
-// types of a schema and schema references, which send a form.
 func schemaServiceWrites() []writeCase {
 	manage := []string{"schema.schema_manage"}
 	return []writeCase{
@@ -26,13 +22,11 @@ func schemaServiceWrites() []writeCase {
 			method: http.MethodPut, path: "/schema/acme1/schemas/s1", scopes: manage, lang: "*", status: http.StatusNoContent,
 		},
 		{
-			// The version and mode go in the query; the body is the array of types.
 			args: []string{"schemas", "update-types", "s1", "--version", "2", "--mode", "ADD"}, file: `["ORDER"]`,
 			method: http.MethodPut, path: "/schema/acme1/schemas/s1/types", query: "mode=ADD&version=2", scopes: manage,
 			status: http.StatusNoContent,
 		},
 		{
-			// A form: the JSON schema file with its name, then the JSON of --file.
 			args:   []string{"schemas", "references", "create", "--json-schema", "testdata/schema.json"},
 			file:   referenceBody,
 			form:   []sentPart{schemaFilePart(), {name: "body", contentType: emporix.JSONContentType, content: referenceBody}},

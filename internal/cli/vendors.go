@@ -6,14 +6,10 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// vendorScope is the scope of every vendor read.
 const vendorScope = "vendor.vendor_read"
 
-// vendorManageScope is the scope of every write of vendors and their
-// locations.
 const vendorManageScope = "vendor.vendor_manage"
 
-// vendor is the part of a Vendor Service vendor shown in tables.
 type vendor struct {
 	ID        string `json:"id"`
 	Name      string `json:"name"`
@@ -25,8 +21,6 @@ type vendor struct {
 	} `json:"legalInfo"`
 }
 
-// vendors declares the vendors, whose IDs the VENDOR_ID of another read
-// completes with too.
 func vendors() resource[vendor] {
 	return resource[vendor]{
 		use:   "vendors",
@@ -50,8 +44,6 @@ func vendors() resource[vendor] {
 	}
 }
 
-// newVendorsCommand reads vendors, the sellers of a marketplace tenant, also
-// those a search finds, and creates, upserts and deletes them.
 func newVendorsCommand(a *app) *cobra.Command {
 	r := vendors()
 	reads := []*cobra.Command{r.searchCommand(a,
@@ -70,8 +62,6 @@ func newVendorsCommand(a *app) *cobra.Command {
 	return newResourceCommand(a, r, slices.Concat(reads, writes)...)
 }
 
-// newVendorLocationsCommand reads the locations of vendors, and creates,
-// upserts and deletes them.
 func newVendorLocationsCommand(a *app) *cobra.Command {
 	locations := resource[location]{
 		use:   "vendor-locations",

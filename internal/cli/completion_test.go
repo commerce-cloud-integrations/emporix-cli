@@ -23,7 +23,7 @@ func TestCompletionScripts(t *testing.T) {
 }
 
 func TestCompletionNeverSuggestsFiles(t *testing.T) {
-	const noFiles = ":4\n" // cobra.ShellCompDirectiveNoFileComp
+	const noFiles = ":4\n"
 	tests := []struct {
 		args []string
 		want []string
@@ -47,8 +47,6 @@ func TestCompletionNeverSuggestsFiles(t *testing.T) {
 		{args: []string{"ai", "analytics", "executions", "helper", "--granularity", ""},
 			want: []string{"QUARTER\n", "MONTH\n", "WEEK\n"}},
 		{args: []string{"category-trees", "list", "--type", ""}, want: []string{"STANDARD\n", "CLASSIFICATION\n"}},
-		// The built-in entity types; --entity-type takes a custom one too
-		// (TestReindexJobCreateSendsTheEntityTypeAsGiven).
 		{args: []string{"indexing", "reindex-jobs", "create", "--entity-type", ""},
 			want: entityBuiltInTypeNames()},
 		// --param repeats, so completion offers it again.
@@ -70,13 +68,6 @@ func TestCompletionNeverSuggestsFiles(t *testing.T) {
 	}
 }
 
-// TestOnlyACompletionRequestRegistersFlagCompletions checks that a run
-// registers no flag completion with Cobra, which keeps each one, and the tree
-// of its flag, for the life of the process, also where an argument or a flag
-// value is named like the completion request; while a completion request
-// registers each flag that completes with values or file names, in every
-// command: those named below, and all for which flagCompletion has a function
-// (a consistency check of the walk).
 func TestOnlyACompletionRequestRegistersFlagCompletions(t *testing.T) {
 	for _, args := range [][]string{
 		{"version"}, {"products", "list", "-o", "json"}, {"completion", "bash"}, {"products", "get", "__complete"},
@@ -101,15 +92,11 @@ func TestOnlyACompletionRequestRegistersFlagCompletions(t *testing.T) {
 	}
 }
 
-// registeredAfter runs a new tree, without configuration, with args, and
-// returns the flags that have a completion registered with Cobra then, and
-// those for which flagCompletion has a function, each as its command path and
-// name.
 func registeredAfter(args ...string) (registered, completing []string) {
 	a := &app{getenv: func(string) string { return "" }, ProfileEnv: *noProfiles()}
 	root := newRootCommand(a, io.Discard, io.Discard)
 	root.SetArgs(args)
-	_ = root.Execute() // what the run does, and whether it fails, does not matter here
+	_ = root.Execute()
 	registered = flagsWhere(root, func(cmd *cobra.Command, flag *pflag.Flag) bool {
 		_, ok := cmd.GetFlagCompletionFunc(flag.Name)
 		return ok
@@ -120,11 +107,9 @@ func registeredAfter(args ...string) (registered, completing []string) {
 	return registered, completing
 }
 
-// TestCompletionAfterRootFlags checks that flags complete in a completion
-// request after root flags, which Cobra accepts there.
 func TestCompletionAfterRootFlags(t *testing.T) {
 	code, stdout, _ := runCLI(t, nil, "--timeout=5s", cobra.ShellCompNoDescRequestCmd, "quotes", "pdf", "Q1", "--out", "")
-	if code != ExitOK || stdout != ":0\n" { // cobra.ShellCompDirectiveDefault
+	if code != ExitOK || stdout != ":0\n" {
 		t.Errorf("--out: exit %d, completions %q; want file names", code, stdout)
 	}
 	code, stdout, _ = runCLI(t, nil, "--timeout", "5s", cobra.ShellCompRequestCmd, "products", "list", "-o", "")
@@ -133,8 +118,6 @@ func TestCompletionAfterRootFlags(t *testing.T) {
 	}
 }
 
-// TestPersistentFlagsComplete checks that a persistent flag completes as
-// recorded, as a local one does.
 func TestPersistentFlagsComplete(t *testing.T) {
 	root := &cobra.Command{Use: "epx"}
 	group := &cobra.Command{Use: "group"}
@@ -155,8 +138,6 @@ func TestPersistentFlagsComplete(t *testing.T) {
 	}
 }
 
-// flagsWhere returns the flags that each command of the tree of root defines
-// for which keep returns true, each as the command path and name.
 func flagsWhere(root *cobra.Command, keep func(*cobra.Command, *pflag.Flag) bool) []string {
 	var flags []string
 	walkCommands(root, func(cmd *cobra.Command) {

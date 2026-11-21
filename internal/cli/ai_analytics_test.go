@@ -6,10 +6,6 @@ import (
 	"testing"
 )
 
-// TestAIAnalyticsRejectResponsesOfAnotherShape checks the analytics reads,
-// whose rows are restructured from their response: a response of another
-// shape, such as one with a count that is not a number, fails the read
-// (exit 1), also with -o json, which prints it whole, and prints nothing.
 func TestAIAnalyticsRejectResponsesOfAnotherShape(t *testing.T) {
 	const totals, executions = "/ai-service/acme1/agentic/analytics", "/ai-service/acme1/agentic/analytics/executions"
 	tenant := []string{"ai", "analytics", "tenant"}
@@ -53,8 +49,6 @@ func TestAIAnalyticsRejectResponsesOfAnotherShape(t *testing.T) {
 	}
 }
 
-// TestAIExecutionsOfNoAgent checks that executions without series print only
-// the header, and that -o json prints the response as sent.
 func TestAIExecutionsOfNoAgent(t *testing.T) {
 	fake := newFakeEmporix(t)
 	fake.route("/ai-service/acme1/agentic/analytics/executions",

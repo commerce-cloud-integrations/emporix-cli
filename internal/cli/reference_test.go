@@ -17,47 +17,26 @@ import (
 	"github.com/spf13/pflag"
 )
 
-// The command reference of the documentation site is rendered from the
-// command tree: index.mdx holds the root command and its global flags, and
-// each top-level command has a page with a section per command below it.
-// The site names a heading by its text, lowercased with spaces as "-", so the
-// heading "epx sites list" is linked as #epx-sites-list. Pages start with
-// front matter (title, sidebar title, description) instead of a heading, and
-// link each other by their site path (/commands/sites), without extension.
-
-// referenceDir holds the generated reference pages, relative to this package.
 const referenceDir = "../../site/commands"
 
-// pageExt is the extension of the page files: MDX, the site's format.
 const pageExt = ".mdx"
 
-// referenceURL is the site path of the reference pages.
 const referenceURL = "/commands"
 
-// regenerateReference is the command that rewrites the reference pages.
 const regenerateReference = "go test ./internal/cli -run TestCommandReference -update"
 
-// updateFlag names the test flag that makes TestCommandReference rewrite the pages.
 const updateFlag = "update"
 
-// globalFlagsLink points to the global flags section of the root page.
 const globalFlagsLink = "[global flags](" + referenceURL + "#global-flags)"
 
-// generated names a directory of files generated from the command tree: the
-// files with ext there are the pages, and regenerate is the command that
-// rewrites them.
 type generated struct {
 	dir, ext, regenerate string
 }
 
-// TestCommandReference checks that the reference pages match the command
-// tree; with -update it rewrites them and removes pages no longer rendered.
 func TestCommandReference(t *testing.T) {
 	generated{dir: referenceDir, ext: pageExt, regenerate: regenerateReference}.check(t, referencePages(newTestRoot()))
 }
 
-// check fails unless the files of g are pages; with -update it rewrites them
-// instead and removes the files no longer rendered.
 func (g generated) check(t *testing.T, pages map[string]string) {
 	t.Helper()
 	if flag.Lookup(updateFlag).Value.String() == "true" {
@@ -70,8 +49,6 @@ func (g generated) check(t *testing.T, pages map[string]string) {
 	}
 }
 
-// stale lists the files of g that are missing, differ from pages or are no
-// longer rendered.
 func (g generated) stale(t *testing.T, pages map[string]string) []string {
 	t.Helper()
 	dir := os.DirFS(g.dir)
@@ -93,13 +70,10 @@ func (g generated) stale(t *testing.T, pages map[string]string) []string {
 	return stale
 }
 
-// shown returns the path of a file of g from the repository root.
 func (g generated) shown(name string) string {
 	return path.Join(strings.TrimPrefix(g.dir, "../../"), name)
 }
 
-// write writes pages to the directory of g and removes the files there that
-// pages does not hold.
 func (g generated) write(t *testing.T, pages map[string]string) {
 	t.Helper()
 	if err := os.MkdirAll(g.dir, 0o750); err != nil {
@@ -122,7 +96,6 @@ func (g generated) write(t *testing.T, pages map[string]string) {
 	}
 }
 
-// extra returns the files of g that pages does not hold.
 func (g generated) extra(t *testing.T, pages map[string]string) []string {
 	t.Helper()
 	entries, err := os.ReadDir(g.dir)
@@ -138,9 +111,6 @@ func (g generated) extra(t *testing.T, pages map[string]string) []string {
 	return extra
 }
 
-// referencePages renders the reference pages of root by file name.
-// It first adds -h to every command, as Cobra does before it shows help, so
-// that usage lines and flag lists read as --help does.
 func referencePages(root *cobra.Command) map[string]string {
 	walkCommands(root, (*cobra.Command).InitDefaultHelpFlag)
 	pages := map[string]string{"index" + pageExt: rootPage(root)}
@@ -152,8 +122,6 @@ func referencePages(root *cobra.Command) map[string]string {
 	return pages
 }
 
-// rootPage renders the root command: an introduction, its help, the global
-// flags and the top-level commands, each linked to its page.
 func rootPage(root *cobra.Command) string {
 	blocks := []string{
 		frontMatter("CLI reference", "Overview",
@@ -171,10 +139,6 @@ func rootPage(root *cobra.Command) string {
 	return strings.Join(blocks, "\n\n") + "\n"
 }
 
-// section renders the blocks of one command, in the order of a reference
-// entry: heading, summary, help, usage, aliases, flags, scopes, examples and
-// subcommands. A top-level command's summary is its page's description,
-// which the site shows under the title, so its section leaves it out.
 func section(cmd *cobra.Command) []string {
 	root := cmd.Root()
 	blocks := []string{"## " + cmd.CommandPath()}
@@ -200,8 +164,6 @@ func section(cmd *cobra.Command) []string {
 	return blocks
 }
 
-// flagBlocks renders the flags of cmd, besides the global ones, which only
-// the root page lists (-h among them).
 func flagBlocks(cmd *cobra.Command) []string {
 	items := flagItems(cmd.LocalFlags(), cmd.Root(), "help")
 	if len(items) == 0 {
@@ -210,7 +172,6 @@ func flagBlocks(cmd *cobra.Command) []string {
 	return []string{"**Flags**", flagList(items), "Also takes the " + globalFlagsLink + "."}
 }
 
-// usage returns the usage lines that help shows for cmd.
 func usage(cmd *cobra.Command) []string {
 	var lines []string
 	if cmd.Runnable() {
@@ -222,8 +183,6 @@ func usage(cmd *cobra.Command) []string {
 	return lines
 }
 
-// scopesLine names the OAuth scopes of a read or a write (shownScopes), none
-// where it requests none, and marks an opt-in read.
 func scopesLine(cmd *cobra.Command) string {
 	scopes, optIn, shown := shownScopes(cmd)
 	switch {
@@ -237,10 +196,6 @@ func scopesLine(cmd *cobra.Command) string {
 	return "**OAuth scopes:** " + codeList(scopes)
 }
 
-// shownScopes returns the OAuth scopes of a read or a write, and whether it
-// is an opt-in read, one whose scopes are write-capable; shown is false for a
-// command that sends no request, or whose help ends with the sentence that
-// names its scopes already.
 func shownScopes(cmd *cobra.Command) (scopes []string, optIn, shown bool) {
 	value, isRead := cmd.Annotations[scopesAnnotation]
 	sentence := scopeSentence
@@ -258,9 +213,6 @@ func shownScopes(cmd *cobra.Command) (scopes []string, optIn, shown bool) {
 	return scopes, isRead && len(scopes) > 0 && writeCapable(scopes), true
 }
 
-// flagItems renders the list items of the flags in flags that help shows,
-// but those named in skip: the flag with its value's name, then its
-// description and default on a line of their own.
 func flagItems(flags *pflag.FlagSet, root *cobra.Command, skip ...string) []string {
 	var items []string
 	for _, f := range shownFlags(flags, skip...) {
@@ -269,11 +221,8 @@ func flagItems(flags *pflag.FlagSet, root *cobra.Command, skip ...string) []stri
 	return items
 }
 
-// shownFlag is a flag as help shows it: its name, shorthand and value's name,
-// its description and its default (shownDefault).
 type shownFlag struct{ name, text, value string }
 
-// shownFlags returns the flags in flags that help shows, but those named in skip.
 func shownFlags(flags *pflag.FlagSet, skip ...string) []shownFlag {
 	var shown []shownFlag
 	flags.VisitAll(func(f *pflag.Flag) {
@@ -293,7 +242,6 @@ func shownFlags(flags *pflag.FlagSet, skip ...string) []shownFlag {
 	return shown
 }
 
-// defaultNote renders a flag default, if any, as a sentence.
 func defaultNote(value string) string {
 	if value == "" {
 		return ""
@@ -301,9 +249,6 @@ func defaultNote(value string) string {
 	return " Default: " + codeSpan(value) + "."
 }
 
-// shownDefault returns a flag default as help shows it, a duration without
-// its zero minutes and seconds (30m, not 30m0s); "" for a zero value, which
-// help does not show.
 func shownDefault(value string) string {
 	if slices.Contains([]string{"", "0", "0s", "false", "[]", "<nil>"}, value) {
 		return ""
@@ -314,8 +259,6 @@ func shownDefault(value string) string {
 	return value
 }
 
-// listItem renders a list item: its term, then its description, if any, on a
-// line of its own.
 func listItem(term, description string) string {
 	description = strings.TrimSpace(description)
 	if description == "" {
@@ -326,7 +269,6 @@ func listItem(term, description string) string {
 
 func flagList(items []string) string { return strings.Join(items, "\n") }
 
-// commandList renders a list of cmds, each linked with link, with its summary.
 func commandList(cmds []*cobra.Command, link func(*cobra.Command) string) string {
 	items := make([]string, len(cmds))
 	for i, cmd := range cmds {
@@ -336,8 +278,6 @@ func commandList(cmds []*cobra.Command, link func(*cobra.Command) string) string
 	return strings.Join(items, "\n")
 }
 
-// sentence returns text as a sentence: its first letter upper case and a
-// final period, unless it ends with punctuation already.
 func sentence(text string) string {
 	text = strings.TrimSpace(text)
 	if text == "" {
@@ -352,7 +292,6 @@ func sentence(text string) string {
 	return text
 }
 
-// shownCommands returns the subcommands of cmd that help lists, without help itself.
 func shownCommands(cmd *cobra.Command) []*cobra.Command {
 	var shown []*cobra.Command
 	for _, sub := range cmd.Commands() {
@@ -363,8 +302,6 @@ func shownCommands(cmd *cobra.Command) []*cobra.Command {
 	return shown
 }
 
-// walkShown calls visit for cmd and every shown command below it, depth first.
-// Unlike walkCommands it prunes: help never lists the commands below a hidden one.
 func walkShown(cmd *cobra.Command, visit func(*cobra.Command)) {
 	visit(cmd)
 	for _, sub := range shownCommands(cmd) {
@@ -372,7 +309,6 @@ func walkShown(cmd *cobra.Command, visit func(*cobra.Command)) {
 	}
 }
 
-// referencePage returns the file of cmd's reference page: its top-level command's, or index.mdx for the root.
 func referencePage(cmd *cobra.Command) string {
 	if top := topCommand(cmd); top != nil {
 		return top.Name() + pageExt
@@ -380,7 +316,6 @@ func referencePage(cmd *cobra.Command) string {
 	return "index" + pageExt
 }
 
-// pageURL returns the site path of cmd's reference page.
 func pageURL(cmd *cobra.Command) string {
 	if top := topCommand(cmd); top != nil {
 		return referenceURL + "/" + top.Name()
@@ -388,7 +323,6 @@ func pageURL(cmd *cobra.Command) string {
 	return referenceURL
 }
 
-// topCommand returns the top-level command that cmd is or is below, or nil for the root.
 func topCommand(cmd *cobra.Command) *cobra.Command {
 	for ; cmd.HasParent(); cmd = cmd.Parent() {
 		if !cmd.Parent().HasParent() {
@@ -398,14 +332,11 @@ func topCommand(cmd *cobra.Command) *cobra.Command {
 	return nil
 }
 
-// frontMatter renders the front matter of a page: its title, the shorter
-// title of its sidebar entry and its description, as quoted YAML strings.
 func frontMatter(title, sidebarTitle, description string) string {
 	return fmt.Sprintf("---\ntitle: %s\nsidebarTitle: %s\ndescription: %s\n---",
 		strconv.Quote(title), strconv.Quote(sidebarTitle), strconv.Quote(description))
 }
 
-// anchorOf returns the heading id of cmd's section: its path joined with "-".
 func anchorOf(cmd *cobra.Command) string {
 	return strings.ReplaceAll(cmd.CommandPath(), " ", "-")
 }

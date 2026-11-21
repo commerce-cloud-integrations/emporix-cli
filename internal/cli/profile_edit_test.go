@@ -62,7 +62,6 @@ func TestProfileRemoveDeletesTheProfileAndItsSecret(t *testing.T) {
 func TestProfileRemoveFailures(t *testing.T) {
 	fake := newFakeEmporix(t)
 	setup := newProfileSetup(t, twoProfiles(fake), map[string]string{"dev": testSecret})
-	// A profile without a stored secret is removed.
 	if code, _, stderr := runIn(t, setup.env(nil, "", false), "profile", "remove", "prod", "--yes"); code != ExitOK {
 		t.Fatalf("without a secret: exit %d, stderr %q", code, stderr)
 	}
@@ -72,7 +71,6 @@ func TestProfileRemoveFailures(t *testing.T) {
 			t.Errorf("unknown %q: exit %d, stderr %q", args, code, stderr)
 		}
 	}
-	// A keychain that cannot delete the secret keeps no profile, and says where the secret is.
 	setup.keychain.fail = map[string]error{"DeleteSecret": errors.New("locked")}
 	code, _, stderr := runIn(t, setup.env(nil, "", false), "profile", "remove", "dev", "--yes")
 	want := "removed profile dev, but the OS keychain may still hold its client secret (service epx, account dev): locked"
@@ -93,9 +91,6 @@ func TestProfileRemoveKeepsTheSecretWhenTheProfileCannotBeSaved(t *testing.T) {
 	}
 }
 
-// TestProfileChangesWaitForEachOther checks that a profile added while
-// another add waits for its secret keeps both: an add reads the
-// configuration file only once it has the secret, under the file's lock.
 func TestProfileChangesWaitForEachOther(t *testing.T) {
 	setup := newProfileSetup(t, nil, nil)
 	asked, answer := make(chan struct{}), make(chan string)
@@ -123,7 +118,6 @@ func TestProfileChangesWaitForEachOther(t *testing.T) {
 	if len(file.Profiles) != 2 || file.Default != "ci" || setup.keychain.secrets["dev"] != "s1" {
 		t.Errorf("profiles %+v, keychain %q; want both, ci the default", file, setup.keychain.secrets)
 	}
-	// A change waits for one that holds the lock, until interrupted.
 	unlock, err := setup.store().Lock(context.Background())
 	if err != nil {
 		t.Fatal(err)
@@ -138,11 +132,6 @@ func TestProfileChangesWaitForEachOther(t *testing.T) {
 	}
 }
 
-// TestAProfileReadWaitsForAReplacement checks that a command that reads a
-// profile waits while another epx holds the configuration lock, which a
-// replacement holds while it changes the profile and its secret: the profile
-// and the secret are then read as one state, never the old host with the new
-// secret.
 func TestAProfileReadWaitsForAReplacement(t *testing.T) {
 	setup := newProfileSetup(t, nil, nil)
 	if code, _, stderr := runIn(t, setup.env(nil, "s1", false), "profile", "add", "dev", "--tenant", "acme1",
@@ -165,9 +154,6 @@ func TestAProfileReadWaitsForAReplacement(t *testing.T) {
 	}
 }
 
-// TestAnInterruptEndsTheWaitForTheKeychain checks that a keychain call that
-// does not return, as one waiting for a prompt the user cannot reach, ends
-// with an interrupt.
 func TestAnInterruptEndsTheWaitForTheKeychain(t *testing.T) {
 	fake := newFakeEmporix(t)
 	setup := newProfileSetup(t, twoProfiles(fake), map[string]string{"dev": testSecret})
@@ -181,7 +167,7 @@ func TestAnInterruptEndsTheWaitForTheKeychain(t *testing.T) {
 		var out, errOut bytes.Buffer
 		env.Out, env.Err = &out, &errOut
 		ctx, cancel := context.WithCancel(context.Background())
-		go func() { // interrupts once the keychain waits, however slow the command is to reach it
+		go func() {
 			select {
 			case <-setup.keychain.waiting:
 				cancel()

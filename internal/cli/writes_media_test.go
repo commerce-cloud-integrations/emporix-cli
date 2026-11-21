@@ -16,18 +16,13 @@ import (
 	"github.com/commerce-cloud-integrations/emporix-cli/internal/emporix"
 )
 
-// pngFile is the content of testdata/asset.png, the file that --upload names
-// in the cases: a PNG signature, then a few bytes.
 const pngFile = "\x89PNG\r\n\x1a\nacme"
 
-// The JSON of the media assets that the cases send.
 const (
 	linkAsset = `{"type":"LINK","access":"PUBLIC","url":"https://example.com/a.pdf"}`
 	blobAsset = `{"type":"BLOB","access":"PUBLIC","refIds":[{"type":"PRODUCT","id":"100200"}]}`
 )
 
-// uploadForm returns the parts of the form that uploads testdata/asset.png
-// with the JSON body.
 func uploadForm(body string) []sentPart {
 	return []sentPart{
 		{name: "file", file: "asset.png", contentType: "image/png", content: pngFile},
@@ -35,8 +30,6 @@ func uploadForm(body string) []sentPart {
 	}
 }
 
-// mediaWriteCases are the writes of media assets: a link, a file uploaded in
-// a form, changes, a delete and the start of an upload straight to storage.
 func mediaWriteCases() []writeCase {
 	manage := []string{"media.asset_manage"}
 	const assets, asset = "/media/acme1/assets", "/media/acme1/assets/a1"
@@ -75,27 +68,21 @@ func mediaWriteCases() []writeCase {
 	}
 }
 
-// TestUploadFileOfTheCases checks that testdata/asset.png holds pngFile,
-// which the cases expect to be sent.
 func TestUploadFileOfTheCases(t *testing.T) {
 	if content, err := os.ReadFile("testdata/asset.png"); err != nil || string(content) != pngFile {
 		t.Fatalf("testdata/asset.png: %q, %v; want %q", content, err, pngFile)
 	}
 }
 
-// TestUploadSendsAnyFileWithItsContentType checks that --upload sends a file
-// whatever it holds, byte for byte, with the content type that its
-// extension names in epx's own table, the same on every system, else the one
-// its content shows.
 func TestUploadSendsAnyFileWithItsContentType(t *testing.T) {
 	directory := t.TempDir()
 	for name, want := range map[string]string{
-		"manual":     "application/pdf", // shown by its content
-		"manual.PDF": "application/pdf", // named by its extension, whatever its case
+		"manual":     "application/pdf",
+		"manual.PDF": "application/pdf",
 		"sheet.xlsx": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-		"list.csv":   "text/csv",                  // not in Go's own table, so its system's would decide
-		"notes.md":   "text/plain; charset=utf-8", // in no table of epx's: shown by its content
-		"data":       "application/octet-stream",  // neither
+		"list.csv":   "text/csv", // not in Go's own table, so its system's would decide
+		"notes.md":   "text/plain; charset=utf-8",
+		"data":       "application/octet-stream",
 	} {
 		content := "%PDF-1.7\n\x00\x01"
 		switch name {
@@ -122,15 +109,10 @@ func TestUploadSendsAnyFileWithItsContentType(t *testing.T) {
 	}
 }
 
-// TestUploadFailuresSendNothing checks that a file to upload that cannot be
-// read, is too large, is standard input or is named with a control
-// character, a JSON body that is missing or not JSON, and the JSON of a BLOB
-// asset without a file to upload, are usage errors (exit 2) found before
-// anything is sent.
 func TestUploadFailuresSendNothing(t *testing.T) {
 	directory := t.TempDir()
 	large := filepath.Join(directory, "large.bin")
-	unsendable := filepath.Join(directory, "asset"+string(rune(0x1b))+".png") // a header cannot carry its name
+	unsendable := filepath.Join(directory, "asset"+string(rune(0x1b))+".png")
 	if err := os.WriteFile(unsendable, []byte(pngFile), 0o600); err != nil {
 		t.Fatal(err)
 	}
@@ -165,9 +147,6 @@ func TestUploadFailuresSendNothing(t *testing.T) {
 	}
 }
 
-// TestUploadDryRunShowsNoTerminalControls checks that a dry run of a file to
-// upload that is named as JSON but holds terminal controls describes the
-// file's part without showing its content, and shows the JSON of --file.
 func TestUploadDryRunShowsNoTerminalControls(t *testing.T) {
 	upload := filepath.Join(t.TempDir(), "asset.json")
 	if err := os.WriteFile(upload, []byte("\x1b]0;title\x07"), 0o600); err != nil {
@@ -184,9 +163,6 @@ func TestUploadDryRunShowsNoTerminalControls(t *testing.T) {
 	fake.assertNothingSent(t)
 }
 
-// TestMediaWritesSayHowToUpload checks that create and update name --upload
-// and say how a BLOB asset is sent, how large its form may be, and that a
-// large file may need a longer --timeout, and that delete has no --file.
 func TestMediaWritesSayHowToUpload(t *testing.T) {
 	for _, command := range []string{"create", "update"} {
 		_, help, _ := runCLI(t, nil, "media", command, "--help")
@@ -201,11 +177,6 @@ func TestMediaWritesSayHowToUpload(t *testing.T) {
 	}
 }
 
-// TestFormsOfUploadsAreBounded checks that a form is bounded by its parts:
-// one with a file to upload at maxUploadBytes, also where the file is
-// required, one without at nothing; and that both bodies that send a form,
-// alone (formBody) and with the JSON of --file (formFile), send a form of its
-// bound and refuse one byte more as a usage error.
 func TestFormsOfUploadsAreBounded(t *testing.T) {
 	field := fieldPart("attachmentId", mediaFlag, "")
 	if got := (form{field, uploadPart("file", "")}).limit(); got != maxUploadBytes {
@@ -242,9 +213,6 @@ func TestFormsOfUploadsAreBounded(t *testing.T) {
 	}
 }
 
-// fillBounded returns the body that source makes of a form with
-// testdata/asset.png to upload, bounded at bound, and the JSON in the file
-// body where source takes --file.
 func fillBounded(t *testing.T, source func(part formPart) bodySource, bound int, body string) (emporix.Body,
 	error) {
 	t.Helper()
@@ -265,10 +233,6 @@ func fillBounded(t *testing.T, source func(part formPart) bodySource, bound int,
 	return w.Body, err
 }
 
-// TestUploadsAreBoundedWithTheirForms checks end to end that the form of a
-// file that fits alone but not with the rest of the form is a usage error
-// (exit 2) found before anything is sent. The file is sparse and read once:
-// the test holds a few copies of it at most.
 func TestUploadsAreBoundedWithTheirForms(t *testing.T) {
 	form, err := emporix.FormBody([]emporix.Part{{Name: "file", FileName: "edge.pdf", ContentType: "application/pdf"},
 		{Name: "body", ContentType: emporix.JSONContentType, Content: []byte(blobAsset)}})
@@ -293,10 +257,6 @@ func TestUploadsAreBoundedWithTheirForms(t *testing.T) {
 	fake.assertNothingSent(t)
 }
 
-// TestBlobNeedsFileRefusesOnlyABlobAsset checks that the JSON of a media asset
-// sent without a file is refused only where it is that of a BLOB asset, as
-// Emporix reads its type: exactly so named, the last where it repeats;
-// another type, none, or JSON that is no object is sent as it is.
 func TestBlobNeedsFileRefusesOnlyABlobAsset(t *testing.T) {
 	for asset, refused := range map[string]bool{
 		blobAsset: true, linkAsset: false, `{"type":"blob"}`: false, `{}`: false, `[{"type":"BLOB"}]`: false,

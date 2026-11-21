@@ -5,14 +5,9 @@ import (
 	"testing"
 )
 
-// The read cases of the Order, Shipping and Payment Gateway services (see TestReads).
-
-// orderReads returns the Order Service reads.
 func orderReads() []readCase {
 	return []readCase{
 		{
-			// TOTAL is the gross final price (numbers keep their text), never the deprecated totalPrice
-			// or the net value; CUSTOMER falls back from the email to a person's or a company's name.
 			args:    []string{"orders", "list"},
 			path:    "/order-v2/acme1/salesorders",
 			scopes:  []string{"order.order_read"},
@@ -50,7 +45,6 @@ func orderReads() []readCase {
 			want:   "STATUS\nSHIPPED\nDECLINED\n",
 		},
 		{
-			// The history is one object holding the status changes; -o json adds its metadata.
 			args:   []string{"orders", "history", "EON/1"},
 			path:   "/order-v2/acme1/salesorders/EON%2F1/historical-transitions",
 			scopes: []string{"order.order_read"},
@@ -64,12 +58,9 @@ func orderReads() []readCase {
 	}
 }
 
-// deliveryTimeReads returns the Shipping Service reads of delivery times.
 func deliveryTimeReads() []readCase {
 	return []readCase{
 		{
-			// DAY is a weekday, a date or an ISO 8601 period; a day without delivery on every zone
-			// says so; DAY SHIFT is empty unless the delivery time sets it.
 			args:   []string{"delivery-times", "list"},
 			path:   "/shipping/acme1/delivery-times",
 			scopes: []string{"shipping.shipping_read"},
@@ -91,7 +82,6 @@ func deliveryTimeReads() []readCase {
 				"                                       0\n",
 		},
 		{
-			// The cut-off is the time of a timestamp, shown as sent; missing values stay empty.
 			args:   []string{"delivery-times", "slots", "list", "d/1"},
 			path:   "/shipping/acme1/delivery-times/d%2F1/slots",
 			scopes: []string{"shipping.shipping_read"},
@@ -115,8 +105,6 @@ func deliveryTimeReads() []readCase {
 				"d/1        main  z1    FRIDAY  true      Europe/Amsterdam             1\n",
 		},
 		{
-			// A cart's delivery windows come whole and need no scope; missing values, the
-			// optional id included, stay empty.
 			args: []string{"delivery-times", "windows", "cart/1"},
 			path: "/shipping/acme1/actualDeliveryWindows/cart%2F1",
 			mode: getWhole,
@@ -132,11 +120,9 @@ func deliveryTimeReads() []readCase {
 	}
 }
 
-// shippingReads returns the Shipping Service reads of a site's shipping.
 func shippingReads() []readCase {
 	return []readCase{
 		{
-			// The site is a path segment; a destination shows its postal codes only when they are limited.
 			args: []string{"shipping", "zones", "list", "--site", "Acme Store", "--language", "nl"},
 			path: "/shipping/acme1/Acme%20Store/zones",
 			mode: getWhole,
@@ -156,8 +142,6 @@ func shippingReads() []readCase {
 			want: "ID   NAME       DEFAULT  SHIPS TO\nz/1  Standaard           NL\n",
 		},
 		{
-			// Amounts keep their text (7.50); a fee limited to a shipping group names it, and a fee
-			// without a minimum order value shows its cost only. Emporix leaves the fees out unless expanded.
 			args:  []string{"shipping", "zones", "methods", "list", "z1", "--site", "main", "--language", "nl"},
 			path:  "/shipping/acme1/main/zones/z1/methods",
 			query: "expand=fees",
@@ -204,8 +188,6 @@ func shippingReads() []readCase {
 	}
 }
 
-// paymentModesBody holds the credentials the Payment Gateway documents for its providers;
-// tables show none of them.
 const paymentModesBody = `[
 	{"id":"pm1","code":"paypal","active":true,"provider":"SPREEDLY","configuration":{
 		"Spreedly/GatewayToken":"S1","Spreedly/EnvironmentKey":"env","Spreedly/AccessSecret":"S2",
@@ -214,11 +196,9 @@ const paymentModesBody = `[
 		"Saferpay/BasicAuth":"S5","Saferpay/CustomerId":"123","Saferpay/RedirectUrl":"https://shop.example"}},
 	{"id":"pm3","code":"later","provider":"UNZER","configuration":{"Unzer/PublicKey":"pub","Unzer/PrivateKey":"S6"}}]`
 
-// paymentModeReads returns the Payment Gateway reads.
 func paymentModeReads() []readCase {
 	return []readCase{
 		{
-			// The fixture holds provider credentials, which only -o json shows.
 			args:   []string{"payment-modes", "list"},
 			path:   "/payment-gateway/acme1/paymentmodes/config",
 			scopes: []string{"payment-gateway.paymentmodes_read"},
@@ -238,7 +218,6 @@ func paymentModeReads() []readCase {
 			want: "ID   CODE    INTEGRATION  METHOD\npm1  paypal  OFFSITE      paypal\n",
 		},
 		{
-			// The API reference documents a one-item array for get.
 			args: []string{"payment-modes", "public", "get", "pm1"},
 			path: "/payment-gateway/acme1/paymentmodes/frontend/pm1",
 			mode: getWhole,
@@ -256,8 +235,6 @@ func paymentModeReads() []readCase {
 	}
 }
 
-// transactionsBody holds a card token and a provider request and response that
-// name credentials, as the Payment Gateway's reference shows them.
 const transactionsBody = `[
 	{"id":"t1","provider":"SPREEDLY","paymentInformation":{"paymentMode":"pm1","creditCardToken":"S1"},
 	 "entries":[
@@ -270,11 +247,9 @@ const transactionsBody = `[
 		 "summary":"Declined"}]},
 	{"id":"t2","provider":"INVOICE","paymentInformation":{"paymentMode":"pm2"},"entries":[]}]`
 
-// paymentTransactionReads returns the Payment Gateway's transaction reads.
 func paymentTransactionReads() []readCase {
 	return []readCase{
 		{
-			// ENTRIES keeps the amounts as sent and marks a failed entry; an empty list stays empty.
 			args:    []string{"payment-transactions", "list"},
 			path:    "/payment-gateway/acme1/transactions",
 			scopes:  []string{"payment-gateway.paymenttransactions_read"},
@@ -295,12 +270,9 @@ func paymentTransactionReads() []readCase {
 	}
 }
 
-// returnReads returns the Returns Service reads.
 func returnReads() []readCase {
 	return []readCase{
 		{
-			// REQUESTOR prefers the email, then the name, then the customer id; TOTAL keeps the value as sent;
-			// SITE is the siteCode copied from the orders (older returns have none).
 			args:    []string{"returns", "list"},
 			path:    "/return/acme1/returns",
 			scopes:  []string{"returns.returns_read"},
@@ -332,11 +304,9 @@ func returnReads() []readCase {
 	}
 }
 
-// quoteReads returns the Quote Service reads.
 func quoteReads() []readCase {
 	return []readCase{
 		{
-			// CUSTOMER prefers the contact email, then the name, then the customer id.
 			args:    []string{"quotes", "list"},
 			path:    "/quote/acme1/quotes",
 			scopes:  []string{"quote.quote_read"},
@@ -356,13 +326,11 @@ func quoteReads() []readCase {
 			path:   "/quote/acme1/quotes/q%2F1",
 			scopes: []string{"quote.quote_read"},
 			mode:   getWhole,
-			// The currency may be the quote's only, as the reference's examples send it.
-			body: `{"id":"q/1","status":{"value":"ACCEPTED"},"currency":"CHF","totalPrice":{"grossValue":5}}`,
+			body:   `{"id":"q/1","status":{"value":"ACCEPTED"},"currency":"CHF","totalPrice":{"grossValue":5}}`,
 			want: "ID   STATUS    CUSTOMER  COMPANY  SITE  VALID TO  TOTAL\n" +
 				"q/1  ACCEPTED                                     5 CHF\n",
 		},
 		{
-			// Without --language, in none: Emporix answers in the tenant's default language.
 			args: []string{"quotes", "pdf", "Q1001", "--out", "-"}, path: "/quote/acme1/quotes/Q1001/pdf",
 			scopes: []string{"quote.quote_read"}, mode: getWhole, method: http.MethodPost,
 			media: "application/pdf", body: quotePDF, want: quotePDF,
@@ -374,11 +342,10 @@ func quoteReads() []readCase {
 			media: "application/pdf; qs=0.9", body: quotePDF, want: quotePDF,
 		},
 		{
-			// BY joins the user type and name, CHANGE the operation and path.
 			args:   []string{"quotes", "history", "q/1"},
 			path:   "/quote/acme1/quotes/q%2F1/history",
 			scopes: []string{"quote.quote_read"},
-			mode:   getWhole, // Emporix ignores paging there (live)
+			mode:   getWhole,
 			body: `[{"id":"h1","op":"REPLACE","path":"/status","newValue":{"value":"OPEN"},
 				"previousValue":{"value":"AWAITING"},"userId":"u1","userFirstName":"Robin","userLastName":"Fritz",
 				"userType":"EMPLOYEE","modifiedAt":"2026-10-14T13:06:15.280Z"},{"id":"h2","op":"CREATE","path":"/quote"}]`,
@@ -408,13 +375,9 @@ func quoteReads() []readCase {
 	}
 }
 
-// shoppingListReads returns the Shopping List Service reads.
 func shoppingListReads() []readCase {
 	return []readCase{
 		{
-			// As Emporix sends them: the customer as id, beside metadata and the lists, objects
-			// with items or a name, by name; one named like a credential's or metadata is a list
-			// like any other.
 			args:   []string{"shopping-lists", "list"},
 			path:   "/shoppinglist/acme1/shopping-lists",
 			scopes: []string{"shoppinglist.shoppinglist_read"},
@@ -435,16 +398,12 @@ func shoppingListReads() []readCase {
 			path:   "/shoppinglist/acme1/shopping-lists/c%2F1",
 			scopes: []string{"shoppinglist.shoppinglist_read"},
 			mode:   getWhole,
-			body:   `{"customerId":"c/1","default":{"name":"default","items":[]}}`, // as the reference names it
+			body:   `{"customerId":"c/1","default":{"name":"default","items":[]}}`,
 			want:   "CUSTOMER  LISTS\nc/1       default (0 items)\n",
 		},
 	}
 }
 
-// TestReturnsHelpNamesTheirSiteAndAnswers checks that the reads of returns
-// say what SITE is, how to filter by site and that a site-limited read scope
-// fails, and that the writes say how Emporix treats siteCode and restriction
-// and what it answers for an unknown return.
 func TestReturnsHelpNamesTheirSiteAndAnswers(t *testing.T) {
 	assertHelpHolds(t, map[string][]string{
 		"returns list": {

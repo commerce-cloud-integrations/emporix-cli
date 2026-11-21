@@ -6,9 +6,6 @@ import (
 	"testing"
 )
 
-// TestUserScopesShapes pins how a user's scopes are read: one text of scopes,
-// of which the tenant entry is left out, so an unknown user (only that entry)
-// lists nothing; anything else fails, and -o json prints the response itself.
 func TestUserScopesShapes(t *testing.T) {
 	for _, tt := range []struct {
 		body, want string
@@ -37,10 +34,6 @@ func TestUserScopesShapes(t *testing.T) {
 	}
 }
 
-// TestIAMOnePageReadsFailRatherThanTruncate checks the IAM reads of one page,
-// the tenant's users and a user's access controls: they are read with one
-// request when Emporix reports their total, and fail when the page does not
-// hold it.
 func TestIAMOnePageReadsFailRatherThanTruncate(t *testing.T) {
 	for _, tt := range []struct {
 		args       []string
@@ -65,9 +58,6 @@ func TestIAMOnePageReadsFailRatherThanTruncate(t *testing.T) {
 	}
 }
 
-// TestUserAccessControlsNeedTheirTotal checks that a user's access controls,
-// which Emporix lists on page 1 only, fail without a total: an empty page 2
-// would not show that page 1 missed some.
 func TestUserAccessControlsNeedTheirTotal(t *testing.T) {
 	fake := newFakeEmporix(t)
 	fake.route("/iam/acme1/users/u1/access-controls", firstPage(`[{"id":"ac1"}]`))
@@ -78,8 +68,6 @@ func TestUserAccessControlsNeedTheirTotal(t *testing.T) {
 	}
 }
 
-// TestIAMPagingNoteIsOnListOnly checks that the IAM lists sorted by id say so
-// in the help of list, and get, which reads one item, does not.
 func TestIAMPagingNoteIsOnListOnly(t *testing.T) {
 	for _, tt := range []struct {
 		group  string

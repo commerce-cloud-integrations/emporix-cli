@@ -5,17 +5,11 @@ import (
 	"slices"
 )
 
-// aiReads returns the reads of the AI Service: agent templates, agents and
-// what they are built from, their searches, the LLM models and the commerce
-// events; what agents did (reads_ai_activity_test.go) and the AI RAG
-// Indexer's metadata (reads_ai_rag_test.go).
 func aiReads() []readCase {
 	return slices.Concat(aiAgentReads(), aiToolReads(), aiConnectionReads(), aiJobReads(), aiLogReads(),
 		aiAnalyticsReads(), aiRAGReads())
 }
 
-// aiAgentReads returns the reads of agent templates, agents, LLM models and
-// commerce events.
 func aiAgentReads() []readCase {
 	const scope = "ai.agent_read"
 	templates := `[{"id":"complaint-template","type":"complaint","enabled":true,"name":{"en":"Complaints","nl":"Klachten"},
@@ -28,7 +22,6 @@ func aiAgentReads() []readCase {
 		"model":"gpt-4.1"},"triggers":[]}]`
 	return []readCase{
 		{
-			// PROVIDER and MODEL name the LLM; prompts are only in -o json.
 			args:    []string{"ai", "templates", "list", "--language", "nl"},
 			path:    "/ai-service/acme1/agentic/templates",
 			scopes:  []string{scope},
@@ -39,7 +32,6 @@ func aiAgentReads() []readCase {
 				"blank               generic                                           Leer (de)\n",
 		},
 		{
-			// Without --query, the body's q filters nothing; pages are read as list reads them.
 			args:    []string{"ai", "templates", "search", "--language", "en"},
 			path:    "/ai-service/acme1/agentic/templates/search",
 			scopes:  []string{scope},
@@ -52,7 +44,6 @@ func aiAgentReads() []readCase {
 				"blank               generic                                           Leer (de)\n",
 		},
 		{
-			// TRIGGERS names what starts an agent; their configuration is only in -o json.
 			args:    []string{"ai", "agents", "list", "--language", "nl"},
 			path:    "/ai-service/acme1/agentic/agents",
 			scopes:  []string{scope},
@@ -73,7 +64,6 @@ func aiAgentReads() []readCase {
 				"complaint-agent  complaint  true     self_hosted_ollama  llama3  slack     Complaints\n",
 		},
 		{
-			// --query is sent in the body as given.
 			args:    []string{"ai", "agents", "search", "--query", "enabled:true type:generic", "--language", "en"},
 			path:    "/ai-service/acme1/agentic/agents/search",
 			scopes:  []string{scope},
@@ -85,7 +75,6 @@ func aiAgentReads() []readCase {
 				"helper  generic  true                      teams     Helper\n",
 		},
 		{
-			// One row per model of every provider; descriptions are only in -o json.
 			args:   []string{"ai", "models"},
 			path:   "/ai-service/acme1/agentic/models",
 			scopes: []string{scope},
@@ -99,7 +88,6 @@ func aiAgentReads() []readCase {
 				"gemini-flash  google              Gemini Flash\n",
 		},
 		{
-			// Sorted by name, whatever order Emporix sends them in.
 			args:   []string{"ai", "commerce-events"},
 			path:   "/ai-service/acme1/agentic/commerce-events",
 			scopes: []string{scope},
@@ -110,12 +98,9 @@ func aiAgentReads() []readCase {
 	}
 }
 
-// searchTool is a search tool, which finds customers or legal entities in a
-// search index; its configuration is only in -o json.
 const searchTool = `{"id":"search-customer","type":"search","name":"Customer search","enabled":true,` +
 	`"config":{"prompt":"Find customers by name or number.","entityType":"customer","maxResults":5}}`
 
-// aiToolReads returns the reads of tools and tokens, and their searches.
 func aiToolReads() []readCase {
 	const scope = "ai.agent_read"
 	tools := `[{"id":"slack-tool","type":"slack","name":"Slack","enabled":true,"config":{"teamId":"T1"}},
@@ -153,7 +138,6 @@ func aiToolReads() []readCase {
 			want:    "ID          TYPE   ENABLED  NAME\nslack-tool  slack  true     Slack\n",
 		},
 		{
-			// A token's name and dates; a value Emporix might send is only in -o json.
 			args:    []string{"ai", "tokens", "list"},
 			path:    "/ai-service/acme1/agentic/tokens",
 			scopes:  []string{scope},
@@ -184,8 +168,6 @@ func aiToolReads() []readCase {
 	}
 }
 
-// aiConnectionReads returns the reads of OAuth configurations and MCP
-// servers, and their searches.
 func aiConnectionReads() []readCase {
 	const scope = "ai.agent_read"
 	oauths := `[{"id":"llm-auth","url":"https://auth.example.com/token","clientId":"acme-client","grantType":
@@ -197,7 +179,6 @@ func aiConnectionReads() []readCase {
 		"tools":[{"name":"stock"}]}]`
 	return []readCase{
 		{
-			// SECRET TOKEN is the ID of the token that holds the client secret; the scope is only in -o json.
 			args:    []string{"ai", "oauths", "list"},
 			path:    "/ai-service/acme1/agentic/oauths",
 			scopes:  []string{scope},
@@ -228,7 +209,6 @@ func aiConnectionReads() []readCase {
 			want:    "ID        ENABLED  CLIENT ID    SECRET TOKEN  TOKEN URL\nllm-auth  true     acme-client                \n",
 		},
 		{
-			// URL is a custom server's; a dynamic server's tools are only in -o json.
 			args:    []string{"ai", "mcp-servers", "list"},
 			path:    "/ai-service/acme1/agentic/mcp-servers",
 			scopes:  []string{scope},

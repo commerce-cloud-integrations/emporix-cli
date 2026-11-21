@@ -11,8 +11,6 @@ import (
 	"time"
 )
 
-// TestPollReadsUntilEnded checks that Poll reads the path again until ended
-// says that a response ends it, handing it every response in turn.
 func TestPollReadsUntilEnded(t *testing.T) {
 	fake := newFakeEmporix(t)
 	sent := 0
@@ -31,13 +29,11 @@ func TestPollReadsUntilEnded(t *testing.T) {
 	}
 }
 
-// TestPollFailures checks that a failure of ended, of a read, or the end of
-// the context ends Poll with that failure, reading nothing more.
 func TestPollFailures(t *testing.T) {
 	errEnded := errors.New("not a job")
 	for _, tt := range []struct {
 		name     string
-		canceled bool // the context has ended before Poll starts
+		canceled bool
 		status   int
 		want     error
 		reads    int

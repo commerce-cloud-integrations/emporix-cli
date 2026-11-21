@@ -24,7 +24,6 @@ import (
 // DefaultBaseURL is the Emporix production API endpoint.
 const DefaultBaseURL = "https://api.emporix.io"
 
-// maxBodyBytes bounds every response read into memory.
 const maxBodyBytes = 32 << 20
 
 var tenantPattern = regexp.MustCompile(`^[A-Za-z0-9][A-Za-z0-9_-]*$`)
@@ -53,12 +52,12 @@ type Client struct {
 	retry   retryPolicy
 	paging  pagingPolicy
 	token   *token
-	now     func() time.Time // the clock that tells when the token is to be replaced (Authenticate)
-	method  string           // the method of every read: GET, or POST or PUT with body (WithBody)
-	body    Body             // the body of every read; none for a GET
-	created bool             // 201 Created answers a read as 200 OK does (AcceptCreated)
-	refusal bool             // a 403 Forbidden may refuse a read's input (ForbiddenIsRefusal, refusesInput)
-	header  http.Header      // what every read sends besides its own headers (WithHeader); none when nil
+	now     func() time.Time
+	method  string
+	body    Body
+	created bool
+	refusal bool
+	header  http.Header
 }
 
 // New validates cfg and returns a client whose token requests exactly the
@@ -67,7 +66,7 @@ func New(cfg *Config, scopes ...string) (*Client, error) {
 	if err := CheckEndpoint(cfg.BaseURL, cfg.Tenant); err != nil {
 		return nil, err
 	}
-	base, _ := url.Parse(cfg.BaseURL) // CheckEndpoint parsed it
+	base, _ := url.Parse(cfg.BaseURL)
 	if cfg.ClientID == "" || cfg.ClientSecret == "" {
 		return nil, fmt.Errorf("%w: client ID and client secret are required", ErrInvalidInput)
 	}
@@ -122,8 +121,6 @@ func (c *Client) WithBody(method string, body Body) (*Client, error) {
 // (singleSegments) is ErrInvalidInput.
 func (c *Client) Posting() *Client { return c.sending(http.MethodPost, Body{}) }
 
-// sending returns a copy of c whose reads send method with body (the zero
-// Body: none).
 func (c *Client) sending(method string, body Body) *Client {
 	copied := *c
 	copied.method, copied.body = method, body
@@ -152,8 +149,6 @@ func (c *Client) ForbiddenIsRefusal() *Client {
 	return &refusing
 }
 
-// checkScope rejects a scope that is empty, holds spaces (one scope per value)
-// or names the tenant, which New adds itself.
 func checkScope(scope string) error {
 	switch {
 	case scope == "":
@@ -170,8 +165,6 @@ func checkScope(scope string) error {
 // baseURL is a scheme and host only, https (plain HTTP only for a loopback
 // host), and tenant a tenant name. Its errors are ErrInvalidInput.
 func CheckEndpoint(baseURL, tenant string) error {
-	// Rejected values are not echoed: they may hold a credential set in the
-	// wrong place.
 	base, err := url.Parse(baseURL)
 	if err != nil || !isOrigin(base) {
 		return fmt.Errorf("%w: API URL must be a scheme and host only, e.g. %s", ErrInvalidInput, DefaultBaseURL)
@@ -189,8 +182,6 @@ func CheckEndpoint(baseURL, tenant string) error {
 	return nil
 }
 
-// isOrigin reports whether u is only a scheme and host, without credentials,
-// path, query or fragment.
 func isOrigin(u *url.URL) bool {
 	extras := u.User != nil || u.RawQuery != "" || u.Fragment != ""
 	return u.Host != "" && strings.Trim(u.Path, "/") == "" && !extras
@@ -218,12 +209,9 @@ func (c *Client) Get(ctx context.Context, path string, query url.Values) (json.R
 	return result.body, err
 }
 
-// getNonEmpty reads path as get does, with header, and fails an empty body as
-// ErrNotFound (Get).
 func (c *Client) getNonEmpty(ctx context.Context, path string, query url.Values, header http.Header) (reply, error) {
 	result, err := c.get(ctx, path, query, header)
 	if err == nil && result.empty() {
-		// The query is left out of the message: it may hold values a log must not keep.
 		return reply{}, fmt.Errorf("%s: empty response: %w", c.named(result.path), ErrNotFound)
 	}
 	return result, err
@@ -237,19 +225,14 @@ func (c *Client) getNonEmpty(ctx context.Context, path string, query url.Values,
 func (c *Client) Check(ctx context.Context, path string, query url.Values) (json.RawMessage, error) {
 	result, err := c.get(ctx, path, query, nil)
 	if result.empty() {
-		return nil, err // a failed read has no body either
+		return nil, err
 	}
 	return result.body, nil
 }
 
-// get performs an authenticated read with optional extra headers, besides
-// those of WithHeader: a GET, or the method and body of a client made by
-// WithBody, or a POST without a body of one made by Posting. Responses that
-// do not answer a read (answered) become classified APIErrors.
 func (c *Client) get(ctx context.Context, path string, query url.Values, header http.Header) (reply, error) {
 	target, err := c.locate(path, query)
 	if err == nil && (c.method == http.MethodPost || c.method == http.MethodPut) {
-		// One sent so could reach an operation that changes data, such as an import next to a search.
 		err = keepSegments(target, c.named(withoutQuery(path)), "a read sent as "+c.method)
 	}
 	if err != nil {
@@ -260,7 +243,6 @@ func (c *Client) get(ctx context.Context, path string, query url.Values, header 
 		return reply{}, err
 	}
 	headers := c.headers(c.body.contentType, c.header, header)
-	// A read changes no data, so it is idempotent, also when sent as POST or PUT.
 	result, err := c.doWithRetry(ctx, idempotent, func() (*http.Request, error) {
 		return newRequest(ctx, c.method, target.String(), bearer, headers, c.body.data)
 	})
@@ -274,10 +256,6 @@ func (c *Client) get(ctx context.Context, path string, query url.Values, header 
 	return result, nil
 }
 
-// failureClass classifies the failure status of a read of c, answered with
-// body, as a resource request's (resourceErrorClass), but a 403 Forbidden
-// that refuses its input where c says that the service answers so (c.refusal,
-// refusesInput) as of no class.
 func (c *Client) failureClass(status int, body []byte) error {
 	if c.refusal && refusesInput(status, body) {
 		return nil
@@ -285,33 +263,23 @@ func (c *Client) failureClass(status int, body []byte) error {
 	return resourceErrorClass(status)
 }
 
-// answered reports whether status answers a read: 200 OK, 204 No Content
-// (which has no body), or 201 Created for a client made by AcceptCreated.
 func (c *Client) answered(status int) bool {
 	return status == http.StatusOK || status == http.StatusNoContent ||
 		(c.created && status == http.StatusCreated)
 }
 
-// reply is a completed HTTP exchange whose body has been read and closed.
 type reply struct {
 	status    int
 	header    http.Header
 	body      []byte
-	path      string // the path requested, escaped, without the query (as error messages name it)
-	uncertain bool   // an attempt may have been carried out without an answer that says so (doWithRetry)
+	path      string
+	uncertain bool
 }
 
-// empty reports whether the reply has no body but white space, as a check
-// that passed or a missing item may be answered.
 func (r reply) empty() bool { return len(bytes.TrimSpace(r.body)) == 0 }
 
-// succeeded reports whether status is a success (2xx).
 func succeeded(status int) bool { return status >= 200 && status <= 299 }
 
-// exchange sends req and reads at most maxBodyBytes of the response. The body
-// of a failure only explains it: one that cannot be read whole is left out,
-// so that its status still classifies the failure (a 409 stays a conflict, a
-// 404 not found) and decides whether it is sent again.
 func (c *Client) exchange(req *http.Request) (reply, error) {
 	resp, err := c.http.Do(req)
 	if err != nil {
@@ -333,9 +301,6 @@ func (c *Client) exchange(req *http.Request) (reply, error) {
 	}
 }
 
-// queryLeftOut leaves the query out of the URL that a failure to send names
-// (*url.Error), as every error of the client leaves it out: it may hold
-// values a log must not keep. The failure it wraps is kept.
 func queryLeftOut(err error) error {
 	var failed *url.Error
 	if errors.As(err, &failed) {
@@ -344,13 +309,6 @@ func queryLeftOut(err error) error {
 	return err
 }
 
-// headers returns the headers of an API request but its Authorization:
-// Accept (JSON), User-Agent, Accept-Language when the client sends one and,
-// with a body, its Content-Type, content (empty: no body); then those of
-// each of extras, in their order, each key in sorted order: a header of one
-// replaces the one of the same name, in any case, set before, one without
-// values removes it (as a read of a file removes Accept-Language: GetFile),
-// and its others are added.
 func (c *Client) headers(content string, extras ...http.Header) http.Header {
 	header := http.Header{}
 	header.Set("Accept", JSONContentType)
@@ -372,8 +330,6 @@ func (c *Client) headers(content string, extras ...http.Header) http.Header {
 	return header
 }
 
-// newRequest returns a request of target with method, header and the bearer
-// token, and with body unless it is nil.
 func newRequest(ctx context.Context, method, target, bearer string, header http.Header, body []byte) (
 	*http.Request, error) {
 	var content io.Reader = http.NoBody
@@ -389,8 +345,6 @@ func newRequest(ctx context.Context, method, target, bearer string, header http.
 	return req, nil
 }
 
-// locate builds the request URL from a relative API path, which may contain
-// {tenant} and a query.
 func (c *Client) locate(path string, query url.Values) (*url.URL, error) {
 	ref, err := url.Parse(strings.ReplaceAll(path, "{tenant}", url.PathEscape(c.cfg.Tenant)))
 	if err != nil || !isRelativePath(path, ref) {
@@ -404,9 +358,6 @@ func (c *Client) locate(path string, query url.Values) (*url.URL, error) {
 	}
 	target := *c.base
 	target.Path, target.RawPath = ref.Path, ref.RawPath
-	// Explicit query values replace inline ones with the same key, as
-	// `epx api get PATH -p key=value` documents. (Collection reads refuse an
-	// inline query, so their paging and filters are always the explicit ones.)
 	for key, values := range query {
 		merged[key] = values
 	}
@@ -414,8 +365,6 @@ func (c *Client) locate(path string, query url.Values) (*url.URL, error) {
 	return &target, nil
 }
 
-// pathOnly returns path without its query or fragment, for error messages: a
-// query may hold a filter value or a credential.
 func pathOnly(path string) string {
 	if i := strings.IndexAny(path, "?#"); i >= 0 {
 		return path[:i]
@@ -423,9 +372,6 @@ func pathOnly(path string) string {
 	return path
 }
 
-// keepSegments fails, as ErrInvalidInput, a request to target, which named
-// names (e.g. "POST /x") and what describes (e.g. "a write"), unless every
-// segment of its path stays one once decoded (singleSegments).
 func keepSegments(target *url.URL, named, what string) error {
 	if singleSegments(target.EscapedPath()) {
 		return nil
@@ -434,8 +380,6 @@ func keepSegments(target *url.URL, named, what string) error {
 		what)
 }
 
-// singleSegments reports whether every segment of escaped, a path as sent,
-// stays one segment that addresses one item once decoded (oneSegment).
 func singleSegments(escaped string) bool {
 	for _, segment := range strings.Split(strings.TrimPrefix(escaped, "/"), "/") {
 		decoded, err := url.PathUnescape(segment)
@@ -446,10 +390,6 @@ func singleSegments(escaped string) bool {
 	return true
 }
 
-// oneSegment reports whether decoded, a decoded path segment, addresses one
-// item: it is not empty, "." or "..", and holds no "/" or "\" that a service,
-// or a proxy before it, might take for a separator, nor a "%" that it might
-// decode again.
 func oneSegment(decoded string) bool {
 	switch decoded {
 	case "", ".", "..":
@@ -458,8 +398,6 @@ func oneSegment(decoded string) bool {
 	return !strings.ContainsAny(decoded, `/\%`)
 }
 
-// isRelativePath reports whether raw (parsed as ref) is an absolute path on the
-// configured host: no scheme, no host (including "//host" forms), no fragment.
 func isRelativePath(raw string, ref *url.URL) bool {
 	leavesHost := ref.Scheme != "" || ref.Host != "" || strings.HasPrefix(raw, "//")
 	return !leavesHost && ref.Fragment == "" && strings.HasPrefix(ref.Path, "/")

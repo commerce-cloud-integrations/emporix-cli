@@ -23,7 +23,7 @@ type TokenInfo struct {
 type token struct {
 	value string
 	info  TokenInfo
-	renew time.Time // when a new token replaces it, before it expires (renewAt); never when zero
+	renew time.Time
 }
 
 // Authenticate obtains the client's service token, and a new one in its place
@@ -44,10 +44,6 @@ func (c *Client) Authenticate(ctx context.Context) (TokenInfo, error) {
 	return c.token.info, nil
 }
 
-// renewAt returns when a token issued at issued (requested then, at the
-// latest) that expires after lifetime is replaced: once nine tenths of its
-// lifetime passed, which leaves the requests sent with it time to end. A
-// token without a lifetime is never replaced.
 func renewAt(issued time.Time, lifetime time.Duration) time.Time {
 	if lifetime <= 0 {
 		return time.Time{}
@@ -55,7 +51,6 @@ func renewAt(issued time.Time, lifetime time.Duration) time.Time {
 	return issued.Add(lifetime - lifetime/10)
 }
 
-// due reports whether t is to be replaced at now.
 func (t *token) due(now time.Time) bool { return !t.renew.IsZero() && !now.Before(t.renew) }
 
 func (c *Client) ensureToken(ctx context.Context) (string, error) {
@@ -73,7 +68,6 @@ func (c *Client) requestToken(ctx context.Context) (*token, error) {
 		"scope":         {strings.Join(append([]string{"tenant=" + c.cfg.Tenant}, c.scopes...), " ")},
 	}.Encode()
 	endpoint := c.base.JoinPath("oauth", "token").String()
-	// A token request changes no data, so it is idempotent.
 	result, err := c.doWithRetry(ctx, idempotent, func() (*http.Request, error) {
 		return newTokenRequest(ctx, endpoint, form, c.cfg.UserAgent)
 	})
@@ -98,8 +92,6 @@ func newTokenRequest(ctx context.Context, endpoint, form, userAgent string) (*ht
 	return req, nil
 }
 
-// parseToken validates a token response. Errors never include the body,
-// because it carries the access token.
 func parseToken(body []byte, tenant string, requested []string) (*token, error) {
 	var payload struct {
 		AccessToken string `json:"access_token"`

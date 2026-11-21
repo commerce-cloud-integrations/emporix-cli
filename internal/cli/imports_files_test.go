@@ -6,23 +6,12 @@ import (
 	"testing"
 )
 
-// filesPath is the file queue of the stream s1 that the tests read and change.
 const filesPath = "/importtool/acme1/streams/s1/files"
 
-// filesList is the command line of a stream's file list, as help and the
-// recovery of a conflict quote it.
 const filesList = "`epx imports streams files list STREAM_ID`"
 
-// fileModeShown is where a stream shows its fileMode, as help and the
-// recovery of a conflict quote it.
 const fileModeShown = "SOURCE of `epx imports streams get ID`"
 
-// TestImportFilesShowHowManyWait checks that LOAD ORDER places each waiting
-// file among all the files waiting, so a table shows when the service lists
-// only some of them: of pendingTotal where it is sent, else of more than
-// those listed where pendingTruncated says that it lists only some, else of
-// those listed; a file of the history has no LOAD ORDER, and an empty queue
-// shows the header only.
 func TestImportFilesShowHowManyWait(t *testing.T) {
 	const files = `"pending":[{"id":"f2","status":"PENDING"},{"id":"f3","status":"PENDING"}],` +
 		`"history":[{"id":"f1","status":"FAILED"}]`
@@ -64,9 +53,6 @@ func TestImportFilesShowHowManyWait(t *testing.T) {
 	}
 }
 
-// TestImportFilesJSONKeepsTheQueue checks that -o json prints the file queue
-// as sent, whether the list is cut and the total included, not the rows
-// that its table shows.
 func TestImportFilesJSONKeepsTheQueue(t *testing.T) {
 	fake := newFakeEmporix(t)
 	fake.route(filesPath, respond(http.StatusOK,
@@ -79,8 +65,6 @@ func TestImportFilesJSONKeepsTheQueue(t *testing.T) {
 	}
 }
 
-// TestImportFilesRejectAFileWithoutID checks that a table of a file queue
-// whose file has no id fails (exit 1), whether it waits or not.
 func TestImportFilesRejectAFileWithoutID(t *testing.T) {
 	for _, body := range []string{
 		`{"pending":[{"fileName":"a.csv"}],"history":[]}`, `{"pending":[],"history":[{"id":"f1"},null]}`,
@@ -94,9 +78,6 @@ func TestImportFilesRejectAFileWithoutID(t *testing.T) {
 	}
 }
 
-// TestImportFileHistoryLimit checks that --history-limit takes a whole number
-// from 1 to 500, sent as historyLimit, and refuses any other value while
-// flags are parsed (exit 2), before anything is sent.
 func TestImportFileHistoryLimit(t *testing.T) {
 	for _, limit := range []string{"1", "500"} {
 		fake := newFakeEmporix(t)
@@ -117,8 +98,6 @@ func TestImportFileHistoryLimit(t *testing.T) {
 	}
 }
 
-// TestImportFileLimitsOfPartialResponses checks that the upload limits show
-// their row when Emporix leaves values out.
 func TestImportFileLimitsOfPartialResponses(t *testing.T) {
 	const head = "MAX UPLOAD BYTES  GATEWAY LIMITED  UPLOAD SUPPORTED\n"
 	for body, want := range map[string]string{
@@ -134,18 +113,12 @@ func TestImportFileLimitsOfPartialResponses(t *testing.T) {
 	}
 }
 
-// runFileWrite runs `epx imports streams files args… --yes` against fake.
 func runFileWrite(t *testing.T, fake *fakeEmporix, args ...string) (code int, stdout, stderr string) {
 	t.Helper()
 	return runIn(t, writeEnv(fake, false, ""), append(append([]string{"imports", "streams", "files"}, args...),
 		"--yes")...)
 }
 
-// TestImportFileUploadFailures checks how an upload that Emporix refuses
-// ends: a file larger than the environment takes (413) and an environment
-// that cannot store uploads (503) exit 1 with Emporix's message, sent once;
-// as epx cannot tell that 503 from a gateway's, it says the file may have
-// been queued all the same.
 func TestImportFileUploadFailures(t *testing.T) {
 	for _, tt := range []struct {
 		status        int
@@ -172,10 +145,6 @@ func TestImportFileUploadFailures(t *testing.T) {
 	}
 }
 
-// TestImportFileWritesRefuseUsage checks that an upload without a file, or
-// of standard input, which has no name to send, and an order without the
-// files' IDs, with both --id and --file, or with a --file that is not a JSON
-// array of one or more IDs, are usage errors (exit 2) that send nothing.
 func TestImportFileWritesRefuseUsage(t *testing.T) {
 	file := writeBody(t, `["f2"]`)
 	const notArray = "not a JSON array of one or more items"
@@ -200,11 +169,6 @@ func TestImportFileWritesRefuseUsage(t *testing.T) {
 	}
 }
 
-// TestImportFileWritesOfRefusedInput checks that an order that is not
-// exactly the waiting files (400) exits 1, a delete or requeue of an unknown
-// file (404) exits 4, and an upload of content that the stream has or a
-// requeue of a file that did not fail (409) exits 5, each with Emporix's
-// message; the conflict says what the stream's list shows.
 func TestImportFileWritesOfRefusedInput(t *testing.T) {
 	for _, tt := range []struct {
 		args       []string
@@ -222,7 +186,6 @@ func TestImportFileWritesOfRefusedInput(t *testing.T) {
 			code: ExitConflict, want: "POST " + filesPath + "/f2/requeue: 409 Conflict: refused (" +
 				fileRequeueConflict(filesList) + ")\n"},
 		{
-			// The list shows files by name; Emporix matches their content.
 			args: []string{"upload", "s1", "--upload", "testdata/order.csv"}, path: filesPath,
 			status: http.StatusConflict, code: ExitConflict,
 			want: "POST " + filesPath + ": 409 Conflict: refused (the stream imported or queued this content already, " +
@@ -242,13 +205,6 @@ func TestImportFileWritesOfRefusedInput(t *testing.T) {
 	}
 }
 
-// TestImportFileHelp checks that the commands of a stream's file queue say
-// where STREAM_ID comes from and what an unknown one gives; that the group
-// and list say once how a stream reads its waiting files by its fileMode,
-// which upload and order refer to; that list says how a table shows a list
-// that Emporix cut; that upload says how Emporix may refuse it and what to do
-// after a 503; which ID a delete takes; and what a requeue takes, which
-// files it refuses, and where list and upload point to it.
 func TestImportFileHelp(t *testing.T) {
 	const stream = "STREAM_ID is the ID that `epx imports configurations streams CONFIGURATION_ID` shows; an " +
 		"unknown one is not found."

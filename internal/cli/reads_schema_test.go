@@ -2,14 +2,11 @@ package cli
 
 import "net/http"
 
-// exportedData is an export package's base64 data, longer than a table cell.
 const exportedData = "W3siaWQiOiJ2ZWhpY2xlcyIsInR5cGUiOiJ2ZWhpY2xlIiwiZmllbGRzIjpbeyJwYXRoIjoiY29kZSJ9XX1d"
 
-// schemaAndUnitReads returns the Schema and Unit Handling Service reads.
 func schemaAndUnitReads() []readCase {
 	return []readCase{
 		{
-			// FACTOR keeps the number as sent (1.0, not 1); a missing baseUnit or factor stays empty.
 			args:    []string{"units", "list", "--language", "nl"},
 			path:    "/unit-handling/acme1/units",
 			filters: listFilters{kinds: sortable},
@@ -50,7 +47,6 @@ func schemaAndUnitReads() []readCase {
 			want: "CODE  NAME   TYPE  SYMBOL  BASE  FACTOR\ng     Gramm  mass  g             0.001\n",
 		},
 		{
-			// The types are strings, sent whole; they keep the order Emporix sends.
 			args: []string{"units", "types"},
 			path: "/unit-handling/acme1/types",
 			mode: getWhole,
@@ -60,12 +56,9 @@ func schemaAndUnitReads() []readCase {
 	}
 }
 
-// schemaServiceReads returns the Schema Service reads besides schemas: schema
-// types, schema references, custom entity types and their instances.
 func schemaServiceReads() []readCase {
 	return []readCase{
 		{
-			// The types keep the order Emporix sends.
 			args: []string{"schemas", "types"},
 			path: "/schema/acme1/types",
 			mode: getWhole,
@@ -108,8 +101,6 @@ func schemaServiceReads() []readCase {
 			want: "ID        NAME       VERSION\nDOCUMENT  Dokumente  1\n",
 		},
 		{
-			// The scope of the type, in lower case, is requested (TestChildScopes: instead of the
-			// parent's); OWNER joins type and id (the legal entity of a customer stays in -o json).
 			args:    []string{"custom-entities", "instances", "list", "DOCUMENT", "--language", "nl"},
 			path:    "/schema/acme1/custom-entities/DOCUMENT/instances",
 			scopes:  []string{"custom.document_read"},
@@ -122,8 +113,6 @@ func schemaServiceReads() []readCase {
 				"124  Invoice (en)  CUSTOMER c1  \n",
 		},
 		{
-			// The type, then the ID, address one instance; the type's scope keeps its digits and
-			// underscores.
 			args:   []string{"custom-entities", "instances", "get", "TECH_SHEET2", "123", "--language", "nl"},
 			path:   "/schema/acme1/custom-entities/TECH_SHEET2/instances/123",
 			scopes: []string{"custom.tech_sheet2_read"},
@@ -134,7 +123,6 @@ func schemaServiceReads() []readCase {
 				"123  Rapport  SERVICE client-1  4\n",
 		},
 		{
-			// Opt-in, sent as POST: the body is the array of the types given; DATA is cut in the table.
 			args:   []string{"custom-entities", "export", "--type", "CAR", "--type", "MANUFACTURER", "--allow-write-scope"},
 			path:   "/schema/acme1/custom-entities/export",
 			scopes: []string{"schema.schema_manage"},
@@ -148,13 +136,9 @@ func schemaServiceReads() []readCase {
 	}
 }
 
-// schemaParseReads returns the parsing of a JSON schema file, a read with a
-// form, without and with the schema that the file updates.
 func schemaParseReads() []readCase {
 	return []readCase{
 		{
-			// Opt-in, sent as POST with a form: the JSON schema file with its name; the table lists the
-			// attributes that Emporix parsed.
 			args:   []string{"schemas", "parse", "--json-schema", "testdata/schema.json", "--allow-write-scope"},
 			path:   "/schema/acme1/schemas/file",
 			scopes: []string{"schema.schema_manage"},
@@ -168,7 +152,6 @@ func schemaParseReads() []readCase {
 				"size   NUMBER                       \n",
 		},
 		{
-			// --id adds the schema that the file updates as a field.
 			args: []string{"schemas", "parse", "--json-schema", "testdata/schema.json", "--id", "s1",
 				"--allow-write-scope"},
 			path:   "/schema/acme1/schemas/file",

@@ -2,11 +2,8 @@ package cli
 
 import "github.com/spf13/cobra"
 
-// iamUse is the name of the group of IAM reads.
 const iamUse = "iam"
 
-// newIAMCommand groups the reads and writes of the IAM Service: users,
-// groups and what they may do.
 func newIAMCommand(a *app) *cobra.Command {
 	return newGroup(iamUse, "Read and change IAM users, groups and access rights",
 		"Reads the tenant's IAM (identity and access management) data: user accounts, the groups they "+

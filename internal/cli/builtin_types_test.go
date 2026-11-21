@@ -9,13 +9,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// TestSearchTypesRequestTheirOwnReadScope checks that a search of the
-// documents of customer or legal-entity requests the read scope of that type
-// in place of that of a custom entity type, besides search.search_read; that
-// a credential without it fails with exit code 3 naming it, before any
-// search is sent; and that a type that only resembles them, or a read of
-// custom entity instances, which takes no built-in type, requests that of a
-// custom entity type.
 func TestSearchTypesRequestTheirOwnReadScope(t *testing.T) {
 	documents := func(typ string) []string {
 		return []string{"search", "documents", typ, "--saved-search", "s1", "--text", "x"}
@@ -54,11 +47,6 @@ func TestSearchTypesRequestTheirOwnReadScope(t *testing.T) {
 	}
 }
 
-// TestSearchTypesOnlyInTheirSpelling checks every command that takes a type
-// of the Search Service, reads and writes, as its TYPE argument or in the
-// TYPE/ID of --index: customer and legal-entity in another spelling are a
-// usage error that names the spelling Emporix keeps its items under, and
-// nothing is sent, not even a token request.
 func TestSearchTypesOnlyInTheirSpelling(t *testing.T) {
 	search, _, err := newTestRoot().Find([]string{searchUse})
 	if err != nil {
@@ -70,7 +58,7 @@ func TestSearchTypesOnlyInTheirSpelling(t *testing.T) {
 			typed = append(typed, cmd)
 		}
 	})
-	if len(typed) != 9 { // documents, and for-type, get, update and delete of indexes and of queries
+	if len(typed) != 9 {
 		t.Fatalf("%d commands take a TYPE; want 9", len(typed))
 	}
 	for typ, name := range map[string]string{"CUSTOMER": "customer", "Customer": "customer",
@@ -91,14 +79,9 @@ func TestSearchTypesOnlyInTheirSpelling(t *testing.T) {
 	}
 }
 
-// unscopedEnd is how typeSentence ends: what an unknown type gives.
 const unscopedEnd = "has no scope that Emporix grants (exit code 3), and a type created in the last minutes has " +
 	"none yet."
 
-// TestTypedCommandsNameTheirBuiltInTypes checks that a command with built-in
-// types names them where it refuses what no type is, in what its help says
-// TYPE is, and the scopes that each requests before its scope sentence,
-// while its annotation holds its own scopes only.
 func TestTypedCommandsNameTheirBuiltInTypes(t *testing.T) {
 	fake := newFakeEmporix(t)
 	code, stdout, stderr := runCLI(t, fake.env(), "search", "documents", "legal entity", "--saved-search", "s1",
@@ -127,7 +110,6 @@ func TestTypedCommandsNameTheirBuiltInTypes(t *testing.T) {
 		t.Errorf("help of search documents %q, annotated %q; want %q and to end with %q", cmd.Long,
 			cmd.Annotations[scopesAnnotation], sentence, scopes)
 	}
-	// Nothing to say where no built-in type requests scopes of its own, or no scope names a custom entity type.
 	for _, note := range []string{anyCaseTypes("PRODUCT").inPlaceOf([]string{customTypeReadScope}),
 		searchDocumentTypes().inPlaceOf(nil)} {
 		if note != "" {
@@ -136,18 +118,14 @@ func TestTypedCommandsNameTheirBuiltInTypes(t *testing.T) {
 	}
 }
 
-// TestBuiltInTypesTakeEveryCaseUnlessExact checks that built-in types that a
-// command takes in any case, such as those of the AI RAG Indexer, pass in
-// every case, and that exact ones pass only as written; what a custom entity
-// type is named is checked only where custom.
 func TestBuiltInTypesTakeEveryCaseUnlessExact(t *testing.T) {
 	anyCase, exact := anyCaseTypes("PRODUCT", "ORDER"), searchTypes()
 	custom, other := []string{customTypeReadScope}, []string{searchScope}
 	for _, tt := range []struct {
 		types  builtInTypes
 		arg    string
-		scopes []string // of the command, which name a custom entity type or not
-		want   string   // in the error; none when empty
+		scopes []string
+		want   string
 	}{
 		{anyCase, "product", custom, ""},
 		{anyCase, "Order", other, ""},
@@ -175,12 +153,6 @@ func TestBuiltInTypesTakeEveryCaseUnlessExact(t *testing.T) {
 	}
 }
 
-// TestBuiltInTypesAreDeclaredOnAnArgumentWithReadScopes checks that a read
-// with built-in types is refused while the command tree is built where its
-// request takes no argument, whose value they would be, where one of them
-// requests a write-capable scope, which the read would request without its
-// opt-in, or where one requests scopes but no scope of the read names a
-// custom entity type, which they would replace.
 func TestBuiltInTypesAreDeclaredOnAnArgumentWithReadScopes(t *testing.T) {
 	typed := []string{"search.search_read", customTypeReadScope}
 	for _, tt := range []struct {

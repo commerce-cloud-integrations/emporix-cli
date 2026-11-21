@@ -13,19 +13,15 @@ import (
 	"testing"
 )
 
-// schemaPart is a part of a form that the tests send: a file, with its name.
 func schemaPart() Part {
 	return Part{Name: "file", FileName: `my "schema".json`, ContentType: "application/json",
 		Content: []byte(`{"type":"object"}`)}
 }
 
-// bodyPart is a part of a form that the tests send: a JSON field.
 func bodyPart() Part {
 	return Part{Name: "body", ContentType: "application/json", Content: []byte(`{"name":{"en":"Specs"}}`)}
 }
 
-// receivedForm returns the parts of the form that req sent with body, as
-// its Content-Type names its boundary.
 func receivedForm(t *testing.T, req *http.Request, body string) []Part {
 	t.Helper()
 	media, params, err := mime.ParseMediaType(req.Header.Get("Content-Type"))
@@ -51,7 +47,6 @@ func receivedForm(t *testing.T, req *http.Request, body string) []Part {
 	}
 }
 
-// equalParts reports whether got and want hold the same parts, in order.
 func equalParts(got, want []Part) bool {
 	return slices.EqualFunc(got, want, func(a, b Part) bool {
 		return a.Name == b.Name && a.FileName == b.FileName && a.ContentType == b.ContentType &&
@@ -59,7 +54,6 @@ func equalParts(got, want []Part) bool {
 	})
 }
 
-// formBody returns the form of parts (FormBody).
 func formBody(t *testing.T, parts ...Part) Body {
 	t.Helper()
 	body, err := FormBody(parts)
@@ -69,10 +63,6 @@ func formBody(t *testing.T, parts ...Part) Body {
 	return body
 }
 
-// TestSendWritesAForm checks a write with a form: it is sent with a
-// Content-Type that names the boundary of its parts, each with its name, the
-// name of its file, escaped, and its content type, in their order, as the
-// request that a dry run shows holds them, whose size Len gives.
 func TestSendWritesAForm(t *testing.T) {
 	fake := newFakeEmporix(t)
 	fake.route("/schema/acme1/references", respond(http.StatusCreated, `{"id":"r1"}`))
@@ -97,9 +87,6 @@ func TestSendWritesAForm(t *testing.T) {
 	}
 }
 
-// TestWithBodyReadsWithAForm checks a read with a form: it is sent as POST
-// with the form, retried as a read is, and the client it was made from still
-// reads with GET.
 func TestWithBodyReadsWithAForm(t *testing.T) {
 	fake := newFakeEmporix(t)
 	fake.route("/schema/acme1/schemas/file", answers(http.StatusServiceUnavailable, http.StatusOK))
@@ -126,9 +113,6 @@ func TestWithBodyReadsWithAForm(t *testing.T) {
 	}
 }
 
-// TestFormsThatCannotBeSent checks that a form without parts, or with a part
-// whose name is empty or one that a header would have to escape, or whose
-// file name holds a control character, is ErrInvalidInput.
 func TestFormsThatCannotBeSent(t *testing.T) {
 	for _, tt := range []struct {
 		parts []Part

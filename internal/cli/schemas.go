@@ -11,7 +11,6 @@ import (
 	"github.com/commerce-cloud-integrations/emporix-cli/internal/emporix"
 )
 
-// schema is the part of a Schema Service schema shown in tables.
 type schema struct {
 	ID         string            `json:"id"`
 	Name       localized         `json:"name"`
@@ -20,17 +19,10 @@ type schema struct {
 	Metadata   itemMetadata      `json:"metadata"`
 }
 
-// schemaManage is the scope of every write of the Schema Service, and of the
-// parsing of a JSON schema file (newSchemaParseCommand).
 const schemaManage = "schema.schema_manage"
 
-// versionParam is the query parameter, and the flag, that names a version of
-// a schema.
 const versionParam = "version"
 
-// newSchemasCommand reads, creates, changes and deletes the tenant's custom schemas
-// (mixin definitions) and schema references, reads the entity types that have
-// schemas and parses JSON schema files.
 func newSchemasCommand(a *app) *cobra.Command {
 	schemas := resource[schema]{
 		use:   "schemas",
@@ -65,16 +57,10 @@ func newSchemasCommand(a *app) *cobra.Command {
 	return newResourceCommand(a, schemas, more...)
 }
 
-// schemaTypesHelp follows what the help of a write of schemas or schema
-// references says of the entity types that the JSON names.
 const schemaTypesHelp = "Name entity types by their ids, with _, such as VENDOR_LOCATION."
 
-// unknownDeletedHelp ends the help of the deletes of schemas and schema
-// references, which Emporix answers alike for an unknown ID.
 const unknownDeletedHelp = "Emporix answers an unknown ID as a deleted one (204), so epx exits with 0."
 
-// schemaWriteCommands returns the writes of schemas: create, update ID,
-// update-types ID and delete ID.
 func schemaWriteCommands(a *app, schemas resource[schema]) []*cobra.Command {
 	manage := []string{schemaManage}
 	return []*cobra.Command{
@@ -116,10 +102,6 @@ func schemaWriteCommands(a *app, schemas resource[schema]) []*cobra.Command {
 	}
 }
 
-// newSchemaReferencesCommand reads, creates, changes and deletes schema references:
-// schemas uploaded as a JSON schema file instead of defined by attributes.
-// Each write uploads the file in a form with the JSON that describes the
-// reference (referenceForm).
 func newSchemaReferencesCommand(a *app) *cobra.Command {
 	references := resource[schema]{
 		use:   "references",
@@ -169,9 +151,6 @@ func newSchemaReferencesCommand(a *app) *cobra.Command {
 	)
 }
 
-// referenceForm is the body of a write of a schema reference: a form of the
-// JSON schema file of --json-schema and, as its body field, the JSON of
-// --file.
 func referenceForm() *formFile {
 	return &formFile{
 		form: form{jsonSchemaFile("JSON schema file in `PATH` that the reference holds")}, field: "body",

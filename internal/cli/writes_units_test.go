@@ -6,8 +6,6 @@ import (
 	"testing"
 )
 
-// unitWrites are the writes of units, with the scope that the reference
-// names for them and the Content-Language that the Unit Service requires.
 func unitWrites() []writeCase {
 	scopes := []string{"unithandling.unit_manage"}
 	return []writeCase{
@@ -27,17 +25,13 @@ func unitWrites() []writeCase {
 	}
 }
 
-// TestUnitUpdateReportsAStaleVersionAsAConflict checks that the 404 Not
-// Found with which the Unit Service answers an update of a stale version
-// exits with 5, a conflict, when the body carries metadata.version, and with
-// 4, not found, without one.
 func TestUnitUpdateReportsAStaleVersionAsAConflict(t *testing.T) {
 	const message = "Cannot find the unit with code: g and version: 1. It is possible to update a unit with " +
 		"the latest version only. Fetch the unit to get the latest version."
 	for _, tt := range []struct {
 		file string
 		code int
-		want string // the end of standard error
+		want string
 	}{
 		{file: `{"code":"g","metadata":{"version":1}}`, code: ExitConflict,
 			want: "404 Not Found: " + message + " (the item changed since it was read, or exists already: read it " +
@@ -57,10 +51,6 @@ func TestUnitUpdateReportsAStaleVersionAsAConflict(t *testing.T) {
 	}
 }
 
-// TestUnitWritesRefuseInvalidInput checks that a unit write without a body,
-// with another --content-language than * or a language code, or with a CODE
-// that does not address one unit, is a usage error (exit 2) that sends
-// nothing, also for a dry run.
 func TestUnitWritesRefuseInvalidInput(t *testing.T) {
 	const body = `{"code":"g"}`
 	assertRefused(t, []refusedWrite{
@@ -77,8 +67,6 @@ func TestUnitWritesRefuseInvalidInput(t *testing.T) {
 	})
 }
 
-// TestWritesRequestAWriteCapableScope checks that a write declared without a
-// write-capable scope fails as the command tree is built.
 func TestWritesRequestAWriteCapableScope(t *testing.T) {
 	a := &app{getenv: func(string) string { return "" }}
 	for _, scopes := range [][]string{nil, {"unithandling.unit_read"}, {"a.read", "b.view"}} {

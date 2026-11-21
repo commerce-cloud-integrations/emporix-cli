@@ -8,7 +8,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// catalog is the part of a Catalog Service catalog shown in tables.
 type catalog struct {
 	ID         string    `json:"id"`
 	Name       localized `json:"name"`
@@ -22,8 +21,6 @@ type catalog struct {
 	CategoryIDs    []string `json:"categoryIds"`
 }
 
-// newCatalogsCommand reads catalogs, visible or not, and the catalogs a
-// category is assigned to, and creates and changes catalogs.
 func newCatalogsCommand(a *app) *cobra.Command {
 	r := resource[catalog]{
 		use:   "catalogs",

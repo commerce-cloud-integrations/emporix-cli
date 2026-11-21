@@ -9,18 +9,16 @@ import (
 	"github.com/commerce-cloud-integrations/emporix-cli/internal/emporix"
 )
 
-// customer is the part of a Customer Service customer shown in tables.
 type customer struct {
 	CustomerNumber string `json:"customerNumber"`
 	personName
-	ContactEmail  string `json:"contactEmail"` // its account's email is only in accounts, which epx does not expand
+	ContactEmail  string `json:"contactEmail"`
 	Company       string `json:"company"`
 	BusinessModel string `json:"businessModel"`
 	Active        *bool  `json:"active"`
 	OnHold        *bool  `json:"onHold"`
 }
 
-// customerAddress is the part of a customer address shown in tables.
 type customerAddress struct {
 	ID           string   `json:"id"`
 	ContactName  string   `json:"contactName"`
@@ -34,16 +32,10 @@ type customerAddress struct {
 	Tags         []string `json:"tags"`
 }
 
-// customersCommand names the reads of customers: of the tenant, of a segment
-// and of the shipping groups of a site.
 const customersCommand = "customers"
 
-// customerReadScope reads every customer profile, as customers and a search of
-// the customer documents of the Search Service (searchDocumentTypes) request it.
 const customerReadScope = "customer.customer_read"
 
-// customers declares the customer profiles, whose numbers the
-// CUSTOMER_NUMBER of another read completes with too.
 func customers() resource[customer] {
 	return resource[customer]{
 		use:   customersCommand,
@@ -60,7 +52,7 @@ func customers() resource[customer] {
 		path:    "/customer/{tenant}/customers",
 		scopes:  []string{customerReadScope},
 		filters: listFilters{kinds: filterable},
-		read:    (*emporix.Client).GetAllHybrisCounted, // the total, as filtered, comes only as hybris-count
+		read:    (*emporix.Client).GetAllHybrisCounted,
 		view: view[customer]{
 			singular: "customer",
 			header:   []string{"NUMBER", columnName, columnEmail, columnCompany, "BUSINESS MODEL", columnActive, "ON HOLD"},
@@ -74,10 +66,6 @@ func customers() resource[customer] {
 	}
 }
 
-// newCustomersCommand reads and changes customer profiles, which hold
-// personal data, also those a search finds, imports them, and reads and
-// changes the addresses of one and the password migration retention of
-// imports.
 func newCustomersCommand(a *app) *cobra.Command {
 	profiles := customers()
 	reads := []*cobra.Command{
@@ -88,9 +76,6 @@ func newCustomersCommand(a *app) *cobra.Command {
 	return newResourceCommand(a, profiles, slices.Concat(reads, customerWrites(a, profiles))...)
 }
 
-// newCustomerAddressesCommand returns the group of the addresses of a
-// customer of customers: list and get, and the writes that change them
-// (addressWrites).
 func newCustomerAddressesCommand(a *app, customers resource[customer]) *cobra.Command {
 	in := customers.nested("addresses")
 	// A customer's addresses are documented without paging.

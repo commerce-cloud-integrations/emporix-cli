@@ -10,12 +10,8 @@ import (
 	"testing"
 )
 
-// productsBulk is the request URI of the Product Service's bulk writes, as
-// sent without their flags.
 const productsBulk = "/product/acme1/products/bulk?" + productSwitches
 
-// productsFile returns a JSON array of n products, 100000 and on, one per
-// line with the spaces of a file written by hand, and the products as given.
 func productsFile(n int) (file string, items []string) {
 	items = make([]string, n)
 	for i := range items {
@@ -24,9 +20,6 @@ func productsFile(n int) (file string, items []string) {
 	return "[\n  " + strings.Join(items, ",\n  ") + "\n]\n", items
 }
 
-// answerItems answers a bulk write item by item, as Emporix does (207): the
-// result of each item at its position, with the code that codes gives its
-// id, 204 for any other.
 func answerItems(t *testing.T, codes map[string]int) http.HandlerFunc {
 	t.Helper()
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -48,8 +41,6 @@ func answerItems(t *testing.T, codes map[string]int) http.HandlerFunc {
 	}
 }
 
-// runImport runs `products import` of a file of n products against fake,
-// with flags, where standard input is not a terminal.
 func runImport(t *testing.T, fake *fakeEmporix, n int, flags ...string) (code int, stdout, stderr string) {
 	t.Helper()
 	file, _ := productsFile(n)
@@ -57,10 +48,6 @@ func runImport(t *testing.T, fake *fakeEmporix, n int, flags ...string) (code in
 		flags...)...)
 }
 
-// TestProductImportSendsBatchesInOrder checks that an import of more products than
-// one request takes sends them in requests of up to 200, in order, each
-// product as given, with one token, prints each answer and succeeds when
-// every product did.
 func TestProductImportSendsBatchesInOrder(t *testing.T) {
 	fake := newFakeEmporix(t)
 	fake.route("/product/acme1/products/bulk", answerItems(t, nil))
@@ -82,10 +69,6 @@ func TestProductImportSendsBatchesInOrder(t *testing.T) {
 	}
 }
 
-// TestProductImportShowsAndConfirmsEveryRequest checks that a dry run of an import
-// in batches prints every request, an empty line between two, and that its
-// confirmation names how many requests it sends: declined, it sends none;
-// confirmed, it sends them all.
 func TestProductImportShowsAndConfirmsEveryRequest(t *testing.T) {
 	fake := newFakeEmporix(t)
 	fake.route("/product/acme1/products/bulk", answerItems(t, nil))
@@ -109,10 +92,6 @@ func TestProductImportShowsAndConfirmsEveryRequest(t *testing.T) {
 	}
 }
 
-// TestProductImportListsTheProductsThatFailed checks that an import goes on after a
-// batch whose products failed, lists each of them on standard error by its
-// position in --file, and then fails with the class that every failure
-// shares: 5 when each was a conflict, 1 otherwise.
 func TestProductImportListsTheProductsThatFailed(t *testing.T) {
 	for _, tt := range []struct {
 		codes map[string]int
@@ -137,10 +116,6 @@ func TestProductImportListsTheProductsThatFailed(t *testing.T) {
 	}
 }
 
-// TestProductImportStopsAtARequestThatFails checks that a batch of an import that
-// fails as a whole ends the import, which sends no further batch and says
-// where it stopped; its failure sets the exit code only where every product
-// that failed before it shares its class.
 func TestProductImportStopsAtARequestThatFails(t *testing.T) {
 	const where = "Error: request 2 of 3, from item 200: PUT /product/acme1/products/bulk: "
 	const before = " (the 200 items before it were sent, and 1 of them failed, as listed above; those after it " +
@@ -148,8 +123,8 @@ func TestProductImportStopsAtARequestThatFails(t *testing.T) {
 	const conflict = "409 Conflict: canned (the item changed since it was read, or exists already: read it " +
 		"again before you retry)"
 	for _, tt := range []struct {
-		first  int // the status of product 100007 in the first batch; 0: it succeeds
-		status int // the status of the second batch
+		first  int
+		status int
 		code   int
 		want   string
 	}{
@@ -178,9 +153,6 @@ func TestProductImportStopsAtARequestThatFails(t *testing.T) {
 	}
 }
 
-// TestProductImportStopsWhenAnAnswerCannotBePrinted checks that an import whose
-// answer to a batch cannot be printed, one whose products all succeeded or
-// one that lists a failure, sends no further batch and says so.
 func TestProductImportStopsWhenAnAnswerCannotBePrinted(t *testing.T) {
 	file, _ := productsFile(450)
 	for _, failed := range []string{"100000", "100300"} {
@@ -198,8 +170,6 @@ func TestProductImportStopsWhenAnAnswerCannotBePrinted(t *testing.T) {
 	}
 }
 
-// failingAfter is a writer that takes writes until it took ok of them, then
-// fails each.
 type failingAfter struct{ ok int }
 
 func (f *failingAfter) Write(p []byte) (int, error) {
@@ -210,9 +180,6 @@ func (f *failingAfter) Write(p []byte) (int, error) {
 	return len(p), nil
 }
 
-// TestProductImportDryRunFailsWhenItCannotPrint checks that a dry run of an
-// import in batches whose requests cannot be printed, the first or the empty
-// line before the second, fails (exit 1) and sends nothing.
 func TestProductImportDryRunFailsWhenItCannotPrint(t *testing.T) {
 	file, _ := productsFile(201)
 	for _, ok := range []int{0, 1, 2} {

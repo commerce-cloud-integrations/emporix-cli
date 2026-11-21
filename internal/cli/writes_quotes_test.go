@@ -6,7 +6,6 @@ import (
 	"testing"
 )
 
-// returnWriteCases are the writes of the Returns Service: returns.
 func returnWriteCases() []writeCase {
 	const returns = "/return/acme1/returns"
 	const back = `{"orders":[{"id":"O1001","items":[{"id":"e1","quantity":1}]}],"reason":{"code":"001"},` +
@@ -34,8 +33,6 @@ func returnWriteCases() []writeCase {
 	}
 }
 
-// quoteWriteCases are the writes of the Quote Service: quotes (and their
-// PDF) and quote reasons.
 func quoteWriteCases() []writeCase {
 	const quotes, reasons = "/quote/acme1/quotes", "/quote/acme1/quote-reasons"
 	const reason = `{"code":"PRICE_TOO_HIGH","type":"CHANGE","message":{"en":"The price is too high"}}`
@@ -70,10 +67,6 @@ func quoteWriteCases() []writeCase {
 	}
 }
 
-// TestQuoteExternalPricesRequestTheirScope checks that quotes create
-// requests cart.cart_manage_external_prices besides quote.quote_manage with
-// --allow-external-prices only, and that patch, which Emporix refuses an
-// external price with that scope too, does not take the flag.
 func TestQuoteExternalPricesRequestTheirScope(t *testing.T) {
 	fake := newFakeEmporix(t)
 	fake.route("/quote/acme1/quotes", respond(http.StatusCreated, `{"id":"Q1"}`))

@@ -11,13 +11,11 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// thing is a neutral resource used to test the shared read builder.
 type thing struct {
 	ID   string `json:"id"`
 	Name string `json:"name"`
 }
 
-// thingView shows a thing as its ID and NAME.
 func thingView() view[thing] {
 	return view[thing]{
 		singular: "thing",
@@ -26,15 +24,12 @@ func thingView() view[thing] {
 	}
 }
 
-// runThings runs `things <args>` on a root holding only the test resource and
-// returns the exit code, stdout and the error text.
 func runThings(t *testing.T, fake *fakeEmporix, args ...string) (code int, stdout, errText string) {
 	t.Helper()
 	a := &app{getenv: func(key string) string { return fake.env()[key] }, timeout: defaultTimeout}
 	root := &cobra.Command{Use: "epx", SilenceErrors: true, SilenceUsage: true}
 	view := thingView()
 	things := resource[thing]{use: "things", path: "/things", scopes: []string{"thing.read"}, view: view}
-	// Opt-in reads (opt_in_test.go): vaults, a write-capable scope that their children inherit.
 	vaults := resource[thing]{
 		use: "vaults", under: "things", path: "/vaults", scopes: []string{"vault.manage"}, view: view,
 	}
@@ -44,9 +39,6 @@ func runThings(t *testing.T, fake *fakeEmporix, args ...string) (code int, stdou
 	}
 	parts.legend = "NAME is a part's name."
 	keys := child[thing]{use: "keys", fetch: listing{}, view: view}
-	// Children of a thing with their own scopes, the parent's (nil), none (empty) and a
-	// write-capable one, one part of a thing (and one key of a vault), read with two arguments,
-	// and one part by name, read with three.
 	root.AddCommand(newResourceCommand(a, things,
 		childCommand(a, things, parts),
 		childItemCommand(a, things, parts, &childItem{
@@ -88,19 +80,15 @@ func TestResourceListAndGet(t *testing.T) {
 	if code != ExitOK || stdout != "ID      NAME\n001234  A\n" {
 		t.Fatalf("get: exit %d, stdout %q, error %q", code, stdout, errText)
 	}
-	// One token per command, also for a list read over two pages, with the declared scopes.
 	if !slices.Equal(fake.tokenScopes, []string{"tenant=acme1 thing.read", "tenant=acme1 thing.read"}) {
 		t.Fatalf("token scopes %q; list and get must request the declared scopes", fake.tokenScopes)
 	}
-	// An item the service does not know is not found.
 	code, stdout, errText = runThings(t, fake, "get", "unknown")
 	if code != ExitNotFound || stdout != "" || !strings.Contains(errText, "GET /things/unknown: 404 Not Found") {
 		t.Fatalf("unknown: exit %d, stdout %q, error %q", code, stdout, errText)
 	}
 }
 
-// TestReadWithTwoArguments checks that a read whose request names {parent}
-// and {id} takes their arguments in that order, each escaped as a path segment.
 func TestReadWithTwoArguments(t *testing.T) {
 	fake := newFakeEmporix(t)
 	fake.route("/things/a%2Fb/parts/007", respond(http.StatusOK, `{"id":"007","name":"Bolt"}`))
@@ -110,9 +98,6 @@ func TestReadWithTwoArguments(t *testing.T) {
 	}
 }
 
-// TestChildScopes checks that a child read requests the scopes it declares
-// instead of its parent's, the parent's when it declares none (nil) and no
-// scope when it declares an empty list, and that its help says which.
 func TestChildScopes(t *testing.T) {
 	for _, tt := range []struct{ use, token, help string }{
 		{"parts", "tenant=acme1 part.read", "Requires the part.read scope."},
@@ -140,7 +125,6 @@ func TestResourceRefusedScopeExitsWithAuth(t *testing.T) {
 			t.Fatalf("%v: exit %d, stdout %q, error %q; want exit 3", args, code, stdout, errText)
 		}
 	}
-	// Without the scope, nothing is read.
 	if len(fake.gets) != 0 {
 		t.Fatalf("requests %q; want none", fake.gets)
 	}
@@ -170,7 +154,6 @@ func TestResourceRejectsMalformedResponses(t *testing.T) {
 			code: ExitError, want: "expected one item as a JSON object"},
 		{name: "empty object", path: "/things/x", body: `{}`, args: []string{"get", "x"},
 			code: ExitError, want: "expected one item, got an empty object"},
-		// JSON output prints the response whole, but only a response of the right shape.
 		{name: "JSON of an empty array", path: "/things/x", body: `[]`, args: []string{"get", "x", "-o", "json"},
 			code: ExitError, want: "decoding thing response: expected one item as a JSON object"},
 		{name: "JSON of a null item", path: "/things/x", body: `null`, args: []string{"get", "x", "-o", "json"},
@@ -218,11 +201,6 @@ func TestResourceUsageErrorsSendNothing(t *testing.T) {
 	}
 }
 
-// TestGroupScopeSentence checks that a group's help states the scopes of the
-// commands below it, at any depth: those of one kind, reads or writes, as one
-// of them states them when they agree; otherwise a sentence per kind that names
-// them when they agree and says that they differ otherwise, followed for
-// reads by the opt-in sentence when one of them is write-capable.
 func TestGroupScopeSentence(t *testing.T) {
 	a := &app{getenv: func(string) string { return "" }}
 	read := func(use string, scopes ...string) *cobra.Command {
@@ -274,10 +252,6 @@ func TestGroupScopeSentence(t *testing.T) {
 	}
 }
 
-// TestGroupsStateTheScopesOfTheirReads checks the command tree: the help of
-// every read and every declared write ends with its scopes, and so does every
-// group of them, or it says that its reads or its writes differ, so no group
-// claims a scope that one of its reads or writes lacks.
 func TestGroupsStateTheScopesOfTheirReads(t *testing.T) {
 	walkCommands(newTestRoot(), func(cmd *cobra.Command) {
 		want := ""
@@ -294,12 +268,6 @@ func TestGroupsStateTheScopesOfTheirReads(t *testing.T) {
 	})
 }
 
-// TestReadsAnnotateTheScopesTheyRequest checks that every read command
-// carries in its annotation the scopes that each of its read cases requests
-// (assertScopes), filled in for the case's first argument as the command
-// fills them in (typeOfRun): those of a custom entity type with that type,
-// or those of the built-in type that it names in their place. So no read
-// built outside reader.command escapes the group scope sentences.
 func TestReadsAnnotateTheScopesTheyRequest(t *testing.T) {
 	root := newTestRoot()
 	for path, cases := range casesOfCommands(t) {

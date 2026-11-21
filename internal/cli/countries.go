@@ -11,7 +11,6 @@ import (
 // countriesPage holds every country a tenant can have (ISO 3166 lists 249).
 const countriesPage = 1000
 
-// country is the part of a Country Service country shown in tables.
 type country struct {
 	Code    string    `json:"code"`
 	Name    localized `json:"name"`
@@ -19,11 +18,8 @@ type country struct {
 	Regions []string  `json:"regions"`
 }
 
-// newCountriesCommand reads the countries known to the tenant, active or not,
-// and activates or deactivates one (patch). The Country Service orders
-// countries differently on every request, even when sorted, so its pages
-// overlap; list reads them as one page instead, sorted by code so the output
-// is the same on every run (a --sort of the user's replaces it).
+// The Country Service orders countries differently on every request, even when
+// sorted, so its pages overlap.
 func newCountriesCommand(a *app) *cobra.Command {
 	r := resource[country]{
 		use:   "countries",
@@ -46,10 +42,6 @@ func newCountriesCommand(a *app) *cobra.Command {
 	return newResourceCommand(a, r, countryWrites(a, r)...)
 }
 
-// countryWrites returns the write of countries, with the scope that the
-// reference names for it: patch CODE, which activates or deactivates a
-// country, the only change that Emporix allows, from typed flags or --file,
-// with the version that Emporix requires.
 func countryWrites(a *app, countries resource[country]) []*cobra.Command {
 	return []*cobra.Command{(&write{
 		use:   countries.itemUse("patch"),
@@ -72,10 +64,8 @@ func countryWrites(a *app, countries resource[country]) []*cobra.Command {
 	}).command(a)}
 }
 
-// newRegionsCommand reads the regions countries belong to. Unsorted, the
-// Country Service orders them differently on every request too, but unlike
-// countries it sorts regions before paging, so list pages them sorted by code
-// (a --sort of the user's replaces it).
+// Unsorted, the Country Service orders regions differently on every request too,
+// but unlike countries it sorts regions before paging.
 func newRegionsCommand(a *app) *cobra.Command {
 	return newResourceCommand(a, resource[codeName]{
 		use:       "regions",

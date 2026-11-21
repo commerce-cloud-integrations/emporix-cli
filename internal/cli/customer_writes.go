@@ -6,44 +6,25 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// customerManageScope is the scope of the Customer Service's writes of
-// customer profiles and their addresses (customer_manage_own is that of a
-// customer's own profile).
 const customerManageScope = "customer.customer_manage"
 
-// customerImportScope is the scope of customer imports and of the password
-// migration retention that they need.
 const customerImportScope = "customer.import_manage"
 
-// maxCustomerImport is the most customers that Emporix imports in one request.
 const maxCustomerImport = 200
 
-// passwordResetEmail is the switch of a write that may create a customer
-// account: Emporix emails the customer a link to set a password unless told
-// not to, which epx tells it unless the flag is given.
 func passwordResetEmail() paramFlag {
 	return paramFlag{param: "sendPasswordResetNotifications", flag: "password-reset-email",
 		usage: "email the customer a link to set a password once the account is created"}
 }
 
-// contactEmailNote follows what a write that changes a customer profile
-// sends, in its help: the account's email is not its contactEmail.
 const contactEmailNote = "On an existing profile, a contactEmail changes its contact email only, never the email " +
 	"with which the customer signs in (that of its account)."
 
-// passwordResetNote follows what a write that may create a customer account
-// sends, in its help.
 const passwordResetNote = "Emporix emails a new customer a link to set a password only with --password-reset-email " +
 	"(without it, epx sends sendPasswordResetNotifications=false, where Emporix's default is true)."
 
-// customerNumberNote states, in the help of a write that sends customer
-// profiles, that Emporix ignores a customerNumber in one: the customer number
-// is the id that Emporix makes or the profile or path gives.
 const customerNumberNote = "Emporix ignores a customerNumber that a profile gives (no error)."
 
-// customerWrites returns the writes of customer profiles: create, update (an
-// upsert), patch, delete and import, which creates customers with their
-// passwords.
 func customerWrites(a *app, customers resource[customer]) []*cobra.Command {
 	scopes := []string{customerManageScope}
 	item, ids := request{path: customers.itemPath()}, customers.itemIDs()
@@ -94,12 +75,8 @@ func customerWrites(a *app, customers resource[customer]) []*cobra.Command {
 	}
 }
 
-// addressWrites returns the writes of the addresses of a customer of
-// customers, in the collection addresses: create, update (an upsert), patch
-// and delete, and add-tags and remove-tags, which change the tags of one,
-// each addressing its address as a read of it does (childItemTarget). The
-// reference names no scope for adding tags; Emporix requires the scope with
-// which it removes them, customer_manage, as for the other writes.
+// The reference names no scope for adding tags; Emporix requires the scope with which it removes them,
+// customer_manage, as for the other writes.
 func addressWrites(a *app, customers resource[customer], addresses child[customerAddress]) []*cobra.Command {
 	scopes := []string{customerManageScope}
 	arguments := customers.argumentSource() + ", and ID the ID that `epx " + childListLine(customers, addresses) +

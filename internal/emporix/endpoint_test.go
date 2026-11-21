@@ -5,8 +5,6 @@ import (
 	"testing"
 )
 
-// TestCheckEndpointNeedsNoCredential checks the API URL and tenant alone, as
-// a profile is checked before its client secret is read.
 func TestCheckEndpointNeedsNoCredential(t *testing.T) {
 	if err := CheckEndpoint(DefaultBaseURL, "acme1"); err != nil {
 		t.Fatalf("valid endpoint: %v", err)

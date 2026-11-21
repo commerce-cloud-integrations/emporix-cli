@@ -6,14 +6,12 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// customEntity is the part of a custom entity type shown in tables.
 type customEntity struct {
 	ID       string       `json:"id"`
 	Name     localized    `json:"name"`
 	Metadata itemMetadata `json:"metadata"`
 }
 
-// customInstance is the part of a custom entity instance shown in tables.
 type customInstance struct {
 	ID       string        `json:"id"`
 	Name     localized     `json:"name"`
@@ -21,7 +19,6 @@ type customInstance struct {
 	Metadata itemMetadata  `json:"metadata"`
 }
 
-// instanceOwner is the owner of a custom instance, by default who created it.
 type instanceOwner struct {
 	Type   string `json:"type"`
 	UserID string `json:"userId"`
@@ -29,17 +26,10 @@ type instanceOwner struct {
 
 func (o instanceOwner) String() string { return spaced(o.Type, o.UserID) }
 
-// instancesUse is the group of the reads and writes of custom instances.
 const instancesUse = "instances"
 
-// instancesSentence ends the help of custom-entities: where the reads and
-// writes of instances are.
 const instancesSentence = "`epx custom-entities instances` reads and changes the instances of a type."
 
-// newCustomEntitiesCommand reads and changes the tenant's custom entity types
-// and their instances, which need the scopes of their type, and exports and
-// imports types with their schemas; the export needs a write-capable scope
-// (opt-in).
 func newCustomEntitiesCommand(a *app) *cobra.Command {
 	entities := customEntities()
 	export := exportCommand(a, entities.path, &export{
@@ -56,8 +46,6 @@ func newCustomEntitiesCommand(a *app) *cobra.Command {
 		export}, customEntityWrites(a, entities))...)
 }
 
-// customEntities declares the custom entity types, whose IDs the TYPE
-// of another read completes with too.
 func customEntities() resource[customEntity] {
 	return resource[customEntity]{
 		use:   "custom-entities",
@@ -80,9 +68,6 @@ func customEntities() resource[customEntity] {
 	}
 }
 
-// newCustomInstancesCommand returns the group of the instances of a custom
-// entity type of entities: list, search and get read them, and the writes
-// (customInstanceWrites) change them, each with the scope of the type.
 func newCustomInstancesCommand(a *app, entities resource[customEntity]) *cobra.Command {
 	typesOf := entities.nested(instancesUse)
 	instances := child[customInstance]{

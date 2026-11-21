@@ -6,20 +6,16 @@ import (
 	"testing"
 )
 
-// cartWriteFailure is a cart write whose response names parts that failed:
-// what it prints on standard error and the code it exits with.
 type cartWriteFailure struct {
-	args     []string // after carts, without --file and --yes
+	args     []string
 	file     string
-	route    string // the path that the fake answers
+	route    string
 	status   int
 	response string
 	code     int
 	stderr   string
 }
 
-// run sends tt to a fake that answers it and checks that the response is
-// printed and the failures listed, sanitized, with the exit code of tt.
 func (tt *cartWriteFailure) run(t *testing.T) {
 	t.Helper()
 	fake := newFakeEmporix(t)
@@ -33,20 +29,12 @@ func (tt *cartWriteFailure) run(t *testing.T) {
 	}
 }
 
-// cartChainOf3 is a chain of three cart commands.
 const cartChainOf3 = `{"commands":[{"type":"AddCartItem"},{"type":"UpdateCartItem"},{"type":"GetCart"}]}`
 
-// TestCartChainsListTheCommandsThatFailed checks that execute, whose
-// response names commands that failed, prints the response, lists those
-// commands on standard error by position and type with their message,
-// sanitized, says how many did not run, and exits with the code that their
-// failures share (4 when each was not found, 5 when each was a conflict),
-// else 1.
 func TestCartChainsListTheCommandsThatFailed(t *testing.T) {
 	const execute = "/cart/acme1/carts/c1/execute"
 	for _, tt := range []cartWriteFailure{
 		{
-			// Without --on-error resume, Emporix stops after the first that failed.
 			args: []string{"execute", "c1"}, file: cartChainOf3, route: execute, status: http.StatusMultiStatus,
 			response: `{"results":[{"index":0,"type":"AddCartItem","code":201},{"index":1,"type":"UpdateCartItem",` +
 				`"code":404,"data":{"code":404,"message":"Cart item not found\u001b[2J"}}]}`,
@@ -78,12 +66,6 @@ func TestCartChainsListTheCommandsThatFailed(t *testing.T) {
 	}
 }
 
-// TestCartBatchesListTheItemsThatFailed checks the batches of items of a
-// cart: items bulk-create, whose response gives each item's code as status,
-// also when Emporix answers a batch that failed in part with 400, and a
-// chain whose batch command failed for some of its items, also with 207,
-// each list the items that failed (Emporix carried out the others) and exit
-// 1.
 func TestCartBatchesListTheItemsThatFailed(t *testing.T) {
 	const (
 		batch  = "/cart/acme1/carts/c1/itemsBatch"
@@ -111,9 +93,6 @@ func TestCartBatchesListTheItemsThatFailed(t *testing.T) {
 	}
 }
 
-// TestCartChainsAreChecked checks that execute sends a JSON object of one to
-// 10 commands and takes only the choices of --on-error and --versioning,
-// failing otherwise as a usage error (exit 2) that sends nothing.
 func TestCartChainsAreChecked(t *testing.T) {
 	commands := func(n int) string {
 		return `{"commands":[` + strings.Repeat(`{"type":"GetCart"},`, n-1) + `{"type":"GetCart"}]}`
@@ -147,9 +126,6 @@ func TestCartChainsAreChecked(t *testing.T) {
 	}
 }
 
-// TestExternalPricesAreRequestedOnlyWithTheirFlag checks the help of a write
-// whose body may hold external prices: --allow-external-prices adds their
-// scope, which the scope sentences of the write and of its group leave out.
 func TestExternalPricesAreRequestedOnlyWithTheirFlag(t *testing.T) {
 	_, help, _ := runCLI(t, nil, "carts", "items", "create", "--help")
 	if want := "--allow-external-prices also requests the cart.cart_manage_external_prices scope.\n\n" +
@@ -172,9 +148,6 @@ func TestExternalPricesAreRequestedOnlyWithTheirFlag(t *testing.T) {
 	}
 }
 
-// TestCartItemHelpSaysWhenAPriceNamesItsPriceID checks that a cart item's
-// create, which update and the bulk writes refer to, says that an EXTERNAL
-// item's price names no priceId.
 func TestCartItemHelpSaysWhenAPriceNamesItsPriceID(t *testing.T) {
 	assertHelpHolds(t, map[string][]string{"carts items create": {
 		"price (priceId (left out when itemType is EXTERNAL), originalAmount",

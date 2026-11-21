@@ -10,11 +10,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// TestCalculationFlagsAreRequiredWithoutBody checks that a calculation's
-// required typed flag must be given unless --body gives the body, that the
-// two exclude each other, that flags of one group are given together and
-// that a flag that applies only with another is refused without it: usage
-// errors (exit 2) that send nothing.
 func TestCalculationFlagsAreRequiredWithoutBody(t *testing.T) {
 	body := writeBody(t, `{"input":{}}`)
 	for _, tt := range []struct {
@@ -63,8 +58,6 @@ func TestCalculationFlagsAreRequiredWithoutBody(t *testing.T) {
 	}
 }
 
-// TestCalculationBodyReplacesTheFlags checks that --body sends a whole body
-// as given, members the typed flags do not set included.
 func TestCalculationBodyReplacesTheFlags(t *testing.T) {
 	const given = `{"input":{"targetLocation":{"countryCode":"DE"},"targetTaxClass":"STANDARD","price":2,` +
 		`"includesTax":false},"commandUuid":"c1"}`
@@ -78,9 +71,6 @@ func TestCalculationBodyReplacesTheFlags(t *testing.T) {
 	fake.assertSent(t, http.MethodPut, given)
 }
 
-// TestCalculationValuesAreCheckedWhileParsing checks that a number or an
-// amount of money in another form is a usage error found before anything is
-// sent, naming the flag.
 func TestCalculationValuesAreCheckedWhileParsing(t *testing.T) {
 	convert := []string{"units", "convert", "--from", "g", "--to", "kg", "--amount"}
 	quote := []string{"shipping", "quote-minimum", "--site", "main", "--country", "NL", "--postal-code", "1012",
@@ -108,17 +98,12 @@ func TestCalculationValuesAreCheckedWhileParsing(t *testing.T) {
 	}
 }
 
-// TestOnlyDeclaredReadsTakeCreated checks that a unit conversion reads the
-// 201 Created that Emporix answers it with (live), although it creates
-// nothing, as generate-cycle does (TestDeliveryCycleNames), while any other
-// read with a body fails on it (exit 1): a coupon validation answered so may
-// have redeemed the coupon.
 func TestOnlyDeclaredReadsTakeCreated(t *testing.T) {
 	for _, tt := range []struct {
 		args       []string
 		path, body string
 		code       int
-		want       string // stdout, or what stderr holds when the read fails
+		want       string
 	}{
 		{args: []string{"units", "conversion-factor", "--from", "g", "--to", "kg"},
 			path: "/unit-handling/acme1/units/conversion-factor-commands",
@@ -149,18 +134,14 @@ func TestOnlyDeclaredReadsTakeCreated(t *testing.T) {
 	}
 }
 
-// TestCouponValidationAnswers checks what a coupon validation prints for each
-// answer: a success without a body, 204 No Content included, is redeemable,
-// true (also for -o json), one with a body is read as true or false, anything
-// else fails, and a failure is the error Emporix gives.
 func TestCouponValidationAnswers(t *testing.T) {
 	validate := []string{"coupons", "validate", "SAVE7", "--order-total", "10 EUR", "--discount", "1 EUR",
 		"--allow-write-scope"}
 	for _, tt := range []struct {
 		answer http.HandlerFunc
-		json   bool // with -o json
+		json   bool
 		code   int
-		want   string // stdout, or what stderr holds when the read fails
+		want   string
 	}{
 		{answer: respond(http.StatusOK, ""), want: "REDEEMABLE\ntrue\n"},
 		{answer: respond(http.StatusOK, " \n"), json: true, want: "true\n"},
@@ -193,11 +174,6 @@ func TestCouponValidationAnswers(t *testing.T) {
 	}
 }
 
-// TestCalculationResponsesAreChecked checks that a calculation's answer of
-// another shape fails (exit 1), also for -o json, such as a quote's zone or
-// method that is not a JSON object, while a delivery window that cannot take
-// an order shows as false; a table also rejects a method without its zone or
-// its id, as it rejects any item without an identifier.
 func TestCalculationResponsesAreChecked(t *testing.T) {
 	validate := []string{"delivery-times", "validate", "--delivery-time", "d1", "--date", "2026-11-02T12:00:00.000Z",
 		"--slot", "s1"}
@@ -207,8 +183,8 @@ func TestCalculationResponsesAreChecked(t *testing.T) {
 		args       []string
 		path, body string
 		code       int
-		want       string // stdout, or what stderr holds when the read fails
-		tableOnly  bool   // -o json prints the response
+		want       string
+		tableOnly  bool
 	}{
 		{args: validate, path: "/shipping/acme1/deliveryWindowValidation", body: "false", want: "VALID\nfalse\n"},
 		{args: validate, path: "/shipping/acme1/deliveryWindowValidation", body: `{"valid":true}`, code: ExitError,
@@ -246,8 +222,6 @@ func TestCalculationResponsesAreChecked(t *testing.T) {
 	}
 }
 
-// TestBodyFlagValues checks the flag values of numbers and amounts of money:
-// their type names, and that they show what they were set to.
 func TestBodyFlagValues(t *testing.T) {
 	var number jsonNumber
 	var amount moneyValue
@@ -260,14 +234,10 @@ func TestBodyFlagValues(t *testing.T) {
 	}
 }
 
-// TestOverlappingBodyMembersPanic checks that a read declaring two fields
-// that set one member, or a member and one inside it, panics while the
-// command is built, as its body would depend on the order of a map, and that
-// members that only start alike do not.
 func TestOverlappingBodyMembersPanic(t *testing.T) {
 	for _, tt := range []struct {
 		members []string
-		want    string // the panic; empty when the members do not overlap
+		want    string
 	}{
 		{members: []string{"q", "q"}, want: `body members "q" and "q" overlap`},
 		{members: []string{"input", "input.price"}, want: `body members "input" and "input.price" overlap`},
@@ -290,17 +260,13 @@ func TestOverlappingBodyMembersPanic(t *testing.T) {
 	}
 }
 
-// TestDeliveryCycleNames checks what generate-cycle prints for each answer:
-// the bare text that Emporix answers with 201 Created (live), trimmed, as the
-// name, which -o json prints as a JSON string, a JSON string as sent, and
-// that any other JSON, a blank name or no answer fails.
 func TestDeliveryCycleNames(t *testing.T) {
 	args := []string{"delivery-times", "generate-cycle", "--delivery-time", "d1", "--slot", "s1", "--date",
 		"2026-10-19T12:00:00.000Z"}
 	for _, tt := range []struct {
 		body, format string
 		code         int
-		want         string // stdout, or what stderr holds when the read fails
+		want         string
 	}{
 		{body: "2026-10-19-6morning\n", format: "table", want: "CYCLE\n2026-10-19-6morning\n"},
 		{body: "2026-10-19-6morning", format: "json", want: "\"2026-10-19-6morning\"\n"},

@@ -7,7 +7,6 @@ import (
 	"testing"
 )
 
-// A price model as create takes it, a price list and a price of a price list.
 const (
 	priceModelJSON = `{"name":{"en":"Per kilogram"},"includesTax":true,"includesMarkup":false,` +
 		`"measurementUnit":{"quantity":1,"unitCode":"kg"},` +
@@ -18,8 +17,6 @@ const (
 		`"tierValues":[{"id":"t1","priceValue":15.90}]}`
 )
 
-// priceModelAndListWrites are the writes of price models, price lists and
-// the prices of a price list.
 func priceModelAndListWrites() []writeCase {
 	models, lists := []string{priceModelManage}, []string{priceListManage}
 	const prices = "/price/acme1/price-lists/pl1/prices"
@@ -39,7 +36,6 @@ func priceModelAndListWrites() []writeCase {
 			scopes: models, confirmBy: "pm1", status: http.StatusNoContent,
 		},
 		{
-			// A model that prices use is deleted, with its prices, only with --force and the admin scope.
 			args: []string{"price-models", "delete", "pm1", "--force"}, method: http.MethodDelete,
 			path: "/price/acme1/priceModels/pm1", query: "forceDelete=true", scopes: []string{priceModelManage, priceModelAdmin},
 			confirmBy: "pm1", many: "the price model and every price that uses it", status: http.StatusNoContent,
@@ -50,7 +46,6 @@ func priceModelAndListWrites() []writeCase {
 			body: `{"id":"pl1"}`, want: "{\n  \"id\": \"pl1\"\n}\n",
 		},
 		{
-			// An upsert of an unknown price list creates it.
 			args: []string{"price-lists", "update", "pl 1"}, file: priceListJSON, method: http.MethodPut,
 			path: "/price/acme1/price-lists/pl%201", scopes: lists, lang: "*", status: http.StatusCreated,
 			body: `{"id":"pl 1"}`, want: "{\n  \"id\": \"pl 1\"\n}\n",
@@ -86,7 +81,6 @@ func priceModelAndListWrites() []writeCase {
 				"  {\n    \"code\": 201,\n    \"id\": \"p2\",\n    \"index\": 1\n  }\n]\n",
 		},
 		{
-			// Emporix answers a bulk delete with 204 No Content, not item by item.
 			args: []string{"price-lists", "prices", "bulk-delete", "pl1"}, file: `["p1","p2"]`,
 			method: http.MethodDelete, path: prices + "/bulk", scopes: lists, confirmBy: "pl1",
 			many: "the prices of a price list that --file names", status: http.StatusNoContent,
@@ -94,8 +88,6 @@ func priceModelAndListWrites() []writeCase {
 	}
 }
 
-// feeAndItemFeeWrites are the writes of fees and of item fees, each with the
-// scope of its own operation.
 func feeAndItemFeeWrites() []writeCase {
 	const (
 		feeJSON = `{"code":"deposit","name":{"en":"Deposit"},"feeType":"ABSOLUTE","siteCode":"AcmeStore_NL",` +
@@ -163,7 +155,6 @@ func feeAndItemFeeWrites() []writeCase {
 			query: "partial=true&siteCode=AcmeStore_NL", scopes: update, status: http.StatusOK,
 		},
 		{
-			// Without --site, Emporix acts on the item fee on site main; --site names another.
 			args: []string{"fees", "assignments", "update", productYRN, "--fee", "f1", "--site", "AcmeStore_DE"},
 			sent: `{"feeIds":["f1"]}`, method: http.MethodPut, path: itemFees, query: "partial=false&siteCode=AcmeStore_DE",
 			scopes: update, status: http.StatusOK,
@@ -198,13 +189,6 @@ func feeAndItemFeeWrites() []writeCase {
 	}
 }
 
-// TestPriceListAndFeeWritesRefuseInvalidInput checks that the writes of
-// price lists, their prices and item fees refuse, as usage errors (exit 2)
-// that send nothing, also for a dry run: an ID that addresses the bulk
-// operation of a price list's prices, missing arguments, a bulk body that is
-// no array of one to 200 items (also that of bulk-delete, which Emporix
-// answers as a whole), a body that a delete does not take, and item fees
-// without the flags or the file that give their body, or with both.
 func TestPriceListAndFeeWritesRefuseInvalidInput(t *testing.T) {
 	const bulk = "DELETE /price/{tenant}/price-lists/pl1/prices/bulk: a bulk write sends "
 	ids := strings.Repeat(`"p",`, 200) + `"p"`
@@ -257,12 +241,6 @@ func TestPriceListAndFeeWritesRefuseInvalidInput(t *testing.T) {
 	}
 }
 
-// TestPriceWritesSayHowEmporixReadsThem checks the help of writes that the
-// Price Service reads in its own way: the localized text of a price list,
-// a map of translations also with --content-language LANGUAGE, unlike that
-// of a price model; bulk-delete, which Emporix answers as a whole, not item
-// by item; and price-models delete, which deletes a model that prices use
-// only with --force, which requests the admin scope too.
 func TestPriceWritesSayHowEmporixReadsThem(t *testing.T) {
 	for _, tt := range []struct {
 		args          []string

@@ -24,7 +24,6 @@ func (c *Client) GetFile(ctx context.Context, path string, query url.Values, med
 	if language != "" {
 		header.Set("Accept-Language", language)
 	}
-	// The query is left out of every message: it may hold values a log must not keep.
 	if err := checkHeaders(c.named(withoutQuery(path)), header); err != nil {
 		return nil, err
 	}

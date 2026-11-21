@@ -6,7 +6,6 @@ import (
 	"testing"
 )
 
-// aiRAGReads returns the reads of the AI RAG Indexer's metadata (ai_rag.go).
 func aiRAGReads() []readCase {
 	const scope = "ai.agent_read"
 	return []readCase{
@@ -19,7 +18,6 @@ func aiRAGReads() []readCase {
 			want:   "FIELD\ncode\nname\nname.en\nmixins.productCustomAttributes.color\n",
 		},
 		{
-			// A built-in type in lower case, sent as given.
 			args:   []string{"ai", "rag", "fields", "legal-entity"},
 			path:   "/ai-rag-indexer/acme1/legal-entity/rag-metadata",
 			scopes: []string{scope},
@@ -28,7 +26,6 @@ func aiRAGReads() []readCase {
 			want:   "FIELD\nname\nlegalInfo.legalName\n",
 		},
 		{
-			// The deprecated name and description are only in -o json.
 			args:   []string{"ai", "rag", "filter-fields", "ORDER"},
 			path:   "/ai-rag-indexer/acme1/ORDER/filter-metadata",
 			scopes: []string{scope},
@@ -37,7 +34,6 @@ func aiRAGReads() []readCase {
 			want:   "FIELD       TYPE    PARENT\nid          string  \nstatus      string  \ntotalPrice          \n",
 		},
 		{
-			// PARENT, the list of objects a field sits in; empty for a field outside a list.
 			args:   []string{"ai", "rag", "filter-fields", "CUSTOMER"},
 			path:   "/ai-rag-indexer/acme1/CUSTOMER/filter-metadata",
 			scopes: []string{scope},
@@ -50,14 +46,9 @@ func aiRAGReads() []readCase {
 	}
 }
 
-// customerFilterFields are the filter fields of customers, one of them in
-// the list of a customer's addresses.
 const customerFilterFields = `[{"key":"customerNumber","type":"string"},
 	{"key":"addresses.zipCode","type":"string","parent":"addresses"}]`
 
-// TestRAGFilterFieldsCutALongParentInTables checks that a table cuts a long
-// PARENT, the list of objects that a field sits in, which csv and -o json
-// print whole, and that the help names it.
 func TestRAGFilterFieldsCutALongParentInTables(t *testing.T) {
 	parent := "mixins.productCustomAttributes." + strings.Repeat("l", 40)
 	body := `[{"key":"` + parent + `.code","type":"string","parent":"` + parent + `"}]`
@@ -82,11 +73,6 @@ func TestRAGFilterFieldsCutALongParentInTables(t *testing.T) {
 	}
 }
 
-// TestRAGHelpNamesTheBuiltInTypes checks that the help of every RAG command
-// with TYPE names the four built-in types, which it completes, and that
-// Emporix takes them in either case and LEGAL-ENTITY with a hyphen only; and
-// what an unknown TYPE gets: 400 for the reads (checked live), while for
-// reindex the 204 seen live beside the reference's 400.
 func TestRAGHelpNamesTheBuiltInTypes(t *testing.T) {
 	const types = entityTypeHelp + " "
 	const read = "An unknown TYPE, such as LEGAL_ENTITY, gets 400 Bad Request (exit 1)."
@@ -109,8 +95,6 @@ func TestRAGHelpNamesTheBuiltInTypes(t *testing.T) {
 	}
 }
 
-// TestRAGReadOfAnUnknownTypeFails checks that a read of a TYPE that Emporix
-// does not know, which it answers 400 Bad Request, fails with exit 1.
 func TestRAGReadOfAnUnknownTypeFails(t *testing.T) {
 	for use, metadata := range map[string]string{"fields": "rag-metadata", "filter-fields": "filter-metadata"} {
 		fake := newFakeEmporix(t)
@@ -123,9 +107,6 @@ func TestRAGReadOfAnUnknownTypeFails(t *testing.T) {
 	}
 }
 
-// TestRAGReindexHelpNamesTheReindexJobs checks that the help of the
-// deprecated reindex points to the reindex job that replaces it: with --rag
-// for products, without it for customers and legal entities.
 func TestRAGReindexHelpNamesTheReindexJobs(t *testing.T) {
 	const want = "Emporix has deprecated this endpoint in favor of a reindex job: " +
 		"`epx indexing reindex-jobs create`, which --wait follows. Give it --rag for PRODUCT; for " +

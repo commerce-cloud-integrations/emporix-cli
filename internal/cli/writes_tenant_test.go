@@ -5,19 +5,14 @@ import (
 	"testing"
 )
 
-// siteJSON is a site as create takes it.
 const siteJSON = `{"code":"AcmeStore_BE","name":"AcmeStore BE","defaultLanguage":"nl","languages":["nl","fr"],` +
 	`"currency":"EUR","homeBase":{"address":{"country":"BE","zipCode":"1000"}},"shipToCountries":["BE"],` +
 	`"taxDeterminationBasedOn":"BILLING_ADDRESS"}`
 
-// tenantSetupWrites are the writes of sites and their mixins, countries,
-// currencies, exchange rates and tax configurations, each with the manage
-// scope that the reference names for its service.
 func tenantSetupWrites() []writeCase {
 	return append(siteWriteCases(), currencyAndTaxWrites()...)
 }
 
-// siteWriteCases are the writes of sites, of their mixins and of countries.
 func siteWriteCases() []writeCase {
 	sites, country := []string{siteManageScope}, []string{"country.country_manage"}
 	const mixin = "/site/acme1/sites/AcmeStore_NL/mixins/generalShopSettings"
@@ -33,7 +28,6 @@ func siteWriteCases() []writeCase {
 			scopes: sites, status: http.StatusOK,
 		},
 		{
-			// The CODE is escaped as a path segment.
 			args: []string{"sites", "patch", "AcmeStore NL"}, file: `{"languages":["en","nl"]}`,
 			method: http.MethodPatch, path: "/site/acme1/sites/AcmeStore%20NL", scopes: sites, status: http.StatusOK,
 		},
@@ -62,7 +56,6 @@ func siteWriteCases() []writeCase {
 			status: http.StatusNoContent,
 		},
 		{
-			// The flags make the body: deactivate the country at the version read.
 			args: []string{"countries", "patch", "NL", "--active=false", "--version", "3"},
 			sent: `{"active":false,"metadata":{"version":3}}`, method: http.MethodPatch,
 			path: "/country/acme1/countries/NL", scopes: country,
@@ -76,8 +69,6 @@ func siteWriteCases() []writeCase {
 	}
 }
 
-// The tax configuration of a country, as create takes it and, with the
-// version read, as update takes it.
 const (
 	taxLocationJSON = `{"location":{"countryCode":"NL"},"taxClasses":[{"code":"STANDARD","name":{"en":"Standard"},` +
 		`"order":0,"rate":21,"isDefault":true}]`
@@ -85,8 +76,6 @@ const (
 	taxVersionedJSON = taxLocationJSON + `,"metadata":{"version":1}}`
 )
 
-// currencyAndTaxWrites are the writes of currencies, exchange rates and tax
-// configurations.
 func currencyAndTaxWrites() []writeCase {
 	currency, tax := []string{currencyManageScope}, []string{"tax.tax_manage"}
 	return []writeCase{
@@ -105,7 +94,6 @@ func currencyAndTaxWrites() []writeCase {
 			path: "/currency/acme1/currencies/CHF", scopes: currency, confirmBy: "CHF", status: http.StatusNoContent,
 		},
 		{
-			// The rate is sent as a string, as the reference types it.
 			args: []string{"exchange-rates", "create", "--source", "EUR", "--target", "CHF", "--rate", "0.95"},
 			sent: `{"rate":"0.95","sourceCurrency":"EUR","targetCurrency":"CHF"}`, method: http.MethodPost,
 			path: "/currency/acme1/exchanges", scopes: currency, status: http.StatusCreated, body: `{"code":"EUR_CHF"}`,
@@ -146,11 +134,6 @@ func currencyAndTaxWrites() []writeCase {
 	}
 }
 
-// TestTenantSetupWritesRefuseInvalidInput checks that a write of the tenant
-// setup without its body, the flags that make it or its arguments, with
-// flags that --file excludes or it does not take, or with an ID that
-// addresses another operation, is a usage error (exit 2) that sends nothing,
-// also for a dry run.
 func TestTenantSetupWritesRefuseInvalidInput(t *testing.T) {
 	const country = `{"active":true,"metadata":{"version":1}}`
 	assertRefused(t, []refusedWrite{
@@ -182,7 +165,6 @@ func TestTenantSetupWritesRefuseInvalidInput(t *testing.T) {
 			want: `invalid argument "-2" for "--version" flag: use the version as read`},
 		{args: []string{"currencies", "create", "--content-language", "Swiss"}, file: country,
 			want: `invalid argument "Swiss" for "--content-language" flag`},
-		// forceDelete is not sent: the reference does not say what it changes.
 		{args: []string{"currencies", "delete", "CHF", "--force-delete"}, want: "unknown flag: --force-delete"},
 		{args: []string{"taxes", "update", taxCalculationSegment}, file: taxJSON,
 			want: `invalid LOCATION "calculation-commands": it would be sent as calculate, not to one item`},

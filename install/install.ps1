@@ -10,13 +10,9 @@
 #   EPX_VERSION         release tag to install, such as v0.1.2 (default: the latest release)
 #   EPX_INSTALL_DIR     directory for epx.exe (default: %LOCALAPPDATA%\Programs\epx\bin)
 #   EPX_NO_MODIFY_PATH  set to 1 to leave the user's Path alone
-#
-# Nothing runs until the last line calls Install-Epx; the lines before it only name the
-# repository and define functions, so a download cut off midway installs nothing.
 
 $EpxRepo = "commerce-cloud-integrations/emporix-cli"
 
-# Get-EpxVersion returns the release tag to install: EPX_VERSION, or the latest release.
 function Get-EpxVersion {
   $version = $env:EPX_VERSION
   if (-not $version) {
@@ -29,7 +25,6 @@ function Get-EpxVersion {
   return $version
 }
 
-# Get-EpxCpu returns the CPU of the release archive for this machine: amd64 or arm64.
 function Get-EpxCpu {
   # The OS architecture, also when this PowerShell runs emulated; older .NET Framework
   # versions lack OSArchitecture, so the environment of Windows answers instead.
@@ -47,8 +42,6 @@ function Get-EpxCpu {
   }
 }
 
-# Assert-EpxChecksum fails unless the file has the SHA-256 that the checksums file lists
-# for its name.
 function Assert-EpxChecksum([string]$File, [string]$Sums) {
   $name = Split-Path -Leaf $File
   $want = $null
@@ -64,8 +57,6 @@ function Assert-EpxChecksum([string]$File, [string]$Sums) {
   if ($got -ne $want) { throw "epx installer: $name does not match its checksum" }
 }
 
-# Add-EpxToPath puts the directory on the user's Path (unless EPX_NO_MODIFY_PATH is 1) and
-# on the Path of this session.
 function Add-EpxToPath([string]$Dir) {
   $entries = @([Environment]::GetEnvironmentVariable("Path", "User") -split ';' | Where-Object { $_ })
   if ($entries -notcontains $Dir) {

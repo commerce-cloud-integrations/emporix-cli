@@ -7,9 +7,6 @@ import (
 	"testing"
 )
 
-// TestShippingErrorsOfAnUnknownGroupOrCustomer pins how Emporix answers a
-// group or customer it does not know: 409 Conflict for a group (exit 1) and an
-// empty body for a customer without a shipping group (not found, exit 4).
 func TestShippingErrorsOfAnUnknownGroupOrCustomer(t *testing.T) {
 	fake := newFakeEmporix(t)
 	fake.route("/shipping/acme1/main/groups/unknown", respond(http.StatusConflict,
@@ -31,9 +28,6 @@ func TestShippingErrorsOfAnUnknownGroupOrCustomer(t *testing.T) {
 	}
 }
 
-// TestDeliveryWindowsAreIdentifiedByDate checks that the delivery date, the
-// one member the reference requires of a delivery window, identifies it: a
-// window without one cannot be shown.
 func TestDeliveryWindowsAreIdentifiedByDate(t *testing.T) {
 	fake := newFakeEmporix(t)
 	fake.route("/shipping/acme1/actualDeliveryWindows/cart1", respond(http.StatusOK,

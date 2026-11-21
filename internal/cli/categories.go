@@ -7,7 +7,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// category is the part of a Category Service category shown in tables.
 type category struct {
 	ID        string `json:"id"`
 	ParentID  string `json:"parentId"`
@@ -17,8 +16,6 @@ type category struct {
 	plainAndLocalizedName
 }
 
-// categoryAssignment is the part of a Category Service assignment of an item,
-// a product, to a category shown in tables.
 type categoryAssignment struct {
 	ID  string `json:"id"`
 	Ref struct {
@@ -29,15 +26,10 @@ type categoryAssignment struct {
 	} `json:"ref"`
 }
 
-// withUnpublished returns the query of a Category Service read that includes
-// unpublished categories (with the category.category_read_unpublished scope).
 func withUnpublished() url.Values { return url.Values{"showUnpublished": {queryTrue}} }
 
-// newCategoriesCommand reads categories, published and unpublished (Emporix
-// omits unpublished ones without showUnpublished and the read_unpublished
-// scope), what lies above and below one and what is assigned to it, and the
-// categories a product is assigned to; it creates, changes and deletes
-// categories and assigns products to them.
+// Emporix omits unpublished categories without showUnpublished and the
+// category.category_read_unpublished scope.
 func newCategoriesCommand(a *app) *cobra.Command {
 	r := resource[category]{
 		use:     "categories",
@@ -49,7 +41,6 @@ func newCategoriesCommand(a *app) *cobra.Command {
 		scopes:  []string{"category.category_read_unpublished"},
 		view:    categoryView(),
 	}
-	// The assignments of a product are sorted but not filtered.
 	reads := []*cobra.Command{
 		r.searchCommand(a, "Reads the categories, published and unpublished, that an Emporix q filter finds "+
 			"(--query; without it, every category).", queryField()),
@@ -85,10 +76,6 @@ func newCategoriesCommand(a *app) *cobra.Command {
 	return newResourceCommand(a, r, slices.Concat(reads, categoryWrites(a, r))...)
 }
 
-// newCategoryAssignmentsCommand returns the group of the products assigned to
-// a category of categories: list CATEGORY_ID, which reads them, the writes
-// that assign products (assignmentWrites) and those that unassign them
-// (assignmentDeletes).
 func newCategoryAssignmentsCommand(a *app, categories resource[category]) *cobra.Command {
 	assignments := child[categoryAssignment]{
 		use:   listUse,
@@ -114,7 +101,6 @@ func newCategoryAssignmentsCommand(a *app, categories resource[category]) *cobra
 			assignmentDeletes(a, categories, assignments))...)
 }
 
-// categoryView is the table of categories.
 func categoryView() view[category] {
 	return view[category]{
 		singular:  "category",
@@ -126,7 +112,6 @@ func categoryView() view[category] {
 	}
 }
 
-// subcategoryView is categoryView with the PARENT of each category.
 func subcategoryView() view[category] {
 	v := categoryView()
 	v.header = slices.Insert(v.header, 1, columnParent)

@@ -10,9 +10,6 @@ import (
 
 const bulkPath = "/price/{tenant}/prices/bulk"
 
-// TestPrepareChecksTheItemsOfABulkWrite checks that a bulk write's body must
-// be a JSON array of one to as many items as its Parts take: anything else is
-// ErrInvalidInput, found before a token is requested or anything is sent.
 func TestPrepareChecksTheItemsOfABulkWrite(t *testing.T) {
 	fake := newFakeEmporix(t)
 	client := fake.client(t)
@@ -44,13 +41,6 @@ func TestPrepareChecksTheItemsOfABulkWrite(t *testing.T) {
 	}
 }
 
-// TestSendReadsTheResultOfEachItem checks a bulk write: a response whose
-// items all succeeded is returned as sent; one with failures is returned
-// with an *ItemsError listing them in the order of the response, each named
-// by its index (from 1 where each result names one and none names 0, as the
-// Customer Segment Service's reference numbers them), or by its position
-// where it gives none, with its id and message, and the class that they
-// share, if any.
 func TestSendReadsTheResultOfEachItem(t *testing.T) {
 	for _, tt := range []struct {
 		results string
@@ -97,7 +87,6 @@ func TestSendReadsTheResultOfEachItem(t *testing.T) {
 				{Index: 1, Status: http.StatusBadRequest, Message: "unknown site"}},
 		},
 		{
-			// The Cart Service's itemsBatch: the code as status, a number, with errorMessage.
 			results: `[{"index":0,"id":"1","status":201},{"index":1,"status":400,"errorMessage":"no price"}]`,
 			failed:  []ItemFailure{{Index: 1, Status: http.StatusBadRequest, Message: "no price"}},
 		},
@@ -125,14 +114,10 @@ func TestSendReadsTheResultOfEachItem(t *testing.T) {
 	}
 }
 
-// summary is what the error of e says after its request.
 func (e *ItemsError) summary() string {
 	return strings.TrimPrefix(e.Error(), e.Method+" "+e.Path+": ")
 }
 
-// TestSendWithoutTheResultOfEachItem checks that a bulk write whose response
-// does not give the result of each item once fails, unclassified, with the
-// response, if any: which items were carried out is unknown.
 func TestSendWithoutTheResultOfEachItem(t *testing.T) {
 	for _, tt := range []struct {
 		status  int
@@ -164,12 +149,6 @@ func TestSendWithoutTheResultOfEachItem(t *testing.T) {
 	}
 }
 
-// TestSendMatchesResultsByTheirItemKey checks a bulk write whose results
-// name each item by a member of it (the key of Items), not by index or id: a
-// result is the result of the first item whose result was not read yet that
-// shares its value of that member, whatever their order, and a failure names
-// the item by it; a result whose value no item left has means that the
-// response does not give the result of each item.
 func TestSendMatchesResultsByTheirItemKey(t *testing.T) {
 	const sent = `[{"eventType":"order.created"},{"eventType":"cart.closed"},{"eventType":"cart.closed"},` +
 		`{"action":"SUBSCRIBE"}]`
@@ -214,9 +193,6 @@ func TestSendMatchesResultsByTheirItemKey(t *testing.T) {
 	}
 }
 
-// TestItemFailureNamesTheItem checks how a failed item reads in messages:
-// one that failed with a 500, 502, 503 or 504 may have been carried out all
-// the same, as a write answered so may have been, and says so.
 func TestItemFailureNamesTheItem(t *testing.T) {
 	const carriedOut = " (" + carriedOutNote + ")"
 	for want, failure := range map[string]ItemFailure{
@@ -237,11 +213,6 @@ func TestItemFailureNamesTheItem(t *testing.T) {
 	}
 }
 
-// TestBulkWriteAnsweredAsAWhole checks a bulk write that Emporix answers as
-// a whole (AnsweredWhole), as it answers a bulk delete of the prices of a
-// price list: Prepare checks its items as it checks those of any bulk write,
-// before anything is sent, and Send returns the empty answer of a 204 No
-// Content without reading a result per item.
 func TestBulkWriteAnsweredAsAWhole(t *testing.T) {
 	const path = "/price/{tenant}/price-lists/pl1/prices/bulk"
 	fake := newFakeEmporix(t)

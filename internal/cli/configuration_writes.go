@@ -7,14 +7,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// configurationManage is the scope that changes tenant and client
-// configurations, the only one the reference names for their writes.
 const configurationManage = "configuration.configuration_manage"
 
-// newConfigurationWrites returns the writes of tenant configurations, whose
-// KEY completes from keys, and those of the configurations of a client
-// (settingOwner.writes), whose CLIENT completes from clients and KEY from
-// clientKeys.
 func newConfigurationWrites(a *app, keys, clients, clientKeys *idSource) []*cobra.Command {
 	var commands []*cobra.Command
 	for _, owner := range []*settingOwner{
@@ -35,34 +29,23 @@ func newConfigurationWrites(a *app, keys, clients, clientKeys *idSource) []*cobr
 	return commands
 }
 
-// settingOwner is whose settings a set of configuration writes changes: the
-// tenant's, or those of a client, which its writes then take as their first
-// argument, CLIENT. Each owner has the same writes, named and described alike.
 type settingOwner struct {
-	prefix   string // of the names of its writes, e.g. "client-" in client-update
-	client   string // its argument before KEY, followed by a space: "CLIENT ", or none
-	some     string // its settings in a summary, e.g. "configurations of a client"
-	one      string // one of its settings in a summary, e.g. "a configuration of a client"
-	settings string // its settings in help, e.g. "configurations of the client CLIENT"
-	setting  string // its setting KEY in help, e.g. "the configuration KEY of the client CLIENT"
-	read     string // the read of its setting KEY, e.g. "client-setting CLIENT KEY"
-	path     string // the collection of its settings
+	prefix   string
+	client   string
+	some     string
+	one      string
+	settings string
+	setting  string
+	read     string
+	path     string
 
-	// The sources of the IDs of its arguments, for completion: CLIENT's (none for the tenant's
-	// settings, which take no CLIENT) and KEY's.
 	clients, keys *idSource
 }
 
-// writes returns the writes of o's settings: create (POST of a JSON array of
-// settings), update KEY (PUT of one whole setting) and delete KEY. A change of
-// one value is an update of the whole setting, which a dry run shows without
-// reading it first. The reference documents that a PUT of a key that was never set fails
-// (400), but Emporix answers 404 (not found), so neither update nor set is an
-// upsert: create makes a key.
 func (o *settingOwner) writes() []*write {
 	scopes := []string{configurationManage}
 	item := request{path: o.path + "/" + placeholderID}
-	epx := "`epx " + configurationsUse + " " // a command line in help, e.g. epx + o.read + "`"
+	epx := "`epx " + configurationsUse + " "
 	create := epx + o.prefix + "create`"
 	return []*write{
 		{
@@ -93,8 +76,6 @@ func (o *settingOwner) writes() []*write {
 	}
 }
 
-// ids returns the sources of the IDs of the arguments of a write of one of
-// o's settings: CLIENT, where o takes it, and KEY.
 func (o *settingOwner) ids() argumentIDs {
 	return argumentIDs{configurationClient: o.clients, columnKey: o.keys}
 }

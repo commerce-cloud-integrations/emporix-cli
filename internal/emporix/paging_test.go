@@ -12,9 +12,6 @@ import (
 	"testing"
 )
 
-// pagedRoute serves count items ({"id":"i<n>"}) by pageNumber. The page size
-// is the requested pageSize capped at maxSize (0: no cap, -1: paging ignored
-// and every item returned). total, when non-empty, is sent as X-Total-Count.
 func pagedRoute(count, maxSize int, total string) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		size, _ := strconv.Atoi(r.URL.Query().Get("pageSize"))
@@ -37,8 +34,6 @@ func pagedRoute(count, maxSize int, total string) func(http.ResponseWriter, *htt
 	}
 }
 
-// pageSequence serves scripted pages by pageNumber (1-based) with optional
-// per-page X-Total-Count values; pages beyond the script are empty.
 func pageSequence(pages []string, totals ...string) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		page, _ := strconv.Atoi(r.URL.Query().Get("pageNumber"))
@@ -80,9 +75,6 @@ func TestGetAllReadsEveryPage(t *testing.T) {
 	}
 }
 
-// checkEveryPage checks that GetAll reads a collection of count items, served
-// with maxSize as the largest page (0 for none) and total, in requests requests
-// with one token, and that the last request asks for the next page.
 func checkEveryPage(t *testing.T, count, maxSize int, total string, requests int) {
 	t.Helper()
 	fake := newFakeEmporix(t)
@@ -132,7 +124,6 @@ func TestGetAllFailures(t *testing.T) {
 			want: "read 4 items but the service reports 6"},
 		{name: "null collection", route: pageSequence([]string{`null`}), want: "page 1: expected a JSON array"},
 		{name: "null later page", route: pageSequence([]string{`["A","B"]`, `null`}), want: "page 2: expected a JSON array"},
-		// Unlike a read of one item, an empty page is malformed, not a missing resource.
 		{name: "empty later page", route: pageSequence([]string{`["A","B"]`, ``}), want: "page 2: expected a JSON array"},
 		{name: "no content", route: respond(http.StatusNoContent, ``), want: "page 1: expected a JSON array"},
 		{name: "endless collection", route: pagedRoute(100, 0, ""), want: "more than 5 pages"},
@@ -153,7 +144,6 @@ func TestGetAllFailures(t *testing.T) {
 
 func TestGetAllWithoutTotal(t *testing.T) {
 	fake := newFakeEmporix(t)
-	// Like the reindex-jobs endpoint: asking for the total fails the request.
 	paged := pagedRoute(3, 0, "")
 	fake.route("/items", func(w http.ResponseWriter, r *http.Request) {
 		if r.Header.Get("X-Total-Count") != "" {
@@ -172,7 +162,6 @@ func TestGetAllWithoutTotal(t *testing.T) {
 		!strings.Contains(err.Error(), "page 2 repeats an item of page 1") {
 		t.Fatalf("error = %v; ignored paging must still fail", err)
 	}
-	// A total sent unasked is still checked.
 	fake.route("/items", pagedRoute(3, 0, "7"))
 	if _, err := client.GetAllWithoutTotal(context.Background(), "/items", nil, ListOptions{}); err == nil ||
 		!strings.Contains(err.Error(), "read 3 items but the service reports 7") {
@@ -180,13 +169,9 @@ func TestGetAllWithoutTotal(t *testing.T) {
 	}
 }
 
-// TestOnePageReads checks GetAllInOnePage and GetAllOnFirstPage, which read
-// one page of 10 asking for its total: a page cut short fails, and without a
-// total GetAllInOnePage checks that the next page is empty, while
-// GetAllOnFirstPage, whose service never lists a next page, fails.
 func TestOnePageReads(t *testing.T) {
 	onFirstPage := (*Client).GetAllOnFirstPage
-	full := make([]string, 10) // a full page, as a service capped at 10 would send of a longer collection
+	full := make([]string, 10)
 	for i := range full {
 		full[i] = fmt.Sprintf(`{"id":"i%d"}`, i)
 	}
@@ -196,7 +181,7 @@ func TestOnePageReads(t *testing.T) {
 		read     func(*Client, context.Context, string, url.Values, int, ListOptions) (json.RawMessage, error)
 		route    func(http.ResponseWriter, *http.Request)
 		requests int
-		want     string // error; empty for success with 3 items
+		want     string
 	}{
 		{name: "total reported", route: pagedRoute(3, 0, "3"), requests: 1},
 		{name: "no total, empty next page", route: pagedRoute(3, 0, ""), requests: 2},
@@ -243,8 +228,6 @@ func TestOnePageReads(t *testing.T) {
 	}
 }
 
-// assertThreeItemsOr checks that a read returned the items i0, i1 and i2 or,
-// when want is set, failed with an error that holds it.
 func assertThreeItemsOr(t *testing.T, body json.RawMessage, err error, want string) {
 	t.Helper()
 	if want == "" {
@@ -265,7 +248,6 @@ func TestGetUnpaged(t *testing.T) {
 		fake.requests[0].URL.RawQuery != "" {
 		t.Fatalf("body %s, error %v, requests %d; want every item from one unpaged request", body, err, len(fake.requests))
 	}
-	// An empty collection body is malformed, not a missing resource as for Get.
 	for _, malformed := range []string{`null`, `{"items":[]}`, `"x"`, `[1,`, ``} {
 		fake.route("/items", respond(http.StatusOK, malformed))
 		if _, err := client.GetUnpaged(context.Background(), "/items", nil, ListOptions{}); err == nil ||
@@ -284,7 +266,6 @@ func TestGetUnpaged(t *testing.T) {
 	}
 }
 
-// TestCountingTotal checks that each counting reads its own header only.
 func TestCountingTotal(t *testing.T) {
 	for value, want := range map[string]int{"": -1, "x": -1, "-3": -1, "0": 0, "15": 15} {
 		counted, hybris := http.Header{}, http.Header{}
@@ -302,8 +283,6 @@ func TestCountingTotal(t *testing.T) {
 	}
 }
 
-// hybrisCountedRoute serves count items by pageNumber, with total as the
-// hybris-count header when asked with totalCount=true, as sites are served.
 func hybrisCountedRoute(count int, total string) func(http.ResponseWriter, *http.Request) {
 	paged := pagedRoute(count, 0, "")
 	return func(w http.ResponseWriter, r *http.Request) {

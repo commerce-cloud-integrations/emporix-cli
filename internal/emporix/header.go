@@ -26,9 +26,6 @@ func (c *Client) WithHeader(name, value string) (*Client, error) {
 	return &sending, nil
 }
 
-// checkHeaders returns ErrInvalidInput, naming the request named (a write,
-// or a read of a file: GetFile), when a value of header cannot be sent
-// (CheckHeaderValue); nil when all can.
 func checkHeaders(named string, header http.Header) error {
 	for name, values := range header {
 		for _, value := range values {

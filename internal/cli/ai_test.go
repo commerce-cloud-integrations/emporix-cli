@@ -7,10 +7,6 @@ import (
 	"testing"
 )
 
-// TestAIReadsRejectResponsesOfAnotherShape checks the LLM models and the
-// commerce events, whose items are inside their response: a response of
-// another shape fails the read (exit 1), also with -o json, which prints it
-// whole, and prints nothing.
 func TestAIReadsRejectResponsesOfAnotherShape(t *testing.T) {
 	const models, events = "/ai-service/acme1/agentic/models", "/ai-service/acme1/agentic/commerce-events"
 	for _, tt := range []struct {
@@ -45,9 +41,6 @@ func TestAIReadsRejectResponsesOfAnotherShape(t *testing.T) {
 	}
 }
 
-// TestAIReadsOfNothing checks that a provider without models, and a tenant
-// without commerce events, print only the header, and that -o json prints
-// the response as sent.
 func TestAIReadsOfNothing(t *testing.T) {
 	fake := newFakeEmporix(t)
 	fake.route("/ai-service/acme1/agentic/models", respond(http.StatusOK, `[{"provider":"google","models":[]}]`))
@@ -64,8 +57,6 @@ func TestAIReadsOfNothing(t *testing.T) {
 	}
 }
 
-// TestAIModelsJSONKeepsTheProviders checks that -o json prints the models
-// response as sent, grouped by provider, not as the table's rows.
 func TestAIModelsJSONKeepsTheProviders(t *testing.T) {
 	fake := newFakeEmporix(t)
 	fake.route("/ai-service/acme1/agentic/models", respond(http.StatusOK,
@@ -84,8 +75,6 @@ func TestAIModelsJSONKeepsTheProviders(t *testing.T) {
 	}
 }
 
-// TestAIToolsJSONHasTheSearchToolConfig checks that -o json prints the
-// configuration of a search tool, which the table leaves out, as sent.
 func TestAIToolsJSONHasTheSearchToolConfig(t *testing.T) {
 	fake := newFakeEmporix(t)
 	fake.route("/ai-service/acme1/agentic/tools/search-customer", respond(http.StatusOK, searchTool))
@@ -99,9 +88,6 @@ func TestAIToolsJSONHasTheSearchToolConfig(t *testing.T) {
 	}
 }
 
-// TestAIToolsHelpNamesTheSearchToolAndItsReindex checks that the help of the
-// tools names the search type, and the reindex job that the first search
-// tool of an entity type waits for.
 func TestAIToolsHelpNamesTheSearchToolAndItsReindex(t *testing.T) {
 	const reindex = "The first search tool of an entity type (customer or legal-entity) finds nothing until a " +
 		"reindex job of that type (`epx indexing reindex-jobs create --entity-type CUSTOMER` or LEGAL-ENTITY), " +
@@ -122,10 +108,6 @@ func TestAIToolsHelpNamesTheSearchToolAndItsReindex(t *testing.T) {
 	}
 }
 
-// TestAIChatGeneratesFilesOnlyWhenAsked checks that chat says that an agent
-// generates files and images only with --allow-file-generation, which the
-// write cases show adds media.asset_manage, and that chat-async does not take
-// the flag (a job's answer names no generated files).
 func TestAIChatGeneratesFilesOnlyWhenAsked(t *testing.T) {
 	assertHelpHolds(t, map[string][]string{"ai chat": {"An agent generates them only with file_generator in its " +
 		"nativeTools and with --allow-file-generation; without it, Emporix creates no files or images."}})

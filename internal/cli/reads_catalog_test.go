@@ -1,44 +1,31 @@
 package cli
 
-// The read cases of the Product, Category, Catalog, Brand, Label, Schema and Unit Handling
-// services (see TestReads).
-
-// categoriesBody holds a published category with translations and an unpublished one
-// with a plain name only.
 const categoriesBody = `[
 	{"id":"c1","code":"Transistor","type":"STANDARD","published":true,"name":"Transistors",
 	 "localizedName":{"en":"Transistors","nl":"Transistoren"}},
 	{"id":"c2","code":null,"type":"STANDARD","published":false,"name":"Plain only"}
 ]`
 
-// productsBody holds products with and without the translations asked for, and one
-// with a plain name.
 const productsBody = `[
 	{"id":"001234","code":"001234","productType":"BASIC","published":false,"name":{"nl":"Transistor","fr":"Transistors"}},
 	{"id":"ZZ1","code":"ZZ1","productType":"BASIC","published":true,"name":{"en":"Valve","nl":"Klep"}},
 	{"id":"P2","code":"P2","productType":"VARIANT","name":"Plain name"}
 ]`
 
-// brandsBody holds a brand with an English and a Dutch name, one with a Dutch
-// name only and one with a plain name only.
 const brandsBody = `[
 	{"id":"b1","name":"Brand_1","localizedName":{"en":"Brand one","nl":"Merk een"}},
 	{"id":"b2","name":"NORTHWIND TRADE","localizedName":{"nl":"NORTHWIND TRADE"}},
 	{"id":"b3","name":"Plain only"}]`
 
-// catalogsBody holds a visible catalog named in English and one that
-// reproduces the live disagreement between status and visibility.
 const catalogsBody = `[{"id":"cc","name":{"en":"Main"},
 	"status":"visible","visibility":{"visible":true,"from":"2025-10","to":"2028-10"},
 	"publishedSites":["NL","main"],"categoryIds":["c1"]},
 	{"id":"odd","name":{"nl":"Raar"},"status":"visible","visibility":{"visible":false}}]`
 
-// catalogsTableInDutch is the table of catalogsBody in Dutch.
 const catalogsTableInDutch = "ID   NAME       STATUS   VISIBLE  FROM     TO       SITES    ROOT CATEGORIES\n" +
 	"cc   Main (en)  visible  true     2025-10  2028-10  NL,main  1\n" +
 	"odd  Raar       visible  false                               0\n"
 
-// productReads returns the Product Service reads.
 func productReads() []readCase {
 	return []readCase{
 		{
@@ -51,7 +38,6 @@ func productReads() []readCase {
 			want: "ID  NAME           ATTRIBUTES  VERSION\nt1  Transistor NL  1           3\n",
 		},
 		{
-			// A missing translation is labeled with the language shown; a plain name is shown as sent.
 			args:    []string{"products", "list"},
 			path:    "/product/acme1/products",
 			scopes:  []string{"product.product_read_unpublished"},
@@ -63,7 +49,6 @@ func productReads() []readCase {
 				"P2      P2      VARIANT             Plain name\n",
 		},
 		{
-			// Language tags compare case-insensitively.
 			args:    []string{"products", "list", "--language", "NL"},
 			path:    "/product/acme1/products",
 			scopes:  []string{"product.product_read_unpublished"},
@@ -75,7 +60,6 @@ func productReads() []readCase {
 				"P2      P2      VARIANT             Plain name\n",
 		},
 		{
-			// The id is one escaped path segment.
 			args:   []string{"products", "get", "001 234/x", "--language", "nl"},
 			path:   "/product/acme1/products/001%20234%2Fx",
 			scopes: []string{"product.product_read_unpublished"},
@@ -94,8 +78,6 @@ func productReads() []readCase {
 			want: "ID  NAME           ATTRIBUTES  VERSION\nt1  Transistor NL  1           3\n",
 		},
 		{
-			// Opt-in, read with one request: the reference documents no paging. A pending job has
-			// not finished; an error is cut.
 			args:   []string{"products", "recalculation-jobs", "list", "--allow-write-scope"},
 			path:   "/product/acme1/products/recalculate/jobs",
 			scopes: []string{"product.product_manage"},
@@ -127,11 +109,9 @@ func productReads() []readCase {
 	}
 }
 
-// categoryReads returns the Category Service reads.
 func categoryReads() []readCase {
 	return []readCase{
 		{
-			// Unpublished categories are asked for, with the scope that shows them.
 			args:    []string{"categories", "list", "--language", "nl"},
 			path:    "/category/acme1/categories",
 			query:   "showUnpublished=true",
@@ -144,7 +124,6 @@ c2              STANDARD  false      Plain only
 `,
 		},
 		{
-			// A missing translation is labeled; the plain name is only a last resort.
 			args:    []string{"categories", "list", "--language", "de"},
 			path:    "/category/acme1/categories",
 			query:   "showUnpublished=true",
@@ -167,7 +146,6 @@ c2              STANDARD  false      Plain only
 			want: "ID  CODE  TYPE      PUBLISHED  NAME\nc2        STANDARD  false      Alleen gewoon\n",
 		},
 		{
-			// The product id is one escaped path segment.
 			args:    []string{"categories", "for-product", "001 234/x", "--language", "nl"},
 			path:    "/category/acme1/assignments/references/001%20234%2Fx",
 			query:   "showUnpublished=true",
@@ -179,7 +157,6 @@ c2              STANDARD  false      Plain only
 				"c2              STANDARD  false      Plain only\n",
 		},
 		{
-			// Every level below the category; PARENT is the category each one lies directly below.
 			args:    []string{"categories", "subcategories", "c/1", "--language", "nl"},
 			path:    "/category/acme1/categories/c%2F1/subcategories",
 			query:   "showUnpublished=true",
@@ -204,7 +181,6 @@ c2              STANDARD  false      Plain only
 				"c2         STANDARD  true       Zagen\n",
 		},
 		{
-			// PRODUCT is the product id; Emporix sends the type in lower case.
 			args:    []string{"categories", "assignments", "list", "c2", "--language", "nl"},
 			path:    "/category/acme1/categories/c2/assignments",
 			query:   "showUnpublished=true",
@@ -217,12 +193,9 @@ c2              STANDARD  false      Plain only
 	}
 }
 
-// categoryTreeReads returns the Category Service reads of category trees.
 func categoryTreeReads() []readCase {
 	return []readCase{
 		{
-			// Each root is followed by its subcategories, depth first, indented by level; a
-			// missing or null subcategories list ends a branch.
 			args:   []string{"category-trees", "list", "--language", "nl"},
 			path:   "/category/acme1/category-trees",
 			query:  "showUnpublished=true",
@@ -239,7 +212,6 @@ func categoryTreeReads() []readCase {
 				"r2                    Tuin\n",
 		},
 		{
-			// --type sends the category type of the trees to list, beside the read's own query.
 			args:   []string{"category-trees", "list", "--type", "CLASSIFICATION"},
 			path:   "/category/acme1/category-trees",
 			query:  "showUnpublished=true&type=CLASSIFICATION",
@@ -272,12 +244,9 @@ func categoryTreeReads() []readCase {
 	}
 }
 
-// catalogReads returns the Catalog and Brand Service reads.
 func catalogReads() []readCase {
 	return []readCase{
 		{
-			// The Brand Service has no tenant path segment: the tenant comes from the token.
-			// A missing translation is labeled; the plain name is only a last resort.
 			args:    []string{"brands", "list"},
 			path:    "/brand/brands",
 			filters: listFilters{kinds: filterable},
@@ -296,7 +265,6 @@ b3  Plain only
 			want:    "ID  NAME\nb1  Merk een\nb2  NORTHWIND TRADE\nb3  Plain only\n",
 		},
 		{
-			// The second catalog reproduces the live disagreement between status and visibility.
 			args:    []string{"catalogs", "list"},
 			path:    "/catalog/acme1/catalogs",
 			filters: listFilters{kinds: sortable},
@@ -322,7 +290,6 @@ odd  Raar (nl)  visible  false                               0
 				"cc  Hoofd  visible                            2\n",
 		},
 		{
-			// The category id is one escaped path segment.
 			args:    []string{"catalogs", "for-category", "c/1", "--language", "nl"},
 			path:    "/catalog/acme1/catalogs/categories/c%2F1",
 			filters: listFilters{kinds: sortable},
@@ -339,12 +306,9 @@ odd  Raar (nl)  visible  false                               0
 	}
 }
 
-// labelReads returns the Label Service reads.
 func labelReads() []readCase {
 	return []readCase{
 		{
-			// The Label Service has no tenant path segment. A description, often HTML, is a string or a
-			// map of translations; the overlay position keeps its text.
 			args:    []string{"labels", "list", "--language", "nl"},
 			path:    "/label/labels",
 			filters: listFilters{kinds: filterable},
@@ -364,12 +328,9 @@ func labelReads() []readCase {
 	}
 }
 
-// mediaReads returns the Media Service reads.
 func mediaReads() []readCase {
 	return []readCase{
 		{
-			// File details are empty for a link; an asset may have no status (it is then ready);
-			// the size keeps its text; REFERENCES joins type and id.
 			args:    []string{"media", "list"},
 			path:    "/media/acme1/assets",
 			scopes:  []string{"media.asset_read"},
@@ -383,7 +344,6 @@ func mediaReads() []readCase {
 				"m2  LINK  PUBLIC                                           \n",
 		},
 		{
-			// An upload that is not complete has no size yet.
 			args:   []string{"media", "get", "m/1"},
 			path:   "/media/acme1/assets/m%2F1",
 			scopes: []string{"media.asset_read"},
@@ -394,7 +354,6 @@ func mediaReads() []readCase {
 				"m/1  BLOB  PRIVATE  PENDING  b.pdf  application/pdf         \n",
 		},
 		{
-			// A private file gets a signed URL that expires.
 			args:   []string{"media", "download-url", "m/1"},
 			path:   "/media/acme1/assets/m%2F1/download-url",
 			scopes: []string{"media.asset_read"},
@@ -404,7 +363,6 @@ func mediaReads() []readCase {
 				"GCS       2026-10-14T12:15:00Z  https://storage.example.com/a.pdf?sig=x\n",
 		},
 		{
-			// A link's URL does not expire.
 			args:   []string{"media", "download-url", "m2"},
 			path:   "/media/acme1/assets/m2/download-url",
 			scopes: []string{"media.asset_read"},

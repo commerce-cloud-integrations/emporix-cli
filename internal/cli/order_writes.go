@@ -6,38 +6,22 @@ import (
 	"github.com/commerce-cloud-integrations/emporix-cli/internal/emporix"
 )
 
-// orderUpdateScope is the scope of the Order Service's writes that change an
-// order; creating and deleting one have scopes of their own, and changing
-// one that is COMPLETED takes one more (completedOrder). The *_by_vendor
-// scopes are those of a vendor's own orders.
 const orderUpdateScope = "order.order_update"
 
-// orderStatuses are the statuses of an order, which `orders transition`
-// moves it to.
 func orderStatuses() []string {
 	return []string{"IN_CHECKOUT", "CREATED", "CONFIRMED", "DECLINED", "SHIPPED", "COMPLETED"}
 }
 
-// completedOrder is the flag of a write that may change a COMPLETED order,
-// which Emporix allows only with order.order_update_completed besides
-// order.order_update (live: neither alone): epx requests it only when told
-// that the order is COMPLETED. Only update and patch take it: Emporix moves a
-// COMPLETED order to no other status and recalculates none, whatever the
-// scopes (live).
 func completedOrder() queryChoice {
 	return queryChoice{options: []choiceOption{{flag: "completed", scopes: []string{"order.order_update_completed"},
 		usage: "for an order that is COMPLETED, which Emporix changes only with one more scope"}}}
 }
 
-// recalculateOrder is the query switch with which Emporix recalculates the
-// whole order that a write replaces or changes.
 func recalculateOrder() []paramFlag {
 	return []paramFlag{{param: recalculate, flag: recalculate,
 		usage: "have Emporix recalculate the whole order, coupon discounts included"}}
 }
 
-// orderWrites returns the writes of orders: create, update ID, patch ID and
-// delete ID, and the actions on one order (orderActions).
 func orderWrites(orders resource[order]) []*write {
 	item := request{path: orders.itemPath()}
 	update := []string{orderUpdateScope}
@@ -85,8 +69,6 @@ func orderWrites(orders resource[order]) []*write {
 	return append(writes, orderActions(orders)...)
 }
 
-// orderActions returns the actions on one order: transition, add-entries,
-// recalculate and split.
 func orderActions(orders resource[order]) []*write {
 	id := orders.argument()
 	ofOrder := argumentIDs{id: orders.ids()}

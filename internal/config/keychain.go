@@ -26,7 +26,7 @@ const KeychainService = "epx"
 
 // SystemKeychain is the keychain of the operating system: the macOS
 // Keychain, the Windows Credential Manager, or a Secret Service (such as
-// GNOME Keyring or KWallet) on Linux and BSD. It needs no cgo.
+// GNOME Keyring or KWallet) on Linux and BSD.
 type SystemKeychain struct{}
 
 // Secret implements Keychain.
@@ -45,7 +45,6 @@ func (SystemKeychain) DeleteSecret(profile string) error {
 	return noSecret(keyring.Delete(KeychainService, profile))
 }
 
-// noSecret returns err, with the keyring's not found as ErrNoSecret.
 func noSecret(err error) error {
 	if errors.Is(err, keyring.ErrNotFound) {
 		return ErrNoSecret

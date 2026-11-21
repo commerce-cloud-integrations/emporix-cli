@@ -6,8 +6,6 @@ import (
 	"testing"
 )
 
-// sessionContextWriteCases are the writes of session contexts: an update, an
-// upsert, and custom attributes added and deleted.
 func sessionContextWriteCases() []writeCase {
 	manage := []string{"sessioncontext.context_manage"}
 	const context = "/session-context/acme1/context/s1"
@@ -38,9 +36,6 @@ func sessionContextWriteCases() []writeCase {
 	}
 }
 
-// TestSessionAttributeNeedsKeyAndValue checks that attributes create without
-// --key or --value, and with --file and either, is a usage error (exit 2)
-// that sends nothing.
 func TestSessionAttributeNeedsKeyAndValue(t *testing.T) {
 	file := writeBody(t, `{"key":"channel","value":"kiosk"}`)
 	for _, tt := range []struct {

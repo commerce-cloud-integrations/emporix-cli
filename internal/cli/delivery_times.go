@@ -11,7 +11,6 @@ import (
 	"github.com/commerce-cloud-integrations/emporix-cli/internal/emporix"
 )
 
-// deliveryTime is the part of a Shipping Service delivery time shown in tables.
 type deliveryTime struct {
 	ID               string            `json:"id"`
 	Name             string            `json:"name"`
@@ -22,25 +21,20 @@ type deliveryTime struct {
 	Day              deliveryDay       `json:"day"`
 	TimeZoneID       string            `json:"timeZoneId"`
 	DeliveryDayShift json.Number       `json:"deliveryDayShift"`
-	Slots            []json.RawMessage `json:"slots"` // counted only
+	Slots            []json.RawMessage `json:"slots"`
 }
 
-// deliveryDay is the day of a delivery time: a weekday, a single date or a
-// period of dates.
 type deliveryDay struct {
 	Weekday    string             `json:"weekday"`
 	SingleDate string             `json:"singleDate"`
 	DatePeriod deliveryDatePeriod `json:"datePeriod"`
 }
 
-// deliveryDatePeriod is the period of dates of a delivery day.
 type deliveryDatePeriod struct {
 	DateFrom string `json:"dateFrom"`
 	DateTo   string `json:"dateTo"`
 }
 
-// zone returns the delivery zone, or "all zones" for a day without delivery
-// on every zone of the site (Emporix allows isForAllZones only there).
 func (d *deliveryTime) zone() string {
 	if d.IsForAllZones {
 		return "all zones"
@@ -48,8 +42,6 @@ func (d *deliveryTime) zone() string {
 	return d.ZoneID
 }
 
-// day returns the weekday, the date or the date period (ISO 8601 from/to)
-// the delivery time applies to; Emporix sets only one of them.
 func (d *deliveryTime) day() string {
 	period := d.Day.DatePeriod
 	if period.DateFrom != "" || period.DateTo != "" {
@@ -58,7 +50,6 @@ func (d *deliveryTime) day() string {
 	return cmp.Or(d.Day.Weekday, d.Day.SingleDate)
 }
 
-// deliveryTimeSlot is the part of a delivery time slot shown in tables.
 type deliveryTimeSlot struct {
 	ID                string `json:"id"`
 	ShippingMethod    string `json:"shippingMethod"`
@@ -73,9 +64,6 @@ type deliveryTimeSlot struct {
 	Capacity json.Number `json:"capacity"`
 }
 
-// newDeliveryTimesCommand reads delivery times, which the service returns
-// whole, the time slots of one and the delivery windows of a cart, and
-// changes delivery times and their slots.
 func newDeliveryTimesCommand(a *app) *cobra.Command {
 	times := resource[deliveryTime]{
 		use:   "delivery-times",
@@ -111,11 +99,8 @@ func newDeliveryTimesCommand(a *app) *cobra.Command {
 	}, deliveryTimeWrites(a, times))...)
 }
 
-// deliveryTimesPath is the path of the delivery times of the tenant.
 const deliveryTimesPath = "/shipping/{tenant}/delivery-times"
 
-// newDeliveryTimeSlotsCommand returns the group of the time slots of a
-// delivery time of times: list and get, and their writes (slotWrites).
 func newDeliveryTimeSlotsCommand(a *app, times resource[deliveryTime]) *cobra.Command {
 	slotsOf := times.nested("slots")
 	slots := child[deliveryTimeSlot]{

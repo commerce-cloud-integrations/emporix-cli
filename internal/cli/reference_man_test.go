@@ -10,34 +10,18 @@ import (
 	"github.com/spf13/pflag"
 )
 
-// The man pages are rendered from the command tree like the command reference
-// (referencePages): epx.1 holds the root command, its global flags and the
-// top-level commands, and each top-level command has a page, such as
-// epx-units.1, with its help and a subsection per command below it. Pages are
-// roff with the man macros; their text is the help text, set in paragraphs,
-// with backquoted spans and literals such as --file in bold and indented
-// lines kept as written.
-
-// manDir holds the generated man pages, relative to this package.
 const manDir = "../../man"
 
-// manExt is the extension of the man pages: section 1, user commands.
 const manExt = ".1"
 
-// regenerateMan is the command that rewrites the man pages.
 const regenerateMan = "go test ./internal/cli -run TestManPages -update"
 
-// siteURL is the address of the documentation site.
 const siteURL = "https://commerce-cloud-integrations.github.io/emporix-cli"
 
-// TestManPages checks that the man pages match the command tree; with -update
-// it rewrites them and removes pages no longer rendered.
 func TestManPages(t *testing.T) {
 	generated{dir: manDir, ext: manExt, regenerate: regenerateMan}.check(t, manPages(newTestRoot()))
 }
 
-// manPages renders the man pages of root by file name. Like referencePages,
-// it first adds -h to every command, as Cobra does before it shows help.
 func manPages(root *cobra.Command) map[string]string {
 	walkCommands(root, (*cobra.Command).InitDefaultHelpFlag)
 	pages := map[string]string{manName(root) + manExt: rootManPage(root)}
@@ -47,11 +31,8 @@ func manPages(root *cobra.Command) map[string]string {
 	return pages
 }
 
-// manName returns the name of cmd's man page: its path joined with "-".
 func manName(cmd *cobra.Command) string { return anchorOf(cmd) }
 
-// rootManPage renders the root command: its help, the global flags and the
-// top-level commands, each named by its page.
 func rootManPage(root *cobra.Command) string {
 	var m manWriter
 	m.title(root)
@@ -71,8 +52,6 @@ func rootManPage(root *cobra.Command) string {
 	return m.String()
 }
 
-// commandManPage renders a top-level command: its help, then a subsection per
-// command below it, in the order of help.
 func commandManPage(top *cobra.Command) string {
 	var m manWriter
 	m.title(top)
@@ -97,13 +76,10 @@ func commandManPage(top *cobra.Command) string {
 	return m.String()
 }
 
-// manRef names cmd's man page as man pages cite each other: epx-units(1).
 func manRef(cmd *cobra.Command) string {
 	return bold(escapeRoff(manName(cmd))) + "(" + strings.TrimPrefix(manExt, ".") + ")"
 }
 
-// manWriter writes a man page. headed reports whether the last line written
-// is a heading, after which a paragraph needs no macro of its own.
 type manWriter struct {
 	b      strings.Builder
 	headed bool
@@ -111,8 +87,6 @@ type manWriter struct {
 
 func (m *manWriter) String() string { return m.b.String() }
 
-// title writes the title line and the NAME section of cmd's page: its name
-// and summary, which whatis and apropos read.
 func (m *manWriter) title(cmd *cobra.Command) {
 	name := manName(cmd)
 	program := cmd.Root().Name()
@@ -121,9 +95,6 @@ func (m *manWriter) title(cmd *cobra.Command) {
 	m.line(escapeRoff(name) + ` \- ` + escapeRoff(summary(cmd.Short)))
 }
 
-// command writes the help of cmd, besides its summary and usage lines: its
-// long help, aliases, flags (besides the global ones and -h), OAuth scopes
-// and examples.
 func (m *manWriter) command(cmd *cobra.Command) {
 	m.help(longHelp(cmd))
 	if len(cmd.Aliases) > 0 {
@@ -142,8 +113,6 @@ func (m *manWriter) command(cmd *cobra.Command) {
 	}
 }
 
-// manScopes names the OAuth scopes of a read or a write (shownScopes), none
-// where it requests none, and marks an opt-in read.
 func manScopes(cmd *cobra.Command) string {
 	scopes, optIn, shown := shownScopes(cmd)
 	switch {
@@ -158,9 +127,6 @@ func manScopes(cmd *cobra.Command) string {
 	return bold("OAuth scopes:") + " " + escapeRoff(strings.Join(scopes, ", "))
 }
 
-// help writes help text: runs of prose as paragraphs, a Markdown heading
-// line such as Cobra's "#### Linux:" as a bold line, and runs of indented
-// lines as written.
 func (m *manWriter) help(text string) {
 	for _, run := range helpRuns(text) {
 		title, isHeading := helpHeading(run.lines[0])
@@ -175,8 +141,6 @@ func (m *manWriter) help(text string) {
 	}
 }
 
-// flags writes the flags in flags that help shows, but those named in skip,
-// as a tagged list: each flag, then its description and default.
 func (m *manWriter) flags(flags *pflag.FlagSet, skip ...string) {
 	for _, f := range shownFlags(flags, skip...) {
 		text := roffProse(sentence(f.text))
@@ -187,7 +151,6 @@ func (m *manWriter) flags(flags *pflag.FlagSet, skip ...string) {
 	}
 }
 
-// item writes a tagged paragraph: term, then text indented below it.
 func (m *manWriter) item(term, text string) {
 	m.macro("TP")
 	m.line(term)
@@ -196,26 +159,22 @@ func (m *manWriter) item(term, text string) {
 
 func (m *manWriter) section(name string) { m.heading("SH", name) }
 
-// heading writes a section (SH) or subsection (SS) heading.
 func (m *manWriter) heading(macro, title string) {
 	m.macro(macro, title)
 	m.headed = true
 }
 
-// paragraph writes text, already roff, as a paragraph.
 func (m *manWriter) paragraph(text string) {
 	m.startParagraph()
 	m.line(text)
 }
 
-// startParagraph starts a paragraph, unless a heading has just started one.
 func (m *manWriter) startParagraph() {
 	if !m.headed {
 		m.macro("PP")
 	}
 }
 
-// preformatted writes lines as written, indented, without filling.
 func (m *manWriter) preformatted(lines []string) {
 	m.startParagraph()
 	m.macro("RS", "4")
@@ -227,7 +186,6 @@ func (m *manWriter) preformatted(lines []string) {
 	m.macro("RE")
 }
 
-// macro writes a macro line, each argument quoted.
 func (m *manWriter) macro(name string, args ...string) {
 	m.b.WriteString("." + name)
 	for _, arg := range args {
@@ -237,8 +195,6 @@ func (m *manWriter) macro(name string, args ...string) {
 	m.headed = false
 }
 
-// line writes a text line, roff already; a line that starts with a period or
-// an apostrophe, which roff would read as a request, starts with \& instead.
 func (m *manWriter) line(text string) {
 	if strings.HasPrefix(text, ".") || strings.HasPrefix(text, "'") {
 		text = `\&` + text
@@ -247,8 +203,6 @@ func (m *manWriter) line(text string) {
 	m.headed = false
 }
 
-// summary returns a command's summary as the NAME section shows it: without
-// a final period, and starting lower case unless it starts with an acronym.
 func summary(short string) string {
 	text := strings.TrimSuffix(strings.TrimSpace(short), ".")
 	if len(text) > 1 && unicode.IsUpper(rune(text[0])) && !unicode.IsUpper(rune(text[1])) {
@@ -257,10 +211,6 @@ func summary(short string) string {
 	return text
 }
 
-// roffProse renders prose as roff that shows the same text: backquoted spans
-// in bold, without their backquotes, literals such as --file in bold
-// (markLiterals) and the rest escaped. Prose with an unmatched backquote shows
-// its backquotes as written.
 func roffProse(text string) string {
 	parts := strings.Split(text, "`")
 	if len(parts)%2 == 0 {
@@ -280,7 +230,6 @@ func roffProse(text string) string {
 	return b.String()
 }
 
-// roffLiterals renders prose with its literals (literalSpans) in bold and the rest escaped.
 func roffLiterals(text string) string {
 	var b strings.Builder
 	last := 0
@@ -293,11 +242,6 @@ func roffLiterals(text string) string {
 
 func bold(text string) string { return `\fB` + text + `\fR` }
 
-// escapeRoff escapes the characters of text that roff would interpret or
-// change: a backslash, a hyphen (which roff may set as a hyphen, not the
-// minus of a flag), a backquote and an apostrophe (which it may set as
-// typographic quotes), and every character outside ASCII, named by its code
-// point.
 func escapeRoff(text string) string {
 	var b strings.Builder
 	for _, r := range text {
@@ -319,9 +263,6 @@ func escapeRoff(text string) string {
 	return b.String()
 }
 
-// TestManRendersHelpFaithfully checks that help text shows in a man page as
-// written: roff's special characters are escaped, backquoted spans and
-// literals are bold and indented lines keep their layout.
 func TestManRendersHelpFaithfully(t *testing.T) {
 	for _, tt := range []struct{ help, want string }{
 		{help: `a \b c-d 'e' – é`, want: ".PP\na \\eb c\\-d \\fB\\(aqe\\(aq\\fR \\[u2013] \\[u00E9]\n"},
@@ -346,9 +287,6 @@ func TestManRendersHelpFaithfully(t *testing.T) {
 	}
 }
 
-// TestManPagesNameEveryCommand checks that the pages cover the command tree:
-// every shown command has a subsection or a page, and the root page names the
-// page of every top-level command.
 func TestManPagesNameEveryCommand(t *testing.T) {
 	root := newTestRoot()
 	pages := manPages(root)

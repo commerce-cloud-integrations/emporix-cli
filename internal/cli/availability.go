@@ -7,27 +7,18 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// productAvailability is the part of an Availability Service record shown in tables.
 type productAvailability struct {
 	ProductID           string      `json:"productId"`
 	Site                string      `json:"site"`
-	StockLevel          json.Number `json:"stockLevel"` // kept as sent
+	StockLevel          json.Number `json:"stockLevel"`
 	Available           *bool       `json:"available"`
 	DistributionChannel string      `json:"distributionChannel"`
 }
 
-// availabilityService is the path of the Availability Service, whose records
-// are addressed by product and site.
 const availabilityService = "/availability/{tenant}/availability"
 
-// availabilityManageScope is the scope of the Availability Service's writes
-// (the *_by_vendor scope is that of a vendor's own products).
 const availabilityManageScope = "availability.availability_manage"
 
-// newAvailabilityCommand reads and changes stock per site. A record is
-// addressed by site and product, so get, create and update take a product id
-// and require --site; a search reads the records of every site, and a bulk
-// write names the product and site of each record.
 func newAvailabilityCommand(a *app) *cobra.Command {
 	const onSite = "Reads product availability (stock) on the site --site names, the tenant's own availability."
 	stock := reader[productAvailability]{view: view[productAvailability]{
@@ -39,7 +30,7 @@ func newAvailabilityCommand(a *app) *cobra.Command {
 	}}
 	records := listing{filters: listFilters{kinds: filterable}}
 	onSiteList := request{path: availabilityService + "/site/" + placeholderSite}
-	listed := argumentIDs{productID: listedIDs(stock, onSiteList, records, columnProduct)} // those with a record on --site
+	listed := argumentIDs{productID: listedIDs(stock, onSiteList, records, columnProduct)}
 	commands := []*cobra.Command{
 		stock.command(a, &command{
 			use:   listUse,
@@ -75,9 +66,6 @@ func newAvailabilityCommand(a *app) *cobra.Command {
 		append(commands, availabilityWrites(a, listed)...)...)
 }
 
-// availabilityWrites returns the writes of availability: create, whose
-// PRODUCT_ID completes with every product, update (an upsert) and delete,
-// whose PRODUCT_ID completes from listed, and each in bulk.
 func availabilityWrites(a *app, listed argumentIDs) []*cobra.Command {
 	one := request{path: availabilityService + "/" + placeholderID + "/" + placeholderSite}
 	scopes := []string{availabilityManageScope}

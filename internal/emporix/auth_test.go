@@ -29,7 +29,7 @@ func TestAuthenticateRejectsUnusableTokens(t *testing.T) {
 		body   string
 		scopes []string
 		want   string
-		auth   bool // whether the error must match ErrAuth (exit code 3)
+		auth   bool
 	}{
 		{name: "missing scope", auth: true, status: 200,
 			scopes: []string{"site.site_read", "category.category_read_unpublished"},
@@ -115,10 +115,6 @@ func TestReadBodyRejectsOversizedResponses(t *testing.T) {
 	}
 }
 
-// TestTokensAreRenewedBeforeTheyExpire checks that a client requests a new
-// token once nine tenths of its token's lifetime passed, and not before,
-// checking it as it checked the first; and that it keeps a token without a
-// lifetime.
 func TestTokensAreRenewedBeforeTheyExpire(t *testing.T) {
 	fake := newFakeEmporix(t)
 	fake.route("/x", respond(http.StatusOK, `{"id":"1"}`))
@@ -126,10 +122,10 @@ func TestTokensAreRenewedBeforeTheyExpire(t *testing.T) {
 	issued := time.Date(2026, 10, 14, 12, 0, 0, 0, time.UTC)
 	clock := issued
 	client.now = func() time.Time { return clock }
-	renew := 14399 * time.Second * 9 / 10 // of the fake's tokens, which expire after 14399s
+	renew := 14399 * time.Second * 9 / 10
 	for _, step := range []struct {
-		at     time.Duration // after the first token was issued
-		tokens int           // the token requests so far
+		at     time.Duration
+		tokens int
 	}{{0, 1}, {renew - time.Second, 1}, {renew, 2}, {renew + time.Hour, 2}} {
 		clock = issued.Add(step.at)
 		if _, err := client.Get(context.Background(), "/x", nil); err != nil || fake.tokenCalls != step.tokens {

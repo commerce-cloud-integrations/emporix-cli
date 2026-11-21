@@ -13,12 +13,6 @@ import (
 	"github.com/commerce-cloud-integrations/emporix-cli/internal/output"
 )
 
-// TestOutputFlagsOfEveryCommand checks which commands take which output
-// flags: every read but one that saves a file (--out), auth status and
-// profile list and show, which show a table, -o (table, json, yaml or csv),
-// --columns, which can name each of its columns, and --no-headers; api get
-// and every write, which print a response, -o (json or yaml) only; any other
-// command, a read that saves a file included, none.
 func TestOutputFlagsOfEveryCommand(t *testing.T) {
 	var reads, writes int
 	walkCommands(newTestRoot(), func(cmd *cobra.Command) {
@@ -35,16 +29,13 @@ func TestOutputFlagsOfEveryCommand(t *testing.T) {
 	}
 }
 
-// checkOutputFlags checks that -o of cmd takes the formats its output has: a
-// table for a read, a response for a write and for api get. It reports
-// whether cmd is a read, and whether it is a write.
 func checkOutputFlags(t *testing.T, cmd *cobra.Command) (read, write bool) {
 	t.Helper()
 	tables := []string{"table", "json", "yaml", "csv"}
 	responses := []string{"json", "yaml"}
 	otherTables := []string{"epx auth status", "epx profile list", "epx profile show"}
 	_, isRead := cmd.Annotations[scopesAnnotation]
-	isRead = isRead && cmd.Flags().Lookup(outFlag) == nil // a read that saves a file prints none
+	isRead = isRead && cmd.Flags().Lookup(outFlag) == nil
 	isWrite := cmd.Flags().Lookup(dryRunFlag) != nil
 	var want []string
 	switch {
@@ -71,8 +62,6 @@ func checkOutputFlags(t *testing.T, cmd *cobra.Command) (read, write bool) {
 	return read, write
 }
 
-// assertColumns checks that --columns of cmd can name each of its columns:
-// no name holds a comma, and no two are the same in any case.
 func assertColumns(t *testing.T, cmd *cobra.Command) {
 	t.Helper()
 	columns, ok := cmd.Flags().Lookup(columnsFlag).Value.(*columnPicks)
@@ -89,10 +78,6 @@ func assertColumns(t *testing.T, cmd *cobra.Command) {
 	}
 }
 
-// TestReadsPrintTheFormatAndColumnsTheyAreGiven checks the shared builder's
-// output flags: CSV of the table's rows, --columns, which picks and orders
-// them by header in any case (repeated, it adds columns), --no-headers, and
-// YAML of the whole response, which a list also checks as JSON.
 func TestReadsPrintTheFormatAndColumnsTheyAreGiven(t *testing.T) {
 	fake := newFakeEmporix(t)
 	fake.route("/things", firstPage(`[{"id":"a1","name":"Shirt, \"blue\"","size":1.50},{"id":"b2","name":"Pants"}]`))
@@ -118,11 +103,6 @@ func TestReadsPrintTheFormatAndColumnsTheyAreGiven(t *testing.T) {
 	}
 }
 
-// TestOutputUsageErrorsSendNothing checks that output flags that cannot
-// apply fail as usage errors before anything is sent: a column that the
-// table does not have (the error names those it has), one named twice,
-// --columns or --no-headers with a format that prints the response whole,
-// and with --stream, which excludes every output flag.
 func TestOutputUsageErrorsSendNothing(t *testing.T) {
 	fake := newFakeEmporix(t)
 	const whole = "--columns and --no-headers apply only to -o table and -o csv"
@@ -174,10 +154,6 @@ func TestAuthStatusPrintsEveryFormat(t *testing.T) {
 	fake.assertNothingSent(t)
 }
 
-// TestTablesAloneCutLongValues checks that a table cuts the values of the
-// columns its view declares long, which CSV prints whole, also when
-// --columns picks them in another order, and that a long column the header
-// lacks panics as the tree is built.
 func TestTablesAloneCutLongValues(t *testing.T) {
 	long := strings.Repeat("v", maxValueRunes+10)
 	for _, tt := range []struct {
@@ -208,7 +184,6 @@ func TestTablesAloneCutLongValues(t *testing.T) {
 	addTableOutput(&cobra.Command{Use: "values"}, []string{"KEY"}, "VALUE")
 }
 
-// asYAML returns body as epx prints YAML.
 func asYAML(t *testing.T, body string) string {
 	t.Helper()
 	var printed strings.Builder

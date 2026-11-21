@@ -2,8 +2,6 @@ package cli
 
 import "github.com/spf13/cobra"
 
-// contactAssignment is the part of a Customer Management contact assignment
-// shown in tables: a customer acting as a contact of a legal entity.
 type contactAssignment struct {
 	ID          string `json:"id"`
 	LegalEntity struct {
@@ -19,9 +17,6 @@ type contactAssignment struct {
 	Primary *bool  `json:"primary"`
 }
 
-// newContactAssignmentsCommand reads which customers are contacts of which
-// legal entities, and in what role, and creates, upserts and deletes those
-// assignments.
 func newContactAssignmentsCommand(a *app) *cobra.Command {
 	assignments := resource[contactAssignment]{
 		use:   "contact-assignments",

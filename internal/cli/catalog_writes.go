@@ -14,16 +14,11 @@ import (
 // localized members are maps of languages to text whatever the
 // Content-Language, so they take no --content-language.
 
-// versionNote says how a replacement (PUT) of one item avoids overwriting a
-// change made since the item was read, the item being a singular that getLine
-// reads.
 func versionNote(singular, getLine string) string {
 	return "With metadata.version, as `epx " + getLine + " -o json` shows it, Emporix refuses " +
 		"the write as a conflict (exit 5) when the " + singular + " changed since it was read."
 }
 
-// catalogWrites returns the writes of catalogs: create, update ID (an upsert),
-// patch ID and delete ID.
 func catalogWrites(a *app, catalogs resource[catalog]) []*cobra.Command {
 	manage := []string{"catalog.catalog_manage"}
 	version := versionNote(catalogs.singular, "catalogs get ID")
@@ -57,8 +52,6 @@ func catalogWrites(a *app, catalogs resource[catalog]) []*cobra.Command {
 	}
 }
 
-// categoryManageScope is the scope of every write of categories and their
-// assignments.
 const categoryManageScope = "category.category_manage"
 
 // publishing is the choice of a write of a category to publish it, with
@@ -136,26 +129,16 @@ func categoryWrites(a *app, categories resource[category]) []*cobra.Command {
 	}
 }
 
-// maxAssignments is the most assignments that a bulk write of a category's
-// assignments sends, as its reference documents.
 const maxAssignments = 200
 
-// referencesSegment follows the path of a category's assignments in the path
-// of the assignment of one product, which the product's id ends, and of
-// bulk-update.
 const referencesSegment = "/references/"
 
-// assignmentWrites returns the writes of the products assigned to a category
-// of categories, assignments being their list: create, bulk-create and
-// bulk-update CATEGORY_ID, and update CATEGORY_ID PRODUCT_ID. Each names the
-// category first and says where its id comes from, as the list does. The
-// deletes follow (assignmentDeletes).
 func assignmentWrites(a *app, categories resource[category], assignments child[categoryAssignment]) []*cobra.Command {
 	path, category := assignments.below(categories.path), categories.argument()
 	ofCategory := argumentIDs{category: categories.ids()}
 	about := categories.argumentSentence(notFound)
 	manage := []string{categoryManageScope}
-	ref := literal(`{"ref": {"id": "100200", "type": "PRODUCT"}}`) // an assignment that create and bulk-create send
+	ref := literal(`{"ref": {"id": "100200", "type": "PRODUCT"}}`)
 	return []*cobra.Command{
 		(&write{
 			use: createUse + " " + category, short: "Assign a product to a category", method: http.MethodPost,
@@ -192,14 +175,6 @@ func assignmentWrites(a *app, categories resource[category], assignments child[c
 	}
 }
 
-// assignmentDeletes returns the deletes of the products assigned to a
-// category of categories, below path, the list of one category's
-// assignments: delete CATEGORY_ID PRODUCT_ID, the inverse of update, and
-// delete-assignment CATEGORY_ID ASSIGNMENT_ID, which delete one, delete-all
-// CATEGORY_ID, which deletes those of every product of a category, and
-// delete-product-everywhere PRODUCT_ID, which deletes those of a product in
-// every category. Each completes the category from categories and the
-// product or assignment from the category's assignments.
 func assignmentDeletes(a *app, categories resource[category], assignments child[categoryAssignment]) []*cobra.Command {
 	path, manage := assignments.below(categories.path), []string{categoryManageScope}
 	category := categories.argument()
@@ -232,9 +207,6 @@ func assignmentDeletes(a *app, categories resource[category], assignments child[
 	return []*cobra.Command{one.command(a), byID.command(a), all.command(a), everywhere.command(a)}
 }
 
-// rebuildCommand returns `rebuild ID`, which rebuilds the category tree of
-// trees, a root category, and prints it whole: published and unpublished
-// categories, as the reads of category trees show them.
 func rebuildCommand(a *app, trees resource[treeCategory]) *cobra.Command {
 	return (&write{
 		use:   trees.itemUse("rebuild"),

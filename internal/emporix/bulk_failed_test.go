@@ -10,19 +10,13 @@ import (
 
 const cartBatchPath = "/cart/{tenant}/carts/c1/itemsBatch"
 
-// TestSendReadsTheItemsOfABatchThatFailed checks a bulk write that Emporix
-// answers with a failure status, as the Cart Service answers a batch of
-// items that failed in part with 400 or 500: where the body gives the result
-// of each item, Send returns it with an *ItemsError listing the items that
-// failed (the others were carried out), as for a 207; otherwise, or where no
-// item failed, the failure, classified as any write's.
 func TestSendReadsTheItemsOfABatchThatFailed(t *testing.T) {
 	const mixed = `[{"index":0,"status":201,"id":"1"},{"index":1,"status":400,"errorMessage":"no price for 100200"}]`
 	for _, tt := range []struct {
 		status   int
 		response string
-		body     bool          // the response is returned
-		failed   []ItemFailure // the items that failed; the failure of the batch when nil
+		body     bool
+		failed   []ItemFailure
 		class    error
 		err      string
 	}{
@@ -70,7 +64,6 @@ func TestSendReadsTheItemsOfABatchThatFailed(t *testing.T) {
 	}
 }
 
-// classOf returns the class of err, nil for none.
 func classOf(err error) error {
 	for _, class := range []error{ErrInvalidInput, ErrAuth, ErrNotFound, ErrConflict} {
 		if errors.Is(err, class) {
@@ -80,9 +73,6 @@ func classOf(err error) error {
 	return nil
 }
 
-// TestItemsErrorNamesItsParts checks the lines and summary of an
-// *ItemsError: its parts are items unless it names them, the items of a
-// command each on a line of their own, which count as one failed command.
 func TestItemsErrorNamesItsParts(t *testing.T) {
 	item := ItemFailure{Index: 1, ID: "2", Status: http.StatusBadRequest, Message: "Invalid quantity"}
 	failed := &ItemsError{Method: http.MethodPost, Path: "/x", Noun: CommandNoun, Items: 3, NotRun: 1}

@@ -6,14 +6,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// The writes of delivery times and their time slots, each with the scope of
-// the Shipping Service's writes (shippingManageScope), which the reference
-// names for every one; those of their delivery windows are with the reads of
-// these (delivery_window.go).
-
-// validateOverlap returns the query parameter of the writes of delivery
-// times and slots that turns off the check that the time ranges of slots of
-// one shipping method do not overlap.
 func validateOverlap() queryFlags {
 	return queryFlags{optional: []paramFlag{{
 		param: "validateOverlap", flag: "validate-overlap", choices: []string{queryTrue, queryFalse},
@@ -22,15 +14,11 @@ func validateOverlap() queryFlags {
 	}}}
 }
 
-// jsonPatchHelp says what the body of a patch of a delivery time or slot is,
-// with an example of an operation.
 func jsonPatchHelp(example string) string {
 	return "the JSON Patch (RFC 6902) in " +
 		"--file: an array of operations whose op is add, remove or replace, such as " + literal("["+example+"]") + "."
 }
 
-// deliveryTimeWrites returns the writes of delivery times: create,
-// bulk-create, update ID, patch ID and delete ID.
 func deliveryTimeWrites(a *app, times resource[deliveryTime]) []*cobra.Command {
 	manage := []string{shippingManageScope}
 	item, ids := request{path: times.itemPath()}, times.itemIDs()
@@ -76,10 +64,6 @@ func deliveryTimeWrites(a *app, times resource[deliveryTime]) []*cobra.Command {
 	}
 }
 
-// slotWrites returns the writes of the time slots of a delivery time, below
-// slotsOf (the delivery times nested in the slots group), slots being their
-// list: create and delete-all DELIVERY_TIME_ID, and update, patch and delete
-// DELIVERY_TIME_ID ID, which address one slot as get reads it.
 func slotWrites(a *app, slotsOf resource[deliveryTime], slots child[deliveryTimeSlot]) []*cobra.Command {
 	manage := []string{shippingManageScope}
 	slot := func(verb string) childTarget { return childItemTarget(slotsOf, slots, verb, nil) }

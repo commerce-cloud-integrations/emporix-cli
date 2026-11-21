@@ -6,8 +6,6 @@ import (
 	"slices"
 )
 
-// orderCSV returns the content of testdata/order.csv, which a case uploads
-// byte for byte; when it cannot be read, every test of the cases fails.
 func orderCSV() string {
 	content, err := os.ReadFile("testdata/order.csv")
 	if err != nil {
@@ -16,7 +14,6 @@ func orderCSV() string {
 	return string(content)
 }
 
-// orderText returns the content of testdata/order.text, as orderCSV does.
 func orderText() string {
 	content, err := os.ReadFile("testdata/order.text")
 	if err != nil {
@@ -25,20 +22,15 @@ func orderText() string {
 	return string(content)
 }
 
-// The paths of the AI Service in the cases.
 const (
 	aiServicePath = "/ai-service/acme1/"
 	aiAgenticPath = aiServicePath + "agentic/"
 )
 
-// aiWrites are the writes of the AI Service: the agents and what they are
-// built from, jobs, and what consumes AI credits.
 func aiWrites() []writeCase {
 	return slices.Concat(aiAgentWrites(), aiConnectionWrites(), aiCreditWrites())
 }
 
-// aiAgentWrites are the writes of agents: one agent's, an agent from a
-// template, the export and import of agents and their attachments.
 func aiAgentWrites() []writeCase {
 	manage, chat := []string{"ai.agent_manage"}, []string{"ai.agentexecution_manage"}
 	const agent = `{"name":{"en":"Complaints"},"userPrompt":"Resolve complaints.","triggers":[],"mcpServers":[],` +
@@ -46,7 +38,6 @@ func aiAgentWrites() []writeCase {
 	const export = `{"checksum":"de56","data":"eyJhZ2VudHMiOltdfQ==","exportedAt":"2026-10-14T10:00:00Z","jobId":"j1"}`
 	return []writeCase{
 		{
-			// Emporix creates a missing agent, and answers with its id.
 			args: []string{"ai", "agents", "update", "a1"}, file: agent, method: http.MethodPut,
 			path: aiAgenticPath + "agents/a1", scopes: manage, lang: "*", status: http.StatusCreated,
 			body: `{"id":"a1"}`, want: "{\n  \"id\": \"a1\"\n}\n",
@@ -67,7 +58,6 @@ func aiAgentWrites() []writeCase {
 			lang: "*", status: http.StatusCreated, body: `{"id":"a2"}`, want: "{\n  \"id\": \"a2\"\n}\n",
 		},
 		{
-			// The export needs a read scope only.
 			args: []string{"ai", "agents", "export", "--agent", "a1", "--agent", "a 2"},
 			sent: `{"agentIds":["a1","a 2"]}`, method: http.MethodPost, path: aiAgenticPath + "agents/export",
 			scopes: []string{"ai.agent_read"}, status: http.StatusOK, body: export,
@@ -86,7 +76,6 @@ func aiAgentWrites() []writeCase {
 			want: "{\n  \"jobId\": \"j2\",\n  \"message\": \"Imported 1 agents.\"\n}\n",
 		},
 		{
-			// The file is sent with its name and the content type of its extension.
 			args: []string{"ai", "agents", "attach", "a1", "--upload", "testdata/order.csv"},
 			form: []sentPart{{name: "attachment", file: "order.csv", contentType: "text/csv",
 				content: orderCSV()}},
@@ -95,7 +84,6 @@ func aiAgentWrites() []writeCase {
 			want: "{\n  \"id\": \"att1\",\n  \"sessionId\": \"s1\"\n}\n",
 		},
 		{
-			// A .text file is sent with the content type of its extension: text/plain.
 			args: []string{"ai", "agents", "attach", "a1", "--upload", "testdata/order.text"},
 			form: []sentPart{{name: "attachment", file: "order.text", contentType: "text/plain",
 				content: orderText()}},
@@ -117,15 +105,12 @@ func aiAgentWrites() []writeCase {
 	}
 }
 
-// aiConnectionWrites are the writes of what agents connect with: tools,
-// tokens, OAuth configurations and MCP servers, whose update and patch take
-// --force where Emporix disables what uses them, and whose delete --force.
 func aiConnectionWrites() []writeCase {
 	manage := []string{"ai.agent_manage"}
 	var cases []writeCase
 	for _, tt := range []struct {
 		use, id, item string
-		disables      bool // update and patch take --force
+		disables      bool
 	}{
 		{use: "tools", id: "t1", item: `{"type":"rag_emporix","name":"Products","config":{}}`, disables: true},
 		{use: "tokens", id: "k1", item: `{"name":"OpenAI key","value":"sk-1"}`},
@@ -135,7 +120,7 @@ func aiConnectionWrites() []writeCase {
 			`"config":{"url":"https://mcp.acme.test"}}`, disables: true},
 	} {
 		path := aiAgenticPath + tt.use + "/" + tt.id
-		off, on := "", "" // the query of update and patch without --force and with it
+		off, on := "", ""
 		if tt.disables {
 			off, on = "force=false", "force=true"
 		}
@@ -158,15 +143,12 @@ func aiConnectionWrites() []writeCase {
 			},
 		)
 	}
-	// A search tool, whose configuration --file sends as given.
 	return append(cases, writeCase{
 		args: []string{"ai", "tools", "update", "search-customer"}, file: searchTool, method: http.MethodPut,
 		path: aiAgenticPath + "tools/search-customer", query: "force=false", scopes: manage, status: http.StatusNoContent,
 	})
 }
 
-// aiCreditWrites are the writes that consume AI credits: chats with agents,
-// text generation and completions.
 func aiCreditWrites() []writeCase {
 	chat := []string{"ai.agentexecution_manage"}
 	const reply = `[{"agentId":"a1","agentType":"generic","message":"Order EON1243 ships today.","sessionId":"s1"}]`
@@ -185,7 +167,6 @@ func aiCreditWrites() []writeCase {
 			want: "[]\n",
 		},
 		{
-			// The agent may generate files only with the Media Service's scope, which the flag requests.
 			args: []string{"ai", "chat", "--agent", "a1", "--message", "Draw a forest", "--allow-file-generation"},
 			sent: `{"agentId":"a1","message":"Draw a forest"}`, method: http.MethodPost, path: aiAgenticPath + "chat",
 			scopes: []string{"ai.agentexecution_manage", "media.asset_manage"}, status: http.StatusOK,
@@ -215,7 +196,6 @@ func aiCreditWrites() []writeCase {
 			body: `{"id":"en","result":"A pipe cutter."}`, want: "{\n  \"id\": \"en\",\n  \"result\": \"A pipe cutter.\"\n}\n",
 		},
 		{
-			// A role is sent upper-cased, the text without the spaces around it.
 			args: []string{"ai", "generate-completion", "--message", "SYSTEM:You write product texts.", "--message",
 				" user : Describe product 100200: a pipe cutter "},
 			sent: `{"messages":[{"role":"SYSTEM","content":"You write product texts."},` +

@@ -16,9 +16,6 @@ func TestFileKeepsItsRules(t *testing.T) {
 	}
 }
 
-// checkDefaults checks that the first profile put becomes the default, that a
-// later one does not, that a replacement replaces, and that the rules of use
-// and removal hold for the default.
 func checkDefaults(t *testing.T, f *File) {
 	t.Helper()
 	if replaced := f.Put("dev", &Profile{Tenant: "acme1", ClientID: "c1"}); replaced || f.Default != "dev" {
@@ -45,8 +42,6 @@ func checkDefaults(t *testing.T, f *File) {
 	}
 }
 
-// checkUnknownProfiles checks that lookup, use and remove of an unknown profile
-// fail with ErrNoProfile.
 func checkUnknownProfiles(t *testing.T, f *File) {
 	t.Helper()
 	for name, call := range map[string]func() error{

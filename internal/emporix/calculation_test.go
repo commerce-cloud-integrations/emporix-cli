@@ -8,17 +8,13 @@ import (
 	"testing"
 )
 
-// TestOnlyAcceptCreatedTakesCreated checks that 201 Created answers only a
-// read of a client made by AcceptCreated, as Emporix answers unit conversions
-// sent as PUT: any other read, with a body or not, fails on it, unclassified,
-// naming the status, since it may have created something.
 func TestOnlyAcceptCreatedTakesCreated(t *testing.T) {
 	const converted = `{"output":{"targetUnitAmount":0.1,"targetUnit":"kg"}}`
 	const path = "/unit-handling/{tenant}/units/convert-unit-commands"
 	for _, tt := range []struct {
 		name    string
 		client  func(c *Client) *Client
-		failure string // the error; empty when the read takes 201
+		failure string
 	}{
 		{name: "PUT accepting Created", client: func(c *Client) *Client {
 			return withBody(t, c, http.MethodPut, `{"input":{}}`).AcceptCreated()
@@ -44,18 +40,13 @@ func TestOnlyAcceptCreatedTakesCreated(t *testing.T) {
 	}
 }
 
-// TestCheckReadsAnAnswerOfItsStatus checks Check, the read of a check that
-// Emporix answers with its status alone: an empty success, 204 No Content
-// included, is no body and no error, a body is returned as sent, and a
-// failure is classified as Get classifies it; 201 Created is one, as for any
-// read but AcceptCreated's.
 func TestCheckReadsAnAnswerOfItsStatus(t *testing.T) {
 	const path = "/coupon/{tenant}/coupons/SAVE7/validation"
 	for _, tt := range []struct {
 		status    int
 		body      string
-		want      string // the body returned
-		class     error  // the error class, when the check fails
+		want      string
+		class     error
 		errorText string
 	}{
 		{status: http.StatusOK, body: ""},
@@ -66,7 +57,6 @@ func TestCheckReadsAnAnswerOfItsStatus(t *testing.T) {
 			errorText: "POST /coupon/acme1/coupons/SAVE7/validation: 404 Not Found: Coupon not found"},
 		{status: http.StatusBadRequest, body: `{"message":"Coupon expired"}`,
 			errorText: "POST /coupon/acme1/coupons/SAVE7/validation: 400 Bad Request: Coupon expired"},
-		// What creating a redemption answers: never a check that passed.
 		{status: http.StatusCreated, body: `{"id":"r1"}`,
 			errorText: "POST /coupon/acme1/coupons/SAVE7/validation: 201 Created"},
 	} {

@@ -6,9 +6,6 @@ import (
 	"testing"
 )
 
-// TestWebhookStatisticsWithoutALimit checks that statistics without a limit,
-// or without anything, still show one row rather than failing, while a body
-// that is no object fails.
 func TestWebhookStatisticsWithoutALimit(t *testing.T) {
 	for body, want := range map[string]string{
 		`{"monthStatistics":[{"statisticsMonth":"2026-10","succesfullySentWebhooks":3}]}`: "not reported  2026-10: 3",

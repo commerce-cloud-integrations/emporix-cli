@@ -7,9 +7,6 @@ import (
 	"testing"
 )
 
-// TestCartValidationWithoutResultIsMalformed checks that a validation that
-// does not say whether the cart is valid fails as a malformed response, for
-// -o json as for tables, and prints nothing.
 func TestCartValidationWithoutResultIsMalformed(t *testing.T) {
 	for _, body := range []string{`{"itemsValidationDetails":[]}`, `{"isValid":"yes"}`, `{}`, `[]`, `null`} {
 		for _, format := range [][]string{nil, {"-o", "json"}} {
@@ -25,10 +22,8 @@ func TestCartValidationWithoutResultIsMalformed(t *testing.T) {
 	}
 }
 
-// TestFindWithoutAMatchingCartIsNotFound checks that criteria that no cart
-// matches give not found (exit 4), as Emporix answers 404.
 func TestFindWithoutAMatchingCartIsNotFound(t *testing.T) {
-	fake := newFakeEmporix(t) // serves 404 on every path but the token's
+	fake := newFakeEmporix(t)
 	code, stdout, stderr := runCLI(t, fake.env(), "carts", "find", "--site", "AcmeStore_NL", "--customer", "C0123",
 		"--allow-write-scope")
 	if code != ExitNotFound || stdout != "" || !strings.Contains(stderr, "GET /cart/acme1/carts: 404 Not Found") {

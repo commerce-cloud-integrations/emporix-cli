@@ -1,10 +1,8 @@
 package cli
 
-// iamReads returns the IAM Service reads.
 func iamReads() []readCase {
 	return []readCase{
 		{
-			// Users are read as one page of 500: Emporix orders them differently on every request.
 			args:   []string{"iam", "users", "list"},
 			path:   "/iam/acme1/users",
 			scopes: []string{"iam.user_read"},
@@ -25,7 +23,6 @@ func iamReads() []readCase {
 			want:   "ID   NAME      EMAIL  STATUS  LOCKED  GROUPS\nu/1  Jane Doe         ACTIVE          1\n",
 		},
 		{
-			// A user's groups need the group scope only.
 			args:   []string{"iam", "users", "groups", "list", "u1", "--language", "de"},
 			path:   "/iam/acme1/users/u1/groups",
 			scopes: []string{"iam.group_read"},
@@ -35,7 +32,6 @@ func iamReads() []readCase {
 				"g1  BO_ADMIN  Administratoren  EMPLOYEE  2\n",
 		},
 		{
-			// The scopes come as one text; they are sorted, without the tenant entry.
 			args:   []string{"iam", "users", "scopes", "u1"},
 			path:   "/iam/acme1/users/u1/scopes",
 			scopes: []string{"iam.scope_read"},
@@ -64,7 +60,6 @@ func iamReads() []readCase {
 			want:   "ID  CODE      NAME       TYPE      ACCESS CONTROLS\ng1  CUSTOMER  Customers  CUSTOMER  0\n",
 		},
 		{
-			// A group's members need the user scope only.
 			args:   []string{"iam", "groups", "users", "list", "g1"},
 			path:   "/iam/acme1/groups/g1/users",
 			scopes: []string{"iam.user_read"},
@@ -74,9 +69,6 @@ func iamReads() []readCase {
 	}
 }
 
-// iamAccessReads returns the IAM Service reads of scopes, access controls and
-// templates. Their lists, like that of groups (every list iamList declares),
-// sort by id unless --sort says otherwise.
 func iamAccessReads() []readCase {
 	return []readCase{
 		{
@@ -117,8 +109,6 @@ func iamAccessReads() []readCase {
 	}
 }
 
-// iamUserAccessReads returns the IAM Service reads of what one group or user
-// may do, and of the users of a vendor.
 func iamUserAccessReads() []readCase {
 	return []readCase{
 		{
@@ -131,7 +121,6 @@ func iamUserAccessReads() []readCase {
 				"ac2                  0       \n",
 		},
 		{
-			// Emporix lists a user's access controls on one page only.
 			args: []string{"iam", "users", "access-controls", "u1", "--language", "en"},
 			path: "/iam/acme1/users/u1/access-controls", scopes: []string{"iam.access_read"},
 			mode: getAllOnFirstPage, page: "1000",
@@ -147,7 +136,6 @@ func iamUserAccessReads() []readCase {
 			want: "ID  CODE      NAME            TYPE      ACCESS CONTROLS\ng1  BO_ADMIN  Administrators  EMPLOYEE  1\n",
 		},
 		{
-			// The reference documents no paging for a vendor's users: they are paged, checked, with GetAll.
 			args: []string{"iam", "users", "for-vendor", "v1"},
 			path: "/iam/acme1/users/vendors/v1", scopes: []string{"iam.user_read"},
 			body: `[{"id":"u1","firstName":"Jane","lastName":"Doe","contactEmail":"jane@example.com","status":"ACTIVE",

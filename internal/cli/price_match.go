@@ -10,8 +10,6 @@ import (
 	"github.com/spf13/pflag"
 )
 
-// priceMatch is the part of a price that the Price Service matches for an
-// item shown in tables.
 type priceMatch struct {
 	PriceID     string    `json:"priceId"`
 	PriceListID string    `json:"priceListId"`
@@ -25,23 +23,19 @@ type priceMatch struct {
 		CountryCode string `json:"countryCode"`
 	} `json:"location"`
 	Quantity struct {
-		Quantity json.Number `json:"quantity"` // kept as sent
+		Quantity json.Number `json:"quantity"`
 		UnitCode string      `json:"unitCode"`
 	} `json:"quantity"`
-	OriginalValue  json.Number `json:"originalValue"` // kept as sent, e.g. 0.0000317
+	OriginalValue  json.Number `json:"originalValue"`
 	EffectiveValue json.Number `json:"effectiveValue"`
 	TotalValue     json.Number `json:"totalValue"`
 	IncludesTax    *bool       `json:"includesTax"`
 }
 
-// in returns an amount of the match's currency.
 func (m *priceMatch) in(amount json.Number) string {
 	return money{Amount: amount, Currency: m.Currency}.String()
 }
 
-// priceMatchCommand returns `match`, which matches the best price of each
-// product that --product names, as Emporix would price one unit for a
-// customer of the site and country in the currency, in one response.
 func priceMatchCommand(a *app) *cobra.Command {
 	return reader[priceMatch]{view: priceMatchView(), scopes: []string{priceReadScope}}.command(a, &command{
 		use:   "match",
@@ -82,7 +76,6 @@ func priceMatches(body json.RawMessage) ([]json.RawMessage, error) {
 	return nil, errors.New("expected a JSON array, or one price as a JSON object")
 }
 
-// priceMatchView is the table of matched prices.
 func priceMatchView() view[priceMatch] {
 	return view[priceMatch]{
 		singular: "price match",
@@ -100,7 +93,6 @@ func priceMatchView() view[priceMatch] {
 	}
 }
 
-// matchItem is an item whose price to match: one unit of a product.
 type matchItem struct {
 	ItemID   priceItem `json:"itemId"`
 	Quantity struct {
@@ -108,13 +100,10 @@ type matchItem struct {
 	} `json:"quantity"`
 }
 
-// matchLocation is the location whose price to match: a country.
 type matchLocation struct {
 	CountryCode string `json:"countryCode"`
 }
 
-// matchLocationField is the member targetLocation of a price match, the
-// country that --country names.
 func matchLocationField() bodyField {
 	const flag = "country"
 	return flagField("targetLocation", flag, func(fs *pflag.FlagSet) func() any {
@@ -123,8 +112,6 @@ func matchLocationField() bodyField {
 	})
 }
 
-// matchItemsField is the member items of a price match: one unit of each
-// product that --product names, in their order.
 func matchItemsField() bodyField {
 	const flag = "product"
 	return flagField("items", flag, func(fs *pflag.FlagSet) func() any {

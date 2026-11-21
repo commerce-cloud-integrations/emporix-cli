@@ -8,9 +8,6 @@ import (
 	"testing"
 )
 
-// TestAIChatsSendTheirSession checks that a chat and an attachment send the
-// session that --session names as the session-id header, which a dry run
-// shows, and none without it.
 func TestAIChatsSendTheirSession(t *testing.T) {
 	for _, tt := range []struct {
 		args []string
@@ -43,8 +40,6 @@ func TestAIChatsSendTheirSession(t *testing.T) {
 	}
 }
 
-// TestAIChatSendsAttachmentsOfItsSession checks that a chat sends each
-// --attachment, in their order, with the session that they belong to.
 func TestAIChatSendsAttachmentsOfItsSession(t *testing.T) {
 	fake := newFakeEmporix(t)
 	var session string
@@ -61,13 +56,6 @@ func TestAIChatSendsAttachmentsOfItsSession(t *testing.T) {
 	}
 }
 
-// TestAIWriteUsageErrorsSendNothing checks that an attachment without a file
-// or a media asset, or with both, with a file that cannot be read or comes
-// from standard input, which has no name to send, a chat or generation
-// without what it sends or with a message, attachment or number of tokens it
-// cannot send, an attachment without the session it belongs to, and a
-// session that cannot be sent as a header are usage errors (exit 2), also for
-// a dry run, that send nothing.
 func TestAIWriteUsageErrorsSendNothing(t *testing.T) {
 	directory := t.TempDir()
 	attach := []string{"ai", "agents", "attach", "a1"}
@@ -125,10 +113,6 @@ func TestAIWriteUsageErrorsSendNothing(t *testing.T) {
 	}
 }
 
-// TestAIHelpNamesCreditsAndJobs checks that what consumes AI credits says so
-// in its summary and help, that what waits for a reply names --timeout, and
-// that the export says that it creates a job, although it needs a read scope
-// only.
 func TestAIHelpNamesCreditsAndJobs(t *testing.T) {
 	root := newTestRoot()
 	for _, use := range []string{"chat", "chat-async", "generate-text", "generate-completion"} {

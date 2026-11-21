@@ -2,12 +2,6 @@ package cli
 
 import "net/http"
 
-// The read cases of item fees, which say which fees apply to which item: the
-// list, read with GET, and the searches that Emporix serves as POST with a
-// JSON body but which change nothing (see TestReads).
-
-// Item YRNs of a product and of a payment type, and item fees that assign
-// fees to them.
 const (
 	productYRN     = "urn:yaas:saasag:caasproduct:product:acme1;100200"
 	paymentYRN     = "urn:yaas:saasag:paymentmode:code:acme1;invoice"
@@ -19,7 +13,6 @@ const (
 		paymentYRN + "    if2  AcmeStore_NL  \n"
 )
 
-// feeAssignmentReads returns the reads of the Fee Service's item fees.
 func feeAssignmentReads() []readCase {
 	return []readCase{
 		{
@@ -30,8 +23,6 @@ func feeAssignmentReads() []readCase {
 			want:  assignmentTable,
 		},
 		{
-			// The site goes in the query and in the body; Emporix returns the search whole. The
-			// reference requires no id: an item fee without one is identified by its item.
 			args: []string{
 				"fees", "assignments", "search", "--item", productYRN, "--item", paymentYRN, "--site", "AcmeStore_NL",
 			},
@@ -47,7 +38,6 @@ func feeAssignmentReads() []readCase {
 				paymentYRN + "         AcmeStore_NL  \n",
 		},
 		{
-			// Each --site adds one site; the pages are in the body, not in the query.
 			args: []string{
 				"fees", "assignments", "search-by-product", "--product", "100200", "--site", "AcmeStore_NL",
 				"--site", "AcmeStore_BE",

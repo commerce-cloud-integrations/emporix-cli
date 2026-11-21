@@ -8,19 +8,11 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// businessRefusal is a 403 Forbidden with which Emporix refuses an input
-// (live: a coupon that the customer may not redeem).
 const businessRefusal = `{"type":"business_error","message":"Coupon cannot be redeemed","errorCode":"E-403",` +
 	`"details":[{"type":"coupon_redemption_forbidden","message":"This customer is not allowed"}]}`
 
-// refusedMessage is how the error of businessRefusal ends.
 const refusedMessage = "403 Forbidden: Coupon cannot be redeemed (E-403) (This customer is not allowed)\n"
 
-// refusals are the 403 answers with which Emporix refuses an input (live),
-// each with how its error ends: businessRefusal, and the Cart Service's for
-// a coupon restricted to customers, whose message names no scope (its
-// reference gives a missing scope the same body, but epx checks the scope of
-// the write before it sends).
 func refusals() map[string]string {
 	return map[string]string{
 		businessRefusal: refusedMessage,
@@ -28,16 +20,10 @@ func refusals() map[string]string {
 	}
 }
 
-// scopeRefusals are 403 answers about the credential: one that names a
-// missing scope and one without a message.
 func scopeRefusals() []string {
 	return []string{`{"message":"Missing one of required scopes '[order.order_update]'"}`, ""}
 }
 
-// TestWriteForbiddenAnswers checks that each refusal answered 403 Forbidden
-// to a write that declares one (writeCase.refuses) exits 1 with Emporix's
-// message and error code, while a 403 that names a missing scope, or has no
-// message, still exits 3, and that every other write exits 3 for any 403.
 func TestWriteForbiddenAnswers(t *testing.T) {
 	for _, tt := range writeCases() {
 		fake := newFakeEmporix(t)
@@ -48,9 +34,6 @@ func TestWriteForbiddenAnswers(t *testing.T) {
 	}
 }
 
-// checkRefusals checks that a write answered 403 with each refusal body exits
-// as the write declares it: 1 with the help's sentence where it is a refusal
-// of the input, else 3.
 func checkRefusals(t *testing.T, tt *writeCase, fake *fakeEmporix) {
 	t.Helper()
 	for body, ends := range refusals() {
@@ -62,8 +45,6 @@ func checkRefusals(t *testing.T, tt *writeCase, fake *fakeEmporix) {
 	}
 }
 
-// checkScopeRefusals checks that a refusal of input that names a missing scope
-// exits 3, where the write declares a refusal of its input.
 func checkScopeRefusals(t *testing.T, tt *writeCase, fake *fakeEmporix) {
 	t.Helper()
 	for _, body := range scopeRefusals() {
@@ -74,8 +55,6 @@ func checkScopeRefusals(t *testing.T, tt *writeCase, fake *fakeEmporix) {
 	}
 }
 
-// TestCouponValidationRefusals checks the same of coupons validate, a read
-// that declares a refusal (bodyRead.forbiddenIsRefusal).
 func TestCouponValidationRefusals(t *testing.T) {
 	args := []string{"coupons", "validate", "SAVE7", "--order-total", "10 EUR", "--discount", "1 EUR",
 		"--customer", "10001", "--allow-write-scope"}
@@ -91,9 +70,6 @@ func TestCouponValidationRefusals(t *testing.T) {
 	}
 }
 
-// TestRefusalsUnnamedInHelpPanic checks that a command declared to take a
-// 403 as a refusal, whose help does not say so, is a mistake that panics
-// while the tree is built.
 func TestRefusalsUnnamedInHelpPanic(t *testing.T) {
 	defer func() {
 		if recover() == nil {

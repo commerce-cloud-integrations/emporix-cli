@@ -10,13 +10,8 @@ import (
 	"strings"
 )
 
-// shape returns the items of a response, failing on a response of another
-// shape (also for -o json, which prints the response whole). A shape may
-// restructure the items (category trees flatten theirs).
 type shape func(body json.RawMessage) ([]json.RawMessage, error)
 
-// itemShape returns s, or oneItem when s is nil: how a read of one item that
-// declares no shape finds the item in its response.
 func itemShape(s shape) shape {
 	if s == nil {
 		return oneItem
@@ -24,7 +19,6 @@ func itemShape(s shape) shape {
 	return s
 }
 
-// listItems returns the items of a list, a JSON array.
 func listItems(body json.RawMessage) ([]json.RawMessage, error) {
 	var items []json.RawMessage
 	if err := json.Unmarshal(body, &items); err != nil || items == nil {
@@ -33,8 +27,6 @@ func listItems(body json.RawMessage) ([]json.RawMessage, error) {
 	return items, nil
 }
 
-// jsonObject returns the members of body, a JSON object, by name; any other
-// JSON, null included, is not one.
 func jsonObject(body json.RawMessage) (map[string]json.RawMessage, error) {
 	var object map[string]json.RawMessage
 	if err := json.Unmarshal(body, &object); err != nil || object == nil {
@@ -43,7 +35,6 @@ func jsonObject(body json.RawMessage) (map[string]json.RawMessage, error) {
 	return object, nil
 }
 
-// oneItem returns the item that get reads: a JSON object with members.
 func oneItem(body json.RawMessage) ([]json.RawMessage, error) {
 	object, err := jsonObject(body)
 	if err != nil {
@@ -55,8 +46,6 @@ func oneItem(body json.RawMessage) ([]json.RawMessage, error) {
 	return []json.RawMessage{body}, nil
 }
 
-// oneObject returns the item of a response that is one JSON object, even an
-// empty one, such as statistics with nothing to report.
 func oneObject(body json.RawMessage) ([]json.RawMessage, error) {
 	if _, err := jsonObject(body); err != nil {
 		return nil, err
@@ -64,16 +53,11 @@ func oneObject(body json.RawMessage) ([]json.RawMessage, error) {
 	return []json.RawMessage{body}, nil
 }
 
-// namedValue is a member of a JSON object as a table row: its name and value
-// (members).
 type namedValue struct {
 	Name  string          `json:"name"`
 	Value json.RawMessage `json:"value"`
 }
 
-// members returns the members of a response that is one JSON object as items
-// (namedValue), sorted by name; an empty object has none. Each value is kept
-// as sent (json.Marshal would escape <, > and & in it).
 func members(body json.RawMessage) ([]json.RawMessage, error) {
 	object, err := jsonObject(body)
 	if err != nil {
@@ -90,8 +74,6 @@ func members(body json.RawMessage) ([]json.RawMessage, error) {
 	return items, nil
 }
 
-// marshalEach returns each value encoded as JSON: the items of a shape that
-// restructures a response.
 func marshalEach[T any](values []T) ([]json.RawMessage, error) {
 	items := make([]json.RawMessage, len(values))
 	for i, value := range values {
@@ -104,9 +86,6 @@ func marshalEach[T any](values []T) ([]json.RawMessage, error) {
 	return items, nil
 }
 
-// oneNumber returns the item of a response that is one JSON number, such as
-// a customer's reward points. It checks the first byte because decoding into
-// a json.Number would also accept a quoted number such as "5".
 func oneNumber(body json.RawMessage) ([]json.RawMessage, error) {
 	value := bytes.TrimSpace(body)
 	if !json.Valid(value) || (value[0] != '-' && (value[0] < '0' || value[0] > '9')) {
@@ -143,8 +122,6 @@ func textAsJSON(answer []byte) (json.RawMessage, error) {
 	return json.Marshal(text)
 }
 
-// oneName returns the answer of a read that is a name, a JSON string that is
-// not blank, as its item.
 func oneName(body json.RawMessage) ([]json.RawMessage, error) {
 	var name *string
 	if json.Unmarshal(body, &name) != nil || name == nil || strings.TrimSpace(*name) == "" {

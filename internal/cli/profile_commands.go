@@ -34,7 +34,6 @@ func newProfileCommand(a *app) *cobra.Command {
 	return group
 }
 
-// profileArgs accepts one argument, a profile name.
 func profileArgs(cmd *cobra.Command, args []string) error {
 	if err := cobra.ExactArgs(1)(cmd, args); err != nil {
 		return err
@@ -45,8 +44,6 @@ func profileArgs(cmd *cobra.Command, args []string) error {
 	return nil
 }
 
-// noProfile is the usage error of a profile argument that names no profile
-// (config.ErrNoProfile); any other error is returned as it is.
 func noProfile(err error) error {
 	if errors.Is(err, config.ErrNoProfile) {
 		return usageError{fmt.Errorf("%w; `epx profile list` lists them", err)}
@@ -86,16 +83,12 @@ func newProfileAddCommand(a *app) *cobra.Command {
 	return cmd
 }
 
-// addProfile checks the settings of profile as a client checks them, reads
-// its client secret (readSecret), then, under the configuration file's lock,
-// stores the secret in the OS keychain and saves the profile as name
-// (saveWithSecret).
 func (a *app) addProfile(cmd *cobra.Command, name string, profile *config.Profile) error {
 	if err := emporix.CheckEndpoint(cmp.Or(profile.APIURL, emporix.DefaultBaseURL), profile.Tenant); err != nil {
 		return err
 	}
 	if _, err := a.store(); err != nil {
-		return err // before the secret is asked for
+		return err
 	}
 	secret, err := a.readSecret(cmd, name)
 	if err != nil {
@@ -117,11 +110,6 @@ func (a *app) addProfile(cmd *cobra.Command, name string, profile *config.Profil
 	return err
 }
 
-// saveWithSecret stores secret in the OS keychain as the client secret of
-// the profile name, then saves file, which holds that profile. Where the
-// save fails, the keychain gets back the secret it held before, or none, so
-// the file and the keychain still agree; a failure to restore it is
-// reported too.
 func (a *app) saveWithSecret(ctx context.Context, store config.Store, file config.File, name, secret string) error {
 	previous, err := a.secretOf(ctx, name)
 	if err != nil {
@@ -145,9 +133,6 @@ func (a *app) saveWithSecret(ctx context.Context, store config.Store, file confi
 	return err
 }
 
-// readSecret reads the client secret of profile name: on a terminal, where
-// it asks for it, without showing it; otherwise the first line of standard
-// input. Spaces around it are dropped; an empty secret is a usage error.
 func (a *app) readSecret(cmd *cobra.Command, name string) (string, error) {
 	var secret string
 	var err error
@@ -165,8 +150,6 @@ func (a *app) readSecret(cmd *cobra.Command, name string) (string, error) {
 	return secret, nil
 }
 
-// askSecret asks for the client secret of profile name on the terminal and
-// reads it without showing it.
 func (a *app) askSecret(cmd *cobra.Command, name string) (string, error) {
 	errOut := cmd.ErrOrStderr()
 	if _, err := fmt.Fprintf(errOut, "Client secret of profile %s: ", name); err != nil {
@@ -177,20 +160,16 @@ func (a *app) askSecret(cmd *cobra.Command, name string) (string, error) {
 	return secret, cmp.Or(err, newline)
 }
 
-// profileView is a profile as list prints it. Its client secret is never
-// shown.
 type profileView struct {
 	Name    string `json:"name"`
 	Default bool   `json:"default"`
 	config.Profile
 }
 
-// profileHeader is the table header of list.
 func profileHeader() []string {
 	return []string{"NAME", "DEFAULT", "TENANT", "CLIENT ID", "API URL", "SITE", "LANGUAGE"}
 }
 
-// row returns the table cells of v.
 func (v *profileView) row() []string {
 	isDefault := ""
 	if v.Default {
@@ -199,14 +178,11 @@ func (v *profileView) row() []string {
 	return []string{v.Name, isDefault, v.Tenant, v.ClientID, v.APIURL, v.Site, v.Language}
 }
 
-// profileDetail is a profile as show prints it: also whether the OS keychain
-// holds its client secret, never the secret.
 type profileDetail struct {
 	profileView
 	SecretStored bool `json:"secretStored"`
 }
 
-// row returns the table cells of d, those of list and CLIENT SECRET.
 func (d *profileDetail) row() []string {
 	stored := "not stored"
 	if d.SecretStored {
@@ -258,8 +234,6 @@ func newProfileShowCommand(a *app) *cobra.Command {
 	return cmd
 }
 
-// showProfile returns the profile name and whether the OS keychain holds its
-// client secret.
 func (a *app) showProfile(ctx context.Context, name string) (*profileDetail, error) {
 	file, err := a.loadProfiles()
 	if err != nil {
@@ -320,10 +294,6 @@ func newProfileRemoveCommand(a *app) *cobra.Command {
 	return cmd
 }
 
-// removeProfile removes the profile name, once confirmed, then deletes its
-// client secret, both under the configuration file's lock: a secret the
-// keychain cannot delete is reported once the profile is removed, so a
-// keychain that cannot be reached never keeps a profile.
 func (a *app) removeProfile(cmd *cobra.Command, name string, yes bool) error {
 	if !yes && !a.terminal {
 		return usageError{fmt.Errorf("%s asks for confirmation on a terminal, which standard input is not: "+
@@ -354,7 +324,6 @@ func (a *app) removeProfile(cmd *cobra.Command, name string, yes bool) error {
 	return err
 }
 
-// confirmRemoval asks whether to remove the profile name, which must exist.
 func (a *app) confirmRemoval(cmd *cobra.Command, name string) error {
 	file, err := a.loadProfiles()
 	if err != nil {

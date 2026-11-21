@@ -6,7 +6,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// authStatus is the JSON shape of `auth status`; scopes is never null.
 type authStatus struct {
 	Tenant           string   `json:"tenant"`
 	Scopes           []string `json:"scopes"`

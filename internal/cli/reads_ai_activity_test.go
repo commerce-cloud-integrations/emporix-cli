@@ -2,8 +2,6 @@ package cli
 
 import "net/http"
 
-// aiJobReads returns the reads of the AI Service's jobs and of the
-// conversations of agents, and their searches (ai_activity.go).
 func aiJobReads() []readCase {
 	const scope = "ai.agent_read"
 	jobs := `[{"id":"job-1","type":"AGENT_CHAT","status":"success","agentType":"complaint","agentId":"complaint-agent",
@@ -15,7 +13,6 @@ func aiJobReads() []readCase {
 		{"conversationId":"19:def@thread.v2","agentId":"helper"}]`
 	return []readCase{
 		{
-			// The agent's message and an export's result are only in -o json.
 			args:    []string{"ai", "jobs", "list"},
 			path:    "/ai-service/acme1/jobs",
 			scopes:  []string{scope},
@@ -47,7 +44,6 @@ func aiJobReads() []readCase {
 				"job-3  AGENT_CHAT  failure  helper                  \n",
 		},
 		{
-			// ID is the conversation in Teams; its channel and context reference are only in -o json.
 			args:    []string{"ai", "conversations", "list"},
 			path:    "/ai-service/acme1/agentic/conversations",
 			scopes:  []string{scope},
@@ -71,8 +67,6 @@ func aiJobReads() []readCase {
 	}
 }
 
-// aiLogReads returns the reads of the logs of agent requests and sessions,
-// and their searches (ai_activity.go).
 func aiLogReads() []readCase {
 	const scope = "ai.agent_read"
 	requests := `[{"id":"log-1","sessionId":"sess-1","requestId":"req-1","triggerAgentId":"complaint-agent",
@@ -86,8 +80,6 @@ func aiLogReads() []readCase {
 		"metadata":{"createdAt":"2026-09-01T10:30:27Z"}},{"sessionId":"sess-2","severity":"ERROR"}]`
 	return []readCase{
 		{
-			// The table ID is the log's id, which get takes. MESSAGES counts the messages, and stays empty
-			// without them; they, the other agents and the tokens are only in -o json.
 			args:    []string{"ai", "logs", "requests", "list"},
 			path:    "/ai-service/acme1/agentic/logs/requests",
 			scopes:  []string{scope},
@@ -99,7 +91,6 @@ func aiLogReads() []readCase {
 				"log-3  req-3    sess-2                    INFO                         \n",
 		},
 		{
-			// The table ID is the log's id, which get takes.
 			args:   []string{"ai", "logs", "requests", "get", "log-1"},
 			path:   "/ai-service/acme1/agentic/logs/requests/log-1",
 			scopes: []string{scope},
@@ -154,8 +145,6 @@ func aiLogReads() []readCase {
 	}
 }
 
-// aiAnalyticsReads returns the reads of the analytics of agents
-// (ai_analytics.go).
 func aiAnalyticsReads() []readCase {
 	const scope = "ai.agent_read"
 	totals := `{"requests":{"total":120,"bySeverity":{"info":100,"warning":15,"error":5},"errorRate":0.0417},
@@ -164,7 +153,6 @@ func aiAnalyticsReads() []readCase {
 		"sessionTrend":[{"date":"2026-09-07T00:00:00Z","totalSessions":10,"errorSessions":1,"errorRate":0.1}]}`
 	return []readCase{
 		{
-			// The totals of requests, then of sessions; efficiency and trends are only in -o json.
 			args:   []string{"ai", "analytics", "tenant"},
 			path:   "/ai-service/acme1/agentic/analytics",
 			scopes: []string{scope},
@@ -175,7 +163,6 @@ func aiAnalyticsReads() []readCase {
 				"sessions  40     1        2      0.05\n",
 		},
 		{
-			// A metric Emporix leaves out stays empty.
 			args:   []string{"ai", "analytics", "agent", "complaint-agent"},
 			path:   "/ai-service/acme1/agentic/analytics",
 			query:  "agentId=complaint-agent",
@@ -187,8 +174,6 @@ func aiAnalyticsReads() []readCase {
 				"sessions  0                      \n",
 		},
 		{
-			// One row per agent and period, in their order, per quarter (Emporix's default granularity,
-			// which epx leaves to it); a null count stays empty.
 			args:   []string{"ai", "analytics", "executions", "complaint-agent,helper"},
 			path:   "/ai-service/acme1/agentic/analytics/executions",
 			query:  "agentIds=complaint-agent%2Chelper",
@@ -204,7 +189,6 @@ func aiAnalyticsReads() []readCase {
 				"helper           2026-Q3  2026-07-01T00:00:00Z  2026-10-01T00:00:00Z  \n",
 		},
 		{
-			// Per month or week with --granularity, sent as given.
 			args:   []string{"ai", "analytics", "executions", "helper", "--granularity", "MONTH"},
 			path:   "/ai-service/acme1/agentic/analytics/executions",
 			query:  "agentIds=helper&granularity=MONTH",

@@ -12,13 +12,11 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// runCLI runs the CLI with the given environment variables.
 func runCLI(t *testing.T, env map[string]string, args ...string) (code int, stdout, stderr string) {
 	t.Helper()
 	return runIn(t, Env{Getenv: func(key string) string { return env[key] }}, args...)
 }
 
-// runIn runs the CLI in env, whose output it captures.
 func runIn(t *testing.T, env Env, args ...string) (code int, stdout, stderr string) {
 	t.Helper()
 	var out, errOut bytes.Buffer
@@ -68,9 +66,6 @@ func TestGetHelpNamesTheIdentifier(t *testing.T) {
 	}
 }
 
-// TestHelpCitesCommandsThatExist checks that every command line a help cites
-// (`epx …`), such as the read that shows the IDs an argument takes, names
-// commands that exist: a group is cited alone, or with one of its commands.
 func TestHelpCitesCommandsThatExist(t *testing.T) {
 	cited := regexp.MustCompile("`epx ([^`]+)`")
 	root := newTestRoot()
@@ -112,13 +107,6 @@ func TestRunReportsUsageErrors(t *testing.T) {
 	}
 }
 
-// TestFormerReadsAreUsageErrors checks that reads epx no longer has, run as
-// before, fail as usage errors (exit 2) that send nothing (an unknown command,
-// or, with --site, an unknown flag of the group), rather than run another
-// command of their group: those that the groups of the methods of a zone, the
-// slots of a delivery time, the users of an IAM group and the groups of an
-// IAM user replaced, and the IAM reads of roles, permissions, resources and a
-// user's access on one resource, whose endpoints Emporix removed.
 func TestFormerReadsAreUsageErrors(t *testing.T) {
 	for _, args := range [][]string{
 		{"shipping", "zones", "methods", "nl", "--site", "AcmeStore_NL"},
@@ -187,12 +175,10 @@ type failingWriter struct{}
 
 func (failingWriter) Write([]byte) (int, error) { return 0, errors.New("disk full") }
 
-// newTestRoot returns the command tree without configuration, to inspect it.
 func newTestRoot() *cobra.Command {
 	return newRootCommand(&app{getenv: func(string) string { return "" }}, io.Discard, io.Discard)
 }
 
-// walkCommands calls visit for cmd and every command below it.
 func walkCommands(cmd *cobra.Command, visit func(*cobra.Command)) {
 	visit(cmd)
 	for _, sub := range cmd.Commands() {

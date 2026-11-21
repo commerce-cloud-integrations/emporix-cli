@@ -21,10 +21,7 @@ import (
 // the item, a member of both may (Items), such as the eventType of a change
 // of a webhook subscription. The Cart Service's itemsBatch gives the code as
 // status, a number, with errorMessage: {"index": 1, "status": 400}, and
-// answers a batch that failed in part with 400 or 500 and that array. A bulk
-// write of more items than one request takes may be sent in batches
-// (Write.Split), whose failures name each item by its position among the
-// items of the whole write.
+// answers a batch that failed in part with 400 or 500 and that array.
 
 // ItemFailure is the result of one part of a write sent in parts (Parts), an
 // item or a command, that Emporix did not carry out, or, with a 500, 502,
@@ -47,8 +44,6 @@ type ItemFailure struct {
 // a status after which it may have been carried out, says so.
 func (f ItemFailure) String() string { return f.line(ItemNoun) }
 
-// line names the failure of a part called noun, as String does; a command's
-// by its type, followed by its item that failed, if any.
 func (f ItemFailure) line(noun string) string {
 	text := noun + " " + strconv.Itoa(f.Index)
 	if name := cmp.Or(f.Type, f.ID); name != "" {
@@ -67,7 +62,6 @@ func (f ItemFailure) line(noun string) string {
 	return text
 }
 
-// status returns the status that classifies f: that of its item, if any.
 func (f ItemFailure) status() int {
 	if f.Item != nil {
 		return f.Item.status()
@@ -108,11 +102,8 @@ func (e *ItemsError) Lines() []string {
 	return lines
 }
 
-// noun returns what a part of e is called.
 func (e *ItemsError) noun() string { return cmp.Or(e.Noun, ItemNoun) }
 
-// failedParts returns the number of parts that failed: a command with items
-// that failed counts once.
 func (e *ItemsError) failedParts() int {
 	parts := 0
 	for i, failure := range e.Failed {
@@ -126,17 +117,12 @@ func (e *ItemsError) failedParts() int {
 // Unwrap exposes the class that every failure shares, if any.
 func (e *ItemsError) Unwrap() error { return e.class }
 
-// sentItems are items sent in one request, as the results of Emporix name
-// them (sentItems.item): their number and, where a member of each names it
-// (the key of Items), that member and its value in each.
 type sentItems struct {
 	count int
-	key   string   // the member that names an item and its result; none: they are named by index or position
-	names []string // the value of key in each item, by position; "" where it is no string
+	key   string
+	names []string
 }
 
-// namedItems returns items, sent in one request, as their results name them:
-// by key, unless it is empty.
 func namedItems(items []json.RawMessage, key string) sentItems {
 	sent := sentItems{count: len(items), key: key}
 	if key != "" {
@@ -148,8 +134,6 @@ func namedItems(items []json.RawMessage, key string) sentItems {
 	return sent
 }
 
-// memberString returns the member key of raw, a JSON object, where it is a
-// string, and "" otherwise.
 func memberString(raw json.RawMessage, key string) string {
 	var object map[string]json.RawMessage
 	var value string
@@ -159,8 +143,6 @@ func memberString(raw json.RawMessage, key string) string {
 	return value
 }
 
-// itemResult is what itemFailures reads of the result of one item of a bulk
-// write.
 type itemResult struct {
 	Index  *int            `json:"index"` // the item's position in the body sent (firstIndex); none: the result's own
 	ID     string          `json:"id"`
@@ -168,8 +150,6 @@ type itemResult struct {
 	Status json.RawMessage `json:"status"` // the code where code is missing, as a number; else its text
 }
 
-// code returns the status of r: its code, else its status where that is a
-// number, else 0.
 func (r itemResult) code() int {
 	var status int
 	if r.Code == 0 && json.Unmarshal(r.Status, &status) == nil {
@@ -178,12 +158,6 @@ func (r itemResult) code() int {
 	return r.Code
 }
 
-// item returns the position, in the body sent, of the item whose result is
-// r, raw at position in the response, and the name of that item: where a
-// member names the items (s.key), the first item whose result was not read
-// yet (read) that shares r's value of it, named by that value; else the item
-// at r's index, counted from first, or else at position, named by r's id. It
-// returns false when that is no item's.
 func (s sentItems) item(r itemResult, raw json.RawMessage, position, first int, read []bool) (item int,
 	name string, isItem bool) {
 	if s.key == "" {
@@ -201,18 +175,11 @@ func (s sentItems) item(r itemResult, raw json.RawMessage, position, first int, 
 	return 0, name, false
 }
 
-// readItems reads the results of the items of a bulk write (itemFailures),
-// each of which runs.
 func readItems(sent *sentParts, results []json.RawMessage) ([]ItemFailure, int, bool) {
 	failed, ok := itemFailures(namedItems(sent.parts, sent.key), results)
 	return failed, 0, ok
 }
 
-// firstIndex returns the index with which the results of a bulk write name
-// the first item sent: 0, unless each result names an index and none names 0,
-// as the Customer Segment Service's reference shows them, numbered from 1.
-// Results numbered from 0 that give the result of each item once name 0, so
-// reading those numbered so from 1 mistakes none for another.
 func firstIndex(results []json.RawMessage) int {
 	for _, raw := range results {
 		var result itemResult
@@ -223,16 +190,13 @@ func firstIndex(results []json.RawMessage) int {
 	return 1
 }
 
-// itemFailures reads results, the results of items sent in one request: the
-// items whose result (sentItems.item) is a failure, in the order of the
-// results; false when they do not give the result of each item once.
 func itemFailures(items sentItems, results []json.RawMessage) ([]ItemFailure, bool) {
 	if len(results) != items.count {
 		return nil, false
 	}
 	var failed []ItemFailure
 	first := firstIndex(results)
-	read := make([]bool, items.count) // the items whose result was read
+	read := make([]bool, items.count)
 	for position, raw := range results {
 		var result itemResult
 		if json.Unmarshal(raw, &result) != nil || !isStatus(result.code()) {
@@ -250,11 +214,8 @@ func itemFailures(items sentItems, results []json.RawMessage) ([]ItemFailure, bo
 	return failed, true
 }
 
-// isStatus reports whether code is an HTTP status code.
 func isStatus(code int) bool { return code >= 100 && code <= 599 }
 
-// sharedClass returns the class of the failures, as writeErrorClass
-// classifies the status of each, when they share one, and nil otherwise.
 func sharedClass(failures []ItemFailure) error {
 	class := writeErrorClass(failures[0].status())
 	for _, failure := range failures[1:] {
@@ -291,7 +252,6 @@ func (w *Write) Split() []*Write {
 	return batches
 }
 
-// jsonArray returns items as one JSON array, each item as given.
 func jsonArray(items []json.RawMessage) []byte {
 	array := []byte{'['}
 	for i, item := range items {

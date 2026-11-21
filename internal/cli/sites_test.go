@@ -7,8 +7,6 @@ import (
 	"testing"
 )
 
-// TestSitesGetEscapesTheID checks that path escaping keeps an ID one segment
-// and that {tenant} inside an ID is never substituted.
 func TestSitesGetEscapesTheID(t *testing.T) {
 	fake := newFakeEmporix(t)
 	code, _, stderr := runCLI(t, fake.env(), "sites", "get", "a b+{tenant}/c?d")
@@ -19,9 +17,6 @@ func TestSitesGetEscapesTheID(t *testing.T) {
 	fake.assertRequests(t, escaped)
 }
 
-// TestSiteMixinsNeedAnObject checks the mixins of a site, and one mixin: a
-// response that is not a JSON object fails, also for -o json, which prints an
-// object whole; an empty object shows no rows.
 func TestSiteMixinsNeedAnObject(t *testing.T) {
 	for _, tc := range []struct {
 		args []string
@@ -37,9 +32,6 @@ func TestSiteMixinsNeedAnObject(t *testing.T) {
 	}
 }
 
-// checkMixinRefused checks that a site's mixins, read from path, fail (exit 1)
-// with stdout empty where the response body is not a JSON object, in table and
-// JSON output alike.
 func checkMixinRefused(t *testing.T, args []string, path, body string) {
 	t.Helper()
 	fake := newFakeEmporix(t)
@@ -53,8 +45,6 @@ func checkMixinRefused(t *testing.T, args []string, path, body string) {
 	}
 }
 
-// checkMixinsShown checks that an empty object shows no rows, and that a
-// non-empty one prints whole, as JSON, with its members sorted.
 func checkMixinsShown(t *testing.T, args []string, path string) {
 	t.Helper()
 	fake := newFakeEmporix(t)

@@ -2,16 +2,9 @@ package cli
 
 import "net/http"
 
-// The read cases of the Customer, Customer Management, Customer Segment, Vendor and Session Context
-// services (see TestReads).
-
-// customerReads returns the Customer Service reads.
 func customerReads() []readCase {
 	return []readCase{
 		{
-			// NUMBER is the customer number, not the id; EMAIL is the contact email (the account's is
-			// only in accounts, which epx does not expand). Emporix sends the total, as filtered, as
-			// hybris-count.
 			args:    []string{"customers", "list"},
 			path:    "/customer/acme1/customers",
 			scopes:  []string{"customer.customer_read"},
@@ -30,7 +23,6 @@ func customerReads() []readCase {
 				"10003                                                                      \n",
 		},
 		{
-			// A customer's addresses come whole, under the escaped customer number.
 			args:   []string{"customers", "addresses", "list", "100/01"},
 			path:   "/customer/acme1/customers/100%2F01/addresses",
 			scopes: []string{"customer.customer_read"},
@@ -63,12 +55,9 @@ func customerReads() []readCase {
 	}
 }
 
-// sessionContextReads returns the Session Context Service read of a
-// storefront session's context, opt-in.
 func sessionContextReads() []readCase {
 	return []readCase{
 		{
-			// Custom attributes (context) are only in -o json.
 			args:   []string{"session-contexts", "get", "s 1/2", "--allow-write-scope"},
 			path:   "/session-context/acme1/context/s%201%2F2",
 			scopes: []string{"sessioncontext.context_manage"},
@@ -81,11 +70,9 @@ func sessionContextReads() []readCase {
 	}
 }
 
-// legalEntityReads returns the Customer Management reads of legal entities.
 func legalEntityReads() []readCase {
 	return []readCase{
 		{
-			// The account limit keeps its text (1000.99) and shows its currency.
 			args:    []string{"legal-entities", "list"},
 			path:    "/customer-management/acme1/legal-entities",
 			scopes:  []string{"customermanagement.legalentity_read"},
@@ -110,7 +97,6 @@ func legalEntityReads() []readCase {
 				"le/2  Acme Retail  SUBSIDIARY  le1                          \n",
 		},
 		{
-			// The hierarchy comes whole, the entity first and its company last.
 			args:   []string{"legal-entities", "hierarchy", "le/2"},
 			path:   "/customer-management/acme1/legal-entities/le%2F2/parent-hierarchy",
 			scopes: []string{"customermanagement.legalentity_read"},
@@ -124,7 +110,6 @@ func legalEntityReads() []readCase {
 	}
 }
 
-// customerManagementReads returns the Customer Management reads of locations and contacts.
 func customerManagementReads() []readCase {
 	return []readCase{
 		{
@@ -154,7 +139,6 @@ func customerManagementReads() []readCase {
 				"loc/1  Head office  OFFICE                                            \n",
 		},
 		{
-			// CUSTOMER is the customer's id, not a customer number.
 			args:    []string{"contact-assignments", "list"},
 			path:    "/customer-management/acme1/contact-assignments",
 			scopes:  []string{"customermanagement.contactassignment_read"},
@@ -179,7 +163,6 @@ func customerManagementReads() []readCase {
 	}
 }
 
-// segmentReads returns the Customer Segment Service reads.
 func segmentReads() []readCase {
 	return []readCase{
 		{
@@ -204,8 +187,6 @@ func segmentReads() []readCase {
 			want:   "ID   NAME  STATUS  SITE  FROM  TO\ns/1  Goud  ACTIVE              \n",
 		},
 		{
-			// CUSTOMER is the customer's id, not the NUMBER that epx customers get takes. Sorted by
-			// id, as Emporix pages them in a different order per request without a sort.
 			args:    []string{"segments", "customers", "list", "s/1"},
 			path:    "/customer-segment/acme1/segments/s%2F1/customers",
 			query:   "sort=id",
@@ -248,7 +229,6 @@ func segmentReads() []readCase {
 			want: "ID  SEGMENT  TYPE     CODE    NAME\np2  s2       PRODUCT  100300  Klep\n",
 		},
 		{
-			// Opt-in, sent as POST: each --product adds one item object, each --segment one id.
 			args: []string{"segments", "match", "--product", "100200", "--product", "P 2", "--segment", "S1",
 				"--site", "AcmeStore_NL", "--allow-write-scope"},
 			path:   "/customer-segment/acme1/segments/match",
@@ -260,8 +240,6 @@ func segmentReads() []readCase {
 			want:   "PRODUCT\n100200\nP 2\n",
 		},
 		{
-			// The answer is one response, not a collection: a product named twice and matched twice
-			// shows twice.
 			args: []string{"segments", "match", "--product", "100200", "--product", "100200", "--segment", "S1",
 				"--site", "AcmeStore_NL", "--allow-write-scope"},
 			path:   "/customer-segment/acme1/segments/match",
@@ -275,7 +253,6 @@ func segmentReads() []readCase {
 	}
 }
 
-// vendorReads returns the Vendor Service reads.
 func vendorReads() []readCase {
 	return []readCase{
 		{

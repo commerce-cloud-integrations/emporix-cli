@@ -109,7 +109,7 @@ func TestLoadAndSaveFailOnAnUnusableDirectory(t *testing.T) {
 	if err := os.WriteFile(blocked, nil, 0o600); err != nil {
 		t.Fatal(err)
 	}
-	store := In(blocked) // its epx directory would be below a file
+	store := In(blocked)
 	if err := store.Save(File{}); err == nil {
 		t.Error("save below a file succeeded")
 	}
@@ -122,7 +122,6 @@ func TestCheckName(t *testing.T) {
 	for name, want := range map[string]bool{
 		"dev": true, "acme1-prod": true, "a.b_c": true, "9": true, strings.Repeat("a", 64): true,
 		"": false, "-dev": false, ".": false, "a b": false, "a/b": false, strings.Repeat("a", 65): false,
-		// Windows ignores case in the keychain's names, so a name has one case only.
 		"Dev": false, "dEV": false,
 	} {
 		if err := CheckName(name); (err == nil) != want {

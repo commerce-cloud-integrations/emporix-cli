@@ -7,9 +7,6 @@ import (
 	"testing"
 )
 
-// TestFeesGetRejectsAnArray checks that get finds a fee wrapped or bare (as
-// in the fee read cases), but not in an array: neither the reference nor
-// Emporix answers with one.
 func TestFeesGetRejectsAnArray(t *testing.T) {
 	fake := newFakeEmporix(t)
 	fake.route("/fee/acme1/fees/f1", respond(http.StatusOK, `[{"id":"f1","feeType":"ABSOLUTE"}]`))
@@ -23,7 +20,6 @@ func TestFeesGetReportsAMalformedWrappedFee(t *testing.T) {
 	fake := newFakeEmporix(t)
 	fake.route("/fee/acme1/fees/f1", respond(http.StatusOK, `{"fee":{"id":"f1","feeType":5}}`))
 	code, stdout, stderr := runCLI(t, fake.env(), "fees", "get", "f1")
-	// The wrapped fee's own decoding error is reported, not a missing identifier.
 	if code != ExitError || stdout != "" || !strings.Contains(stderr, "cannot unmarshal number") {
 		t.Fatalf("exit %d, stdout %q, stderr %q", code, stdout, stderr)
 	}
@@ -31,8 +27,6 @@ func TestFeesGetReportsAMalformedWrappedFee(t *testing.T) {
 
 func TestFeesOfAnItemFailures(t *testing.T) {
 	fake := newFakeEmporix(t)
-	// Emporix lists nothing for an unknown item, fails on a malformed YRN, and
-	// would answer fee ids if expand were not honored.
 	fake.route("/fee/acme1/productFees/unknown/fees", respond(http.StatusOK, `[]`))
 	fake.route("/fee/acme1/itemFees/malformed/fees", respond(http.StatusInternalServerError,
 		`{"message":"Something went wrong"}`))

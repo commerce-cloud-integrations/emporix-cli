@@ -2,8 +2,6 @@ package cli
 
 import "slices"
 
-// importReads returns the Import Service reads, every one opt-in: Emporix reads
-// them only with importtool.import_trigger, which also starts runs.
 func importReads() []readCase {
 	const optIn = "--" + writeScopeFlag
 	scopes := []string{importScope}
@@ -12,8 +10,6 @@ func importReads() []readCase {
 		"deleted":0,"message":"Import completed with 5 record failures."}`
 	return slices.Concat(importConfigurationReads(optIn, scopes, run), []readCase{
 		{
-			// A stream is read by its own ID; its settings are only in -o json. One that imports files may
-			// leave its source entity out or empty.
 			args:   []string{"imports", "streams", "get", "s 1", optIn},
 			path:   "/importtool/acme1/streams/s%201",
 			scopes: scopes,
@@ -36,7 +32,6 @@ func importReads() []readCase {
 				"d1  100200  product  UPSERTED  2026-07-27T02:03:55.000Z\n",
 		},
 		{
-			// get shows the run; the progress of its streams is only in -o json there.
 			args:   []string{"imports", "runs", "get", "r1", optIn},
 			path:   "/importtool/acme1/runs/r1",
 			scopes: scopes,
@@ -46,7 +41,6 @@ func importReads() []readCase {
 				"r1  PARTIAL  DELTA  2026-07-27T02:00:00.000Z  2026-07-27T02:04:12.000Z  1250  5\n",
 		},
 		{
-			// Every counter that READ adds up to, a parent's sweep marked as one; the files read only in -o json.
 			args:   []string{"imports", "runs", "streams", "r1", optIn},
 			path:   "/importtool/acme1/runs/r1",
 			scopes: scopes,
@@ -83,7 +77,6 @@ func importReads() []readCase {
 				"e1  100200  EXTRACT  REJECTED_BY_SOURCE  Column COUNTRIES has 1200 elements, more than 1000.\n",
 		},
 		{
-			// Every recorded row is asked for; the sample's size and cap are only in -o json.
 			args:   []string{"imports", "runs", "diagnostics", "r1", optIn},
 			path:   "/importtool/acme1/runs/r1/diagnostics",
 			query:  "limit=50000",
@@ -100,12 +93,9 @@ func importReads() []readCase {
 	}, importFileReads(optIn, scopes), importDataAndAnalyticsReads(optIn, scopes))
 }
 
-// importFileReads returns the reads of a stream's file queue: its files and
-// the most bytes an upload takes.
 func importFileReads(optIn string, scopes []string) []readCase {
 	return []readCase{
 		{
-			// The waiting files in load order, each of all those waiting, then the history, newest first.
 			args:   []string{"imports", "streams", "files", "list", "s1", "--history-limit", "50", optIn},
 			path:   filesPath,
 			query:  "historyLimit=50",
@@ -138,12 +128,9 @@ func importFileReads(optIn string, scopes []string) []readCase {
 	}
 }
 
-// importConfigurationReads returns the reads of import configurations: the
-// configurations and their streams, schedule, stream order and runs.
 func importConfigurationReads(optIn string, scopes []string, run string) []readCase {
 	return []readCase{
 		{
-			// The configurations come whole; VERSION is kept as sent.
 			args:   []string{"imports", "configurations", "list", optIn},
 			path:   "/importtool/acme1/configs",
 			scopes: scopes,
@@ -164,8 +151,6 @@ func importConfigurationReads(optIn string, scopes []string, run string) []readC
 			want:   "ID   NAME            ENABLED  VERSION  MODIFIED\nc 1  Product master  true     3.0      \n",
 		},
 		{
-			// A file-based stream says how it reads its files, also when it names no entity; a FAN_OUT stream,
-			// which has no source of its own, names the stream it fans out from.
 			args:   []string{"imports", "configurations", "streams", "c1", optIn},
 			path:   "/importtool/acme1/configs/c1/streams",
 			scopes: scopes,
@@ -198,7 +183,6 @@ func importConfigurationReads(optIn string, scopes []string, run string) []readC
 				"0 0 2 * * *  Europe/Amsterdam  true     2026-07-28T00:00:00.000Z\n",
 		},
 		{
-			// The streams in the order they run, each after its prerequisites.
 			args:   []string{"imports", "configurations", "stream-order", "c1", optIn},
 			path:   "/importtool/acme1/configs/c1/stream-order",
 			scopes: scopes,
@@ -211,7 +195,6 @@ func importConfigurationReads(optIn string, scopes []string, run string) []readC
 				"purchaseOrderLine  purchaseOrder, vendor\n",
 		},
 		{
-			// Most recent first, in pages from 0; MODE marks a dry run, whose counters are 0.
 			args:   []string{"imports", "configurations", "runs", "c1", optIn},
 			path:   "/importtool/acme1/configs/c1/runs",
 			scopes: scopes,
@@ -226,8 +209,6 @@ func importConfigurationReads(optIn string, scopes []string, run string) []readC
 	}
 }
 
-// importDataAndAnalyticsReads returns the reads of imported records and of the
-// import statistics, job groups, health thresholds and limits.
 func importDataAndAnalyticsReads(optIn string, scopes []string) []readCase {
 	return []readCase{
 		{
@@ -239,7 +220,6 @@ func importDataAndAnalyticsReads(optIn string, scopes []string) []readCase {
 			want:   "TYPE\nproduct\ncategory\n",
 		},
 		{
-			// The type is a query parameter, not a path segment.
 			args:   []string{"imports", "records", "product", optIn},
 			path:   "/importtool/acme1/data/records",
 			query:  "type=product",
@@ -254,7 +234,6 @@ func importDataAndAnalyticsReads(optIn string, scopes []string) []readCase {
 				"d2  100201  product  FAILED    \n",
 		},
 		{
-			// The headline counters of the last 30 days; the rest is only in -o json.
 			args:   []string{"imports", "statistics", optIn},
 			path:   "/importtool/acme1/stats",
 			scopes: scopes,
@@ -277,7 +256,6 @@ func importDataAndAnalyticsReads(optIn string, scopes []string) []readCase {
 				"g2  Empty                0               \n",
 		},
 		{
-			// The tenant's thresholds, empty where it falls back to the built-in defaults.
 			args:   []string{"imports", "health-thresholds", optIn},
 			path:   "/importtool/acme1/settings/health-thresholds",
 			scopes: scopes,

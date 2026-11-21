@@ -9,18 +9,16 @@ import (
 	"github.com/commerce-cloud-integrations/emporix-cli/internal/emporix"
 )
 
-// webhookConfiguration is the part of a webhook configuration shown in tables.
 type webhookConfiguration struct {
 	Code          string `json:"code"`
 	Provider      string `json:"provider"`
 	Active        *bool  `json:"active"`
 	Configuration struct {
 		DestinationURL      string            `json:"destinationUrl"`
-		EventsConfiguration []json.RawMessage `json:"eventsConfiguration"` // counted only
+		EventsConfiguration []json.RawMessage `json:"eventsConfiguration"`
 	} `json:"configuration"`
 }
 
-// eventSubscription is a webhook event type and whether the tenant receives it.
 type eventSubscription struct {
 	Event struct {
 		Type string    `json:"type"`
@@ -29,13 +27,11 @@ type eventSubscription struct {
 	Subscription string `json:"subscription"`
 }
 
-// webhookStatistics is how many webhooks a tenant may send and sent per month.
 type webhookStatistics struct {
 	WebhooksLimit   json.Number       `json:"webhooksLimit"`
 	MonthStatistics []monthStatistics `json:"monthStatistics"`
 }
 
-// monthStatistics is how many webhooks were sent in a month.
 type monthStatistics struct {
 	Month string      `json:"statisticsMonth"`
 	Sent  json.Number `json:"succesfullySentWebhooks"` // spelled so by Emporix
@@ -43,7 +39,6 @@ type monthStatistics struct {
 
 func (m monthStatistics) String() string { return m.Month + ": " + m.Sent.String() }
 
-// dashboardAccess is a login link to a tenant's webhook dashboard.
 type dashboardAccess struct {
 	URL string `json:"url"`
 }
@@ -58,10 +53,6 @@ const (
 	webhookManageScope = "webhook.subscription_manage"
 )
 
-// newWebhooksCommand reads the tenant's webhook setup: where events go, which
-// events it subscribes to, how many webhooks it sent, and a link to its
-// webhook dashboard, which Emporix gives only with a write-capable scope
-// (opt-in).
 func newWebhooksCommand(a *app) *cobra.Command {
 	statistics := reader[webhookStatistics]{view: view[webhookStatistics]{
 		singular: "webhook statistics",
@@ -105,8 +96,6 @@ func newWebhooksCommand(a *app) *cobra.Command {
 	)
 }
 
-// newWebhookSubscriptionsCommand reads the webhook events and whether the
-// tenant subscribes to them, and changes its subscriptions.
 func newWebhookSubscriptionsCommand(a *app) *cobra.Command {
 	const path = "/webhook/{tenant}/event-subscriptions"
 	subscriptions := reader[eventSubscription]{view: view[eventSubscription]{
@@ -131,7 +120,6 @@ func newWebhookSubscriptionsCommand(a *app) *cobra.Command {
 		subscriptionsBulkPatch(path).command(a))
 }
 
-// newWebhookConfigurationsCommand reads and changes webhook configurations.
 func newWebhookConfigurationsCommand(a *app) *cobra.Command {
 	configs := resource[webhookConfiguration]{
 		use:   configurationsUse,

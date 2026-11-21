@@ -38,7 +38,6 @@ func (c *Client) GetAllBodyPaged(ctx context.Context, path string, query url.Val
 		return nil, fmt.Errorf("%w: %s: a search paged in its body needs a JSON object as its body",
 			ErrInvalidInput, c.named(path))
 	}
-	// One client sends every page with that page's body; it requests the token on page 1 and keeps it.
 	sending := *c
 	return c.getAll(ctx, path, query, opts, func(ctx context.Context, path string, query url.Values, page, size int) (
 		[]json.RawMessage, int, error) {

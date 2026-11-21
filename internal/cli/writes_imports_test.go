@@ -8,24 +8,17 @@ import (
 	"time"
 )
 
-// queuedRun is an import run as Emporix answers a write that starts one.
 const queuedRun = `{"id":"r2","configId":"c1","status":"QUEUED","mode":"DELTA","queuePosition":0}`
 
-// queuedRunJSON is queuedRun as epx prints it.
 const queuedRunJSON = "{\n  \"configId\": \"c1\",\n  \"id\": \"r2\",\n  \"mode\": \"DELTA\",\n" +
 	"  \"queuePosition\": 0,\n  \"status\": \"QUEUED\"\n}\n"
 
-// cancelUnknown is the answer of a cancel that Emporix gives an unknown or
-// ended run (409 Conflict, live), and cancelUnknownShown what epx prints for it.
 const (
 	cancelUnknown      = `{"accepted":false,"cancelRequested":false,"force":false,"runId":"r1"}`
 	cancelUnknownShown = "{\n  \"accepted\": false,\n  \"cancelRequested\": false,\n" +
 		"  \"force\": false,\n  \"runId\": \"r1\"\n}\n"
 )
 
-// importWriteCases are the writes of the Import Service: runs started,
-// retried and cancelled, a configuration's schedule set and deleted, and
-// those of a stream's file queue.
 func importWriteCases() []writeCase {
 	trigger := []string{"importtool.import_trigger"}
 	const configuration, run = "/importtool/acme1/configs/c1", "/importtool/acme1/runs/r1"
@@ -89,9 +82,6 @@ func importWriteCases() []writeCase {
 	}, importFileWriteCases(trigger))
 }
 
-// importFileWriteCases are the writes of a stream's file queue: a file
-// uploaded in a form, the load order set by flags or by --file, a waiting
-// file removed and a failed one queued again.
 func importFileWriteCases(trigger []string) []writeCase {
 	const order = `["f3","f2"]`
 	reordered := `[{"id":"f3","status":"PENDING","loadRank":1},{"id":"f2","status":"PENDING","loadRank":2}]`
@@ -99,7 +89,6 @@ func importFileWriteCases(trigger []string) []writeCase {
 		"  {\n    \"id\": \"f2\",\n    \"loadRank\": 2,\n    \"status\": \"PENDING\"\n  }\n]\n"
 	return []writeCase{
 		{
-			// The file is sent as the form's file, with its name and the content type of its extension.
 			args:   []string{"imports", "streams", "files", "upload", "s1", "--upload", "testdata/order.csv"},
 			form:   []sentPart{{name: "file", file: "order.csv", contentType: "text/csv", content: orderCSV()}},
 			method: http.MethodPost, path: filesPath, scopes: trigger, status: http.StatusOK,
@@ -124,7 +113,6 @@ func importFileWriteCases(trigger []string) []writeCase {
 			conflict: fileDeleteConflict(filesList),
 		},
 		{
-			// No body: Emporix queues the content it holds and answers with the file, PENDING.
 			args: []string{"imports", "streams", "files", "requeue", "s1", "f2"}, method: http.MethodPost,
 			path: filesPath + "/f2/requeue", scopes: trigger, status: http.StatusOK,
 			body: `{"id":"f2","fileName":"order.csv","status":"PENDING","loadRank":3}`,
@@ -135,9 +123,6 @@ func importFileWriteCases(trigger []string) []writeCase {
 	}
 }
 
-// runWaits returns trigger and retry, which start a run, whose --wait may
-// read the run every millisecond, unlike the commands', which read it every
-// second at most.
 func runWaits() (trigger, retry *write) {
 	runs := importRuns("imports configurations runs CONFIGURATION_ID")
 	job := importRunJob(runs)
@@ -145,20 +130,15 @@ func runWaits() (trigger, retry *write) {
 	return importTrigger(importConfigurations(), job), importRetry(runs, job)
 }
 
-// TestImportRunWaitFollowsTheRun checks that --wait reads the run that
-// trigger or retry started, which Emporix answers with the run itself, as
-// `imports runs get` reads it, in its details, until it ends, saying on
-// standard error how its status changes, and that it succeeds only for a run
-// that ended SUCCEEDED, naming the status and message of another.
 func TestImportRunWaitFollowsTheRun(t *testing.T) {
 	const running = `{"run":{"id":"r2","status":"RUNNING","recordsRead":40},"streams":[]}`
 	trigger, retry := runWaits()
 	for _, tt := range []struct {
 		write      *write
 		args       []string
-		post, last string // the path of the write and the details of the run as it ended
+		post, last string
 		code       int
-		end        string // the last line of standard error
+		end        string
 	}{
 		{
 			write: trigger, args: []string{"trigger", "c1"}, post: "/importtool/acme1/configs/c1/runs",
@@ -186,9 +166,6 @@ func TestImportRunWaitFollowsTheRun(t *testing.T) {
 	}
 }
 
-// TestImportRunWaitNeedsARun checks that --wait fails, printing the response
-// as sent, when the run that Emporix answers with has no id or status, also
-// when it answers with the run's details, which only a read of a run holds.
 func TestImportRunWaitNeedsARun(t *testing.T) {
 	trigger, _ := runWaits()
 	for _, answer := range []string{`{"status":"QUEUED"}`, `{"run":` + queuedRun + `,"streams":[]}`} {
@@ -203,9 +180,6 @@ func TestImportRunWaitNeedsARun(t *testing.T) {
 	}
 }
 
-// TestImportWriteFlags checks that a --mode other than FULL or DELTA, a
-// --mode with --file and update-schedule without --cron are usage errors
-// (exit 2) that send nothing.
 func TestImportWriteFlags(t *testing.T) {
 	file := writeBody(t, `{"mode":"FULL"}`)
 	for _, tt := range []struct {
@@ -226,17 +200,13 @@ func TestImportWriteFlags(t *testing.T) {
 	}
 }
 
-// TestImportRunRefusals checks how a trigger that Emporix refuses ends: a
-// conflict with a run in flight exits 5 and prints the run the error names
-// (details, as the reference's example sends them), a run with nothing to
-// import exits 1 with Emporix's message, and an unknown configuration exits 4.
 func TestImportRunRefusals(t *testing.T) {
 	const runs = "/importtool/acme1/configs/c1/runs"
 	for _, tt := range []struct {
 		status int
 		body   string
 		code   int
-		want   string // in standard error
+		want   string
 	}{
 		{
 			status: http.StatusConflict, code: ExitConflict,

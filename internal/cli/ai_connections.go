@@ -2,11 +2,6 @@ package cli
 
 import "github.com/spf13/cobra"
 
-// The AI Service's connections: what agents connect to (native tools and MCP
-// servers) and the credentials they connect with (tokens and OAuth
-// configurations).
-
-// aiTool is the part of an agent's native tool shown in tables.
 type aiTool struct {
 	ID      string `json:"id"`
 	Type    string `json:"type"`
@@ -22,13 +17,10 @@ type aiToken struct {
 	Metadata itemMetadata `json:"metadata"`
 }
 
-// tokenReference names a token (aiToken) by its ID.
 type tokenReference struct {
 	ID string `json:"id"`
 }
 
-// aiOAuth is the part of an OAuth configuration shown in tables; its scope
-// is only in -o json.
 type aiOAuth struct {
 	ID                string         `json:"id"`
 	Enabled           *bool          `json:"enabled"`
@@ -37,7 +29,6 @@ type aiOAuth struct {
 	URL               string         `json:"url"`
 }
 
-// aiMCPServer is the part of an MCP server shown in tables.
 type aiMCPServer struct {
 	ID        string `json:"id"`
 	Type      string `json:"type"`
@@ -49,25 +40,18 @@ type aiMCPServer struct {
 	} `json:"config"`
 }
 
-// searchToolNeedsReindex says when a search tool, which finds what a reindex job of
-// its type indexed, first finds anything.
 const searchToolNeedsReindex = "The first search tool of an entity type (customer or legal-entity) finds nothing " +
 	"until a reindex job of that type (`epx indexing reindex-jobs create --entity-type CUSTOMER` or " +
 	"LEGAL-ENTITY), started after the tool is saved, ends."
 
-// fileGeneratorNotATool says that the built-in file generator, which an
-// agent's nativeTools may name, is not a tool.
 const fileGeneratorNotATool = "The built-in file generator (type file) is not stored as a tool: an agent " +
 	"enables it with the reserved ID file_generator in its nativeTools, and Emporix refuses a tool with " +
 	"that ID (400 Bad Request, exit 1)."
 
-// mixinsHelp says what the mixins of an agent or MCP server hold and that an
-// upsert replaces them.
 const mixinsHelp = "Its mixins hold custom values by name, and metadata.mixins the URLs of the JSON schemas " +
 	"that Emporix checks them against; an update replaces them, so a body without mixins clears the stored " +
 	"ones: send them again, with metadata.mixins."
 
-// newAIToolsCommand reads and writes the native tools of agents.
 func newAIToolsCommand(a *app) *cobra.Command {
 	r := agentic(resource[aiTool]{
 		use: "tools", noun: "agent tools",
@@ -92,8 +76,6 @@ func newAIToolsCommand(a *app) *cobra.Command {
 	})
 }
 
-// newAITokensCommand reads the tokens of the AI Service by name, and writes
-// them.
 func newAITokensCommand(a *app) *cobra.Command {
 	r := agentic(resource[aiToken]{
 		use: "tokens", noun: "AI tokens",
@@ -116,8 +98,6 @@ func newAITokensCommand(a *app) *cobra.Command {
 	})
 }
 
-// newAIOAuthsCommand reads and writes OAuth configurations, with which agents
-// get a token for a self-hosted LLM.
 func newAIOAuthsCommand(a *app) *cobra.Command {
 	r := agentic(resource[aiOAuth]{
 		use: "oauths", noun: "OAuth configurations",
@@ -142,7 +122,6 @@ func newAIOAuthsCommand(a *app) *cobra.Command {
 	})
 }
 
-// newAIMCPServersCommand reads and writes the tenant's MCP servers.
 func newAIMCPServersCommand(a *app) *cobra.Command {
 	r := agentic(resource[aiMCPServer]{
 		use: "mcp-servers", noun: "MCP servers",

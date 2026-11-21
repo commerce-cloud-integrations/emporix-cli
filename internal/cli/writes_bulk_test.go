@@ -9,16 +9,10 @@ import (
 	"testing"
 )
 
-// TestBulkWritesListTheItemsThatFailed checks that a bulk write whose
-// response names items that failed prints the response, lists the items that
-// failed on standard error in the order of the response, sanitized, each
-// named by its index or position (and one that failed with a 5xx status as
-// possibly carried out), and exits non-zero: with 5 when each failed with 409
-// Conflict, 4 when each was not found, and 1 otherwise.
 func TestBulkWritesListTheItemsThatFailed(t *testing.T) {
 	const items = `[{"id":"p1"},{"id":"p2"},{"id":"p3"}]`
 	for _, tt := range []struct {
-		results string // the results of the three items
+		results string
 		code    int
 		stderr  string
 	}{
@@ -66,10 +60,6 @@ func TestBulkWritesListTheItemsThatFailed(t *testing.T) {
 	}
 }
 
-// TestBulkWritesListTheItemsThatFailedWhenPrintingFails checks that a bulk
-// write whose response cannot be printed still lists the items that failed
-// on standard error and exits with the code that their failures share, with
-// both errors.
 func TestBulkWritesListTheItemsThatFailedWhenPrintingFails(t *testing.T) {
 	fake := newFakeEmporix(t)
 	fake.route("/price/acme1/prices/bulk",
@@ -86,10 +76,6 @@ func TestBulkWritesListTheItemsThatFailedWhenPrintingFails(t *testing.T) {
 	}
 }
 
-// TestBulkWritesWithoutTheResultOfEachItemFail checks that a bulk write
-// whose response does not give the result of each item sent fails (exit 1),
-// saying that the items may have been carried out, after printing what
-// Emporix answered, if anything.
 func TestBulkWritesWithoutTheResultOfEachItemFail(t *testing.T) {
 	const want = "Error: POST /availability/acme1/availability/bulk: the response does not give the result of each " +
 		"of the 2 items, which may have been carried out all the same: read them before you send them again\n"
@@ -117,9 +103,6 @@ func TestBulkWritesWithoutTheResultOfEachItemFail(t *testing.T) {
 	}
 }
 
-// TestBulkWritesTakeUpToTheirLimit checks that a bulk write sends as many
-// items as Emporix takes in one request, 200 for prices, and refuses more as
-// a usage error (exit 2) that sends nothing, also on a dry run.
 func TestBulkWritesTakeUpToTheirLimit(t *testing.T) {
 	items := func(n int) string { return "[" + strings.Repeat(priceJSON+",", n-1) + priceJSON + "]" }
 	fake := newFakeEmporix(t)
@@ -140,11 +123,6 @@ func TestBulkWritesTakeUpToTheirLimit(t *testing.T) {
 	}
 }
 
-// TestWriteBodiesAreChecked checks that a declared write requires --file, a
-// bulk write a JSON array of one or more items, a write whose request names
-// the site --site, and an ID that addresses one item, not another operation
-// of the collection, failing as usage errors (exit 2) that send nothing, also
-// for a dry run.
 func TestWriteBodiesAreChecked(t *testing.T) {
 	assertRefused(t, []refusedWrite{
 		{args: []string{"prices", "create"}, want: `required flag(s) "file" not set`},
@@ -165,11 +143,6 @@ func TestWriteBodiesAreChecked(t *testing.T) {
 	})
 }
 
-// TestWriteHelpEndsWithItsScopes checks the help of a declared write: what
-// it sends, an upsert named so, for a bulk write how many items Emporix
-// takes and how they are answered, how it is sent, and the write scope it
-// requests, without the opt-in note of a read; its --file is required and
-// says so. A group with writes states the scopes of its reads and writes.
 func TestWriteHelpEndsWithItsScopes(t *testing.T) {
 	for _, tt := range []struct {
 		args []string
@@ -203,10 +176,6 @@ func TestWriteHelpEndsWithItsScopes(t *testing.T) {
 	}
 }
 
-// TestWritesReserveOnlyIDsTheyTake checks that a write that reserves values
-// of an ID it does not take panics while the command tree is built, which
-// every test of the tree would find, and that one with a write-capable scope
-// among read-only ones is built, annotated with every scope it requests.
 func TestWritesReserveOnlyIDsTheyTake(t *testing.T) {
 	a := &app{getenv: func(string) string { return "" }}
 	func() {
@@ -227,9 +196,6 @@ func TestWritesReserveOnlyIDsTheyTake(t *testing.T) {
 	}
 }
 
-// TestBulkWritesReserveTheIDsOfTheirPaths checks which IDs of a write of one
-// item address a bulk write instead: bulk, where the item is {id} right
-// below the collection and the collection has a bulk write of its method.
 func TestBulkWritesReserveTheIDsOfTheirPaths(t *testing.T) {
 	bulk := &bulkWrites{path: "/things/{parent}/parts", update: "Upserts parts.", delete: "Deletes parts."}
 	const part = "/things/{parent}/parts/{id}"

@@ -4,14 +4,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// priceListManage is the scope of every write of price lists and of their
-// prices.
 const priceListManage = "price.pricelist_manage"
 
-// priceListLanguageHelp follows what a write of a price list sends, in its
-// help: the Price Service takes its localized text as a map of translations
-// also with a Content-Language that names one language, a map of that one
-// language then (its reference's header_contentLanguage).
 func priceListLanguageHelp() string {
 	return "Localized text in the body, such as a name, is a map of translations, e.g. " +
 		literal(`{"en": "Wholesale", "nl": "Groothandel"}`) + ", as `-o json` of a read prints it, also with --" +
@@ -21,8 +15,6 @@ func priceListLanguageHelp() string {
 		contentLanguageFlag + " en."
 }
 
-// priceListWrites returns the writes of price lists: create, update ID (an
-// upsert) and delete ID, which deletes the prices of the list too.
 func priceListWrites(a *app, lists resource[priceList]) []*cobra.Command {
 	at := lists.at()
 	create, update, remove := (&collectionWrites{
@@ -43,11 +35,6 @@ func priceListWrites(a *app, lists resource[priceList]) []*cobra.Command {
 	return writeCommands(a, []write{*create, *update, *remove})
 }
 
-// priceListPriceWrites returns the writes of the prices of a price list,
-// prices being their collection below pricesOf (newPriceListPricesCommand):
-// create, update ID (an upsert) and delete ID, and in bulk bulk-create,
-// bulk-update (an upsert) and bulk-delete, each below the price list
-// PRICE_LIST_ID.
 func priceListPriceWrites(a *app, pricesOf resource[priceList], prices child[priceListPrice]) []*cobra.Command {
 	at := childAt(pricesOf, prices)
 	of := pricesOf.argumentSource() + "."

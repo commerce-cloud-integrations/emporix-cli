@@ -8,8 +8,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// schemaAttribute is the part of an attribute of a parsed JSON schema file
-// shown in tables.
 type schemaAttribute struct {
 	Key      string `json:"key"`
 	Type     string `json:"type"`
@@ -20,13 +18,9 @@ type schemaAttribute struct {
 	} `json:"metadata"`
 }
 
-// jsonSchemaFile is the part of a form that sends a JSON schema file, named
-// by --json-schema, described by usage.
 func jsonSchemaFile(usage string) formPart { return filePart("file", "json-schema", usage) }
 
-// newSchemaParseCommand returns `schemas parse`, which parses a JSON schema
-// file into the schema that Emporix would make of it and stores nothing: an
-// opt-in read, as Emporix allows it only with schema.schema_manage.
+// Emporix allows the parse only with schema.schema_manage.
 func newSchemaParseCommand(a *app) *cobra.Command {
 	return reader[schemaAttribute]{
 		view: view[schemaAttribute]{
@@ -55,8 +49,6 @@ func newSchemaParseCommand(a *app) *cobra.Command {
 	})
 }
 
-// schemaAttributes returns the attributes of the schema that the parsing of
-// a JSON schema file answers with; a response without them is no schema.
 func schemaAttributes(body json.RawMessage) ([]json.RawMessage, error) {
 	var parsed struct {
 		Attributes *[]json.RawMessage `json:"attributes"`

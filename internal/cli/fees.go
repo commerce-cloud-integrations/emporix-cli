@@ -9,21 +9,17 @@ import (
 	"github.com/commerce-cloud-integrations/emporix-cli/internal/emporix"
 )
 
-// feeService is the path of the Fee Service.
 const feeService = "/fee/{tenant}"
 
-// yrnNote shows how to give the YRN that names an item, such as a product,
-// in the Fee Service: an example, quoted for the shell.
 const yrnNote = "e.g. 'urn:yaas:saasag:caasproduct:product:TENANT;PRODUCT_ID' " +
 	"(quoted, because the shell would end the command at ;)"
 
-// fee is the part of a Fee Service fee shown in tables.
 type fee struct {
 	ID             string      `json:"id"`
 	Code           string      `json:"code"`
 	Name           localized   `json:"name"`
 	FeeType        string      `json:"feeType"`
-	FeePercentage  json.Number `json:"feePercentage"` // kept as sent, e.g. 2.50
+	FeePercentage  json.Number `json:"feePercentage"`
 	FeeAbsolute    money       `json:"feeAbsolute"`
 	ItemType       string      `json:"itemType"`
 	SiteCode       string      `json:"siteCode"`
@@ -35,8 +31,6 @@ type fee struct {
 	} `json:"activeTimespan"`
 }
 
-// amount returns the value that the fee type uses: a percentage for PERCENT,
-// else an amount in its currency. A missing value stays empty.
 func (f *fee) amount() string {
 	if f.FeeType == "PERCENT" {
 		return percent(f.FeePercentage)
@@ -44,10 +38,6 @@ func (f *fee) amount() string {
 	return f.FeeAbsolute.String()
 }
 
-// feeItem finds the fee that get reads. The API reference documents it
-// wrapped with the items it applies to, {"fee": {...}, "itemYRNs": {...}}; a
-// body without a fee member is taken as the fee itself, since Emporix has
-// deviated from its reference for single reads before.
 func feeItem(body json.RawMessage) ([]json.RawMessage, error) {
 	var wrapper map[string]json.RawMessage
 	if json.Unmarshal(body, &wrapper) == nil {
@@ -58,10 +48,6 @@ func feeItem(body json.RawMessage) ([]json.RawMessage, error) {
 	return oneItem(body)
 }
 
-// newFeesCommand reads and changes fees, the fees assigned to a product or
-// another item, and which items have which fees (assignments). Fees are
-// filtered by a site that Emporix documents as defaulting to main, so the
-// site is required rather than left implicit.
 func newFeesCommand(a *app) *cobra.Command {
 	r := resource[fee]{
 		use:   "fees",
@@ -94,7 +80,6 @@ func newFeesCommand(a *app) *cobra.Command {
 			},
 		},
 	}
-	// The fees of one item are not paged; without expand Emporix returns only their ids.
 	item, product := feeOwners()
 	feesOf := func(o feeOwner) request {
 		return request{

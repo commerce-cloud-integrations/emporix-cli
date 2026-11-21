@@ -2,10 +2,6 @@ package cli
 
 import "net/http"
 
-// deleteWrites are the deletes of units, brands, labels, schemas and schema
-// references, prices, availability, index provider configurations and
-// configurations, each sent without a body unless --file names what it
-// deletes, and confirmed by typing what it names, or the tenant.
 func deleteWrites() []writeCase {
 	return append(catalogDeleteWrites(), []writeCase{
 		{
@@ -68,8 +64,6 @@ func deleteWrites() []writeCase {
 	}...)
 }
 
-// catalogDeleteWrites are the deletes of catalogs, categories, the
-// assignments of products to categories, products and product templates.
 func catalogDeleteWrites() []writeCase {
 	categories := []string{categoryManageScope}
 	return []writeCase{

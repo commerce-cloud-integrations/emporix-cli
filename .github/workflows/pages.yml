@@ -1,10 +1,5 @@
 name: pages
 
-# Publishes the documentation site (site/) on GitHub Pages for every pushed
-# vMAJOR.MINOR.PATCH tag, so the site describes the latest release; run it by hand
-# (workflow_dispatch) to republish a tag or main. The build is static: a Mintlify export,
-# rewritten for the base path /emporix-cli, with a Pagefind search index
-# (.github/scripts/site/build.sh).
 on:
   push:
     tags:
@@ -34,8 +29,6 @@ jobs:
         with:
           node-version: 24
 
-      # From the lockfile: the build rewrites the export's paths and payloads, so a new
-      # Mintlify version (or a dependency of it) is adopted only after it was checked.
       - name: Install Mintlify and Pagefind
         run: |
           mkdir -p "$RUNNER_TEMP/tools"

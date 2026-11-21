@@ -2,23 +2,13 @@ package cli
 
 import "net/http"
 
-// The read cases of the customer, legal entity, vendor and segment searches,
-// which Emporix serves as POST with a JSON body but which change nothing (see
-// TestReads).
-
-// customerSearchReads returns the searches of the Customer, Customer
-// Management, Vendor and Customer Segment services.
 func customerSearchReads() []readCase {
 	return append(customerAndVendorSearchReads(), segmentSearchReads()...)
 }
 
-// customerAndVendorSearchReads returns the searches of customers, legal
-// entities and vendors.
 func customerAndVendorSearchReads() []readCase {
 	return []readCase{
 		{
-			// Without --query, the body's q filters nothing; pages are read as list reads them,
-			// with the total, as filtered, as hybris-count.
 			args:    []string{"customers", "search"},
 			path:    "/customer/acme1/customers/search",
 			scopes:  []string{"customer.customer_read"},
@@ -34,7 +24,6 @@ func customerAndVendorSearchReads() []readCase {
 				"10002                bo@example.com             B2C                     \n",
 		},
 		{
-			// --query is sent in the body as given, quotes and > included.
 			args:    []string{"customers", "search", "--query", `lastName:"Example" metadata.createdAt:>2026-01-01`},
 			path:    "/customer/acme1/customers/search",
 			scopes:  []string{"customer.customer_read"},
@@ -74,8 +63,6 @@ func customerAndVendorSearchReads() []readCase {
 	}
 }
 
-// segmentSearchReads returns the searches of segments and of what is
-// assigned to one.
 func segmentSearchReads() []readCase {
 	const scope = "customersegment.segment_read"
 	return []readCase{
@@ -93,8 +80,6 @@ func segmentSearchReads() []readCase {
 				"s2  Trial (en)  INACTIVE                              \n",
 		},
 		{
-			// The segment's id is escaped in the path (a read with a body refuses one holding
-			// a slash); the search goes below its customers, sorted by id as list sorts them.
 			args:    []string{"segments", "customers", "search", "s 1", "--query", "assignmentType:MANUAL"},
 			path:    "/customer-segment/acme1/segments/s%201/customers/search",
 			query:   "sort=id",

@@ -10,9 +10,6 @@ import (
 	"testing"
 )
 
-// bodyPagedRoute serves count items ({"id":"i<n>"}) by the pageNumber and
-// pageSize of the request body, ignoring the query, as the Fee Service's
-// searches by product page; total, when non-empty, is sent as X-Total-Count.
 func bodyPagedRoute(count int, total string) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var paging struct {
@@ -34,10 +31,6 @@ func bodyPagedRoute(count int, total string) func(http.ResponseWriter, *http.Req
 	}
 }
 
-// TestGetAllBodyPagedPagesInTheBody checks that every page sends the body
-// with its page and size set, replacing those it held and keeping the other
-// members as given, and the query as given, without paging; one token reads
-// every page.
 func TestGetAllBodyPagedPagesInTheBody(t *testing.T) {
 	fake := newFakeEmporix(t)
 	fake.route("/items/search", bodyPagedRoute(5, ""))
@@ -45,7 +38,6 @@ func TestGetAllBodyPagedPagesInTheBody(t *testing.T) {
 	body, err := search.GetAllBodyPaged(context.Background(), "/items/search",
 		map[string][]string{"siteFallback": {"true"}}, ListOptions{})
 	var items []json.RawMessage
-	// Without a total, the empty page 4 ends the search.
 	if err != nil || json.Unmarshal(body, &items) != nil || len(items) != 5 || len(fake.requests) != 4 {
 		t.Fatalf("body %s, error %v, %d requests; want 5 items in 4 pages", body, err, len(fake.requests))
 	}
@@ -62,13 +54,11 @@ func TestGetAllBodyPagedPagesInTheBody(t *testing.T) {
 	}
 }
 
-// TestGetAllBodyPagedChecksPagesAsCollections checks that a search paged in
-// its body is checked as GetAll checks a collection, and stops at its limit.
 func TestGetAllBodyPagedChecksPagesAsCollections(t *testing.T) {
 	for name, tt := range map[string]struct {
 		route    func(http.ResponseWriter, *http.Request)
 		opts     ListOptions
-		want     string // the error, or the items when empty
+		want     string
 		requests int
 	}{
 		"paging ignored": {route: pagedRoute(3, -1, ""), requests: 2,
@@ -91,9 +81,6 @@ func TestGetAllBodyPagedChecksPagesAsCollections(t *testing.T) {
 	}
 }
 
-// TestGetAllBodyPagedRefusesABodyThatIsNotAnObject checks that a search
-// paged in its body needs a JSON object to page: without one, nothing is
-// sent, not even a token request.
 func TestGetAllBodyPagedRefusesABodyThatIsNotAnObject(t *testing.T) {
 	fake := newFakeEmporix(t)
 	client := fake.client(t)

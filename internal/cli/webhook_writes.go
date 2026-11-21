@@ -6,10 +6,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// webhookConfigurationWrites returns the writes of webhook configurations:
-// create, update CODE (PUT, which creates no missing configuration), patch
-// CODE (a JSON array of operations) and delete CODE (--force for an active
-// one).
 func webhookConfigurationWrites(a *app, configs resource[webhookConfiguration]) []*cobra.Command {
 	scopes := []string{webhookManageScope}
 	item := request{path: configs.itemPath()}
@@ -60,12 +56,6 @@ func webhookConfigurationWrites(a *app, configs resource[webhookConfiguration]) 
 	}
 }
 
-// subscriptionsBulkPatch subscribes the tenant to webhook events and
-// unsubscribes it, from a JSON array of changes sent to path, the collection
-// of its subscriptions, which Emporix answers per event with 207
-// Multi-Status: a bulk write of up to bulkItemsDefault items, as the
-// reference names no other limit, whose results name each item by its
-// eventType, not by index.
 func subscriptionsBulkPatch(path string) *write {
 	return &write{
 		use:   bulkPatchUse,

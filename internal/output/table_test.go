@@ -39,9 +39,6 @@ func TestWriteTableReportsWriteErrors(t *testing.T) {
 	}
 }
 
-// TestWriteCSVQuotesAndSanitizes checks that CSV quotes what needs quoting
-// (commas, quotes, a leading space), keeps cells as given (leading zeros,
-// spaces), and sanitizes what a terminal could act on, as tables do.
 func TestWriteCSVQuotesAndSanitizes(t *testing.T) {
 	var out bytes.Buffer
 	rows := [][]string{
@@ -71,9 +68,6 @@ func TestWriteCSVWithoutHeaderAndErrors(t *testing.T) {
 	}
 }
 
-// TestWriteCSVKeepsEmptyRecords checks that a record of one empty cell, which
-// a single column can give, reads back as a record, with and without the
-// header, where encoding/csv alone writes an empty line that readers skip.
 func TestWriteCSVKeepsEmptyRecords(t *testing.T) {
 	rows := [][]string{{""}, {"B"}, {""}, {""}}
 	for _, tt := range []struct {

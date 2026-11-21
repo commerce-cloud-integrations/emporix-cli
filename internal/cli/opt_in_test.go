@@ -9,17 +9,11 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// TestOptInReadsRequireTheFlag checks the opt-in reads of the test resource
-// (runThings): a child with a write-capable scope of its own, a resource with
-// one, and its child and child item, which inherit it. Without
-// --allow-write-scope, also when it is given false, each fails as a usage
-// error naming its scope, before a token is requested; with it, each reads
-// with exactly its scopes.
 func TestOptInReadsRequireTheFlag(t *testing.T) {
 	const list, item = `[{"id":"x1","name":"X"}]`, `{"id":"x1","name":"X"}`
 	for _, tt := range []struct {
 		command, path, body, scope string
-		args                       []string // after the command
+		args                       []string
 	}{
 		{command: "secrets", args: []string{"t1"}, path: "/things/t1/secrets", body: list, scope: "secret.manage"},
 		{command: "vaults list", path: "/vaults", body: list, scope: "vault.manage"},
@@ -51,9 +45,6 @@ func TestOptInReadsRequireTheFlag(t *testing.T) {
 	}
 }
 
-// TestChildWithItsOwnScopesLeavesTheOptIn checks that a child of an opt-in
-// resource that declares its own read scopes is not opt-in: it reads without
-// --allow-write-scope and does not take it.
 func TestChildWithItsOwnScopesLeavesTheOptIn(t *testing.T) {
 	fake := newFakeEmporix(t)
 	fake.route("/vaults/v1/tags", firstPage(`[{"id":"x1","name":"X"}]`))
@@ -68,8 +59,6 @@ func TestChildWithItsOwnScopesLeavesTheOptIn(t *testing.T) {
 	}
 }
 
-// TestOptInHelp checks that an opt-in read's help ends with the opt-in
-// sentence and that its flag names the scope it requests.
 func TestOptInHelp(t *testing.T) {
 	_, help, _ := runThings(t, newFakeEmporix(t), "secrets", "--help")
 	for _, want := range []string{
@@ -82,8 +71,6 @@ func TestOptInHelp(t *testing.T) {
 	}
 }
 
-// TestWriteCapable checks which scopes count as write-capable: every scope
-// but those named for reading, with read or view as a word after the service.
 func TestWriteCapable(t *testing.T) {
 	for _, tt := range []struct {
 		scopes []string
@@ -97,8 +84,8 @@ func TestWriteCapable(t *testing.T) {
 		{scopes: []string{"thing.read"}, want: false},
 		{scopes: []string{"coupon.coupon_manage"}, want: true},
 		{scopes: []string{"importtool.import_trigger"}, want: true},
-		{scopes: []string{"order.order_readascustomer"}, want: true}, // not named for reading: opt-in, to be safe
-		{scopes: []string{"read.manage"}, want: true},                // the service is not a word of the name
+		{scopes: []string{"order.order_readascustomer"}, want: true},
+		{scopes: []string{"read.manage"}, want: true},
 		{scopes: []string{"read"}, want: true},
 		{scopes: []string{"coupon.coupon_read", "coupon.coupon_manage"}, want: true},
 	} {
@@ -108,12 +95,6 @@ func TestWriteCapable(t *testing.T) {
 	}
 }
 
-// TestEveryWriteCapableReadIsOptIn checks the command tree: a read takes
-// --allow-write-scope exactly when one of its scopes is write-capable, and
-// each such read, run as its read case runs it but without the flag, fails as
-// a usage error naming the flag before a token is requested or anything is
-// read, and requests exactly its scopes with it. So no write-capable scope,
-// such as coupon.coupon_manage, is ever requested implicitly.
 func TestEveryWriteCapableReadIsOptIn(t *testing.T) {
 	cases := casesByCommand(t)
 	optIn := 0
@@ -138,9 +119,6 @@ func TestEveryWriteCapableReadIsOptIn(t *testing.T) {
 	}
 }
 
-// assertOptInEnforced runs args, the read case of an opt-in read, which opts
-// in with --allow-write-scope: without the flag it must fail as a usage error
-// naming it and send nothing; as given, it must request exactly scopes.
 func assertOptInEnforced(t *testing.T, args, scopes []string) {
 	t.Helper()
 	optIn := "--" + writeScopeFlag
@@ -163,9 +141,6 @@ func assertOptInEnforced(t *testing.T, args, scopes []string) {
 	}
 }
 
-// TestOptInReadsFailWithUsageBeforeConfiguration checks a real opt-in read:
-// without --allow-write-scope it fails as a usage error, pointing to the flag,
-// even before the configuration is checked, and sends nothing.
 func TestOptInReadsFailWithUsageBeforeConfiguration(t *testing.T) {
 	fake := newFakeEmporix(t)
 	fake.route("/coupon/acme1/coupons/SAVE7/redemptions", respond(http.StatusOK, `[]`))

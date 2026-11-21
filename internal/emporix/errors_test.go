@@ -6,11 +6,6 @@ import (
 	"unicode/utf8"
 )
 
-// TestErrorMessage checks the message that errorMessage takes from each
-// error shape: the message member, followed by the details in each shape
-// that the Emporix references document, field and message only; it leaves
-// out what a detail holds besides, a detail without a message, one that
-// repeats the message and any other JSON; and it bounds the result.
 func TestErrorMessage(t *testing.T) {
 	const violation = `"message":"The request violates validation constraints.","type":"validation_violation"`
 	checkErrorMessages(t, []errorMessageCase{
@@ -70,7 +65,6 @@ func TestErrorMessage(t *testing.T) {
 	}
 }
 
-// errorMessageCase is a body and the message that errorMessage takes from it.
 type errorMessageCase struct{ name, body, want string }
 
 func checkErrorMessages(t *testing.T, cases []errorMessageCase) {
@@ -82,9 +76,6 @@ func checkErrorMessages(t *testing.T, cases []errorMessageCase) {
 	}
 }
 
-// TestErrorMessageMembers checks which member gives the message: those of
-// the services and OAuth before the gateway's faultstring, then
-// problem+json's detail (a string only) and its title; no other member.
 func TestErrorMessageMembers(t *testing.T) {
 	checkErrorMessages(t, []errorMessageCase{
 		{name: "problem detail (Reward Points Service)",
@@ -108,9 +99,6 @@ func TestErrorMessageMembers(t *testing.T) {
 	})
 }
 
-// TestErrorMessageErrorCode checks that a string errorCode follows the
-// message in parentheses, unless the message names it as a word, and stands
-// first without a message.
 func TestErrorMessageErrorCode(t *testing.T) {
 	checkErrorMessages(t, []errorMessageCase{
 		{name: "after the message (Shipping Service)",
@@ -135,9 +123,6 @@ func TestErrorMessageErrorCode(t *testing.T) {
 	})
 }
 
-// TestErrorMessageDetailMembers checks the details of Micronaut's
-// _embedded.errors and of fileDetails, read as those of a details member,
-// after them and nothing else of _embedded.
 func TestErrorMessageDetailMembers(t *testing.T) {
 	checkErrorMessages(t, []errorMessageCase{
 		{name: "embedded errors (Brand, Price, Schema, Unit Service)",
@@ -164,8 +149,6 @@ func TestErrorMessageDetailMembers(t *testing.T) {
 	})
 }
 
-// TestErrorMessageDetailFields checks the field of a detail: its field or
-// else its path, left out where the message starts with it as a word.
 func TestErrorMessageDetailFields(t *testing.T) {
 	checkErrorMessages(t, []errorMessageCase{
 		{name: "a field before a path",

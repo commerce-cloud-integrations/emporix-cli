@@ -6,17 +6,13 @@ import (
 	"testing"
 )
 
-// reindexJobBody is a reindex job as Emporix answers its creation.
 const reindexJobBody = `{"id":"j1","status":"IN_PROGRESS","entityType":"PRODUCT","expectedCount":5000,` +
 	`"processedCount":0,"metadata":{"createdAt":"2026-06-16T12:32:14.132Z"}}`
 
-// reindexJobJSON is reindexJobBody as epx prints it.
 const reindexJobJSON = "{\n  \"entityType\": \"PRODUCT\",\n  \"expectedCount\": 5000,\n  \"id\": \"j1\",\n" +
 	"  \"metadata\": {\n    \"createdAt\": \"2026-06-16T12:32:14.132Z\"\n  },\n  \"processedCount\": 0,\n" +
 	"  \"status\": \"IN_PROGRESS\"\n}\n"
 
-// indexingWrites are the writes of the Indexing Service and of the AI RAG
-// Indexer: index provider configurations and reindexing.
 func indexingWrites() []writeCase {
 	const provider = `{"provider":"ALGOLIA","active":true,"applicationId":"APP1","indexName":"acme1",` +
 		`"searchKey":"s","writeKey":"w"}`
@@ -68,13 +64,8 @@ func indexingWrites() []writeCase {
 	}
 }
 
-// TestReindexJobCreateSendsTheEntityTypeAsGiven checks that --entity-type
-// takes every type, built-in in either case or custom, and sends it as
-// given: Emporix takes the built-in ones in any case, and
-// LEGAL-ENTITY with a hyphen. Its help names them; shells complete the
-// built-in ones (TestCompletionNeverSuggestsFiles).
 func TestReindexJobCreateSendsTheEntityTypeAsGiven(t *testing.T) {
-	sent := []string{"vehicle"} // a custom entity type
+	sent := []string{"vehicle"}
 	for _, name := range entityBuiltInTypeNames() {
 		sent = append(sent, name, strings.ToLower(name))
 	}
@@ -99,10 +90,6 @@ func TestReindexJobCreateSendsTheEntityTypeAsGiven(t *testing.T) {
 	}
 }
 
-// TestIndexingWriteBodies checks that providers create and update, whose
-// configuration Emporix requires, fail without --file as a usage error (exit
-// 2) that sends nothing, and that ai rag reindex, which Emporix takes no body
-// for, has no --file.
 func TestIndexingWriteBodies(t *testing.T) {
 	file := writeBody(t, `{"provider":"ALGOLIA"}`)
 	for _, tt := range []struct {
@@ -126,11 +113,6 @@ func TestIndexingWriteBodies(t *testing.T) {
 	}
 }
 
-// TestIndexProviderHelpNamesBatteryIncludedSettings checks that the
-// provider writes name the BatteryIncluded settings and the provider they are
-// refused for, that update says a body without them resets them and how to
-// avoid it, and that the reads say where they show; the generated reference
-// pins the wording.
 func TestIndexProviderHelpNamesBatteryIncludedSettings(t *testing.T) {
 	settings := []string{"apiUrl", "enrichments", "siteAwareMixinsStrategy", "FEE calls the Fee Service but adds nothing",
 		"for ALGOLIA", "an apiUrl of another host"}

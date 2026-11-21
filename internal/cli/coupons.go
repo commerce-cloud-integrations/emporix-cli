@@ -9,12 +9,11 @@ import (
 	"github.com/commerce-cloud-integrations/emporix-cli/internal/emporix"
 )
 
-// coupon is the part of a Coupon Service coupon shown in tables.
 type coupon struct {
 	Code               string      `json:"code"`
 	Name               string      `json:"name"`
 	DiscountType       string      `json:"discountType"`
-	DiscountPercentage json.Number `json:"discountPercentage"` // kept as sent
+	DiscountPercentage json.Number `json:"discountPercentage"`
 	DiscountAbsolute   money       `json:"discountAbsolute"`
 	Status             string      `json:"status"`
 	RedemptionCount    json.Number `json:"redemptionCount"`
@@ -24,8 +23,6 @@ type coupon struct {
 	} `json:"restrictions"`
 }
 
-// discount returns the coupon's discount: a percentage, an amount or free
-// shipping.
 func (c *coupon) discount() string {
 	switch c.DiscountType {
 	case "PERCENT":
@@ -37,8 +34,6 @@ func (c *coupon) discount() string {
 	}
 }
 
-// redeemed returns how often the coupon was redeemed, out of its maximum when
-// it has one (-1, the default, means unlimited).
 func (c *coupon) redeemed() string {
 	if limit, err := c.MaxRedemptions.Float64(); err != nil || limit < 0 {
 		return c.RedemptionCount.String()
@@ -46,7 +41,6 @@ func (c *coupon) redeemed() string {
 	return c.RedemptionCount.String() + "/" + c.MaxRedemptions.String()
 }
 
-// redemption is the part of a coupon redemption shown in tables.
 type redemption struct {
 	ID             string `json:"id"`
 	OrderCode      string `json:"orderCode"`
@@ -57,12 +51,10 @@ type redemption struct {
 	RedeemedAt     string `json:"redeemedAt"`
 }
 
-// columnDiscount is the discount of a coupon, and the one a redemption granted.
 const columnDiscount = "DISCOUNT"
 
-// newCouponsCommand reads coupons and their redemptions, which Emporix reads
-// only with the write-capable coupon.coupon_manage scope, so those reads are
-// opt-in, and creates, changes, redeems and deletes them (couponWrites).
+// Emporix reads coupons and their redemptions only with the write-capable
+// coupon.coupon_manage scope.
 func newCouponsCommand(a *app) *cobra.Command {
 	const long = "Reads coupons, customer ids included (issuedTo, validFor in `-o json`). DISCOUNT is a " +
 		"percentage, an amount or FREE_SHIPPING. STATUS is VALID, INACTIVE, EXPIRED or USED, as " +
@@ -86,7 +78,7 @@ func newCouponsCommand(a *app) *cobra.Command {
 		path:    "/coupon/{tenant}/coupons",
 		scopes:  []string{"coupon.coupon_read"},
 		filters: listFilters{kinds: filterable},
-		read:    (*emporix.Client).GetAllHybrisCounted, // the total comes only as hybris-count
+		read:    (*emporix.Client).GetAllHybrisCounted,
 		view:    couponView(),
 	}
 	redemptions := child[redemption]{
@@ -121,7 +113,6 @@ func newCouponsCommand(a *app) *cobra.Command {
 	return newResourceCommand(a, coupons, append(reads, couponWrites(a, coupons, redemptions)...)...)
 }
 
-// couponView is the table of coupons, also of a customer's referral coupon.
 func couponView() view[coupon] {
 	return view[coupon]{
 		singular: "coupon",
@@ -132,13 +123,10 @@ func couponView() view[coupon] {
 	}
 }
 
-// referralCouponsPath is the collection of customers' referral coupons, each
-// below the customer's number.
 const referralCouponsPath = "/coupon/{tenant}/referral-coupons"
 
-// newReferralCouponCommand reads the referral coupon of a customer. The
-// reference declares no scope for it, and Emporix answers an unknown customer
-// to a token without scopes.
+// The reference declares no scope for the referral coupon, and Emporix
+// answers an unknown customer to a token without scopes.
 func newReferralCouponCommand(a *app) *cobra.Command {
 	profiles := customers()
 	return reader[coupon]{view: couponView()}.command(a, &command{
@@ -155,13 +143,9 @@ func newReferralCouponCommand(a *app) *cobra.Command {
 	})
 }
 
-// newCouponValidationCommand returns `validate COUPON_CODE`, whether a coupon
-// can be redeemed: a check that Emporix serves as POST without redeeming it,
-// with the write-capable coupon.coupon_redeem_on_behalf scope, so it is
-// opt-in. The reference names only that scope, required to name the customer;
-// whether Emporix validates without it otherwise is not documented, so it is
-// requested also without --customer, as a reader's scopes do not depend on
-// its flags.
+// The reference names only coupon.coupon_redeem_on_behalf, required to name
+// the customer; whether Emporix validates without it otherwise is not
+// documented, so it is requested also without --customer.
 func newCouponValidationCommand(a *app, coupons resource[coupon]) *cobra.Command {
 	check := reader[bool]{view: answerView("coupon validation", "REDEEMABLE"),
 		scopes: []string{couponRedeemOnBehalf}}

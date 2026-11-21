@@ -11,11 +11,8 @@ import (
 	"unicode/utf8"
 )
 
-// maxMessageBytes bounds error text taken from a response body.
 const maxMessageBytes = 300
 
-// Error classes. Every error returned by this package that callers should act
-// on matches one of these with errors.Is, so callers never inspect HTTP statuses.
 var (
 	// ErrInvalidInput reports invalid configuration or request input; nothing was sent.
 	ErrInvalidInput = errors.New("invalid input")
@@ -40,7 +37,7 @@ type APIError struct {
 	Path    string
 	Status  int
 	Message string
-	class   error // ErrAuth, ErrNotFound, ErrConflict or nil
+	class   error
 }
 
 func (e *APIError) Error() string {
@@ -93,14 +90,11 @@ func refusesInput(status int, body []byte) bool {
 	return status == http.StatusForbidden && errorMessage(body) != "" && !namesScopeOrPermission(body)
 }
 
-// namesScopeOrPermission reports whether body holds "scope" or "permission",
-// in whatever case.
 func namesScopeOrPermission(body []byte) bool {
 	lower := bytes.ToLower(body)
 	return bytes.Contains(lower, []byte("scope")) || bytes.Contains(lower, []byte("permission"))
 }
 
-// resourceErrorClass classifies a failed resource request.
 func resourceErrorClass(status int) error {
 	switch status {
 	case http.StatusUnauthorized, http.StatusForbidden:
@@ -136,12 +130,6 @@ func tokenErrorClass(status int) error {
 	}
 }
 
-// errorMessage extracts the human-readable message from an error body: of a
-// JSON body, its message, error code and details (jsonMessage), e.g. "The
-// request violates validation constraints. (ENTITY-400001) (name: must not
-// be null)", and none of its other members, which may carry tokens; a
-// plain-text body as it is. The result is bounded; terminal sanitizing is the
-// caller's job.
 func errorMessage(body []byte) string {
 	text := string(body)
 	if json.Valid(body) {
@@ -193,8 +181,6 @@ func jsonMessage(body []byte) string {
 	return appendNote(summary, strings.Join(texts, "; "))
 }
 
-// appendNote returns text followed by note in parentheses; either alone
-// where the other is empty.
 func appendNote(text, note string) string {
 	switch {
 	case note == "":
@@ -206,9 +192,6 @@ func appendNote(text, note string) string {
 	}
 }
 
-// namesWord reports whether text holds word as a word of its own, not as a
-// part of a longer one, e.g. an error code "E-1" in "failed (E-1)" but not in
-// "failed (E-10)".
 func namesWord(text, word string) bool {
 	for from := 0; ; {
 		at := strings.Index(text[from:], word)
@@ -223,9 +206,6 @@ func namesWord(text, word string) bool {
 	}
 }
 
-// continuesWord reports whether the text next to a match continues its
-// word: the last character of the text before it (atEnd) or the first one
-// of the text after it is a letter, a digit or a hyphen.
 func continuesWord(text string, atEnd bool) bool {
 	if text == "" {
 		return false
@@ -239,8 +219,6 @@ func continuesWord(text string, atEnd bool) bool {
 	return r == '-' || unicode.IsLetter(r) || unicode.IsDigit(r)
 }
 
-// firstText returns the first non-blank string among the members keys of
-// object, trimmed; none where it has none.
 func firstText(object map[string]any, keys ...string) string {
 	for _, key := range keys {
 		if text, _ := object[key].(string); strings.TrimSpace(text) != "" {
@@ -299,8 +277,6 @@ func detailText(detail any) string {
 	}
 }
 
-// startsWithField reports whether a detail's message starts with its field
-// as a word of its own, followed by a colon, a space or nothing.
 func startsWithField(message, field string) bool {
 	rest, found := strings.CutPrefix(message, field)
 	return found && (rest == "" || rest[0] == ':' || rest[0] == ' ')

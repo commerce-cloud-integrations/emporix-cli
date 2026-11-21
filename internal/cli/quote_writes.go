@@ -4,18 +4,10 @@ import (
 	"net/http"
 )
 
-// quoteManageScope is the scope of the Quote Service's writes made by an
-// employee (quote.quote_manage_own is a customer's, with the customer's own
-// token).
 const quoteManageScope = "quote.quote_manage"
 
-// quoteExternalPrices is what --allow-external-prices allows on quotes
-// create (externalPrices).
 const quoteExternalPrices = "a body with external prices (price type EXTERNAL)"
 
-// quoteWrites returns the writes of quotes: create, patch ID and delete ID.
-// Only create takes --allow-external-prices: Emporix refuses an external item
-// price in a patch with that scope too (live).
 func quoteWrites(quotes resource[quote]) []*write {
 	item := request{path: quotes.itemPath()}
 	manage := []string{quoteManageScope}
@@ -50,8 +42,6 @@ func quoteWrites(quotes resource[quote]) []*write {
 	}
 }
 
-// quoteReasonWrites returns the writes of quote reasons: create, update ID
-// and delete ID. Their message is localized text.
 func quoteReasonWrites(reasons resource[quoteReason]) []*write {
 	item := request{path: reasons.itemPath()}
 	manage := []string{quoteManageScope}

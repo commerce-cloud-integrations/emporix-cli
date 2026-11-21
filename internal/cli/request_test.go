@@ -15,13 +15,11 @@ func TestRequestFill(t *testing.T) {
 		path:  "/x/{tenant}/" + placeholderSite + "/items/" + placeholderID,
 		query: url.Values{"itemId": {placeholderID}, "site": {placeholderSite}, "fixed": {"a", "b"}},
 	}
-	// IDs are escaped in the path and kept in the query; a placeholder inside a value stays as given.
 	path, query := req.fill([]string{"a/b {site}"}, "Acme Store")
 	if path != "/x/{tenant}/Acme%20Store/items/a%2Fb%20%7Bsite%7D" ||
 		query.Encode() != "fixed=a&fixed=b&itemId=a%2Fb+%7Bsite%7D&site=Acme+Store" {
 		t.Fatalf("fill = %q, %q", path, query.Encode())
 	}
-	// A placeholder counts wherever fill fills it in, also inside a query value.
 	embedded := request{path: "/x", query: url.Values{"q": {"siteCode:" + placeholderSite}}}
 	if !req.names(placeholderSite) || !req.names(placeholderID) || !embedded.names(placeholderSite) ||
 		embedded.names(placeholderID) || (request{path: "/x/" + placeholderID}).names(placeholderSite) {
@@ -33,8 +31,6 @@ func TestRequestFill(t *testing.T) {
 }
 
 func TestRequestFillsParentThenID(t *testing.T) {
-	// The arguments fill {parent}, then {id}, wherever each is named; one holding the other's
-	// placeholder stays as given.
 	req := request{
 		path:  "/x/{tenant}/types/" + placeholderParent + "/items/" + placeholderID,
 		query: url.Values{"q": {"type:" + placeholderParent}},
@@ -55,7 +51,6 @@ func TestRequestFillsParentThenID(t *testing.T) {
 }
 
 func TestRequestFillsThreeArguments(t *testing.T) {
-	// {parent}, {inner} and {id} take the arguments in that order, wherever the path names them.
 	req := request{path: "/x/{tenant}/" + placeholderParent + "/items/" + placeholderInner + "/" + placeholderID}
 	if got := req.arguments(); !slices.Equal(got, []string{placeholderParent, placeholderInner, placeholderID}) {
 		t.Fatalf("arguments %q", got)
@@ -69,10 +64,6 @@ func TestRequestFillsThreeArguments(t *testing.T) {
 	}
 }
 
-// TestHelpNamesExistingCommands checks that help text quotes every command
-// it names (`epx ...`) and that each quoted command exists: its leading words
-// name a command, and what follows (arguments, flags) is not a further
-// command name.
 func TestHelpNamesExistingCommands(t *testing.T) {
 	root := newTestRoot()
 	walkCommands(root, func(cmd *cobra.Command) {
@@ -83,13 +74,11 @@ func TestHelpNamesExistingCommands(t *testing.T) {
 			t.Errorf("%s: %s", cmd.CommandPath(), problem)
 		}
 	})
-	// The check itself fails on an unquoted or unknown command.
 	if problems := helpReferenceProblems(root, "see epx sites list or `epx nope list`"); len(problems) != 2 {
 		t.Fatalf("problems %q; want an unquoted and an unknown command", problems)
 	}
 }
 
-// helpReferenceProblems returns what is wrong with the commands that text names.
 func helpReferenceProblems(root *cobra.Command, text string) []string {
 	quoted := regexp.MustCompile("`epx\\s+([^`]*)`")
 	unquoted := regexp.MustCompile("(?:^|[^`])epx\\s+([a-z][a-z0-9-]*)")
@@ -112,9 +101,6 @@ func helpReferenceProblems(root *cobra.Command, text string) []string {
 	return problems
 }
 
-// TestArgumentsMatchUsage checks that a command names as many arguments in
-// its usage as it takes: a read takes one where its request names {id} and
-// another where it names {parent}, so the two cannot drift apart.
 func TestArgumentsMatchUsage(t *testing.T) {
 	walkCommands(newTestRoot(),
 		func(cmd *cobra.Command) {
@@ -124,11 +110,6 @@ func TestArgumentsMatchUsage(t *testing.T) {
 		})
 }
 
-// argumentsTaken returns how many arguments cmd takes: 0 without a validator,
-// else the one count, up to three, that it accepts, or -1 when it accepts
-// none or several counts, which no usage matches. A count whose arguments
-// are refused as an invalid value (one that only some values may take, such
-// as TYPE) is accepted.
 func argumentsTaken(cmd *cobra.Command) int {
 	if cmd.Args == nil {
 		return 0
@@ -170,7 +151,6 @@ func TestArgumentsTaken(t *testing.T) {
 		{args: nil, want: 0},
 		{args: cobra.NoArgs, want: 0},
 		{args: requestArgs([]string{"ID"}, 1, nil), want: 1},
-		// Arguments refused for their value only still count.
 		{args: requestArgs([]string{"TYPE", "ID"}, 2, map[string][]string{"TYPE": {"PRODUCT"}}), want: 2},
 		{args: requestArgs([]string{"KEY", "VALUE"}, 1, nil), want: 2},
 		{args: cobra.ExactArgs(2), want: 2},
@@ -184,7 +164,6 @@ func TestArgumentsTaken(t *testing.T) {
 	}
 }
 
-// TestAlternatives checks how choices are named in messages and help.
 func TestAlternatives(t *testing.T) {
 	for want, values := range map[string][]string{
 		"PRODUCT":                {"PRODUCT"},

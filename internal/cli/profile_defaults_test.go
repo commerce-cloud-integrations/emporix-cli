@@ -18,7 +18,7 @@ func TestAProfileGivesTheDefaultSiteAndLanguage(t *testing.T) {
 	setup := newProfileSetup(t, twoProfiles(fake), map[string]string{"dev": testSecret, "prod": testSecret})
 	for _, tt := range []struct {
 		args  []string
-		query string // of the first request
+		query string
 		want  string
 	}{
 		{args: []string{"prices", "list"}, query: "siteCode=AcmeStore_NL", want: pricesTable},
@@ -38,9 +38,6 @@ func TestAProfileGivesTheDefaultSiteAndLanguage(t *testing.T) {
 	}
 }
 
-// TestAProfileSiteAppliesOnlyToItsKey checks that a profile's default site
-// applies only where the profile gives the API key and the tenant is its
-// own: never with the environment's key, nor on another tenant.
 func TestAProfileSiteAppliesOnlyToItsKey(t *testing.T) {
 	fake := newFakeEmporix(t)
 	setup := newProfileSetup(t, twoProfiles(fake), map[string]string{"dev": testSecret})
@@ -49,7 +46,7 @@ func TestAProfileSiteAppliesOnlyToItsKey(t *testing.T) {
 		name string
 		vars map[string]string
 		args []string
-		want string // on standard output, else the error
+		want string
 	}{
 		{name: "the profile's key", want: "POST " + fake.server.URL + "/availability/acme1/availability/P1/AcmeStore_NL\n"},
 		{name: "the environment's key", vars: fake.env(), want: `required flag(s) "site" not set`},
@@ -64,10 +61,6 @@ func TestAProfileSiteAppliesOnlyToItsKey(t *testing.T) {
 	fake.assertNothingSent(t)
 }
 
-// TestAProfileSiteGivesAnOptionalSiteOfSettings checks that the optional
-// --site of reward points create and add, which selects the site whose
-// settings apply, takes a profile's default site, and that without either
-// no siteCode is sent (Emporix then applies those of site main).
 func TestAProfileSiteGivesAnOptionalSiteOfSettings(t *testing.T) {
 	fake := newFakeEmporix(t)
 	setup := newProfileSetup(t, twoProfiles(fake), map[string]string{"dev": testSecret})
@@ -75,7 +68,7 @@ func TestAProfileSiteGivesAnOptionalSiteOfSettings(t *testing.T) {
 	for _, tt := range []struct {
 		vars map[string]string
 		args []string
-		want string // the request line of the dry run
+		want string
 	}{
 		{want: "POST " + addPoints + "?siteCode=AcmeStore_NL\n"},
 		{args: []string{"--site", "main"}, want: "POST " + addPoints + "?siteCode=main\n"},
@@ -112,8 +105,6 @@ func TestAProfileSiteLeavesABodyGivenWhole(t *testing.T) {
 	}
 }
 
-// TestAProfileSiteLeavesAnOptionalSiteUnset checks that a search whose site
-// is an optional filter (all sites without it) keeps searching every site.
 func TestAProfileSiteLeavesAnOptionalSiteUnset(t *testing.T) {
 	fake := newFakeEmporix(t)
 	fake.route("/price/acme1/prices/search", respond(http.StatusOK, `[{"itemId":"100200","prices":[]}]`))
@@ -124,8 +115,6 @@ func TestAProfileSiteLeavesAnOptionalSiteUnset(t *testing.T) {
 	}
 }
 
-// TestAProfileSiteKeepsTheErrorOfAFlagGroup checks that a site filled in
-// from a profile leaves the error of another flag group as Cobra reports it.
 func TestAProfileSiteKeepsTheErrorOfAFlagGroup(t *testing.T) {
 	fake := newFakeEmporix(t)
 	setup := newProfileSetup(t, twoProfiles(fake), map[string]string{"dev": testSecret})
@@ -157,9 +146,6 @@ func TestAnInvalidProfileDefaultIsNotQuoted(t *testing.T) {
 	}
 }
 
-// TestOnlyTheRootHasAPersistentHook checks that the root's persistent hook,
-// which fills in the defaults of profiles, runs for every command: Cobra
-// runs only the nearest one.
 func TestOnlyTheRootHasAPersistentHook(t *testing.T) {
 	root := newTestRoot()
 	walkCommands(root, func(cmd *cobra.Command) {
@@ -169,10 +155,6 @@ func TestOnlyTheRootHasAPersistentHook(t *testing.T) {
 	})
 }
 
-// TestFlagsTakeProfileDefaultsByDeclaration checks which flags take a
-// profile's default: a site that a command needs or whose settings apply,
-// and the language of its table, never an optional filter or the settings of
-// a profile itself.
 func TestFlagsTakeProfileDefaultsByDeclaration(t *testing.T) {
 	root := newTestRoot()
 	for _, tt := range []struct {

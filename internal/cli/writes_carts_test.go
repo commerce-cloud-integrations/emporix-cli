@@ -5,33 +5,21 @@ import (
 	"slices"
 )
 
-// The write cases of the Cart Service (see TestWrites): every write requests
-// cart.cart_manage, and --allow-external-prices adds
-// cart.cart_manage_external_prices.
-
-// cartItemJSON is an item as items create takes it.
 const cartItemJSON = `{"product":{"id":"100200"},"quantity":2,"price":{"priceId":"p1","originalAmount":15.90,` +
 	`"effectiveAmount":15.90,"currency":"EUR"}}`
 
-// cartChainJSON is a chain of two cart commands: add an item, then read the
-// calculated cart.
 const cartChainJSON = `{"commands":[{"type":"AddCartItem","data":` + cartItemJSON + `},` +
 	`{"type":"GetCart","options":{"expandCalculation":true}}]}`
 
-// cartChainResults answers cartChainJSON: both commands succeeded.
 const cartChainResults = `{"results":[{"index":0,"type":"AddCartItem","code":201,"status":"Created",` +
 	`"data":{"itemId":"3"}},{"index":1,"type":"GetCart","code":200,"status":"OK","data":{"id":"c1"}}]}`
 
-// externalScopes returns the scopes of a cart write with
-// --allow-external-prices.
 func externalScopes() []string { return []string{cartCaseScope, "cart.cart_manage_external_prices"} }
 
-// cartWriteCases returns the write cases of carts, their items and discounts.
 func cartWriteCases() []writeCase {
 	return slices.Concat(cartChanges(), cartItemChanges(), cartDiscountChanges())
 }
 
-// cartChanges returns the write cases of carts.
 func cartChanges() []writeCase {
 	scopes := []string{cartCaseScope}
 	return []writeCase{
@@ -69,7 +57,6 @@ func cartChanges() []writeCase {
 			args: []string{"carts", "merge", "c1", "--cart", "a1", "--cart", "a2"}, sent: `{"carts":["a1","a2"]}`,
 			method: http.MethodPost, path: "/cart/acme1/carts/c1/merge", scopes: scopes, status: http.StatusOK,
 		},
-		// --file replaces the typed flags of a small body.
 		{
 			args: []string{"carts", "change-site", "c1"}, file: `{"siteCode":"AcmeStore_NL"}`, method: http.MethodPost,
 			path: "/cart/acme1/carts/c1/changeSite", scopes: scopes, status: http.StatusOK,
@@ -102,7 +89,6 @@ func cartChanges() []writeCase {
 	}
 }
 
-// cartItemChanges returns the write cases of the items of a cart.
 func cartItemChanges() []writeCase {
 	scopes := []string{cartCaseScope}
 	return []writeCase{
@@ -136,7 +122,6 @@ func cartItemChanges() []writeCase {
 			many: "every item of the cart", status: http.StatusNoContent,
 		},
 		{
-			// Emporix answers the result of each item with its code as status, a number.
 			args: []string{"carts", "items", "bulk-create", "c1"}, file: "[" + cartItemJSON + "," + cartItemJSON + "]",
 			method: http.MethodPost, path: "/cart/acme1/carts/c1/itemsBatch", scopes: scopes, status: http.StatusOK,
 			body: `[{"index":0,"status":201,"id":"1"},{"index":1,"status":201,"id":"2"}]`,
@@ -152,7 +137,6 @@ func cartItemChanges() []writeCase {
 	}
 }
 
-// cartDiscountChanges returns the write cases of the discounts of a cart.
 func cartDiscountChanges() []writeCase {
 	const cartDiscountsDeleted = "every discount of the cart (or those that --codes names)"
 	scopes := []string{cartCaseScope}

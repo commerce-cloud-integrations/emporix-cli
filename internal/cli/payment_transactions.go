@@ -8,8 +8,6 @@ import (
 	"github.com/commerce-cloud-integrations/emporix-cli/internal/emporix"
 )
 
-// paymentTransaction is the part of a Payment Gateway transaction shown in
-// tables; its payment details and the provider's requests are left to -o json.
 type paymentTransaction struct {
 	ID                 string `json:"id"`
 	Provider           string `json:"provider"`
@@ -19,7 +17,6 @@ type paymentTransaction struct {
 	Entries []transactionEntry `json:"entries"`
 }
 
-// transactionEntry is one operation of a transaction, such as a capture.
 type transactionEntry struct {
 	Type       string `json:"type"`
 	Successful *bool  `json:"successful"`
@@ -35,9 +32,6 @@ func (e transactionEntry) String() string {
 	return spaced(e.Type, e.Amount.String(), failed)
 }
 
-// newPaymentTransactionsCommand reads the payment transactions that payment
-// providers ran through the Payment Gateway, and authorizes, captures,
-// refunds and cancels payments.
 func newPaymentTransactionsCommand(a *app) *cobra.Command {
 	transactions := resource[paymentTransaction]{
 		use:   "payment-transactions",
@@ -67,21 +61,14 @@ func newPaymentTransactionsCommand(a *app) *cobra.Command {
 	return newResourceCommand(a, transactions, paymentWrites(a, transactions)...)
 }
 
-// paymentTransactionsSortUsage is the help of list's --sort: Emporix refuses
-// any field but createdDate, and several fields.
 const paymentTransactionsSortUsage = "Emporix sort `order`, passed as given: createdDate only, e.g. " +
 	"createdDate:desc; another field, or several, is refused (400, exit 1)"
 
-// paymentWrites returns the payment operations of the Payment Gateway, each
-// with the one scope that the reference names for it: authorize, and
-// capture, refund and cancel of a transaction. Emporix answers each with
-// whether it succeeded (answers.ReportsOutcome).
 func paymentWrites(a *app, transactions resource[paymentTransaction]) []*cobra.Command {
 	const (
 		payments    = "/payment-gateway/{tenant}/payment"
 		transaction = payments + "/" + placeholderID
-		// moves is the second paragraph of the help of capture, refund and cancel.
-		moves = "This moves money: the confirmation names the transaction in the URL that it shows. ID is " +
+		moves       = "This moves money: the confirmation names the transaction in the URL that it shows. ID is " +
 			"the ID that `epx payment-transactions list` shows; an unknown one is not found (exit 4)."
 	)
 	amount := func(verb string) []bodyField {

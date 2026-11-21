@@ -19,8 +19,6 @@ func TestSpaced(t *testing.T) {
 	}
 }
 
-// TestTrimAmount checks that tables drop the trailing zeros of an amount
-// beyond its cents only, as Emporix sends some amounts with 40 decimals.
 func TestTrimAmount(t *testing.T) {
 	for amount, want := range map[string]string{
 		"35.7000000000000000000000000000000000000000": "35.70",

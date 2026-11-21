@@ -6,10 +6,6 @@ import (
 	"testing"
 )
 
-// TestTextAnswerIsPrintedAsJSON checks that orders recalculate, which Emporix
-// answers with bare text labelled JSON (live), prints the text, trimmed, as a
-// JSON string, JSON as sent, and nothing for a blank answer, and that its
-// help says so.
 func TestTextAnswerIsPrintedAsJSON(t *testing.T) {
 	recalculate := []string{"orders", "recalculate", "O1001", "--file", writeBody(t, `{"entries":[]}`), "--yes"}
 	for body, want := range map[string]string{

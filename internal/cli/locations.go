@@ -2,8 +2,6 @@ package cli
 
 import "strings"
 
-// location is the part of a location shown in tables; customers (legal
-// entities) and vendors have locations of the same shape.
 type location struct {
 	ID             string `json:"id"`
 	Name           string `json:"name"`
@@ -18,11 +16,9 @@ type location struct {
 	} `json:"contactDetails"`
 }
 
-// locationColumns ends the help of every location read.
 const locationColumns = "TYPE is HEADQUARTER, WAREHOUSE or OFFICE, ADDRESS the first address line and TAGS the " +
 	"location's labels; phone numbers and the rest of the address are only in `-o json`."
 
-// locationView is the table of every location read; singular names its locations.
 func locationView(singular string) view[location] {
 	return view[location]{
 		singular: singular,
@@ -37,9 +33,6 @@ func locationView(singular string) view[location] {
 	}
 }
 
-// locationMembers are the members of the body of a location's create, which
-// customers (legal entities) and vendors make alike; locationRequired those
-// that its update requires.
 const (
 	locationMembers = "type (required: HEADQUARTER, WAREHOUSE or OFFICE), contactDetails (required: emails, " +
 		"phones, addressLine1, addressLine2, city, state, postcode, countryCode and tags) and name; " +

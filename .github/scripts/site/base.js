@@ -1,10 +1,7 @@
-// Runtime fixes for the static export of the docs site, loaded first by every page
-// (.github/scripts/site/pages.py). Served below a base path such as /emporix-cli/ on GitHub
-// Pages, the export still holds root links that Mintlify's router builds at runtime
-// ("/install"): this script prefixes the base to them as links appear, and turns a click on
-// a site link into a full page load, since the router's navigation needs data requests
-// (?_rsc=) that a static host cannot answer. Those requests, and the polling of the live
-// reload that the export keeps (socket.io), are stopped before they reach the network.
+// Served below a base path such as /emporix-cli/ on GitHub Pages, the export still holds
+// root links that Mintlify's router builds at runtime ("/install"), and the router's
+// navigation needs data requests (?_rsc=) that a static host cannot answer. The export also
+// keeps the polling of the live reload (socket.io).
 (function () {
   "use strict";
   var base = document.currentScript?.dataset.base || "";
@@ -40,7 +37,6 @@
     }).observe(document.documentElement, { childList: true, subtree: true, attributes: true, attributeFilter: ["href"] });
   }
 
-  // Capture phase: the router never sees a click on a site link.
   document.addEventListener("click", function (event) {
     if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
     var link = event.target.closest?.("a[href]");

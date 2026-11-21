@@ -41,5 +41,4 @@ func JSONBodyOf(v any) (Body, error) {
 // their headers and boundaries.
 func (b Body) Len() int { return len(b.data) }
 
-// none reports whether b is no body, the zero Body.
 func (b Body) none() bool { return b.data == nil }

@@ -1,11 +1,8 @@
 package cli
 
-// webhookReads returns the Webhook Service reads.
 func webhookReads() []readCase {
 	return []readCase{
 		{
-			// The configurations come whole; DESTINATION is the URL as sent; ENTRIES counts the event
-			// entries.
 			args:   []string{"webhooks", "configurations", "list"},
 			path:   "/webhook/acme1/config",
 			scopes: []string{"webhook.subscription_read"},
@@ -38,7 +35,6 @@ func webhookReads() []readCase {
 				"cart.closed    NONE        Cart closed (en)\n",
 		},
 		{
-			// One row: the limit and the webhooks sent per month.
 			args:   []string{"webhooks", "statistics"},
 			path:   "/webhook/acme1/statistics",
 			scopes: []string{"webhook.subscription_read"},
@@ -48,7 +44,6 @@ func webhookReads() []readCase {
 			want: "LIMIT  SENT PER MONTH\n5000   2026-09: 120, 2026-10: 80\n",
 		},
 		{
-			// Opt-in; the token is only in -o json.
 			args:   []string{"webhooks", "dashboard-access", "--allow-write-scope"},
 			path:   "/webhook/acme1/dashboard-access",
 			scopes: []string{"webhook.subscription_manage"},

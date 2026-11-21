@@ -35,8 +35,6 @@ func TestWriteWritesTheFormat(t *testing.T) {
 	}
 }
 
-// TestWriteRefusesAFormatOfTheOtherKind checks that a format that prints
-// rows writes nothing whole, and one that prints a result whole no rows.
 func TestWriteRefusesAFormatOfTheOtherKind(t *testing.T) {
 	var out bytes.Buffer
 	for _, format := range []Format{Table, CSV, "xml"} {

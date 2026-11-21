@@ -13,9 +13,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// TestReflowWrapsProseAndKeepsTheRest checks that reflow fills each paragraph
-// of prose up to the width, never inside a backquoted span, and keeps every
-// line that is not prose as it is.
 func TestReflowWrapsProseAndKeepsTheRest(t *testing.T) {
 	for _, tt := range []struct{ name, text, want string }{
 		{name: "joins and fills", text: "one two\nthree four five six", want: "one two\nthree four\nfive six"},
@@ -40,8 +37,6 @@ func TestReflowWrapsProseAndKeepsTheRest(t *testing.T) {
 	}
 }
 
-// TestHelpChunksYieldsKeptLinesAndParagraphs checks helpChunks: kept lines as
-// they are and the prose between them joined, in order, until the loop stops.
 func TestHelpChunksYieldsKeptLinesAndParagraphs(t *testing.T) {
 	var got []string
 	for chunk, kept := range helpChunks("one\ntwo\n\n  run\nthree") {
@@ -65,13 +60,10 @@ func TestHelpChunksYieldsKeptLinesAndParagraphs(t *testing.T) {
 	}
 }
 
-// TestHelpShowsLongReflowedAndLeavesItAsWritten checks the help of commands
-// of the tree as epx builds it: it shows the long help reflowed (longHelp)
-// and the examples as written, and leaves Long as written, plain prose.
 func TestHelpShowsLongReflowedAndLeavesItAsWritten(t *testing.T) {
 	for _, tt := range []struct {
 		args    []string
-		example bool // the command has an example
+		example bool
 	}{{args: []string{"sites"}}, {args: []string{"api", "get"}, example: true}} {
 		var out strings.Builder
 		root := newRootCommand(&app{getenv: func(string) string { return "" }}, &out, io.Discard)
@@ -92,10 +84,6 @@ func TestHelpShowsLongReflowedAndLeavesItAsWritten(t *testing.T) {
 	}
 }
 
-// TestLongHelpFitsTheWidth checks the long help of every command of the tree
-// as its help shows it (longHelp): no line is wider than helpWidth unless it
-// is one word that starts with a backquote, such as a long command line, and
-// reflowing it again changes nothing.
 func TestLongHelpFitsTheWidth(t *testing.T) {
 	walkCommands(newTestRoot(), func(cmd *cobra.Command) {
 		long := longHelp(cmd)
@@ -109,10 +97,9 @@ func TestLongHelpFitsTheWidth(t *testing.T) {
 	})
 }
 
-// TestLongHelpIsPlainProse checks the long help of every command of the
-// tree as written (plainProse). Cobra writes the help of its completion
-// commands, wrapped by hand, so they are left out, but for the paragraph
-// that epx adds to that of completion (completionHelp).
+// Cobra writes the help of its completion commands, wrapped by hand, so they are
+// left out, but for the paragraph that epx adds to that of completion
+// (completionHelp).
 func TestLongHelpIsPlainProse(t *testing.T) {
 	root := newTestRoot()
 	completion, _, err := root.Find([]string{"completion"})
@@ -129,8 +116,6 @@ func TestLongHelpIsPlainProse(t *testing.T) {
 	}
 }
 
-// TestPlainProseFindsBreaksAndSeparators checks the check of
-// TestLongHelpIsPlainProse.
 func TestPlainProseFindsBreaksAndSeparators(t *testing.T) {
 	for text, want := range map[string]bool{
 		"One. Two.\n\nThree.": true, "Run:\n  epx a\n\tepx b": true, "": true,
@@ -144,13 +129,6 @@ func TestPlainProseFindsBreaksAndSeparators(t *testing.T) {
 	}
 }
 
-// plainProse reports whether text, help as written, is plain prose: each
-// paragraph one line, its words separated by single spaces (reflow at any
-// width wraps it), so no fragment of it carries a line break or a separator
-// of its own; a line that starts with one space and then a word is a
-// separator too, as an indented line starts with two spaces or a tab. Nor
-// does a sentence end joined to the next word outside a backquoted span
-// (sentenceJoined): a fragment that lacks its separator.
 func plainProse(text string) bool {
 	for line := range strings.SplitSeq(text, "\n") {
 		if strings.HasPrefix(line, " ") && !strings.HasPrefix(line, "  ") && strings.TrimSpace(line) != "" {
@@ -163,19 +141,11 @@ func plainProse(text string) bool {
 	return reflow(text, math.MaxInt) == text
 }
 
-// sentenceJoined matches the end of a sentence joined to the next one: a
-// period after a letter, digit or bracket and before a capital, but between
-// two words in capitals (VENDOR.LOCATION). backquoted matches a backquoted
-// span, which plainProse replaces with a word first, as a period in it may be
-// followed by a capital (`epx api get /x/A.B`).
 var (
 	sentenceJoined = regexp.MustCompile(`[a-z0-9)\]]\.[A-Z]|[A-Z]\.[A-Z][a-z]`)
 	backquoted     = regexp.MustCompile("`[^`]*`")
 )
 
-// TestOverWidthFindsWideLines checks the check of TestLongHelpFitsTheWidth:
-// a line wider than the width is found unless it is one word that starts with
-// a backquote.
 func TestOverWidthFindsWideLines(t *testing.T) {
 	text := "short\nthis line is wide\n`a wide span`.\n\tan indented wide one\nhttps://example.com/wide"
 	got := overWidth(text, 12)
@@ -185,8 +155,6 @@ func TestOverWidthFindsWideLines(t *testing.T) {
 	}
 }
 
-// overWidth returns the lines of text wider than width but those that are
-// one word that starts with a backquote (helpWords).
 func overWidth(text string, width int) []string {
 	var wide []string
 	for line := range strings.SplitSeq(text, "\n") {
@@ -198,15 +166,8 @@ func overWidth(text string, width int) []string {
 	return wide
 }
 
-// overWidthUsage returns the lines of usage, a section of Cobra's usage,
-// wider than width but those that hold one word after their indent. pflag
-// breaks a flag usage only between words; a word wider than the room left
-// stands on a line of its own only where it ends the usage, as the rest of a
-// usage after such a word stays on its line, which this reports: rewording
-// the usage is the only fix. Unlike overWidth, any one word passes, not only
-// a backquoted span: pflag takes the first backquoted word of a flag usage
-// for the name of its value and drops the backquotes, so a flag usage has no
-// spans.
+// pflag takes the first backquoted word of a flag usage for the name of its value
+// and drops the backquotes, so a flag usage has no spans.
 func overWidthUsage(lines []string, width int) []string {
 	var wide []string
 	for _, line := range lines {
@@ -217,8 +178,6 @@ func overWidthUsage(lines []string, width int) []string {
 	return wide
 }
 
-// cobraHeading reports whether line is the heading of a section that
-// Cobra's usage template writes after the long help.
 func cobraHeading(line string) bool {
 	switch line {
 	case "Usage:", "Aliases:", "Examples:", "Available Commands:", "Additional Commands:",
@@ -228,14 +187,9 @@ func cobraHeading(line string) bool {
 	return false
 }
 
-// helpSections returns the lines of help, as --help shows it, by section:
-// each line under the heading of its section, such as "Flags:", up to the
-// blank line that ends it. The lines under no heading, the long help before
-// "Usage:", where Cobra's usage starts, and the lines after a section, are
-// under "". A section of Cobra's usage holds no blank line but an example.
 func helpSections(help string) map[string][]string {
 	sections := map[string][]string{}
-	name, usage := "", false // the section of the line, and whether the usage has started
+	name, usage := "", false
 	for line := range strings.SplitSeq(help, "\n") {
 		switch {
 		case cobraHeading(line) && (usage || line == "Usage:"):
@@ -249,10 +203,6 @@ func helpSections(help string) map[string][]string {
 	return sections
 }
 
-// flagEntries returns the flags of a list of flags as help shows it, each
-// with the white space within it as single spaces: a flag starts a line with
-// a dash after the indent, and the lines after it, which the wrapping
-// indents further, are its usage too.
 func flagEntries(lines []string) []string {
 	var entries []string
 	for _, line := range lines {
@@ -272,12 +222,10 @@ func flagEntries(lines []string) []string {
 	return entries
 }
 
-// flagUsage returns what the Flags section of help, the help of a command,
-// shows after flag, its lines joined (flagEntries), and whether it shows flag.
 func flagUsage(help, flag string) (string, bool) {
 	for _, entry := range flagEntries(helpSections(help)["Flags:"]) {
 		if len(entry) > 4 && entry[0] == '-' && entry[2:4] == ", " {
-			entry = entry[4:] // the shorthand, as in "-o, --output"
+			entry = entry[4:]
 		}
 		if usage, found := strings.CutPrefix(entry, flag+" "); found {
 			return usage, true
@@ -286,8 +234,6 @@ func flagUsage(help, flag string) (string, bool) {
 	return "", false
 }
 
-// flat returns text as paragraphs, which blank lines separate, with the
-// white space within each as single spaces.
 func flat(text string) string {
 	var paragraphs []string
 	for paragraph := range strings.SplitSeq(text, "\n\n") {
@@ -296,11 +242,8 @@ func flat(text string) string {
 	return strings.Join(paragraphs, "\n\n")
 }
 
-// containsFlat reports whether help holds want, both flat.
 func containsFlat(help, want string) bool { return strings.Contains(flat(help), flat(want)) }
 
-// TestFlatKeepsParagraphs checks flat: lines and spaces of a paragraph
-// collapse, paragraphs stay apart.
 func TestFlatKeepsParagraphs(t *testing.T) {
 	for text, want := range map[string]string{
 		"a  b\nc\n \n\n\td\n": "a b c\n\nd", "\n\nRequires\n": "\n\nRequires", "x\n\n": "x\n\n", "\nx": "x",
@@ -311,8 +254,6 @@ func TestFlatKeepsParagraphs(t *testing.T) {
 	}
 }
 
-// assertHelpHolds checks that the help of each command, named by its words,
-// holds each part.
 func assertHelpHolds(t *testing.T, parts map[string][]string) {
 	t.Helper()
 	for args, want := range parts {

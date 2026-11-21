@@ -6,8 +6,6 @@ import (
 	"testing"
 )
 
-// TestShoppingListsOfAnUnknownCustomerAreNotFound pins how Emporix answers a
-// customer without shopping lists: an empty body, which is not found (exit 4).
 func TestShoppingListsOfAnUnknownCustomerAreNotFound(t *testing.T) {
 	fake := newFakeEmporix(t)
 	fake.route("/shoppinglist/acme1/shopping-lists/c9", respond(http.StatusOK, ``))
@@ -17,17 +15,11 @@ func TestShoppingListsOfAnUnknownCustomerAreNotFound(t *testing.T) {
 	}
 }
 
-// TestShoppingListsSkipMembersThatAreNoList checks that the members of a
-// customer that are not lists (no object with items or a name: text, a
-// number, null, mixins) are left out of the table.
 func TestShoppingListsSkipMembersThatAreNoList(t *testing.T) {
 	assertShoppingLists(t, `[{"id":"c1","version":3,"note":null,"label":"x","mixins":{"a":{}},"default":{"items":[]}}]`,
 		"CUSTOMER  LISTS\nc1        default (0 items)\n")
 }
 
-// TestShoppingListsNameTheCustomerByID checks that id names the customer
-// rather than customerId where both are sent, unless it is empty or null, or
-// names a list.
 func TestShoppingListsNameTheCustomerByID(t *testing.T) {
 	assertShoppingLists(t, `[{"id":"c1","customerId":"c0","default":{"items":[]}},`+
 		`{"id":null,"customerId":"c2","default":{"items":[]}},{"id":"","customerId":"c3","default":{"items":[]}},`+
@@ -36,7 +28,6 @@ func TestShoppingListsNameTheCustomerByID(t *testing.T) {
 			"c3        default (0 items)\nc4        id (1 item)\n")
 }
 
-// assertShoppingLists checks that `shopping-lists list` shows body as want.
 func assertShoppingLists(t *testing.T, body, want string) {
 	t.Helper()
 	fake := newFakeEmporix(t)
@@ -47,9 +38,6 @@ func assertShoppingLists(t *testing.T, body, want string) {
 	}
 }
 
-// TestShoppingListsRejectAMalformedCustomer checks that a list whose items are
-// no array, or a customer id that is no text, fails the table (exit 1) and
-// names the member.
 func TestShoppingListsRejectAMalformedCustomer(t *testing.T) {
 	for member, body := range map[string]string{
 		`member "default"`:    `[{"id":"c1","default":{"name":"default","items":"x"}}]`,

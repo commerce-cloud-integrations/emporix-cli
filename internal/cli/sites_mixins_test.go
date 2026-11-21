@@ -5,8 +5,6 @@ import (
 	"testing"
 )
 
-// TestSitesMixinsListEmptyBody checks that an empty body of the mixins of a site is no mixins, and
-// that an unknown site, which Emporix answers with 404 on the mixins path, is not found.
 func TestSitesMixinsListEmptyBody(t *testing.T) {
 	tests := []struct {
 		name     string

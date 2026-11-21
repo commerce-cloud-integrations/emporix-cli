@@ -6,8 +6,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// sessionContext is the part of a Session Context Service session context
-// shown in tables.
 type sessionContext struct {
 	SessionID      string `json:"sessionId"`
 	CustomerID     string `json:"customerId"`
@@ -18,23 +16,12 @@ type sessionContext struct {
 	CartID         string `json:"cartId"`
 }
 
-// sessionContextManage is the one scope of the Session Context Service that
-// a service token may hold: it reads and changes session contexts.
 const sessionContextManage = "sessioncontext.context_manage"
 
-// sessionContexts is the path of the session contexts, below which each
-// storefront session has its own.
 const sessionContexts = "/session-context/{tenant}/context"
 
-// sessionContextPath is the session context of the storefront session that
-// {id} names.
 const sessionContextPath = sessionContexts + "/" + placeholderID
 
-// newSessionContextsCommand reads the session context of a storefront
-// session, which Emporix reads only with the write-capable
-// sessioncontext.context_manage scope, so the read is opt-in, and changes it
-// (sessionContextWrites). Emporix lists no session contexts, so the group
-// reads with get only.
 func newSessionContextsCommand(a *app) *cobra.Command {
 	const long = "Reads the context of a storefront session: its customer (once logged in, personal data; " +
 		"ANONYMOUS before), site, currency, language, LOCATION (its target country) and active cart; " +
@@ -60,8 +47,6 @@ func newSessionContextsCommand(a *app) *cobra.Command {
 	}, sessionContextWrites(a)...)...)
 }
 
-// sessionContextWrites returns the writes of a session context: update, and
-// the group of its custom attributes, which adds and deletes one.
 func sessionContextWrites(a *app) []*cobra.Command {
 	scopes := []string{sessionContextManage}
 	const source = "SESSION_ID is the ID of `epx session-contexts get`; an unknown one is not found (exit 4). " +

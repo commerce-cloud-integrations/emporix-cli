@@ -8,13 +8,8 @@ import (
 	"testing"
 )
 
-// An instance of a custom entity type as create takes it.
 const instanceJSON = `{"id":"123","name":{"en":"Report"},"mixins":{"attributes":{"pages":3}}}`
 
-// customEntityWriteCases are the writes of custom entity types, with the Schema
-// Service's manage scope, and of their instances, with the manage scope of
-// their type, in lower case, and its read scope where Emporix checks their
-// references.
 func customEntityWriteCases() []writeCase {
 	types, instances := []string{"schema.schema_manage"}, []string{"custom.document_manage"}
 	checked := []string{"custom.document_manage", "custom.document_read"}
@@ -35,7 +30,6 @@ func customEntityWriteCases() []writeCase {
 			status: http.StatusNoContent,
 		},
 		{
-			// The export package, as export prints it.
 			args: []string{"custom-entities", "import"}, file: `{"exportedAt":"2026-10-01T07:05:18.857Z","data":"W10="}`,
 			method: http.MethodPost, path: "/schema/acme1/custom-entities/import", scopes: types,
 			status: http.StatusNoContent,
@@ -46,7 +40,6 @@ func customEntityWriteCases() []writeCase {
 			lang: "*", status: http.StatusCreated, body: `{"id":"123"}`, want: "{\n  \"id\": \"123\"\n}\n",
 		},
 		{
-			// The ID is escaped as a path segment; --validate-references is sent as given.
 			args: []string{"custom-entities", "instances", "update", "DOCUMENT", "12 3", "--validate-references", "false"},
 			file: `{"name":{"en":"Report"},"metadata":{"version":2}}`, method: http.MethodPut,
 			path: "/schema/acme1/custom-entities/DOCUMENT/instances/12%203", query: "validateReferences=false",
@@ -95,12 +88,6 @@ func customEntityWriteCases() []writeCase {
 	}
 }
 
-// TestCustomInstanceWritesRefuseInvalidInput checks that an instance write
-// whose ID would address the bulk write of its collection, without its type,
-// with a --validate-references other than true or false, with
-// --content-language (Emporix refuses a string in any language), a
-// bulk-delete of no id or of more than 1000, is a usage error (exit 2) that
-// sends nothing, also for a dry run.
 func TestCustomInstanceWritesRefuseInvalidInput(t *testing.T) {
 	ids := func(n int) string { return `[` + strings.Repeat(`"123",`, n-1) + `"123"]` }
 	for _, tt := range []struct {
@@ -141,9 +128,6 @@ func TestCustomInstanceWritesRefuseInvalidInput(t *testing.T) {
 	}
 }
 
-// TestCustomInstanceBulkDeleteSendsUpTo1000IDs checks that bulk-delete sends
-// as many ids as Emporix takes in one request, more than its other bulk
-// writes take.
 func TestCustomInstanceBulkDeleteSendsUpTo1000IDs(t *testing.T) {
 	const most = 1000
 	results := make([]string, most)
@@ -161,9 +145,6 @@ func TestCustomInstanceBulkDeleteSendsUpTo1000IDs(t *testing.T) {
 	}
 }
 
-// TestCustomInstanceBulkDeleteListsTheIDsThatFailed checks that a bulk delete
-// of instances that Emporix answers with a failure for some of them prints
-// the response, lists those on standard error and exits non-zero.
 func TestCustomInstanceBulkDeleteListsTheIDsThatFailed(t *testing.T) {
 	fake := newFakeEmporix(t)
 	fake.route("/schema/acme1/custom-entities/DOCUMENT/instances/bulk", respond(http.StatusMultiStatus,
@@ -177,13 +158,6 @@ func TestCustomInstanceBulkDeleteListsTheIDsThatFailed(t *testing.T) {
 	}
 }
 
-// TestCustomEntityWriteHelp checks the help of the writes of custom entities:
-// an upsert is named so, what --validate-references does without it and what
-// checking references needs, the scopes requested (those of instances, of
-// their type), where the arguments come from, the most items of a bulk write,
-// what Emporix does with ids, localized text, mixins, unknown items and the
-// scopes of new and deleted types, and that each group names the scopes of
-// its reads and writes and the command lines of its reads.
 func TestCustomEntityWriteHelp(t *testing.T) {
 	for _, tt := range []struct {
 		args []string

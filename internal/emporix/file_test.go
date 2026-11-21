@@ -8,17 +8,11 @@ import (
 	"testing"
 )
 
-// filePDF stands in for a file that a read accepts.
 const filePDF = "%PDF-1.7\n%%EOF\n"
 
 // pdfPath is the path of a quote's PDF, which Emporix serves as POST.
 const pdfPath = "/quote/{tenant}/quotes/Q1/pdf"
 
-// TestGetFileReadsAFile checks a read of a file (GetFile) sent as POST
-// without a body (Posting): it asks for the file's type and JSON, in the
-// language given or else without the client's Accept-Language, with a token
-// of the client's scopes, and returns the file as sent where the response's
-// Content-Type, parameters aside, is the file's type.
 func TestGetFileReadsAFile(t *testing.T) {
 	for _, language := range []string{"", "de"} {
 		fake := newFakeEmporix(t)
@@ -44,17 +38,13 @@ func TestGetFileReadsAFile(t *testing.T) {
 	}
 }
 
-// TestGetFileFails checks the failures of a read of a file: a success of
-// another type, or none, fails without a class; an empty success is not
-// found, as for Get; an error status is classified as a read's, and a
-// server error is sent again, as the read changes nothing.
 func TestGetFileFails(t *testing.T) {
 	const named = "POST /quote/acme1/quotes/Q1/pdf: "
 	for _, tt := range []struct {
 		answer func(http.ResponseWriter, *http.Request)
 		class  error
 		want   string
-		sent   int // the requests sent
+		sent   int
 	}{
 		{answer: respond(http.StatusOK, `{"url":"u"}`, "Content-Type", "application/json"),
 			want: named + "the response is application/json, not the application/pdf that it asked for", sent: 1},
@@ -85,10 +75,6 @@ func TestGetFileFails(t *testing.T) {
 	}
 }
 
-// TestGetFileRefusesBeforeSending checks that a read of a file refuses,
-// before it requests a token or sends anything, a language that cannot be
-// sent as a header value, and, sent as POST, a path with a segment that might
-// address another operation once decoded.
 func TestGetFileRefusesBeforeSending(t *testing.T) {
 	fake := newFakeEmporix(t)
 	client := fake.client(t).Posting()

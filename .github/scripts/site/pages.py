@@ -34,13 +34,11 @@ HERE = Path(__file__).resolve().parent
 INDEX_HTML = "index.html"
 REMOVED = ("serve.js", "Start Docs.command", "Start Docs.bat", "sync.py")
 TEXT_SUFFIXES = (".html", ".js", ".css", ".json", ".txt", ".xml", ".webmanifest")
-# Entries that exist only once the build has run, and Mintlify's API paths.
 EXTRA_ENTRIES = ("pagefind", "base.js", "search.js", "search.css", "_mintlify")
 # The files that agents.py writes beside the pages. Only links in the HTML name them: a page's
 # payload (React reads its text back) keeps them as they are, or the page fails to hydrate.
 PAGE_ENTRIES = ("llms.txt", "llms-full.txt", "sitemap.xml", "robots.txt", "index.md")
 OWN_FILES = ("base.js", "search.js", "search.css")
-# Loaded before any other script, so that it sees every link and request (base.js).
 BASE_TAG = '<script src="{base}/base.js" data-base="{base}"></script>'
 SEARCH_TAGS = '<link rel="stylesheet" href="{base}/search.css"><script defer src="{base}/search.js" data-base="{base}"></script>'
 
@@ -63,9 +61,6 @@ def rewriter(base: str, names: list, root_links: bool = True):
     """Returns a function that prefixes base to root-absolute paths to names, and with
     root_links to links to the root itself."""
     alternatives = "|".join(re.escape(name) for name in names)
-    # A path that starts a string, an attribute or a url(): after a quote (also an escaped
-    # one, \"), a backtick, "(" or "=".
-    # A page's Markdown twin (/install.md) is the page's path too.
     path = re.compile(r'(?<=["\'`(=])/(?=(?:%s)(?:\.md)?(?:[/"\'?#)\\]|$))' % alternatives)
     root = re.compile(r'(?<=href=")/(?=")|(?<=href\\":\\")/(?=\\")|(?<=href":")/(?=")')
 
@@ -158,7 +153,7 @@ def rewrite_files(export: Path, base: str) -> None:
                 new = rewrite_page(text, rewrite, rewrite_assets).replace("</head>", tags + "</head>", 1)
                 new = re.sub(r"<head[^>]*>", lambda head: head.group(0) + first, new, count=1)
             else:
-                new = rewrite_assets(text)  # code may name pages ("/index") in other senses
+                new = rewrite_assets(text)
             if new != text:
                 file.write_text(new, encoding="utf-8")
 

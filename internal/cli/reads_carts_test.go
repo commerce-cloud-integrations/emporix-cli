@@ -5,25 +5,16 @@ import (
 	"slices"
 )
 
-// The read cases of the Cart Service (see TestReads), which reads carts only
-// with the write-capable cart.cart_manage scope: every read is opt-in.
-
-// cartsBody is a page of carts: a customer's, with its final price, and an
-// anonymous one.
 const cartsBody = `[{"id":"c1","status":"OPEN","siteCode":"AcmeStore_NL","type":"shopping","customerId":"C0123",
 	"legalEntityId":"le1","currency":"EUR","items":[{"id":"0"},{"id":"1"}],
 	"calculatedPrice":{"finalPrice":{"netValue":285.592,"grossValue":339.485}},
 	"metadata":{"createdAt":"2026-10-01T08:00:00Z","modifiedAt":"2026-10-02T09:30:00Z","version":3}},
 	{"id":"c2","status":"CLOSED","siteCode":"AcmeStore_NL","sessionId":"s-1","currency":"EUR","items":[]}]`
 
-// cartsTable is the table of cartsBody.
 const cartsTable = "ID  STATUS  SITE          TYPE      CUSTOMER  LEGAL ENTITY  ITEMS  TOTAL        MODIFIED\n" +
 	"c1  OPEN    AcmeStore_NL  shopping  C0123     le1           2      339.485 EUR  2026-10-02T09:30:00Z\n" +
 	"c2  CLOSED  AcmeStore_NL                                    0                   \n"
 
-// cartItemsBody holds items as the items reads send them, without unitPrice
-// and calculatedPrice: one with a localized product name, a price and its tax
-// line, one with a plain name only.
 const cartItemsBody = `[{"id":"0","type":"INTERNAL","quantity":2,"effectiveQuantity":2,"keepAsSeparateLineItem":false,
 	"product":{"id":"100200","code":"100200","sku":"100200","name":"Transistor",
 	"localizedName":{"en":"Transistor","nl":"Transistor NL"}},
@@ -32,14 +23,10 @@ const cartItemsBody = `[{"id":"0","type":"INTERNAL","quantity":2,"effectiveQuant
 	"value":{"amount":3.8,"currency":"EUR"}}]},
 	{"id":"1","type":"EXTERNAL","quantity":1.5,"effectiveQuantity":1.5,"product":{"id":"ext-1","name":"Cable"}}]`
 
-// cartCaseScope is the scope every cart read case states, as written (not
-// as carts.go names it).
 const cartCaseScope = "cart.cart_manage"
 
-// cartReads returns the Cart Service reads.
 func cartReads() []readCase { return slices.Concat(cartLookups(), cartItemReads(), cartContents()) }
 
-// cartLookups returns the reads of carts: by ID, by criteria and by search.
 func cartLookups() []readCase {
 	const scope = cartCaseScope
 	return []readCase{
@@ -54,7 +41,6 @@ func cartLookups() []readCase {
 				"c 1          AcmeStore_NL        C0123                   1      10.50 EUR  \n",
 		},
 		{
-			// Every criterion given is sent with the site; create never is.
 			args: []string{"carts", "find", "--site", "AcmeStore_NL", "--customer", "C0123", "--legal-entity", "le 1",
 				"--type", "shopping", "--allow-write-scope"},
 			path:   "/cart/acme1/carts",
@@ -77,7 +63,6 @@ func cartLookups() []readCase {
 				"c2  OPEN    AcmeStore_NL                                0             \n",
 		},
 		{
-			// Without --query, the body's q filters nothing; pages are read as lists read them.
 			args:    []string{"carts", "search", "--allow-write-scope"},
 			path:    "/cart/acme1/carts/search",
 			scopes:  []string{scope},
@@ -100,12 +85,10 @@ func cartLookups() []readCase {
 	}
 }
 
-// cartItemReads returns the reads of the items of one cart, all or one.
 func cartItemReads() []readCase {
 	const scope = cartCaseScope
 	return []readCase{
 		{
-			// Emporix documents no paging for a cart's items: one request.
 			args:   []string{"carts", "items", "list", "c1", "--allow-write-scope"},
 			path:   "/cart/acme1/carts/c1/items",
 			scopes: []string{scope},
@@ -126,7 +109,6 @@ func cartItemReads() []readCase {
 				"1   ext-1    Cable          1.5                  \n",
 		},
 		{
-			// Live, the items reads send gross values with 40 decimals: trimmed to the cents.
 			args:   []string{"carts", "items", "list", "c2", "--allow-write-scope"},
 			path:   "/cart/acme1/carts/c2/items",
 			scopes: []string{scope},
@@ -151,13 +133,10 @@ func cartItemReads() []readCase {
 	}
 }
 
-// cartContents returns the reads of what else one cart holds: its discounts,
-// delivery restrictions and validation.
 func cartContents() []readCase {
 	const scope = cartCaseScope
 	return []readCase{
 		{
-			// AMOUNT trimmed (trimAmount), RATE as sent; the discounts read sends no valid, so no column shows it.
 			args:   []string{"carts", "discounts", "list", "c1", "--allow-write-scope"},
 			path:   "/cart/acme1/carts/c1/discounts",
 			scopes: []string{scope},
@@ -179,7 +158,6 @@ func cartContents() []readCase {
 			want:   "LEAD HOURS  NON-DELIVERY DAYS\n10          1, 3, 5\n",
 		},
 		{
-			// Nothing to report: the missing lead time is named.
 			args:   []string{"carts", "delivery-restrictions", "c2", "--allow-write-scope"},
 			path:   "/cart/acme1/carts/c2/dtRestrictions",
 			scopes: []string{scope},

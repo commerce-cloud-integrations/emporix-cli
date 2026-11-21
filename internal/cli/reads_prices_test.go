@@ -2,10 +2,6 @@ package cli
 
 import "testing"
 
-// The read cases of the Price, Fee and Availability services (see TestReads).
-
-// pricesBody holds a price with two tiers (one with trailing zeros, which
-// tables trim to the cents) and one without tiers.
 const pricesBody = `[
 	{"id":"p1","itemId":{"itemType":"PRODUCT","id":"001234"},"currency":"EUR","location":{"countryCode":"NL"},
 	 "priceModelId":"m1","restrictions":{"siteCodes":["AcmeStore_NL","main"],
@@ -14,26 +10,21 @@ const pricesBody = `[
 	{"id":"p2","itemId":{"itemType":"PRODUCT","id":"ZZ1"},"currency":"EUR","tierValues":[]}
 ]`
 
-// pricesTable is the table of pricesBody.
 const pricesTable = "ID  ITEM    TYPE     CURRENCY  COUNTRY  SITES              TIERS       FROM" +
 	"                  TO\n" +
 	"p1  001234  PRODUCT  EUR       NL       AcmeStore_NL,main  15.90,14.5  2026-01-01T00:00:00Z  " +
 	"2027-01-01T00:00:00Z\n" +
 	"p2  ZZ1     PRODUCT  EUR                                                                     \n"
 
-// feeBody is the fee f1, a deposit named in English and Dutch.
 const feeBody = `{"id":"f1","code":"deposit","name":{"en":"Deposit","nl":"Statiegeld"},"feeType":"ABSOLUTE",
 	"feeAbsolute":{"amount":3.5,"currency":"EUR"}}`
 
-// feeTable is the table of feeBody in Dutch.
 const feeTable = "ID  CODE     NAME        TYPE      AMOUNT   ITEM TYPE  SITE  ACTIVE  TAXABLE  FROM  TO\n" +
 	"f1  deposit  Statiegeld  ABSOLUTE  3.5 EUR                                          \n"
 
-// priceReads returns the Price Service reads of prices.
 func priceReads() []readCase {
 	return []readCase{
 		{
-			// Prices are listed per site; without siteCode Emporix lists every site's prices.
 			args:    []string{"prices", "list", "--site", "AcmeStore_NL"},
 			path:    "/price/acme1/prices",
 			query:   "siteCode=AcmeStore_NL",
@@ -50,7 +41,6 @@ func priceReads() []readCase {
 			want:    pricesTable,
 		},
 		{
-			// get reads one price by id and sends no siteCode.
 			args: []string{"prices", "get", "p2"},
 			path: "/price/acme1/prices/p2",
 			mode: getWhole,
@@ -61,12 +51,9 @@ func priceReads() []readCase {
 	}
 }
 
-// priceModelReads returns the Price Service reads of price models.
 func priceModelReads() []readCase {
 	return []readCase{
 		{
-			// Quantities keep their text (1.0, not 1); a missing part of a quantity, a missing
-			// boolean or a missing unit stays empty.
 			args:    []string{"price-models", "list", "--language", "nl"},
 			path:    "/price/acme1/priceModels",
 			scopes:  []string{"price.pricemodel_read"},
@@ -88,7 +75,6 @@ func priceModelReads() []readCase {
 				"pm4                                                                  \n",
 		},
 		{
-			// Emporix returns the model itself, although the API reference documents a one-item array.
 			args:   []string{"price-models", "get", "pm1", "--language", "nl"},
 			path:   "/price/acme1/priceModels/pm1",
 			scopes: []string{"price.pricemodel_read"},
@@ -100,7 +86,6 @@ func priceModelReads() []readCase {
 	}
 }
 
-// priceListReads returns the Price Service reads of price lists.
 func priceListReads() []readCase {
 	return []readCase{
 		{
@@ -124,7 +109,6 @@ func priceListReads() []readCase {
 				"                          \n",
 		},
 		{
-			// Tier values keep their text (15.90); an empty MODEL is the default model.
 			args:    []string{"price-lists", "prices", "list", "pl/1"},
 			path:    "/price/acme1/price-lists/pl%2F1/prices",
 			scopes:  []string{"price.pricelist_read"},
@@ -149,12 +133,9 @@ func priceListReads() []readCase {
 	}
 }
 
-// feeReads returns the Fee Service reads.
 func feeReads() []readCase {
 	return []readCase{
 		{
-			// The fee type picks the value: a percentage or an amount in its currency, kept as sent
-			// (2.50); a missing value stays empty, zero does not.
 			args:  []string{"fees", "list", "--site", "main", "--language", "nl"},
 			path:  "/fee/acme1/fees",
 			query: "siteCode=main",
@@ -184,7 +165,6 @@ func feeReads() []readCase {
 				"                               \n",
 		},
 		{
-			// The API reference documents the fee wrapped with the items it applies to; get needs no site.
 			args: []string{"fees", "get", "f1", "--language", "nl"},
 			path: "/fee/acme1/fees/f1",
 			mode: getWhole,
@@ -192,7 +172,6 @@ func feeReads() []readCase {
 			want: feeTable,
 		},
 		{
-			// A fee sent without the wrapper is read as it is.
 			args: []string{"fees", "get", "f2"},
 			path: "/fee/acme1/fees/f2",
 			mode: getWhole,
@@ -202,7 +181,6 @@ func feeReads() []readCase {
 				"f2  deposit  Deposit  ABSOLUTE  3.5 EUR                                          \n",
 		},
 		{
-			// The fees of one item come whole and expanded: Emporix sends only their ids otherwise.
 			args:  []string{"fees", "for-product", "100 200", "--site", "AcmeStore_NL", "--language", "nl"},
 			path:  "/fee/acme1/productFees/100%20200/fees",
 			query: "expand=true&siteCode=AcmeStore_NL",
@@ -224,11 +202,9 @@ func feeReads() []readCase {
 	}
 }
 
-// availabilityReads returns the Availability Service reads.
 func availabilityReads() []readCase {
 	return []readCase{
 		{
-			// The site is one escaped path segment.
 			args:    []string{"availability", "list", "--site", "AcmeStore NL"},
 			path:    "/availability/acme1/availability/site/AcmeStore%20NL",
 			filters: listFilters{kinds: filterable},
@@ -241,7 +217,6 @@ func availabilityReads() []readCase {
 				"ZZ1      AcmeStore NL                    \n",
 		},
 		{
-			// The product id stays one path segment, followed by the site.
 			args: []string{"availability", "get", "001 234/x", "--site", "main"},
 			path: "/availability/acme1/availability/001%20234%2Fx/main",
 			mode: getWhole,
@@ -251,9 +226,6 @@ func availabilityReads() []readCase {
 	}
 }
 
-// TestPriceMatchHelpSaysHowPriceListsRank checks that a price match says how
-// the price lists that apply rank and that only the first rank with a price
-// is compared.
 func TestPriceMatchHelpSaysHowPriceListsRank(t *testing.T) {
 	assertHelpHolds(t, map[string][]string{"prices match": {
 		"Prices of price lists come before catalog prices",

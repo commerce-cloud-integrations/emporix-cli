@@ -6,15 +6,11 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// brand is the part of a Brand Service brand shown in tables.
 type brand struct {
 	ID string `json:"id"`
 	plainAndLocalizedName
 }
 
-// newBrandsCommand reads, creates, changes and deletes the tenant's brands.
-// The Brand Service has no tenant path segment: the tenant comes from the
-// token.
 func newBrandsCommand(a *app) *cobra.Command {
 	brands := resource[brand]{
 		use:     "brands",

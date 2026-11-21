@@ -6,7 +6,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// priceModel is the part of a Price Service price model shown in tables.
 type priceModel struct {
 	ID             string    `json:"id"`
 	Name           localized `json:"name"`
@@ -20,29 +19,23 @@ type priceModel struct {
 	MeasurementUnit quantity `json:"measurementUnit"`
 }
 
-// quantity is an amount in a unit, such as 50 g.
 type quantity struct {
-	Amount   json.Number `json:"quantity"` // kept as sent, e.g. 1.0
+	Amount   json.Number `json:"quantity"`
 	UnitCode string      `json:"unitCode"`
 }
 
-// String joins the amount and the unit code; a missing part is left out.
 func (q quantity) String() string {
 	return spaced(q.Amount.String(), q.UnitCode)
 }
 
-// modelTiers are the tiers of a price model, in the model's order.
 type modelTiers []modelTier
 
-// modelTier is one tier of a price model.
 type modelTier struct {
 	MinQuantity quantity `json:"minQuantity"`
 }
 
 func (t modelTier) String() string { return t.MinQuantity.String() }
 
-// String lists the minimum quantity of each tier, joined with ", " because
-// each quantity already holds a space.
 func (t modelTiers) String() string { return joinEach(t, ", ", modelTier.String) }
 
 // newPriceModelsCommand reads and changes price models, the tier structures
@@ -86,9 +79,6 @@ const (
 	priceModelAdmin  = "price.pricemodel_manage_admin"
 )
 
-// priceModelWrites returns the writes of price models: create, update ID (an
-// upsert) and delete ID, which deletes a model that prices use only with
-// --force.
 func priceModelWrites(a *app, models resource[priceModel]) []*cobra.Command {
 	at := models.at()
 	create, update, remove := (&collectionWrites{

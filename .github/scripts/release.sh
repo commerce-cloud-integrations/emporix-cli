@@ -18,14 +18,6 @@
 #                                  here, byte for byte, so the workflow goes on to npm;
 #                                  otherwise the run fails
 #
-# Binaries are static (CGO_ENABLED=0), built with -trimpath and VCS stamping, so
-# `epx version` reports the tag without ldflags. Every binary is checked with
-# `go version -m` (module version, revision, unmodified tree) before packaging.
-# Archives are reproducible: their files carry the commit's time, fixed modes and owner 0,
-# in a fixed order, and gzip stores no time, so a rebuild of the same commit on the same
-# kind of builder, by any account and umask, has the same checksums. Tarballs need GNU tar
-# (gtar where tar is another one, as on macOS: brew install gnu-tar).
-# The tarballs (macOS and Linux) also hold the man pages, in man/.
 # Output: dist/<version>/epx_<version>_<os>_<arch>.{tar.gz,zip}, a checksums file and, for
 # a tagged release, epx.rb and epx.json.
 set -euo pipefail
@@ -53,7 +45,6 @@ mkdir -p "$out"
 stage=$(mktemp -d)
 trap 'rm -r "$stage"' EXIT
 
-# check_binary verifies the build info a binary carries.
 check_binary() {
 	local binary=$1 info
 	info=$(go version -m "$binary") || fail "cannot read build info of $binary"
@@ -75,8 +66,6 @@ tar --version 2>/dev/null | grep -q 'GNU tar' || gnu_tar=gtar
 stamp=$(TZ=UTC git show -s --date=format-local:%Y%m%d%H%M.%S --format=%cd HEAD)
 export TZ=UTC
 
-# The man pages (man/*.1, generated from the command tree) go into the tarballs, their
-# title lines dated with the commit's day and naming the version, as man shows in the footer.
 day=$(git show -s --date=format-local:%Y-%m-%d --format=%cd HEAD)
 mkdir "$stage/man"
 for page in man/*.1; do
@@ -118,7 +107,6 @@ for target in darwin/amd64 darwin/arm64 linux/amd64 linux/arm64 windows/amd64 wi
 	fi
 done
 (cd "$out" && shasum -a 256 epx_* >"epx_${version}_checksums.txt")
-# The Homebrew formula and the Scoop manifest, from the checksums (not listed there).
 if [[ "$mode" != --snapshot ]]; then
 	.github/scripts/packages.sh "$out"
 fi
@@ -128,13 +116,8 @@ reported=$("$host" version) || fail "the host binary does not run"
 echo "release: built $out ($reported)"
 ls -1 "$out"
 
-# installers are published beside the archives, served as releases/latest/download/<name>.
 installers=(install/install.sh install/install.ps1)
 
-# released reports whether the GitHub release of the version exists (1 only where gh
-# says it is not found; any other failure of gh fails the run): then it must be published
-# and hold exactly the archives, checksums file, packages and installers built here, or the run
-# fails, since a release is never replaced.
 released() {
 	local sums=epx_${version}_checksums.txt fetched=$stage/released draft want got installer package
 	if ! draft=$(gh release view "$version" --json isDraft --jq .isDraft 2>"$stage/gh.err"); then
@@ -161,10 +144,8 @@ released() {
 	done
 }
 
-# notes prints the flag that chooses the release notes: the annotated tag's message where
-# it has a body (gh takes a lightweight tag's commit message instead, so only an annotated
-# tag counts), else notes that GitHub generates. refs, origin's lines of the tag, show
-# whether it is annotated there (a peeled ^{} line); a local copy that is not fails.
+# gh takes a lightweight tag's commit message as the notes, so only an annotated tag's
+# body counts; git ls-remote shows an annotated tag with a peeled ^{} line.
 notes() {
 	local refs=$1 annotated=false
 	[[ "$(git cat-file -t "refs/tags/$version")" = tag ]] && annotated=true

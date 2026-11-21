@@ -8,9 +8,6 @@ import (
 	"testing"
 )
 
-// TestFirstPageReadsOnePage checks that a glance (ListOptions.FirstPage)
-// requests one page of every paged read and returns its items as read, where
-// a listing would request more pages or fail its checks.
 func TestFirstPageReadsOnePage(t *testing.T) {
 	glance := ListOptions{FirstPage: true}
 	reads := map[string]func(*Client, ListOptions) (json.RawMessage, error){
@@ -58,8 +55,6 @@ func TestFirstPageReadsOnePage(t *testing.T) {
 	}
 }
 
-// TestFirstPageFailsWhereItsPageFails checks that a glance of a collection
-// fails as reading its first page fails.
 func TestFirstPageFailsWhereItsPageFails(t *testing.T) {
 	fake := newFakeEmporix(t)
 	fake.route("/items", func(w http.ResponseWriter, _ *http.Request) { w.WriteHeader(http.StatusInternalServerError) })
@@ -69,8 +64,6 @@ func TestFirstPageFailsWhereItsPageFails(t *testing.T) {
 	}
 }
 
-// TestFirstPageStillRefusesARepeatedItem checks that a glance fails on a page
-// that lists an item twice, as a listing does.
 func TestFirstPageStillRefusesARepeatedItem(t *testing.T) {
 	for name, read := range map[string]func(*Client) error{
 		"GetAll": func(c *Client) error {

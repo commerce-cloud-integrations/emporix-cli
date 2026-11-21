@@ -6,8 +6,6 @@ import (
 	"testing"
 )
 
-// TestWriteHeadersAreSentAndShown checks that the headers of a write are
-// sent and shown with every request's, replacing one of the same name.
 func TestWriteHeadersAreSentAndShown(t *testing.T) {
 	fake := newFakeEmporix(t)
 	fake.route("/unit-handling/acme1/units", respond(http.StatusCreated, `{"code":"g"}`))
@@ -34,14 +32,10 @@ func TestWriteHeadersAreSentAndShown(t *testing.T) {
 	}
 }
 
-// TestStaleVersionsAnsweredNotFoundAreConflicts checks that where a service
-// answers a stale metadata.version with 404 Not Found, a 404 to a body that
-// carries a version is ErrConflict, and any other 404 stays ErrNotFound, as
-// it does for every other write.
 func TestStaleVersionsAnsweredNotFoundAreConflicts(t *testing.T) {
 	for _, tt := range []struct {
 		body  string
-		stale bool // Write.StaleNotFound
+		stale bool
 		class error
 	}{
 		{body: `{"code":"g","metadata":{"version":3}}`, stale: true, class: ErrConflict},
@@ -72,7 +66,6 @@ func TestStaleVersionsAnsweredNotFoundAreConflicts(t *testing.T) {
 			}
 		}
 	}
-	// A conflict stays one, and a write without a body is no stale version.
 	for status, class := range map[int]error{http.StatusConflict: ErrConflict, http.StatusNotFound: ErrNotFound} {
 		fake := newFakeEmporix(t)
 		fake.route("/unit-handling/acme1/units/g", respond(status, `{}`))

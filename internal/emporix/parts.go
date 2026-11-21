@@ -12,16 +12,13 @@ import (
 // body without one to most parts, and Send reads the result of each part: an
 // *ItemsError lists those that failed.
 type Parts struct {
-	noun    string // what a part is called in messages, e.g. "item"
-	sender  string // what sends the parts in messages, e.g. "a bulk write"
-	most    int    // the most parts that Emporix takes in one request
-	member  string // the member of the body's JSON object that holds the parts; the body is their array when empty
-	results string // the member of the response's JSON object that holds their results; alike
-	key     string // the member of each item and of its result that names the item (Items); none when empty
-	// read reads results, the results of the parts of sent: the parts that
-	// failed, in the order of the response, and how many did not run; false
-	// when results do not give the result of each part that ran.
-	read func(sent *sentParts, results []json.RawMessage) (failed []ItemFailure, notRun int, ok bool)
+	noun    string
+	sender  string
+	most    int
+	member  string
+	results string
+	key     string
+	read    func(sent *sentParts, results []json.RawMessage) (failed []ItemFailure, notRun int, ok bool)
 }
 
 // What the parts of a bulk write and of a chain are called in messages, as
@@ -51,18 +48,13 @@ func Commands(most int) *Parts {
 		read: readCommands}
 }
 
-// sentParts is a body of parts as Prepare checked it, whose results Send
-// reads.
 type sentParts struct {
 	*Parts
-	parts []json.RawMessage // the parts as sent
-	query url.Values        // the query sent with them, such as the onError of a chain
-	first int               // the position of the first among the items of the write split (Write.Split); else 0
+	parts []json.RawMessage
+	query url.Values
+	first int
 }
 
-// split returns the parts of body, sent with query by the request that named
-// names, or ErrInvalidInput when it does not hold one to most of them; nil
-// for no Parts, a write of one value.
 func (p *Parts) split(named string, body []byte, query url.Values) (*sentParts, error) {
 	if p == nil {
 		return nil, nil
@@ -83,9 +75,6 @@ func (p *Parts) split(named string, body []byte, query url.Values) (*sentParts, 
 	return &sentParts{Parts: p, parts: parts, query: query}, nil
 }
 
-// within returns the JSON array that data is or, with member, that the member
-// of its JSON object holds (named exactly, as Emporix names it); false for
-// anything else.
 func within(data []byte, member string) ([]json.RawMessage, bool) {
 	if member != "" {
 		var object map[string]json.RawMessage
@@ -98,14 +87,8 @@ func within(data []byte, member string) ([]json.RawMessage, bool) {
 	return array, json.Unmarshal(data, &array) == nil && array != nil
 }
 
-// check returns the body of result, the response to s sent as method, nil
-// when it is empty, and how it failed, with failure, the error of a response
-// that failed (nil for a success), which may still give the result of each
-// part, as the Cart Service answers a batch of items that failed in part with
-// 400 or 500: an *ItemsError when a part failed; failure where the response
-// failed without the result of each part; an error where it succeeded
-// without them, as then which ones Emporix carried out is unknown; else
-// failure (where every part succeeded, yet the response failed).
+// The Cart Service answers a batch of items that failed in part with 400 or
+// 500 and still gives the result of each part.
 func (s *sentParts) check(method string, result reply, failure error) (json.RawMessage, error) {
 	body, path := responseBody(result), result.path
 	results, given := within(body, s.results)
@@ -115,7 +98,7 @@ func (s *sentParts) check(method string, result reply, failure error) (json.RawM
 		failed, notRun, ok = s.read(s, results)
 	}
 	for i := range failed {
-		failed[i].Index += s.first // its position in the write that was split, if any
+		failed[i].Index += s.first
 	}
 	switch {
 	case failure != nil && !ok:

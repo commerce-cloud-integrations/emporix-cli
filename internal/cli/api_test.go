@@ -6,8 +6,6 @@ import (
 	"testing"
 )
 
-// TestAPIGetPrintsSortedJSON checks that api get prints the response with
-// sorted keys and every value as sent, API keys included.
 func TestAPIGetPrintsSortedJSON(t *testing.T) {
 	fake := newFakeEmporix(t)
 	fake.route("/indexing/acme1/configurations", respond(http.StatusOK,
@@ -36,12 +34,10 @@ func TestAPIGetFailures(t *testing.T) {
 		message string
 	}{
 		{args: []string{"/missing"}, code: ExitNotFound, message: "GET /missing: 404 Not Found: not found"},
-		// An empty item is not found, and its inline query never reaches the message.
 		{args: []string{"/empty?token=" + testSecret}, code: ExitNotFound, message: "GET /empty: empty response: not found"},
 		{args: []string{"/forbidden"}, code: ExitAuth, message: "403 Forbidden: canned failure"},
 		{args: []string{"/broken"}, code: ExitError, message: "500 Internal Server Error: canned failure"},
 		{args: []string{"/escape"}, code: ExitError, message: "400 Bad Request: a ]0;pwned  b\n"},
-		// Validation details are shown, field and message only, sanitized as the message is.
 		{args: []string{"/invalid"}, code: ExitError,
 			message: "400 Bad Request: The request violates validation constraints. (na me: must  not be blank)\n"},
 		{args: []string{"https://evil.example/x"}, code: ExitUsage, message: `API path "https://evil.example/x"`},

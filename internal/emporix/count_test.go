@@ -8,9 +8,6 @@ import (
 	"testing"
 )
 
-// TestCountReadsTheTotalOfAHeadRequest checks that a count sends HEAD,
-// without a body (also from a client made by WithBody), asking for the total,
-// with the user's filter joined to the read's own q, and returns the total.
 func TestCountReadsTheTotalOfAHeadRequest(t *testing.T) {
 	fake := newFakeEmporix(t)
 	fake.route("/order-v2/acme1/salesorders", respond(http.StatusOK, "", "X-Total-Count", "1250"))
@@ -31,8 +28,6 @@ func TestCountReadsTheTotalOfAHeadRequest(t *testing.T) {
 	}
 }
 
-// TestCountFailures checks that a count fails on a response without a valid
-// total and on a failed request, classified as any read's, naming HEAD.
 func TestCountFailures(t *testing.T) {
 	for name, tt := range map[string]struct {
 		route func(http.ResponseWriter, *http.Request)
@@ -60,9 +55,6 @@ func TestCountFailures(t *testing.T) {
 	}
 }
 
-// TestCountRefusesAQueryInItsPath checks that a count sends nothing for a
-// path with a query, which a filter would replace instead of narrow, and
-// leaves the query out of its message.
 func TestCountRefusesAQueryInItsPath(t *testing.T) {
 	fake := newFakeEmporix(t)
 	_, err := fake.client(t).Count(context.Background(), "/orders?token="+testSecret, nil, "status:CREATED")

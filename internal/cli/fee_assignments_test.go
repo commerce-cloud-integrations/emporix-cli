@@ -8,9 +8,6 @@ import (
 	"testing"
 )
 
-// TestFeeAssignmentSearchSendsTheSiteWithABodyGiven checks that --body
-// replaces the body that --item and --site make, while --site, required,
-// still goes in the query.
 func TestFeeAssignmentSearchSendsTheSiteWithABodyGiven(t *testing.T) {
 	const given = `{"itemYrns":["` + paymentYRN + `"],"siteCode":"AcmeStore_NL"}`
 	fake := newFakeEmporix(t)
@@ -24,9 +21,6 @@ func TestFeeAssignmentSearchSendsTheSiteWithABodyGiven(t *testing.T) {
 	fake.assertSent(t, http.MethodPost, given)
 }
 
-// TestFeeAssignmentSearchesPageTheBodyGiven checks that a search paged in
-// its body pages a body given with --body too, replacing its pageNumber and
-// pageSize: a page of the --limit, read once.
 func TestFeeAssignmentSearchesPageTheBodyGiven(t *testing.T) {
 	fake := newFakeEmporix(t)
 	fake.route("/fee/acme1/itemFees/searchByProductId", firstBodyPage(`[{"id":"if1","itemYrn":"i1","feeIds":["f1"]}]`))
@@ -39,10 +33,6 @@ func TestFeeAssignmentSearchesPageTheBodyGiven(t *testing.T) {
 	fake.assertSent(t, http.MethodPost, `{"pageNumber":1,"pageSize":1,"productId":"100200","siteCodes":["main"]}`)
 }
 
-// TestFeeAssignmentFailures checks the failures of the item-fee reads: usage
-// errors that send nothing (exit 2), among them every member that Emporix
-// requires in a search's body, missing, and a site that cannot be one; and a
-// body given with --body that Emporix rejects (exit 1).
 func TestFeeAssignmentFailures(t *testing.T) {
 	fake := newFakeEmporix(t)
 	for _, tt := range []struct {
@@ -66,7 +56,6 @@ func TestFeeAssignmentFailures(t *testing.T) {
 		{args: []string{"search-by-products", "--products", "100200", "--site", ""}, want: `invalid site ""`},
 		{args: []string{"search-by-products", "--body", "-", "--site", "main"}, stdin: "{}",
 			want: "[body site] are set none of the others"},
-		// A body that is no JSON object cannot be paged.
 		{args: []string{"search-by-products", "--body", "-"}, stdin: `["100200"]`,
 			want: "POST /fee/{tenant}/itemFees/searchByProductIds: a search paged in its body needs a JSON object"},
 	} {
@@ -79,7 +68,6 @@ func TestFeeAssignmentFailures(t *testing.T) {
 	if len(fake.tokenScopes) != 0 || len(fake.gets) != 0 {
 		t.Fatalf("tokens %q, requests %q; want none", fake.tokenScopes, fake.gets)
 	}
-	// Emporix rejects a search without a product (seen live).
 	fake.route("/fee/acme1/itemFees/searchByProductIds", respond(http.StatusBadRequest,
 		`{"status":400,"message":"Validation failed","type":"validation_violation"}`))
 	code, stdout, stderr := runWithInput(t, fake.env(), strings.NewReader(`{"siteCode":"main"}`),
@@ -90,9 +78,6 @@ func TestFeeAssignmentFailures(t *testing.T) {
 	fake.assertSent(t, http.MethodPost, `{"pageNumber":1,"pageSize":100,"siteCode":"main"}`)
 }
 
-// TestSiteFieldNeedsTheSiteOfItsRequest checks that a body member that
-// repeats the site of its request fails as the command is built, not as it
-// runs, when the request names no site.
 func TestSiteFieldNeedsTheSiteOfItsRequest(t *testing.T) {
 	defer func() {
 		if recovered := recover(); !strings.Contains(fmt.Sprint(recovered),

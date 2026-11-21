@@ -16,13 +16,11 @@ func TestLockKeepsOtherChangesWaiting(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	// Another lock waits, until its context ends.
 	ctx, cancel := context.WithTimeout(context.Background(), 3*lockPoll)
 	defer cancel()
 	if _, waited := store.Lock(ctx); !errors.Is(waited, context.DeadlineExceeded) {
 		t.Fatalf("second lock: %v; want it to wait until its deadline", waited)
 	}
-	// One waiting gets the lock once it is released.
 	locked := make(chan error, 1)
 	go func() {
 		again, failed := store.Lock(context.Background())

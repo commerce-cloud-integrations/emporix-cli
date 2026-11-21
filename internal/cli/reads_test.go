@@ -10,28 +10,24 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// readCase is a read command, the response it gets, and what it must request
-// and print. It checks what a declaration states (path, query, scopes, read
-// mode and table); the shared builder's behavior is tested in resource_test.go.
 type readCase struct {
-	args    []string    // command, arguments and flags
-	path    string      // the request path as escaped on the wire, which the fake serves
-	query   string      // the request query, paging aside, encoded with sorted keys
-	scopes  []string    // the scopes besides the tenant
-	mode    readMode    // how the command reads (getAll, the default, pages the collection)
-	page    string      // the page size of a getAllInOnePage or getAllOnFirstPage read, which only they name
-	filters listFilters // what a list takes besides --limit (TestListFiltersReachEveryRequest)
-	method  string      // the method of every request; GET when empty
-	sent    string      // the body of every request, e.g. a search's ({page}: its page); none when empty
-	form    []sentPart  // the parts of the form of every request, in place of sent; none when nil
-	body    string      // the response; a paged read gets it on page 1 and nothing after
-	total   string      // the X-Total-Count served instead of a body, as to a HEAD request; none when empty
-	media   string      // the Content-Type of a file served as body, in the language that args name (fileRead)
-	site    string      // the emporix-site header of every request (--mixin-site); none when empty
-	want    string      // the table printed, or the file
+	args    []string
+	path    string
+	query   string
+	scopes  []string
+	mode    readMode
+	page    string
+	filters listFilters
+	method  string
+	sent    string
+	form    []sentPart
+	body    string
+	total   string
+	media   string
+	site    string
+	want    string
 }
 
-// readCases returns the read cases of every service.
 func readCases() []readCase {
 	return slices.Concat(productReads(),
 		categoryReads(),
@@ -91,9 +87,6 @@ func readCases() []readCase {
 		importReads())
 }
 
-// tableReadCases returns the read cases of the reads that print a table:
-// all but those of a read that saves the file that Emporix answers with
-// (media).
 func tableReadCases() []readCase {
 	all := readCases()
 	var tables []readCase
@@ -105,8 +98,6 @@ func tableReadCases() []readCase {
 	return tables
 }
 
-// TestReads runs every read case. The fake serves the body only when every
-// translation is requested, as the client always asks (Accept-Language: *).
 func TestReads(t *testing.T) {
 	for _, tt := range readCases() {
 		t.Run(strings.Join(tt.args, " "), func(t *testing.T) {
@@ -130,8 +121,6 @@ func TestReads(t *testing.T) {
 	}
 }
 
-// TestEveryReadHasACase checks that every read command has a read case, so a
-// new command cannot ship without its path, scopes and table being pinned.
 func TestEveryReadHasACase(t *testing.T) {
 	cases := casesOfCommands(t)
 	reads := readCommands()
@@ -140,7 +129,6 @@ func TestEveryReadHasACase(t *testing.T) {
 			t.Errorf("%s has no read case", path)
 		}
 	}
-	// The other way round, so the check cannot pass with no read commands found.
 	for path := range cases {
 		if !slices.Contains(reads, path) {
 			t.Errorf("read case of %s, which is not a read command", path)
@@ -148,7 +136,6 @@ func TestEveryReadHasACase(t *testing.T) {
 	}
 }
 
-// casesOfCommands returns the read cases of every command, by command path.
 func casesOfCommands(t *testing.T) map[string][]readCase {
 	t.Helper()
 	root := newTestRoot()
@@ -164,8 +151,6 @@ func casesOfCommands(t *testing.T) map[string][]readCase {
 	return byPath
 }
 
-// casesByCommand returns the first read case of every command; the cases of
-// one command must agree on its list filters.
 func casesByCommand(t *testing.T) map[string]readCase {
 	t.Helper()
 	first := map[string]readCase{}
@@ -180,8 +165,6 @@ func casesByCommand(t *testing.T) map[string]readCase {
 	return first
 }
 
-// readCommands returns the sorted paths of the read commands: every command
-// that a reader builds, which notes its scopes (scopesAnnotation).
 func readCommands() []string {
 	var paths []string
 	walkCommands(newTestRoot(), func(cmd *cobra.Command) {
@@ -193,7 +176,6 @@ func readCommands() []string {
 	return paths
 }
 
-// commandsWithFlag returns the sorted paths of the commands that define flag.
 func commandsWithFlag(flag string) []string {
 	var paths []string
 	walkCommands(newTestRoot(), func(cmd *cobra.Command) {

@@ -7,21 +7,10 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// productManageScope is the scope of every product write, and of the reads
-// of the variant recalculation jobs (opt-in).
 const productManageScope = "product.product_manage"
 
-// maxProductsPerRequest is the most products that a bulk write of the
-// Product Service takes in one request.
 const maxProductsPerRequest = 200
 
-// productPublishing returns the choice of a write of products sent with
-// method, which only adds scopes: those that Emporix requires besides
-// product.product_manage only to publish a product, which every write of
-// products may do, and to unpublish one, which a write that replaces or
-// changes products (not POST) may do, as the reference names them. Its flags
-// may be given together. Emporix refuses a product that the write publishes
-// or unpublishes without the flag that allows it.
 func productPublishing(method string) queryChoice {
 	options := []choiceOption{{flag: "allow-publish", scopes: []string{"product.product_publish"},
 		usage:   "allow the write to publish products, which needs a scope of its own",
@@ -34,8 +23,6 @@ func productPublishing(method string) queryChoice {
 	return queryChoice{options: options}
 }
 
-// productQuery returns the query parameters that every write of products
-// takes: doIndex, sent when its flag is given, and the switches.
 func productQuery() (queryFlags, []paramFlag) {
 	return queryFlags{optional: []paramFlag{{
 		param: "doIndex", flag: "do-index", choices: []string{queryTrue, queryFalse},
@@ -51,16 +38,12 @@ func productQuery() (queryFlags, []paramFlag) {
 	}}
 }
 
-// productConflict says when Emporix refuses a write of a product as a conflict.
 const productConflict = "Emporix refuses it as a conflict (exit 5) when another product has its code or, given " +
 	"metadata.version, when the product changed since that version."
 
-// productBulkAnswer says how Emporix answers a bulk write of products.
 const productBulkAnswer = "Emporix answers each product with its index, id, code (the HTTP status of the " +
 	"product, e.g. 201) and status (e.g. CREATED), and a message where it failed."
 
-// productWrites returns the writes of products: create, update ID, patch ID,
-// bulk-create, bulk-update, import and recalculate.
 func productWrites(a *app, products resource[product]) []*cobra.Command {
 	scopes := []string{productManageScope}
 	most := strconv.Itoa(maxProductsPerRequest)
@@ -123,8 +106,6 @@ func productWrites(a *app, products resource[product]) []*cobra.Command {
 	}).command(a))
 }
 
-// productTemplateWrites returns the writes of product templates: create and
-// update ID.
 func productTemplateWrites(a *app, templates resource[productTemplate]) []*cobra.Command {
 	scopes := []string{"product.product_template_manage"}
 	return writeCommands(a, []write{{

@@ -7,29 +7,21 @@ import (
 	"testing"
 )
 
-// A segment as create takes it, and an assignment's mixins and version.
 const (
 	segmentJSON    = `{"id":"s1","name":{"en":"Gold"},"siteCode":"AcmeStore_NL","status":"ACTIVE"}`
 	assignmentJSON = `{"mixins":{"segmentAttributes":{"tier":"GOLD"}},"metadata":{"version":2}}`
 )
 
-// bulkDone is the answer to a bulk write of two items that Emporix carried
-// out without content, numbered from 1 as the Customer Segment Service's
-// reference numbers them, and doneJSON the answer as epx prints it.
 const (
 	bulkDone = `[{"index":1,"id":"s1","code":204,"status":"OK"},{"index":2,"id":"s2","code":204,"status":"OK"}]`
 	doneJSON = "[\n  {\n    \"code\": 204,\n    \"id\": \"s1\",\n    \"index\": 1,\n    \"status\": \"OK\"\n  },\n" +
 		"  {\n    \"code\": 204,\n    \"id\": \"s2\",\n    \"index\": 2,\n    \"status\": \"OK\"\n  }\n]\n"
 )
 
-// segmentServiceWrites are the writes of the Customer Segment Service:
-// segments and their customer, IAM group and item assignments.
 func segmentServiceWrites() []writeCase {
 	return slices.Concat(segmentItself(), segmentAssignments())
 }
 
-// segmentItself are the writes of segments: those that send localized text
-// send maps of translations with Content-Language: *.
 func segmentItself() []writeCase {
 	manage := []string{segmentManageScope}
 	const segments = "/customer-segment/acme1/segments"
@@ -47,7 +39,6 @@ func segmentItself() []writeCase {
 			method: http.MethodPatch, path: segments + "/s1", scopes: manage, lang: "*", status: http.StatusNoContent,
 		},
 		{
-			// Without --with-assignments, Emporix keeps a segment that has assignments.
 			args: []string{"segments", "delete", "s1"}, method: http.MethodDelete, path: segments + "/s1",
 			query: "forceDelete=false", scopes: manage, confirmBy: "s1", status: http.StatusNoContent,
 		},
@@ -75,8 +66,6 @@ func segmentItself() []writeCase {
 	}
 }
 
-// segmentAssignments are the writes of what is assigned to a segment: an
-// assignment sends {} without --file.
 func segmentAssignments() []writeCase {
 	manage := []string{segmentManageScope}
 	const segment = "/customer-segment/acme1/segments/s%201"
@@ -155,14 +144,6 @@ func segmentAssignments() []writeCase {
 	}
 }
 
-// TestSegmentWriteUsageErrorsSendNothing checks that the segment writes
-// refuse what they cannot send as usage errors (exit 2) that send nothing,
-// also for a dry run: an item TYPE other than PRODUCT or CATEGORY, bulk as
-// the ID of a write of one item that a bulk write of its collection would
-// get (a legal entity, a group or the segment of a patch may be called so),
-// a bulk write without a JSON array of items, a patch whose --file is no
-// JSON array (Emporix answers an object as done, changing nothing), and
-// --content-language, as Emporix refuses a string in any language.
 func TestSegmentWriteUsageErrorsSendNothing(t *testing.T) {
 	const ids = `["s1"]`
 	assertRefused(t, []refusedWrite{
@@ -194,10 +175,6 @@ func TestSegmentWriteUsageErrorsSendNothing(t *testing.T) {
 	})
 }
 
-// TestSegmentWritesTakeBulkWhereNoBulkWriteWouldGetIt checks that the writes
-// of one item refuse bulk only as the ID that a bulk write of the collection
-// would get: a legal entity, an IAM group and a patched segment may be
-// called so, as Emporix sends no bulk write to their paths.
 func TestSegmentWritesTakeBulkWhereNoBulkWriteWouldGetIt(t *testing.T) {
 	for _, args := range [][]string{
 		{"segments", "customers", "update-b2b", "s1", "c1", "bulk"},
@@ -213,10 +190,6 @@ func TestSegmentWritesTakeBulkWhereNoBulkWriteWouldGetIt(t *testing.T) {
 	}
 }
 
-// TestSegmentBulkWritesListTheItemsThatFailed checks that a bulk write of the
-// Customer Segment Service reads the results of its items numbered from 1, as
-// its reference's examples number them: an item that failed is named by its
-// position in --file, from 0, and fails the write (exit 1).
 func TestSegmentBulkWritesListTheItemsThatFailed(t *testing.T) {
 	fake := newFakeEmporix(t)
 	fake.route("/customer-segment/acme1/segments/bulk", respond(http.StatusMultiStatus,
@@ -231,9 +204,6 @@ func TestSegmentBulkWritesListTheItemsThatFailed(t *testing.T) {
 	}
 }
 
-// TestSegmentGroupsStateTheirScopes checks the help of the segment groups
-// with writes, and that the reads of a child collection in a group of its
-// own name the list of that group as the source of their arguments.
 func TestSegmentGroupsStateTheirScopes(t *testing.T) {
 	for _, tt := range []struct {
 		args []string

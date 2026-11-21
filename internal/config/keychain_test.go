@@ -7,9 +7,6 @@ import (
 	"github.com/zalando/go-keyring"
 )
 
-// TestSystemKeychainStoresSecretsPerProfile runs SystemKeychain against the
-// keyring's in-memory mock, never a real keychain: each profile has its own
-// secret, and a missing one is ErrNoSecret.
 func TestSystemKeychainStoresSecretsPerProfile(t *testing.T) {
 	keyring.MockInit()
 	var k Keychain = SystemKeychain{}

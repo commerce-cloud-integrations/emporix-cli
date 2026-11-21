@@ -6,24 +6,13 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// perTypeWrites declares the writes of one item of a Search Service
-// collection kept per type (perTypeCommand): update TYPE ID, an upsert of
-// the JSON object in --file, whose localized text is sent as maps only
-// (mapsOnly), and delete TYPE ID, both with searchManageScope.
-// Each text field says what its write sends and what Emporix answers; what a
-// type is (builtInTypes.sentence), what TYPE and ID are, how `epx api` sends
-// it to an item kept under another spelling of a built-in type, how it is
-// sent and the scope sentence follow.
 type perTypeWrites struct {
-	update  string   // what update sends
-	example string   // a command line of update, indented by two spaces
-	delete  string   // what delete sends
-	answer  answerer // how update and delete end: by following the job that they start; by printing when nil
+	update  string
+	example string
+	delete  string
+	answer  answerer
 }
 
-// commands returns update and delete of target, one item of a collection
-// kept per type, whose TYPE takes types, which also say how to reach an item
-// kept under another spelling of them.
 func (p perTypeWrites) commands(a *app, target perTypeTarget, types exactTypes) []*cobra.Command {
 	manage := []string{searchManageScope}
 	typeAndArguments := types.builtIn.sentence() + " " + target.arguments
@@ -47,23 +36,14 @@ func (p perTypeWrites) commands(a *app, target perTypeTarget, types exactTypes) 
 	}
 }
 
-// indexJobWait returns how --wait follows an index job of jobs that a write
-// of search indexes starts: it reads the job as `search jobs get` does until
-// it is no longer in_progress, and succeeds only when it ended with success.
-// Each write names the jobs that it starts by their IDs alone (jobIDs).
 func indexJobWait(jobs resource[indexJob]) *jobWait {
 	return followJob(jobs, (*indexJob).state, []string{"in_progress"}, "success")
 }
 
-// state returns what --wait follows of j: its response, what it recorded
-// when it ended, which says why it failed.
 func (j *indexJob) state() jobState {
 	return jobState{ID: j.ID, Status: j.Status, Failure: j.Response}
 }
 
-// searchIndexWrites declares the writes of one search index, which start the
-// job that builds or removes it, which job follows: Emporix answers with the
-// job's id alone, or with nothing where it starts none.
 func searchIndexWrites(job *jobWait) perTypeWrites {
 	return perTypeWrites{
 		update: "Creates the search index ID of the type TYPE, or replaces it (an upsert), with the one " +
@@ -82,7 +62,6 @@ func searchIndexWrites(job *jobWait) perTypeWrites {
 	}
 }
 
-// savedSearchWrites declares the writes of one saved search.
 func savedSearchWrites() perTypeWrites {
 	return perTypeWrites{
 		update: "Creates the saved search ID of the type TYPE, or replaces it (an upsert), with the one in " +
@@ -96,9 +75,6 @@ func savedSearchWrites() perTypeWrites {
 	}
 }
 
-// searchIndexImport returns import, which creates or updates each search
-// index of an export package, as update does, starting the jobs that job
-// follows, which Emporix names by their IDs alone, in its result per index.
 func searchIndexImport(a *app, indexes resource[searchIndex], job *jobWait) *cobra.Command {
 	return (&write{
 		use: importUse, short: "Import search indexes", method: http.MethodPost,

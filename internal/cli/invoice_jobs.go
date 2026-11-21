@@ -19,7 +19,6 @@ type invoiceJob struct {
 	} `json:"invoices"`
 }
 
-// count returns how many of the job's orders have status, as text.
 func (j *invoiceJob) count(status string) string {
 	n := 0
 	for _, o := range j.Invoices {
@@ -68,8 +67,6 @@ func newInvoiceJobsCommand(a *app) *cobra.Command {
 		}))
 }
 
-// invoiceJobCreate starts an invoice job: MANUAL, for the orders that --order
-// names, or AUTOMATIC, for those that the tenant's configuration selects.
 func invoiceJobCreate() *write {
 	return &write{
 		use:   createUse,

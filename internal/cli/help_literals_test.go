@@ -8,11 +8,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// TestLongHelpBackquotesSpacedLiterals checks the long help of every command
-// of the tree as written: a literal that the reference shows as code
-// (markLiterals) and that holds a space, such as -o json, a JSON value or a
-// quoted message, is backquoted, so that the help reflow keeps it on one line
-// as the reference keeps it in one code span.
 func TestLongHelpBackquotesSpacedLiterals(t *testing.T) {
 	walkCommands(newTestRoot(), func(cmd *cobra.Command) {
 		for _, literal := range spacedLiterals(cmd.Long) {
@@ -21,8 +16,6 @@ func TestLongHelpBackquotesSpacedLiterals(t *testing.T) {
 	})
 }
 
-// TestSpacedLiteralsFindsUnquotedLiteralsWithSpaces checks the check of
-// TestLongHelpBackquotesSpacedLiterals.
 func TestSpacedLiteralsFindsUnquotedLiteralsWithSpaces(t *testing.T) {
 	for _, tt := range []struct {
 		text string
@@ -48,11 +41,6 @@ func TestSpacedLiteralsFindsUnquotedLiteralsWithSpaces(t *testing.T) {
 	}
 }
 
-// spacedLiterals returns the literals of help text that the reference shows
-// as code (literalSpans) and that hold a space, in the paragraphs of prose
-// that the reflow fills (helpChunks) and outside their backquoted spans,
-// which the reflow keeps whole (wordEnd). The text after an unmatched
-// backquote counts as prose, as the reflow may break a line inside it.
 func spacedLiterals(text string) []string {
 	var found []string
 	for prose, kept := range helpChunks(text) {
@@ -62,7 +50,7 @@ func spacedLiterals(text string) []string {
 		parts := strings.Split(prose, "`")
 		for i, part := range parts {
 			if i%2 == 1 && i < len(parts)-1 {
-				continue // a backquoted span; the text after an unmatched backquote is prose
+				continue
 			}
 			found = append(found, literalsWithSpace(part)...)
 		}
@@ -70,9 +58,6 @@ func spacedLiterals(text string) []string {
 	return found
 }
 
-// literalsWithSpace returns the literals of text, prose without backquotes,
-// that markLiterals shows as code (literalSpans) and that hold a space or a
-// tab.
 func literalsWithSpace(text string) []string {
 	var found []string
 	for start, end := range literalSpans(text) {

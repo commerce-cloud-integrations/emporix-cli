@@ -6,19 +6,12 @@ import (
 	"testing"
 )
 
-// shippingZoneJSON and shippingMethodJSON are a zone and a method as create
-// takes them.
 const (
 	shippingZoneJSON   = `{"id":"nl","name":{"en":"Netherlands"},"shipTo":[{"country":"NL"}],"default":true}`
 	shippingMethodJSON = `{"id":"post","name":"Post","active":true,"fees":[{"minOrderValue":{"amount":0,` +
 		`"currency":"EUR"},"cost":{"amount":5,"currency":"EUR"}}],"shippingTaxCode":"STANDARD"}`
 )
 
-// shippingWrites are the writes of a site's shipping zones, their methods,
-// shipping groups and the shipping group of each customer, with the scope
-// that the reference names for them. Those of zones, methods and groups send
-// maps of translations without a Content-Language header, which Emporix
-// refuses with *, and the language that --content-language names with it.
 func shippingWrites() []writeCase {
 	manage := []string{shippingManageScope}
 	site := []string{"--site", "AcmeStore_NL"}
@@ -29,7 +22,6 @@ func shippingWrites() []writeCase {
 			status: http.StatusCreated, body: `{"id":"nl"}`, want: "{\n  \"id\": \"nl\"\n}\n",
 		},
 		{
-			// The ID is escaped as a path segment; Emporix answers without a body. The language goes as typed.
 			args: []string{"shipping", "zones", "update", "nl 1", "--site", "AcmeStore_NL", "--content-language",
 				"en-NL"},
 			file:   `{"id":"nl 1","name":"Netherlands","shipTo":[{"country":"NL","postalCode":"10*"}]}`,
@@ -85,7 +77,6 @@ func shippingWrites() []writeCase {
 			confirmBy: "vip", status: http.StatusNoContent,
 		},
 		{
-			// The customer-group relations take no Content-Language.
 			args: append([]string{"shipping", "customers", "create"}, site...),
 			file: `{"customerId":"c1","groupId":"vip"}`, method: http.MethodPost,
 			path: "/shipping/acme1/AcmeStore_NL/cgrelations", scopes: manage, status: http.StatusCreated,
@@ -105,11 +96,6 @@ func shippingWrites() []writeCase {
 	}
 }
 
-// TestChildWritesNameTheirArguments checks that the writes of the methods of
-// a zone and the slots of a delivery time take the parent's argument first,
-// then the item's, as their reads do, and say in their help where each comes
-// from, the parent's first, and that an unknown one is not found, except for
-// a create of slots, for which the reference documents no 404.
 func TestChildWritesNameTheirArguments(t *testing.T) {
 	const (
 		zone   = "SHIPPING_ZONE_ID is the ID that `epx shipping zones list --site S` shows"
@@ -151,10 +137,6 @@ func TestChildWritesNameTheirArguments(t *testing.T) {
 	}
 }
 
-// TestShippingCustomerWritesHelp pins what the help of the writes of
-// customers' shipping groups says of Emporix's answers: unknown ids, the
-// update that creates no assignment, and deletes of unknown customers and of
-// groups with customers.
 func TestShippingCustomerWritesHelp(t *testing.T) {
 	assertHelpHolds(t, map[string][]string{
 		"shipping customers create": {"unknown ids are assigned too"},

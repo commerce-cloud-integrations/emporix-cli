@@ -7,8 +7,6 @@ import (
 	"testing"
 )
 
-// searchReads returns the reads of the Search Service: indexes and saved
-// searches, of every custom entity type or of one, and index jobs.
 func searchReads() []readCase {
 	const scope = "search.search_read"
 	indexes := `[{"id":"vehicles","type":"vehicle","name":{"en":"Vehicles","nl":"Voertuigen"},"status":"ready",
@@ -20,7 +18,6 @@ func searchReads() []readCase {
 		{"id":"all-parts","type":"part","indexId":"parts","filters":{"field":"code","operator":"EXISTS"}}]`
 	return []readCase{
 		{
-			// FIELDS names the indexed fields' paths; how each is searched is only in -o json.
 			args:    []string{"search", "indexes", "list", "--language", "nl"},
 			path:    "/search/acme1/search/indexes",
 			scopes:  []string{scope},
@@ -41,7 +38,6 @@ func searchReads() []readCase {
 				"vehicles  vehicle  Vehicles  failed  name, description, mixins.engine.power, mixins.engine.fuel  \n",
 		},
 		{
-			// The type and the ID address the index, in that order.
 			args:   []string{"search", "indexes", "get", "vehicle", "vehicles", "--language", "de"},
 			path:   "/search/acme1/search/vehicle/indexes/vehicles",
 			scopes: []string{scope},
@@ -52,7 +48,6 @@ func searchReads() []readCase {
 				"vehicles  vehicle  Fahrzeuge  ready   name    3\n",
 		},
 		{
-			// Queries and filters are only in -o json.
 			args:    []string{"search", "queries", "list", "--language", "nl"},
 			path:    "/search/acme1/search/queries",
 			scopes:  []string{scope},
@@ -81,7 +76,6 @@ func searchReads() []readCase {
 				"red-cars  vehicle  Red cars  vehicles  2\n",
 		},
 		{
-			// customer and legal-entity are types too, sent as given.
 			args:    []string{"search", "indexes", "for-type", "legal-entity", "--language", "en"},
 			path:    "/search/acme1/search/legal-entity/indexes",
 			scopes:  []string{scope},
@@ -103,13 +97,10 @@ func searchReads() []readCase {
 	}
 }
 
-// searchJobReads returns the reads of index jobs: a --query is sent as given (a lower-case value matches
-// no job, see the help of jobs), and the list and get show what each job recorded.
 func searchJobReads() []readCase {
 	const scope = "search.search_read"
 	return []readCase{
 		{
-			// --query is sent as given: a lower-case value matches no job (see the help of jobs).
 			args:    []string{"search", "jobs", "list", "--query", "status:success"},
 			path:    "/search/acme1/jobs",
 			query:   "q=status%3Asuccess",
@@ -120,7 +111,6 @@ func searchJobReads() []readCase {
 				"66f1a2b3c4d5e6f708192a3b  create_index  success  vehicles                     \n",
 		},
 		{
-			// RESULT is what a job recorded when it finished, cut in tables.
 			args:    []string{"search", "jobs", "list"},
 			path:    "/search/acme1/jobs",
 			scopes:  []string{scope},
@@ -151,11 +141,9 @@ func searchJobReads() []readCase {
 	}
 }
 
-// searchExportReads returns the opt-in export of search indexes, sent as POST.
 func searchExportReads() []readCase {
 	return []readCase{
 		{
-			// Each --index TYPE/ID selects one index; an id holds no slash, so a type may.
 			args: []string{"search", "indexes", "export", "--index", "vehicle/vehicles", "--index", "two/part/bikes",
 				"--allow-write-scope"},
 			path:   "/search/acme1/search/indexes/export",
@@ -169,9 +157,6 @@ func searchExportReads() []readCase {
 	}
 }
 
-// TestSearchIndexExportFailures checks an export of search indexes: an
-// --index that is not TYPE/ID is a usage error that sends nothing; Emporix's
-// answer to an unknown index is not found (exit 4), as help says.
 func TestSearchIndexExportFailures(t *testing.T) {
 	export := []string{"search", "indexes", "export", "--" + writeScopeFlag}
 	fake := newFakeEmporix(t)
@@ -192,16 +177,12 @@ func TestSearchIndexExportFailures(t *testing.T) {
 	}
 }
 
-// helpText returns the help of the command that args name, with its words joined by single spaces, so that a
-// sentence broken across lines is compared whole.
 func helpText(t *testing.T, args ...string) string {
 	t.Helper()
 	_, help, _ := runCLI(t, nil, append(slices.Clone(args), "--help")...)
 	return strings.Join(strings.Fields(help), " ")
 }
 
-// TestSearchListHelpNamesTheFilterValues checks that the help of the job and index lists names the upper-case
-// values --query matches, checked live, and says that a lower-case one matches nothing.
 func TestSearchListHelpNamesTheFilterValues(t *testing.T) {
 	for _, tt := range []struct {
 		args []string
@@ -226,13 +207,6 @@ func TestSearchListHelpNamesTheFilterValues(t *testing.T) {
 	}
 }
 
-// TestSearchHelpNamesTheBuiltInTypes checks that the help of the search group,
-// of documents, and of indexes and queries and their commands per type names
-// customer and legal-entity as types beside the custom entity types, that
-// the help of documents names the limitation of the scopes that it requests,
-// and that the help of indexes and queries, their reads and writes per type
-// and the export of indexes says how to reach an item kept under another
-// spelling of a built-in type.
 func TestSearchHelpNamesTheBuiltInTypes(t *testing.T) {
 	const types = "customer or legal-entity, exactly as written, or a custom entity type"
 	for _, args := range [][]string{
@@ -253,7 +227,6 @@ func TestSearchHelpNamesTheBuiltInTypes(t *testing.T) {
 	if text := helpText(t, "search", "documents"); !strings.Contains(text, limitation) {
 		t.Errorf("search documents: help lacks %q:\n%s", limitation, text)
 	}
-	// What TYPE refuses in another spelling is listed, exported with --body, and reached with epx api.
 	const otherwise = " kept under another spelling of a built-in type, such as CUSTOMER, "
 	for singular, use := range map[string]string{"search index": "indexes", "saved search": "queries"} {
 		path := " /search/{tenant}/search/CUSTOMER/" + use + "/ID --scope search.search_"
@@ -277,10 +250,6 @@ func TestSearchHelpNamesTheBuiltInTypes(t *testing.T) {
 	}
 }
 
-// TestExactTypesNeedBuiltInTypes checks that saying how to reach an item
-// under another spelling of a built-in type, for a service whose collections
-// take none, take them in any case, or name the first in upper case, is
-// refused while the command tree is built, naming the service (its use).
 func TestExactTypesNeedBuiltInTypes(t *testing.T) {
 	const want = "things: says how to reach an item under another spelling of a built-in type, but TYPE " +
 		"does not refuse the upper-case spelling of its first built-in type, if it has one"

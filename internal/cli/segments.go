@@ -8,7 +8,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// segment is the part of a Customer Segment Service segment shown in tables.
 type segment struct {
 	ID       string    `json:"id"`
 	Name     localized `json:"name"`
@@ -17,7 +16,6 @@ type segment struct {
 	Validity validity  `json:"validity"`
 }
 
-// segmentCustomer is a customer, of a legal entity for B2B, assigned to a segment.
 type segmentCustomer struct {
 	Customer struct {
 		ID string `json:"id"`
@@ -30,7 +28,6 @@ type segmentCustomer struct {
 	AssignmentType string `json:"assignmentType"`
 }
 
-// segmentGroup is an IAM group assigned to a segment.
 type segmentGroup struct {
 	Group struct {
 		ID   string    `json:"id"`
@@ -38,7 +35,6 @@ type segmentGroup struct {
 	} `json:"group"`
 }
 
-// segmentItem is a product or category assigned to a segment.
 type segmentItem struct {
 	SegmentID string `json:"segmentId"`
 	Type      string `json:"type"`
@@ -49,16 +45,10 @@ type segmentItem struct {
 	} `json:"item"`
 }
 
-// segmentMatchItem is a product of a segment match: one that the request
-// names to check, and one that the answer lists as matching.
 type segmentMatchItem struct {
 	ID string `json:"id"`
 }
 
-// newSegmentsCommand reads and changes customer segments and what is
-// assigned to them (customers, IAM groups and items), all or one, also those
-// a search finds, and reads which products belong to segments, which Emporix
-// answers only with a write-capable scope (opt-in).
 func newSegmentsCommand(a *app) *cobra.Command {
 	segments := resource[segment]{
 		use:   "segments",
@@ -98,8 +88,6 @@ func newSegmentsCommand(a *app) *cobra.Command {
 	return newResourceCommand(a, segments, slices.Concat(reads, segmentWrites(a, segments))...)
 }
 
-// newSegmentCustomersCommand returns the group of the customers of a segment
-// of segments: their reads and the writes that assign and remove them.
 func newSegmentCustomersCommand(a *app, segments resource[segment]) *cobra.Command {
 	customers := segmentCustomers()
 	in := segments.nested(customersCommand)
@@ -126,8 +114,6 @@ func newSegmentCustomersCommand(a *app, segments resource[segment]) *cobra.Comma
 	})
 }
 
-// newSegmentGroupsCommand returns the group of the IAM groups of a segment
-// of segments: their reads and the writes that assign and remove them.
 func newSegmentGroupsCommand(a *app, segments resource[segment]) *cobra.Command {
 	groups := segmentGroups()
 	in := segments.nested(groupsUse)
@@ -144,9 +130,6 @@ func newSegmentGroupsCommand(a *app, segments resource[segment]) *cobra.Command 
 	})
 }
 
-// newSegmentItemsCommand returns the group of items, the products and
-// categories of a segment of segments: their reads and the writes that
-// assign and remove them.
 func newSegmentItemsCommand(a *app, segments resource[segment]) *cobra.Command {
 	items := segmentItems()
 	in := segments.nested(itemsUse)
@@ -165,29 +148,17 @@ func newSegmentItemsCommand(a *app, segments resource[segment]) *cobra.Command {
 	})
 }
 
-// segmentItemTypes are the only values of the TYPE of a segment's item, in
-// capitals: Emporix answers others with 400 Bad Request.
 func segmentItemTypes() map[string][]string {
 	return map[string][]string{columnType: {productItemType, "CATEGORY"}}
 }
 
-// segmentItemTypeSentence says which values the TYPE of a segment's item
-// takes (segmentItemTypes).
 func segmentItemTypeSentence() string {
 	return columnType + " is " + alternatives(segmentItemTypes()[columnType]) + ", in capitals"
 }
 
-// segmentCustomerOrder says, in the help of the reads of the customers of a
-// segment, in which order they are read without --sort: Emporix pages them
-// in a different order per request without a sort, repeating some customers
-// and leaving out others across pages, so the reads send one
-// (segmentCustomers), phrased as the IAM lists say theirs (iamPagingNote).
 const segmentCustomerOrder = "list and search sort by id unless --sort says otherwise, an order that Emporix keeps " +
 	"across pages: unsorted, it pages them in a different order per request."
 
-// segmentCustomers declares the customers of a segment, for B2B with their
-// legal entity, read in a stable order: by id unless --sort gives another
-// (segmentCustomerOrder), as a user's sort replaces the read's own.
 func segmentCustomers() child[segmentCustomer] {
 	return child[segmentCustomer]{
 		use:   listUse,
@@ -212,7 +183,6 @@ func segmentCustomers() child[segmentCustomer] {
 	}
 }
 
-// segmentGroups declares the IAM groups of a segment.
 func segmentGroups() child[segmentGroup] {
 	return child[segmentGroup]{
 		use:     listUse,
@@ -230,7 +200,6 @@ func segmentGroups() child[segmentGroup] {
 	}
 }
 
-// segmentItems declares the items of a segment, products or categories.
 func segmentItems() child[segmentItem] {
 	return child[segmentItem]{
 		use:     listUse,
@@ -250,10 +219,6 @@ func segmentItems() child[segmentItem] {
 	}
 }
 
-// newSegmentMatchCommand returns `match`, which reads the products of a list
-// that belong to segments: a POST to path/match that only reads. Its answer,
-// the products named that match, is read as one response, not as a
-// collection: a product named twice may be listed twice.
 func newSegmentMatchCommand(a *app, path string) *cobra.Command {
 	product := func(id string) (segmentMatchItem, error) { return segmentMatchItem{ID: id}, nil }
 	return reader[segmentMatchItem]{view: view[segmentMatchItem]{

@@ -8,10 +8,6 @@ import (
 	"testing"
 )
 
-// TestWriteRequestShowsTheRequestAsSent checks the text of a request: the
-// method and URL, the headers sorted by name with every value, and the body
-// byte for byte after an empty line, ended by one line break; a request
-// without a body ends after its headers.
 func TestWriteRequestShowsTheRequestAsSent(t *testing.T) {
 	header := map[string][]string{"User-Agent": {"epx"}, "Accept": {"application/json", "text/plain"}}
 	for _, tt := range []struct {
@@ -36,9 +32,6 @@ func TestWriteRequestShowsTheRequestAsSent(t *testing.T) {
 	}
 }
 
-// form returns a multipart/form-data body with a JSON file part, whose name
-// holds quotes and a letter that is not ASCII, a JSON field, a binary file
-// and a plain field, and its Content-Type.
 func form(t *testing.T) (body []byte, contentType string) {
 	t.Helper()
 	var encoded bytes.Buffer
@@ -71,13 +64,6 @@ func form(t *testing.T) (body []byte, contentType string) {
 	return encoded.Bytes(), writer.FormDataContentType()
 }
 
-// TestWriteRequestDescribesTheParts checks the text of a request whose body
-// is a form: as that of any request up to its headers, then, after an empty
-// line, a line for each part, in order: its name, the name of its file and
-// its content type where it has them, and its size, followed by its content
-// as sent where it is JSON only (not a file named as JSON that holds terminal
-// controls); names are quoted. A form that cannot be read fails, and writes
-// nothing.
 func TestWriteRequestDescribesTheParts(t *testing.T) {
 	body, contentType := form(t)
 	var out bytes.Buffer
@@ -99,7 +85,6 @@ func TestWriteRequestDescribesTheParts(t *testing.T) {
 		want        string
 	}{
 		{contentType: "multipart/form-data", body: body, want: "reading the form: multipart: boundary is empty"},
-		// Cut within the content of the image.
 		{contentType: contentType, body: body[:bytes.IndexByte(body, 0)+1], want: "reading the form: unexpected EOF"},
 	} {
 		var out bytes.Buffer

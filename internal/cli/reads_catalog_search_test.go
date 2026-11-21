@@ -2,17 +2,12 @@ package cli
 
 import "net/http"
 
-// The read cases of the product, category and category-tree searches, which
-// Emporix serves as POST with a JSON body but which change nothing (see TestReads).
-
-// catalogSearchReads returns the searches of the Product and Category services.
 func catalogSearchReads() []readCase {
 	const categoryScope = "category.category_read_unpublished"
 	trees := `[{"id":"r1","code":"tools","published":true,"localizedName":{"en":"Tools","nl":"Werkplaats"},
 		"subcategories":[{"id":"c2","published":false,"localizedName":{"en":"Saws"}}]}]`
 	return []readCase{
 		{
-			// Without --query, the body's q filters nothing; pages are read as list reads them.
 			args:    []string{"products", "search"},
 			path:    "/product/acme1/products/search",
 			scopes:  []string{"product.product_read_unpublished"},
@@ -26,7 +21,6 @@ func catalogSearchReads() []readCase {
 				"P2      P2      VARIANT             Plain name\n",
 		},
 		{
-			// --query is sent in the body as given, > included.
 			args: []string{"products", "search", "--query", "metadata.modifiedAt:>2026-01-01 published:true",
 				"--language", "nl"},
 			path:    "/product/acme1/products/search",
@@ -38,7 +32,6 @@ func catalogSearchReads() []readCase {
 			want:    "ID   CODE  TYPE   PUBLISHED  NAME\nZZ1  ZZ1   BASIC  true       Klep\n",
 		},
 		{
-			// Unpublished categories are asked for, with the scope that shows them, as list does.
 			args:    []string{"categories", "search", "--language", "nl"},
 			path:    "/category/acme1/categories/search",
 			query:   "showUnpublished=true",
@@ -63,8 +56,6 @@ func catalogSearchReads() []readCase {
 			want:    "ID  CODE        TYPE      PUBLISHED  NAME\nc1  Transistor  STANDARD  true       Transistors\n",
 		},
 		{
-			// Without --category, every tree (as list, seen live); Emporix answers whole, without paging.
-			// The optional list is sent as an empty array, never null.
 			args:   []string{"category-trees", "search", "--language", "nl"},
 			path:   "/category/acme1/category-trees/search",
 			query:  "showUnpublished=true",
@@ -76,7 +67,6 @@ func catalogSearchReads() []readCase {
 			want:   "ID  CODE   PUBLISHED  NAME\nr1  tools  true       Werkplaats\nc2         false        Saws (en)\n",
 		},
 		{
-			// Each --category adds one id, as given.
 			args:   []string{"category-trees", "search", "--category", "c2", "--category", "c 3,4"},
 			path:   "/category/acme1/category-trees/search",
 			query:  "showUnpublished=true",

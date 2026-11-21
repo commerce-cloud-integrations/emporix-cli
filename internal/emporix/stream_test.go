@@ -9,7 +9,6 @@ import (
 	"testing"
 )
 
-// streamedIDs returns opts streaming into pages, each the ids of its items.
 func streamedIDs(t *testing.T, opts ListOptions) (streaming ListOptions, pages *[][]string) {
 	t.Helper()
 	pages = &[][]string{}
@@ -29,13 +28,10 @@ func TestGetAllStreamsPagesAsItChecksThem(t *testing.T) {
 		name           string
 		maxSize, limit int
 		want           [][]string
-		reads          int // pages requested
+		reads          int
 	}{
-		// Every page, as read, until the total is reached.
 		{name: "whole collection", want: [][]string{{"i0", "i1"}, {"i2", "i3"}, {"i4"}}, reads: 3},
-		// At most the limit, stopping early as a kept read does.
 		{name: "limit", limit: 3, want: [][]string{{"i0", "i1"}, {"i2"}}, reads: 2},
-		// Pages capped at one item: the limit is streamed, and the read goes on to check the total.
 		{name: "limit after a short page", maxSize: 1, limit: 2, want: [][]string{{"i0"}, {"i1"}}, reads: 5},
 	}
 	for _, tt := range tests {
@@ -61,9 +57,7 @@ func TestGetAllStreamFailsAfterThePagesBefore(t *testing.T) {
 		want    [][]string
 		message string
 	}{
-		// The service ignores paging: page 2 repeats page 1, which was streamed.
 		{name: "repeated page", maxSize: -1, want: [][]string{{"i0", "i1", "i2"}}, message: "page 2 repeats"},
-		// The collection ends before its total: every page was streamed.
 		{name: "count below total", total: "4", want: [][]string{{"i0", "i1"}, {"i2"}},
 			message: "read 3 items but the service reports 4"},
 	}
@@ -105,7 +99,6 @@ func TestWholeCollectionReadsStreamOnceChecked(t *testing.T) {
 	if err != nil || body != nil || !slices.EqualFunc(*pages, [][]string{{"i0", "i1"}}, slices.Equal) {
 		t.Fatalf("unpaged: body %s, error %v, pages %q", body, err, *pages)
 	}
-	// A page whose count differs from its total fails before anything is streamed.
 	fake.route("/items", pagedRoute(3, 0, "2"))
 	opts, pages = streamedIDs(t, ListOptions{})
 	if _, err := client.GetAllInOnePage(context.Background(), "/items", nil, 10, opts); err == nil || len(*pages) != 0 {
@@ -113,8 +106,6 @@ func TestWholeCollectionReadsStreamOnceChecked(t *testing.T) {
 	}
 }
 
-// TestGetAllStreamsNoPageBeyondTheTotal checks that a page holding more items
-// than the total is not streamed: the count check runs before it is handed over.
 func TestGetAllStreamsNoPageBeyondTheTotal(t *testing.T) {
 	tests := []struct {
 		name  string
@@ -140,18 +131,15 @@ func TestGetAllStreamsNoPageBeyondTheTotal(t *testing.T) {
 	}
 }
 
-// TestStreamedReadsTakeMorePages checks that a read that streams may request
-// more pages than one that keeps its items (pagedClient: 8, not 5), and that
-// both still stop a collection that never ends.
 func TestStreamedReadsTakeMorePages(t *testing.T) {
 	tests := []struct {
 		name     string
-		count    int // items served, in pages of 2
+		count    int
 		total    string
 		stream   bool
-		requests int    // pages requested
-		streamed int    // pages streamed
-		want     string // the error; empty for none
+		requests int
+		streamed int
+		want     string
 	}{
 		{name: "kept read beyond its cap", count: 12, total: "12", requests: 5,
 			want: "GET /items: more than 5 pages; a read that streams its items takes up to 8"},
@@ -179,9 +167,6 @@ func TestStreamedReadsTakeMorePages(t *testing.T) {
 	}
 }
 
-// TestDefaultPageCaps checks the page caps of a client as New makes it: a
-// kept read stops after KeptPages, on a service that caps its pages at one
-// item, and says that a streamed read takes up to StreamedPages, its cap.
 func TestDefaultPageCaps(t *testing.T) {
 	fake := newFakeEmporix(t)
 	fake.route("/items", pagedRoute(1001, 1, "1001"))
@@ -197,7 +182,6 @@ func TestDefaultPageCaps(t *testing.T) {
 	}
 }
 
-// errorText returns the message of err, or "" for no error.
 func errorText(err error) string {
 	if err == nil {
 		return ""

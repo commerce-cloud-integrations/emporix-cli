@@ -8,9 +8,6 @@ import (
 	"testing"
 )
 
-// A legal entity, a contact assignment, a location and a vendor as create
-// takes them, each naming the items it refers to as {"id": ...}, and as
-// update takes them: without an id, with the version that a read gave.
 const (
 	b2bLegalEntityJSON = `{"id":"le1","name":"Acme Corp","type":"COMPANY","entitiesAddresses":[{"id":"loc1"}],` +
 		`"approvalGroup":[{"id":"ca1"}]}`
@@ -25,15 +22,8 @@ const (
 	b2bVendorUpdateJSON   = `{"name":"Acme Supplies","type":"SUBSIDIARY","parentId":"v0","metadata":{"version":2}}`
 )
 
-// b2bCreatedJSON is how epx prints the id with which Emporix answers a
-// create or an upsert that created the item.
 func b2bCreatedJSON(id string) string { return "{\n  \"id\": \"" + id + "\"\n}\n" }
 
-// b2bWrites are the writes of legal entities, contact assignments, customer
-// locations, vendors and vendor locations: create, update (an upsert) and
-// delete of each, with the manage scope that the reference names for it. A
-// legal entity's delete also deletes its subsidiaries, assignments and IAM
-// customer groups, which its prompt says.
 func b2bWrites() []writeCase {
 	entities := b2bWriteCases("legal-entities", "/customer-management/acme1/legal-entities",
 		"customermanagement.legalentity_manage", b2bLegalEntityJSON, b2bLegalEntityUpdateJSON, "le1")
@@ -55,10 +45,6 @@ func b2bWrites() []writeCase {
 	)
 }
 
-// b2bWriteCases are the write cases of group, whose items are at path, each
-// written with scope: create, with created, of the item id, which Emporix
-// answers with its id; update id, which replaces it with updated (204 No
-// Content); and delete id, which sends no body and is confirmed by typing id.
 func b2bWriteCases(group, path, scope, created, updated, id string) []writeCase {
 	scopes := []string{scope}
 	item := path + "/" + url.PathEscape(id)
@@ -78,11 +64,6 @@ func b2bWriteCases(group, path, scope, created, updated, id string) []writeCase 
 	}
 }
 
-// TestB2BWritesUpsertAndDelete checks that update answers with the id of the
-// item that Emporix created where none had the id (201 Created), and that
-// delete of an unknown contact assignment is not found (exit 4) and prints
-// nothing on standard output, while Emporix answers that of an unknown legal
-// entity as one that it deleted (204 No Content, exit 0).
 func TestB2BWritesUpsertAndDelete(t *testing.T) {
 	fake := newFakeEmporix(t)
 	fake.route("/vendor/acme1/vendors/v2", respond(http.StatusCreated, `{"id":"v2"}`))
@@ -106,10 +87,6 @@ func TestB2BWritesUpsertAndDelete(t *testing.T) {
 	}
 }
 
-// TestB2BWriteBodies checks that create and update, whose body Emporix
-// requires, fail without --file as a usage error (exit 2) that sends
-// nothing, as do an ID that is no path segment and delete, which sends no
-// body, given --file.
 func TestB2BWriteBodies(t *testing.T) {
 	file := writeBody(t, b2bLocationJSON)
 	for _, tt := range []struct {
@@ -131,14 +108,6 @@ func TestB2BWriteBodies(t *testing.T) {
 	}
 }
 
-// TestB2BWritesHelp checks the help of these writes: create names the
-// members of its body, how it names the items it refers to, that get prints
-// one alike and that Emporix checks that they exist; update what it
-// requires, that it creates a missing item and how metadata.version guards
-// it, and for a legal entity which customer groups to keep; delete how
-// Emporix answers an unknown item and what it deletes along with it; and
-// update and delete where ID comes from. Their groups say what the writes
-// send.
 func TestB2BWritesHelp(t *testing.T) {
 	for args, want := range map[string][]string{
 		"customer-locations create": {"shaped as `epx customer-locations get ID -o json` prints one: type (required",

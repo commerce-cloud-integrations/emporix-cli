@@ -34,8 +34,6 @@ func WriteYAML(w io.Writer, v any) error {
 	return err
 }
 
-// writeYAMLNode writes node from where its first line starts, which is
-// already indented, and the later lines of a collection at indent.
 func writeYAMLNode(out *bytes.Buffer, node any, indent string) {
 	switch n := node.(type) {
 	case map[string]any:
@@ -48,8 +46,6 @@ func writeYAMLNode(out *bytes.Buffer, node any, indent string) {
 	}
 }
 
-// writeYAMLMap writes m as writeYAMLNode writes a node: an entry per line,
-// in the order of the keys, or {} when m is empty.
 func writeYAMLMap(out *bytes.Buffer, m map[string]any, indent string) {
 	if len(m) == 0 {
 		out.WriteString("{}\n")
@@ -71,9 +67,6 @@ func writeYAMLMap(out *bytes.Buffer, m map[string]any, indent string) {
 	}
 }
 
-// writeYAMLKey writes key, quoted (yamlString), from where its line starts,
-// which is already indented: a key longer than maxImplicitKey after a
-// question mark, its colon then starting the next line, at indent.
 func writeYAMLKey(out *bytes.Buffer, key, indent string) {
 	quoted := yamlString(key)
 	if utf8.RuneCountInString(quoted) > maxImplicitKey {
@@ -83,8 +76,6 @@ func writeYAMLKey(out *bytes.Buffer, key, indent string) {
 	out.WriteString(quoted)
 }
 
-// writeYAMLList writes items as writeYAMLNode writes a node: each after a
-// dash, its later lines indented under its first, or [] when there are none.
 func writeYAMLList(out *bytes.Buffer, items []any, indent string) {
 	if len(items) == 0 {
 		out.WriteString("[]\n")
@@ -99,8 +90,6 @@ func writeYAMLList(out *bytes.Buffer, items []any, indent string) {
 	}
 }
 
-// isYAMLBlock reports whether node takes lines of its own after a key: a
-// collection that is not empty.
 func isYAMLBlock(node any) bool {
 	switch n := node.(type) {
 	case map[string]any:
@@ -112,8 +101,6 @@ func isYAMLBlock(node any) bool {
 	}
 }
 
-// yamlScalar returns a value that is no collection as YAML: a string
-// quoted (yamlString), a number as given, true, false or null.
 func yamlScalar(v any) string {
 	switch s := v.(type) {
 	case string:
@@ -127,7 +114,6 @@ func yamlScalar(v any) string {
 	}
 }
 
-// yamlString returns s as a double-quoted YAML scalar (see WriteYAML).
 func yamlString(s string) string {
 	var b strings.Builder
 	b.Grow(len(s) + 2)
@@ -153,8 +139,6 @@ func yamlString(s string) string {
 	return b.String()
 }
 
-// yamlBeyondBMP escapes a character beyond U+FFFF as YAML takes it:
-// \UXXXXXXXX, where JSON takes a pair of surrogates (jsonBeyondBMP).
 func yamlBeyondBMP(r rune) string { return fmt.Sprintf(`\U%08x`, r) }
 
 // isYAMLText reports whether YAML parsers read r, which no terminal acts on,

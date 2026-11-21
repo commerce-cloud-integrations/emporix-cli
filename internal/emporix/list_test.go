@@ -13,7 +13,6 @@ import (
 	"testing"
 )
 
-// itemIDs returns the ids of a JSON array of {"id": …} items.
 func itemIDs(t *testing.T, body json.RawMessage) []string {
 	t.Helper()
 	var items []struct {
@@ -34,14 +33,11 @@ func TestGetAllWithLimitStopsEarly(t *testing.T) {
 		name         string
 		count, limit int
 		want         []string
-		pageSizes    []string // pageSize of each request
+		pageSizes    []string
 	}{
-		// Pages of 2 (the policy size) until the limit is reached; the total is not checked.
 		{name: "limit within the collection", count: 7, limit: 3, want: []string{"i0", "i1", "i2"},
 			pageSizes: []string{"2", "2"}},
-		// A limit below the page size shrinks the page.
 		{name: "limit below the page size", count: 7, limit: 1, want: []string{"i0"}, pageSizes: []string{"1"}},
-		// A limit beyond the collection reads it whole, and the total is still checked.
 		{name: "limit beyond the collection", count: 3, limit: 10, want: []string{"i0", "i1", "i2"},
 			pageSizes: []string{"2", "2"}},
 		{name: "no limit", count: 3, want: []string{"i0", "i1", "i2"}, pageSizes: []string{"2", "2"}},
@@ -68,12 +64,11 @@ func TestGetAllWithLimitStopsEarly(t *testing.T) {
 
 func TestGetAllWithLimitStillChecksAWholeCollection(t *testing.T) {
 	fake := newFakeEmporix(t)
-	fake.route("/items", pagedRoute(3, 0, "4")) // the collection ends before its total
+	fake.route("/items", pagedRoute(3, 0, "4"))
 	client := pagedClient(t, fake)
 	if _, err := client.GetAll(context.Background(), "/items", nil, ListOptions{Limit: 10}); err == nil {
 		t.Fatal("want the count mismatch reported")
 	}
-	// A repeated item is reported even before the limit is reached.
 	fake.route("/items", pagedRoute(3, -1, ""))
 	if _, err := client.GetAll(context.Background(), "/items", nil, ListOptions{Limit: 5}); err == nil {
 		t.Fatal("want the repeated page reported")
@@ -93,7 +88,6 @@ func TestWholeCollectionReadsAreCutAtTheLimit(t *testing.T) {
 	if err != nil || !slices.Equal(itemIDs(t, body), []string{"i0", "i1"}) {
 		t.Fatalf("one page: items %s, error %v", body, err)
 	}
-	// A short collection is returned whole, as with a negative limit.
 	fake.route("/items", pagedRoute(3, -1, "3"))
 	for _, limit := range []int{5, -1} {
 		body, err = client.GetUnpaged(context.Background(), "/items", nil, ListOptions{Limit: limit})
@@ -104,8 +98,6 @@ func TestWholeCollectionReadsAreCutAtTheLimit(t *testing.T) {
 }
 
 func TestGetAllWithLimitReadsOnAfterAShortPage(t *testing.T) {
-	// A service that caps pages at one item: the read cannot stop early, so it
-	// reads to the end, checks the total and then cuts.
 	fake := newFakeEmporix(t)
 	fake.route("/items", pagedRoute(4, 1, "4"))
 	body, err := pagedClient(t, fake).GetAll(context.Background(), "/items", nil, ListOptions{Limit: 3})
@@ -113,8 +105,6 @@ func TestGetAllWithLimitReadsOnAfterAShortPage(t *testing.T) {
 		t.Fatalf("items %s, error %v, requests %d; want 3 of 4 items after reading all 4 pages",
 			body, err, len(fake.requests))
 	}
-	// A capped service that still counts offsets by the requested size leaves
-	// gaps: the total check reports them instead of returning i0, i2.
 	gaps := newFakeEmporix(t)
 	gaps.route("/items", func(w http.ResponseWriter, r *http.Request) {
 		page, _ := strconv.Atoi(r.URL.Query().Get("pageNumber"))
@@ -133,8 +123,6 @@ func TestGetAllWithLimitReadsOnAfterAShortPage(t *testing.T) {
 }
 
 func TestGetAllWithLimitStopsInAShortPageAfterFullOnes(t *testing.T) {
-	// Items of a page are contiguous, so after full pages the limit can be
-	// reached in a short page: A, B, C are the first three of four.
 	fake := newFakeEmporix(t)
 	fake.route("/items", pageSequence([]string{`[{"id":"A"},{"id":"B"}]`, `[{"id":"C"}]`}, "4", "4"))
 	body, err := pagedClient(t, fake).GetAll(context.Background(), "/items", nil, ListOptions{Limit: 3})
@@ -167,7 +155,6 @@ func TestListOptionsReachEveryCollectionRead(t *testing.T) {
 			if _, err := read(pagedClient(t, fake)); err != nil {
 				t.Fatal(err)
 			}
-			// Every request carries the filter; the user's sort replaces the read's own.
 			for _, request := range fake.requests {
 				query := request.URL.Query()
 				if query.Get("q") != "code:A1" || query.Get("sort") != "name:desc" || query.Get("siteCode") != "main" {
@@ -183,7 +170,6 @@ func TestListOptionsReachEveryCollectionRead(t *testing.T) {
 
 func TestListOptionsApply(t *testing.T) {
 	base := url.Values{"sort": {"code"}, "siteCode": {"main"}}
-	// Empty options change nothing; a user's filter joins the read's own (both must match).
 	if got := (ListOptions{}).apply(base); got.Encode() != base.Encode() {
 		t.Fatalf("empty options changed the query to %q", got)
 	}
@@ -197,8 +183,6 @@ func TestCollectionReadsTakeTheirQuerySeparately(t *testing.T) {
 	fake := newFakeEmporix(t)
 	fake.route("/items", pagedRoute(3, 0, "3"))
 	client := pagedClient(t, fake)
-	// An inline q would be replaced by a filter instead of narrowed, so a query
-	// in the path is refused before anything is sent, and the error leaves it out.
 	path := "/items?q=legalEntityId:L1&token=" + testSecret
 	for name, read := range map[string]func() (json.RawMessage, error){
 		"GetAll": func() (json.RawMessage, error) { return client.GetAll(context.Background(), path, nil, ListOptions{}) },

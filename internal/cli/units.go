@@ -10,18 +10,15 @@ import (
 	"github.com/commerce-cloud-integrations/emporix-cli/internal/emporix"
 )
 
-// unit is the part of a Unit Handling Service unit shown in tables.
 type unit struct {
 	Code     string      `json:"code"`
 	Name     localized   `json:"name"`
 	Type     string      `json:"type"`
 	Symbol   string      `json:"symbol"`
 	BaseUnit *bool       `json:"baseUnit"`
-	Factor   json.Number `json:"factor"` // kept as sent, e.g. 1.0
+	Factor   json.Number `json:"factor"`
 }
 
-// newUnitsCommand reads, creates, updates and deletes the tenant's units of
-// measurement, and reads the unit types.
 func newUnitsCommand(a *app) *cobra.Command {
 	units := resource[unit]{
 		use:   "units",
@@ -53,24 +50,13 @@ func newUnitsCommand(a *app) *cobra.Command {
 		newUnitConversionFactorCommand(a)}, unitWriteCommands(a, units))...)
 }
 
-// unitManageScope is the scope of every write of units, the one that the
-// reference names for them.
 const unitManageScope = "unithandling.unit_manage"
 
-// unitLanguageHelp is what the help of units update says of the localized
-// text of its body: Emporix replaces a name with a string in one language,
-// so that the unit's other translations are gone.
 func unitLanguageHelp() string {
 	return contentLanguageHelp() + " Such a string replaces the unit's other translations of " +
 		"that text; send the map to keep them."
 }
 
-// unitWriteCommands returns the writes of units, with the scope that the
-// reference names for them: `create` (POST to the collection), `update CODE`
-// (PUT to the unit), which replaces a unit, `delete CODE` and `bulk-delete`,
-// which deletes the units whose codes a JSON array names. Emporix creates no
-// missing unit, and answers a stale metadata.version as an unknown unit,
-// with 404 Not Found: a conflict when the body carries one.
 func unitWriteCommands(a *app, units resource[unit]) []*cobra.Command {
 	manage := []string{unitManageScope}
 	const visibility = "Other services see the change after up to 5 minutes."
@@ -109,8 +95,6 @@ func unitWriteCommands(a *app, units resource[unit]) []*cobra.Command {
 	}
 }
 
-// unitConversion is the part of a unit conversion, or of its factor, shown
-// in tables.
 type unitConversion struct {
 	Input struct {
 		SourceUnitAmount json.Number `json:"sourceUnitAmount"`
@@ -124,13 +108,11 @@ type unitConversion struct {
 	} `json:"output"`
 }
 
-// unitConversionHelp ends the help of the unit conversions.
 const unitConversionHelp = "An unknown unit is not found (exit 4); Emporix answers units of different types with " +
 	"400 Bad Request (exit 1)."
 
-// newUnitConvertCommand returns `convert`, an amount of one unit in
-// another: a calculation that Emporix serves as PUT, answering 201 Created
-// without changing data, with no scope (live; the reference names none).
+// Emporix serves the conversion as PUT, answering 201 Created without changing
+// data, with no scope (live; the reference names none).
 func newUnitConvertCommand(a *app) *cobra.Command {
 	return reader[unitConversion]{view: view[unitConversion]{
 		singular: "unit conversion",
@@ -153,8 +135,6 @@ func newUnitConvertCommand(a *app) *cobra.Command {
 	})
 }
 
-// newUnitConversionFactorCommand returns `conversion-factor`, the factor from
-// one unit into another, a calculation that Emporix serves as convert's.
 func newUnitConversionFactorCommand(a *app) *cobra.Command {
 	return reader[unitConversion]{view: view[unitConversion]{
 		singular: "unit conversion factor",
@@ -175,8 +155,6 @@ func newUnitConversionFactorCommand(a *app) *cobra.Command {
 	})
 }
 
-// unitPairFields are the members of a unit conversion's body that name its
-// units.
 func unitPairFields() []bodyField {
 	return []bodyField{
 		stringField("input.sourceUnit", "from", "the `CODE` of the unit to convert from").require(),

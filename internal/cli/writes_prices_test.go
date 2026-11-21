@@ -4,8 +4,6 @@ import (
 	"net/http"
 )
 
-// A price as create takes it and an availability record, with the product
-// and site that a bulk write names it by.
 const (
 	priceJSON = `{"itemId":{"itemType":"PRODUCT","id":"100200"},"currency":"EUR","location":{"countryCode":"NL"},` +
 		`"priceModelId":"pm1","restrictions":{"siteCodes":["AcmeStore_NL"]},"tierValues":[{"id":"t1","priceValue":15.90}]}`
@@ -13,7 +11,6 @@ const (
 	stockItem = `{"productId":"100200","site":"AcmeStore_NL","stockLevel":10,"available":true}`
 )
 
-// priceAndAvailabilityWrites are the writes of prices and availability.
 func priceAndAvailabilityWrites() []writeCase {
 	scopes := []string{priceManageScope}
 	stockScopes := []string{availabilityManageScope}

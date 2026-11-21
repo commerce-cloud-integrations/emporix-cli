@@ -1,7 +1,4 @@
 #!/usr/bin/env node
-// Runs the epx binary of this platform, which npm installed from the matching
-// optional dependency: epx-cli-<platform>-<arch>, an alias of the version
-// <version>-<platform>-<arch> of this package, which holds the binary.
 "use strict";
 
 const { spawn } = require("node:child_process");
@@ -17,15 +14,12 @@ const reinstall =
   "package-lock.json was made on another platform, delete node_modules and " +
   "package-lock.json, then install again.";
 
-// fail prints the message and ends the launcher; it never returns.
 function fail(message) {
   console.error(`epx: ${message}`);
   process.exit(1);
 }
 
-// locate returns the path of the binary in the platform package that npm installed with
-// this launcher, at its version: Node's lookup could otherwise reach an older one
-// installed elsewhere.
+// Node's lookup can reach a platform package of another version installed elsewhere.
 function locate() {
   const spec = optionalDependencies[pkg];
   if (spec === undefined) {
@@ -73,6 +67,5 @@ child.on("exit", (code, signal) => {
     setImmediate(() => process.exit(128 + constants.signals[signal]));
     return;
   }
-  // Node always sets the code when no signal ended epx; a missing one is a failure.
   process.exit(code ?? 1);
 });

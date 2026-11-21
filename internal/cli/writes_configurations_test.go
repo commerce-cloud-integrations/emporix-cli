@@ -6,8 +6,6 @@ import (
 	"testing"
 )
 
-// configurationWrites are the writes of tenant configurations and of those of
-// clients.
 func configurationWrites() []writeCase {
 	manage := []string{configurationManage}
 	const client = "/configuration/acme1/clients/acme.indexing-client/configurations"
@@ -42,10 +40,6 @@ func configurationWrites() []writeCase {
 	}
 }
 
-// TestConfigurationWriteUsageErrorsSendNothing checks that a write without
-// its body or arguments, or with a key that would address another path,
-// fails as a usage error before anything is sent: create and update need
-// --file.
 func TestConfigurationWriteUsageErrorsSendNothing(t *testing.T) {
 	for _, tt := range []struct {
 		args []string

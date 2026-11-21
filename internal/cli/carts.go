@@ -13,7 +13,6 @@ import (
 	"github.com/commerce-cloud-integrations/emporix-cli/internal/emporix"
 )
 
-// cart is the part of a Cart Service cart shown in tables.
 type cart struct {
 	ID              string            `json:"id"`
 	Status          string            `json:"status"`
@@ -21,65 +20,53 @@ type cart struct {
 	Type            string            `json:"type"`
 	CustomerID      string            `json:"customerId"`
 	LegalEntityID   string            `json:"legalEntityId"`
-	Items           []json.RawMessage `json:"items"` // counted only
+	Items           []json.RawMessage `json:"items"`
 	CalculatedPrice calculatedPrice   `json:"calculatedPrice"`
 	Currency        string            `json:"currency"`
 	Metadata        itemMetadata      `json:"metadata"`
 }
 
-// cartItem is the part of an item of a cart shown in tables, as the items
-// reads send it: not always with the unitPrice and calculatedPrice that the
-// reference shows (live, Emporix sends those only for the items that the cart
-// held when it was last calculated, and always on the items of the cart
-// itself).
 type cartItem struct {
 	ID      string `json:"id"`
 	Product struct {
 		ID string `json:"id"`
 		plainAndLocalizedName
 	} `json:"product"`
-	Quantity json.Number  `json:"quantity"` // kept as sent
+	Quantity json.Number  `json:"quantity"`
 	Price    itemPrice    `json:"price"`
 	TaxLines []grossPrice `json:"itemTaxInfo"`
 }
 
-// itemPrice is the price that matched an item of a cart, per unit, as the
-// price states it (net or gross).
 type itemPrice struct {
-	EffectiveAmount json.Number `json:"effectiveAmount"` // kept as sent
+	EffectiveAmount json.Number `json:"effectiveAmount"`
 	Currency        string      `json:"currency"`
 }
 
-// cartDiscount is the part of a discount of a cart shown in tables.
 type cartDiscount struct {
 	Code         string      `json:"code"`
 	Name         string      `json:"name"`
-	Amount       json.Number `json:"amount"` // kept as sent
+	Amount       json.Number `json:"amount"`
 	Currency     string      `json:"currency"`
 	DiscountRate json.Number `json:"discountRate"`
 	AppliesTo    string      `json:"discountCalculationType"`
-	Index        json.Number `json:"discountIndex"` // its position among the cart's discounts, which delete takes
+	Index        json.Number `json:"discountIndex"`
 }
 
-// deliveryRestrictions is what limits the delivery of a cart's items.
 type deliveryRestrictions struct {
-	LeadTime    json.Number `json:"leadTime"` // hours, kept as sent
+	LeadTime    json.Number `json:"leadTime"`
 	NonDelivery []string    `json:"nonDelivery"`
 }
 
-// cartValidation is the result of the checks of a cart's items.
 type cartValidation struct {
 	IsValid *bool            `json:"isValid"`
 	Items   []itemValidation `json:"itemsValidationDetails"`
 }
 
-// itemValidation is what the checks found wrong with one item of a cart.
 type itemValidation struct {
 	ID     string      `json:"id"`
 	Errors []itemError `json:"errors"`
 }
 
-// itemError is one error that the checks found with an item of a cart.
 type itemError struct {
 	ErrorCode string `json:"errorCode"`
 }
@@ -89,9 +76,6 @@ func (v itemValidation) String() string {
 	return v.ID + ": " + joinEach(v.Errors, ", ", func(e itemError) string { return e.ErrorCode })
 }
 
-// validationResult returns the result of a cart's checks, an object that
-// says whether the cart is valid: one without isValid is not a result, for
-// -o json as for tables.
 func validationResult(body json.RawMessage) ([]json.RawMessage, error) {
 	var result struct {
 		IsValid *bool `json:"isValid"`
@@ -102,13 +86,8 @@ func validationResult(body json.RawMessage) ([]json.RawMessage, error) {
 	return []json.RawMessage{body}, nil
 }
 
-// cartScope is the scope of every cart read: Emporix allows none with a
-// narrower one, so they are opt-in.
 const cartScope = "cart.cart_manage"
 
-// newCartsCommand reads and changes shopping carts, which Emporix reads only
-// with the write-capable cart.cart_manage scope, so every read is opt-in.
-// Emporix lists carts only by search, which shows their ids.
 func newCartsCommand(a *app) *cobra.Command {
 	carts := resource[cart]{
 		use:   "carts",
@@ -152,9 +131,6 @@ func newCartsCommand(a *app) *cobra.Command {
 	return newSearchedResourceCommand(a, carts, slices.Concat(reads, cartWrites(a, carts))...)
 }
 
-// newCartItemsCommand returns the group of the items of a cart of carts:
-// list CART_ID and get CART_ID ID, which read them, and the writes that add,
-// change and remove items (cartItemWrites).
 func newCartItemsCommand(a *app, carts resource[cart]) *cobra.Command {
 	itemsOf := carts.nested(itemsUse)
 	items := cartItems(itemsOf.use)
@@ -166,9 +142,6 @@ func newCartItemsCommand(a *app, carts resource[cart]) *cobra.Command {
 	})
 }
 
-// newCartDiscountsCommand returns the group of the discounts of a cart of
-// carts: list CART_ID, which reads them, and the writes that apply and
-// remove discounts (cartDiscountWrites).
 func newCartDiscountsCommand(a *app, carts resource[cart]) *cobra.Command {
 	discountsOf := carts.nested("discounts")
 	discounts := cartDiscounts(discountsOf.use)
@@ -179,19 +152,11 @@ func newCartDiscountsCommand(a *app, carts resource[cart]) *cobra.Command {
 	})
 }
 
-// The flag of find that names the customer whose cart it reads, and the
-// query parameter that sends it: constants, as other reads of the package use
-// the same words.
 const (
 	cartCustomerFlag  = "customer"
 	cartCustomerParam = "customerId"
 )
 
-// findCartCommand returns `find`, which reads the one cart of a site that
-// criteria identify (a GET of the carts with them, which returns one cart):
-// who owns it, a customer or an anonymous session, and optionally its legal
-// entity and type. It never sends create, with which Emporix would create a
-// missing cart.
 func findCartCommand(a *app, carts resource[cart]) *cobra.Command {
 	return carts.reader().command(a, &command{
 		use:   "find",
@@ -270,8 +235,6 @@ func cartDiscounts(sub string) child[cartDiscount] {
 	}
 }
 
-// cartDeliveryRestrictions declares what limits the delivery of a cart's
-// items, one object.
 func cartDeliveryRestrictions() child[deliveryRestrictions] {
 	return child[deliveryRestrictions]{
 		use:   "delivery-restrictions",
@@ -294,8 +257,6 @@ func cartDeliveryRestrictions() child[deliveryRestrictions] {
 	}
 }
 
-// cartValidationChild declares the checks of a cart's items, which Emporix
-// serves as GET and which change nothing.
 func cartValidationChild() child[cartValidation] {
 	return child[cartValidation]{
 		use:   "validate",

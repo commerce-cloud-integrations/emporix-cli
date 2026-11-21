@@ -7,8 +7,6 @@ import (
 	"testing"
 )
 
-// orderWriteCases are the writes of the Order Service: orders and the
-// actions on one order.
 func orderWriteCases() []writeCase {
 	const order = `{"siteCode":"AcmeStore_NL","currency":"EUR","entries":[{"productId":"100200","amount":1}]}`
 	const orders = "/order-v2/acme1/salesorders"
@@ -51,7 +49,7 @@ func orderWriteCases() []writeCase {
 		{
 			args: []string{"orders", "recalculate", "O1001"}, file: `{"entries":[{"entryId":"e1","deliveredAmount":10}]}`,
 			method: http.MethodPost, path: orders + "/O1001/calculations", scopes: update, status: http.StatusOK,
-			body: "Order with id: O1001 calculated successfully", // bare text, as Emporix answers (live)
+			body: "Order with id: O1001 calculated successfully",
 			want: "\"Order with id: O1001 calculated successfully\"\n",
 		},
 		{
@@ -68,8 +66,6 @@ func orderWriteCases() []writeCase {
 	}
 }
 
-// invoiceJobWriteCases are the writes of the Invoice Service: the creation
-// of invoice jobs.
 func invoiceJobWriteCases() []writeCase {
 	invoice := []string{"invoice.invoice_manage"}
 	return []writeCase{
@@ -90,11 +86,6 @@ func invoiceJobWriteCases() []writeCase {
 	}
 }
 
-// TestCompletedOrdersRequestTheirScope checks that the writes that may
-// change a COMPLETED order request order.order_update_completed besides
-// order.order_update with --completed only, sending no query parameter for
-// it, and say so in their help. transition and recalculate do not take it:
-// Emporix moves and recalculates no COMPLETED order, whatever the scopes.
 func TestCompletedOrdersRequestTheirScope(t *testing.T) {
 	for _, tt := range []struct {
 		args []string
@@ -125,11 +116,6 @@ func TestCompletedOrdersRequestTheirScope(t *testing.T) {
 	}
 }
 
-// TestOrderWritesRefuseBadInput checks that the typed bodies of orders
-// transition and invoice-jobs create refuse what Emporix would refuse, among
-// them orders to invoice in an AUTOMATIC job, which selects its own, and a
-// MANUAL job without any, and that a body comes from --file or the flags,
-// not both: a usage error (exit 2) that sends nothing.
 func TestOrderWritesRefuseBadInput(t *testing.T) {
 	file := writeBody(t, `{}`)
 	for _, tt := range []struct {

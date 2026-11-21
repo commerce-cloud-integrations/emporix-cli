@@ -13,23 +13,18 @@ import (
 	"github.com/commerce-cloud-integrations/emporix-cli/internal/emporix"
 )
 
-// customerShoppingLists is the shopping lists of a customer: each list is a
-// member named after it, beside the customer's id and metadata.
 type customerShoppingLists struct {
 	CustomerID string
-	Lists      []shoppingList // by name
+	Lists      []shoppingList
 }
 
-// shoppingList is one shopping list of a customer, named by its member.
 type shoppingList struct {
 	Name  string
-	Items []json.RawMessage // counted only
+	Items []json.RawMessage
 }
 
-// UnmarshalJSON reads the lists from the members that are lists (listOf), in
-// the order of their names, and the customer from the member id, as Emporix
-// sends it, or else customerId, as the reference names it, where either is
-// text rather than a list.
+// UnmarshalJSON reads the customer from the member id, as Emporix sends it, or else customerId, as the
+// reference names it.
 func (c *customerShoppingLists) UnmarshalJSON(data []byte) error {
 	var members map[string]json.RawMessage
 	if err := json.Unmarshal(data, &members); err != nil {
@@ -57,12 +52,8 @@ func (c *customerShoppingLists) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-// listOf reads the shopping list that the member name holds, or nil where it
-// holds none: a list is an object with items or a name. The other members,
-// such as the customer's id and metadata (an object of neither), are not
-// lists; a list named metadata is one all the same.
 func listOf(name string, raw json.RawMessage) (*shoppingList, error) {
-	if len(raw) == 0 || raw[0] != '{' { // a member of a decoded object starts with its value
+	if len(raw) == 0 || raw[0] != '{' {
 		return nil, nil
 	}
 	var list struct {
@@ -75,7 +66,6 @@ func listOf(name string, raw json.RawMessage) (*shoppingList, error) {
 	return &shoppingList{Name: name, Items: list.Items}, nil
 }
 
-// String returns the name of l and how many items it holds.
 func (l shoppingList) String() string {
 	if len(l.Items) == 1 {
 		return l.Name + " (1 item)"
@@ -83,10 +73,8 @@ func (l shoppingList) String() string {
 	return fmt.Sprintf("%s (%d items)", l.Name, len(l.Items))
 }
 
-// newShoppingListsCommand reads, creates, replaces and deletes customers'
-// shopping lists. The reference documents no paging for the list of every
-// customer's lists, and Emporix sends no total, so it is read with one
-// request.
+// The reference documents no paging for the list of every customer's lists, and Emporix sends no total,
+// so it is read with one request.
 func newShoppingListsCommand(a *app) *cobra.Command {
 	const long = "Reads customers' shopping lists, personal data included: each customer's lists by name, " +
 		"with how many items they hold. Items are only in `-o json`. CUSTOMER is the customer id the " +
@@ -113,18 +101,10 @@ func newShoppingListsCommand(a *app) *cobra.Command {
 	return newResourceCommand(a, lists, shoppingListWrites(a, lists)...)
 }
 
-// listNameParam names one shopping list of a customer, as the query parameter and the flag
-// of `shopping-lists delete`.
 const listNameParam = "name"
 
-// shoppingListWrites returns the writes of customers' shopping lists: create
-// (POST of one list), update CUSTOMER (PUT of one list of the customer),
-// delete CUSTOMER --name NAME (one list) and delete-all CUSTOMER (every list
-// of the customer: the same DELETE without name). Each requests only
-// shoppinglist_manage, which the reference requires of an employee, as epx
-// is. The reference names shoppinglist_delete for a delete too, but live,
-// shoppinglist_manage alone deletes, and a token with shoppinglist_delete
-// alone is taken for a customer's and refused (400 Bad Request).
+// The reference names shoppinglist_delete for a delete too, but live, shoppinglist_manage alone deletes,
+// and a token with shoppinglist_delete alone is taken for a customer's and refused (400 Bad Request).
 func shoppingListWrites(a *app, lists resource[customerShoppingLists]) []*cobra.Command {
 	manage := []string{"shoppinglist.shoppinglist_manage"}
 	const unknown = "A customer without shopping lists is not found (exit 4)."

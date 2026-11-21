@@ -8,23 +8,14 @@ import (
 	"github.com/commerce-cloud-integrations/emporix-cli/internal/emporix"
 )
 
-// The metadata of the AI RAG Indexer, which embeds entities for the RAG
-// tools of agents.
-
-// ragFilterField is a field that a vector search can filter by, and the
-// path of the list of objects it sits in, if any; its deprecated name and
-// description are only in -o json.
 type ragFilterField struct {
 	Key    string `json:"key"`
 	Type   string `json:"type"`
 	Parent string `json:"parent"`
 }
 
-// newAIRAGCommand reads the metadata of the AI RAG Indexer, the fields of an
-// entity type it can embed and those a vector search can filter by, and
-// embeds the entities of a type again.
 func newAIRAGCommand(a *app) *cobra.Command {
-	const path = "/ai-rag-indexer/{tenant}/" + placeholderID // the metadata of the entity type TYPE
+	const path = "/ai-rag-indexer/{tenant}/" + placeholderID
 	// The entity types that the RAG reference names besides the custom ones, the same as reindex jobs
 	// take, in any case (live: product, order, customer and legal-entity are served too).
 	builtIn := entityBuiltInTypes()

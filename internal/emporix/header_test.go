@@ -12,8 +12,6 @@ import (
 
 const siteHeader = "emporix-site"
 
-// withHeader returns the copy of c that reads with the header name, value
-// (WithHeader).
 func withHeader(t *testing.T, c *Client, name, value string) *Client {
 	t.Helper()
 	sending, err := c.WithHeader(name, value)
@@ -23,10 +21,6 @@ func withHeader(t *testing.T, c *Client, name, value string) *Client {
 	return sending
 }
 
-// TestWithHeaderSendsItWithEveryRead checks that every read of the copy
-// sends the header, every page of a collection and a search sent with a
-// body too, besides the headers of the read's own and of every request, and
-// that the client it was made from sends none.
 func TestWithHeaderSendsItWithEveryRead(t *testing.T) {
 	fake := newFakeEmporix(t)
 	fake.route("/items", pagedRoute(3, 0, ""))
@@ -68,9 +62,6 @@ func TestWithHeaderSendsItWithEveryRead(t *testing.T) {
 	}
 }
 
-// TestWithHeaderKeepsTheHeadersOfEarlierCopies checks that a copy of a copy
-// sends both headers, a second value of one header replaces the first, and
-// a header of a read's own replaces one of WithHeader named in another case.
 func TestWithHeaderKeepsTheHeadersOfEarlierCopies(t *testing.T) {
 	fake := newFakeEmporix(t)
 	fake.route("/items", pagedRoute(1, 0, "1"))
@@ -92,12 +83,6 @@ func TestWithHeaderKeepsTheHeadersOfEarlierCopies(t *testing.T) {
 	}
 }
 
-// TestHeadersApplyEachExtraInOrder checks that the headers of a request
-// take each set of extra headers in its order: one of a later set replaces
-// one of an earlier set or of every request, whatever the case of its name,
-// one without values removes it, and the keys of one set that name the same
-// header apply in their sorted order, so that a request is the same on every
-// run.
 func TestHeadersApplyEachExtraInOrder(t *testing.T) {
 	client := newFakeEmporix(t).client(t)
 	got := client.headers(JSONContentType,
@@ -116,9 +101,6 @@ func TestHeadersApplyEachExtraInOrder(t *testing.T) {
 	}
 }
 
-// TestWithHeaderRefusesAValueThatCannotBeSent checks that a value holding a
-// control character is ErrInvalidInput, named by its header but not echoed,
-// before any token is requested.
 func TestWithHeaderRefusesAValueThatCannotBeSent(t *testing.T) {
 	fake := newFakeEmporix(t)
 	for _, value := range []string{"main\r\nX-Injected: 1", "main\x7f"} {
@@ -133,8 +115,6 @@ func TestWithHeaderRefusesAValueThatCannotBeSent(t *testing.T) {
 	}
 }
 
-// TestWithHeaderLeavesWritesAlone checks that a write prepared by a copy
-// sends only the headers of its Write.
 func TestWithHeaderLeavesWritesAlone(t *testing.T) {
 	fake := newFakeEmporix(t)
 	sending := withHeader(t, fake.client(t), siteHeader, "main")

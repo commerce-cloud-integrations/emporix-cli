@@ -9,7 +9,6 @@ import (
 	"github.com/commerce-cloud-integrations/emporix-cli/internal/emporix"
 )
 
-// shippingZone is the part of a Shipping Service zone shown in tables.
 type shippingZone struct {
 	ID      string                `json:"id"`
 	Name    localized             `json:"name"`
@@ -17,10 +16,9 @@ type shippingZone struct {
 	ShipTo  []shippingDestination `json:"shipTo"`
 }
 
-// shippingDestination is a country, optionally limited to postal codes.
 type shippingDestination struct {
 	Country    string `json:"country"`
-	PostalCode string `json:"postalCode"` // a code, or a prefix followed by *
+	PostalCode string `json:"postalCode"`
 }
 
 // String shows the country, and the postal code unless it matches every code.
@@ -31,7 +29,6 @@ func (d shippingDestination) String() string {
 	return d.Country + " " + d.PostalCode
 }
 
-// shippingMethod is the part of a shipping method shown in tables.
 type shippingMethod struct {
 	ID              string        `json:"id"`
 	Name            localized     `json:"name"`
@@ -42,7 +39,6 @@ type shippingMethod struct {
 	ShippingGroupID string        `json:"shippingGroupId"`
 }
 
-// shippingFee is the cost of a shipping method from an order value on.
 type shippingFee struct {
 	Cost            money  `json:"cost"`
 	MinOrderValue   money  `json:"minOrderValue"`
@@ -62,19 +58,16 @@ func (f shippingFee) String() string {
 	return text
 }
 
-// shippingGroup is the part of a shipping group shown in tables.
 type shippingGroup struct {
 	ID          string    `json:"id"`
 	Description localized `json:"description"`
 }
 
-// shippingCustomer assigns a customer to a shipping group.
 type shippingCustomer struct {
 	CustomerID string `json:"customerId"`
 	GroupID    string `json:"groupId"`
 }
 
-// shippingPath is the path of a Shipping Service collection of the --site.
 // Zones and methods were shown to ignore pageNumber and pageSize, and groups
 // and customer assignments are documented without paging, so every shipping
 // read uses GetUnpaged.
@@ -82,8 +75,6 @@ func shippingPath(collection string) string {
 	return "/shipping/{tenant}/" + placeholderSite + "/" + collection
 }
 
-// newShippingCommand reads and changes a site's shipping configuration and
-// calculates shipping fees; every command but find-sites requires --site.
 func newShippingCommand(a *app) *cobra.Command {
 	return newGroup("shipping", "Read and change shipping zones, methods and groups, and calculate shipping fees",
 		"Reads and changes a site's shipping configuration, calculates its shipping fees and finds the "+
@@ -94,8 +85,6 @@ func newShippingCommand(a *app) *cobra.Command {
 		newFindSitesCommand(a))
 }
 
-// newShippingZonesCommand reads and changes shipping zones and the methods of
-// a zone.
 func newShippingZonesCommand(a *app) *cobra.Command {
 	zones := resource[shippingZone]{
 		use:   "zones",
@@ -123,8 +112,6 @@ func newShippingZonesCommand(a *app) *cobra.Command {
 		slices.Concat([]*cobra.Command{newShippingMethodsCommand(a, zones)}, zoneWrites(a, zones))...)
 }
 
-// newShippingMethodsCommand returns the group of the shipping methods of a
-// zone of zones: list and get, and their writes (methodWrites).
 func newShippingMethodsCommand(a *app, zones resource[shippingZone]) *cobra.Command {
 	methodsOf := zones.nested("methods")
 	methods := child[shippingMethod]{
@@ -162,8 +149,6 @@ func newShippingMethodsCommand(a *app, zones resource[shippingZone]) *cobra.Comm
 	})
 }
 
-// newShippingGroupsCommand reads and changes shipping groups, which limit
-// shipping fees to the customers assigned to them.
 func newShippingGroupsCommand(a *app) *cobra.Command {
 	groups := resource[shippingGroup]{
 		use:   groupsUse,
@@ -186,8 +171,6 @@ func newShippingGroupsCommand(a *app) *cobra.Command {
 	return newResourceCommand(a, groups, groupWrites(a, groups)...)
 }
 
-// newShippingCustomersCommand reads and changes which shipping group each
-// customer belongs to (customer-group relations).
 func newShippingCustomersCommand(a *app) *cobra.Command {
 	customers := resource[shippingCustomer]{
 		use:   customersCommand,
@@ -197,7 +180,7 @@ func newShippingCustomersCommand(a *app) *cobra.Command {
 			"id. Emporix answers a customer without a shipping group with an empty response, so get " +
 			"reports it as not found.",
 		about: "Reads and changes which shipping group each customer of a site belongs to.",
-		path:  shippingPath("cgrelations"), // customer-group relations
+		path:  shippingPath("cgrelations"),
 		read:  (*emporix.Client).GetUnpaged,
 		view: view[shippingCustomer]{
 			singular: "customer's shipping group",

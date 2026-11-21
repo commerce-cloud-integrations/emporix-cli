@@ -6,8 +6,6 @@ import (
 	"testing"
 )
 
-// deliveryTimeJSON and deliverySlotJSON are a delivery time and a time slot
-// as create takes them.
 const (
 	deliveryTimeJSON = `{"name":"Weekdays","siteCode":"AcmeStore_NL","zoneId":"nl","isDeliveryDay":true,` +
 		`"day":{"weekday":"MONDAY"},"timeZoneId":"Europe/Amsterdam"}`
@@ -15,9 +13,6 @@ const (
 		`"cutOffTime":{"time":"2026-01-01T06:00:00.000Z"},"capacity":40}`
 )
 
-// deliveryTimeWriteCases are the writes of delivery times and their time
-// slots, the count of the orders of a delivery window and its delivery cycle,
-// with the scope of the Shipping Service's writes.
 func deliveryTimeWriteCases() []writeCase {
 	manage := []string{shippingManageScope}
 	const window = `{"deliveryDate":"2026-11-02T12:00:00.000Z","deliveryWindowId":"d1","slotId":"s1"}`
@@ -37,7 +32,6 @@ func deliveryTimeWriteCases() []writeCase {
 				"  {\n    \"code\": 201,\n    \"id\": \"d2\",\n    \"index\": 1,\n    \"status\": \"CREATED\"\n  }\n]\n",
 		},
 		{
-			// The ID is escaped as a path segment.
 			args: []string{"delivery-times", "update", "d 1"}, file: deliveryTimeJSON, method: http.MethodPut,
 			path: "/shipping/acme1/delivery-times/d%201", scopes: manage, status: http.StatusOK,
 		},
@@ -90,11 +84,6 @@ func deliveryTimeWriteCases() []writeCase {
 	}
 }
 
-// TestDeliveryWindowWriteFlags checks that increment-counter, whose body
-// Emporix requires, fails without its flags or --file and with both a flag and
-// --file, and that a delivery time write
-// fails with an invalid --validate-overlap, as a usage error (exit 2) that
-// sends nothing.
 func TestDeliveryWindowWriteFlags(t *testing.T) {
 	file := writeBody(t, `{"deliveryWindowId":"d1"}`)
 	for _, tt := range []struct {

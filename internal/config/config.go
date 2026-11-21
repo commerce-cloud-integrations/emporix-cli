@@ -34,13 +34,10 @@ type File struct {
 	Profiles map[string]Profile `json:"profiles"`
 }
 
-// namePattern matches a profile name: a lowercase letter or digit, then up
-// to 63 lowercase letters, digits, dots, underscores or hyphens. A name is
-// also the account of its client secret in the OS keychain, which on Windows
-// ignores case: two names that differ in case only would share one secret.
+// A name is also the account of its client secret in the OS keychain, which on
+// Windows ignores case: two names that differ in case only would share one secret.
 var namePattern = regexp.MustCompile(`^[a-z0-9][a-z0-9._-]{0,63}$`)
 
-// errName is what CheckName returns for a name that cannot name a profile.
 var errName = errors.New("a profile name is a lowercase letter or digit, then up to 63 lowercase letters, " +
 	"digits, '.', '_' or '-'")
 
@@ -99,9 +96,6 @@ func (f *File) Remove(name string) error {
 	return nil
 }
 
-// check returns an error unless f is a configuration: every profile name is
-// one that CheckName accepts, and the default, if any, names a profile.
-// Errors quote no value.
 func (f File) check() error {
 	for name := range f.Profiles {
 		if CheckName(name) != nil {
@@ -114,7 +108,6 @@ func (f File) check() error {
 	return nil
 }
 
-// maxFileBytes bounds the configuration file, far above any set of profiles.
 const maxFileBytes = 1 << 20
 
 // Store is the configuration file of epx in a user's configuration directory.
@@ -140,7 +133,7 @@ func (s Store) Load() (File, error) {
 	if err != nil {
 		return File{}, err
 	}
-	defer func() { _ = file.Close() }() // only read
+	defer func() { _ = file.Close() }()
 	info, err := file.Stat()
 	if err != nil {
 		return File{}, err
@@ -159,19 +152,16 @@ func (s Store) Load() (File, error) {
 	return parse(data, s.Path())
 }
 
-// shared reports whether a file of mode grants other users any access. On
-// Windows, whose access control lists Go does not report in a mode, the
+// On Windows, whose access control lists Go does not report in a mode, the
 // user's configuration directory is the user's own.
 func shared(mode fs.FileMode) bool {
 	return runtime.GOOS != "windows" && mode.Perm()&0o077 != 0
 }
 
-// parse returns the configuration that data holds.
 func parse(data []byte, path string) (File, error) {
 	decoder := json.NewDecoder(bytes.NewReader(data))
 	decoder.DisallowUnknownFields()
 	var f File
-	// The decoder's messages may quote a value, so they are not passed on.
 	if err := decoder.Decode(&f); err != nil {
 		return File{}, fmt.Errorf("%s is not an epx configuration: a JSON object of profiles "+
 			"(tenant, apiUrl, clientId, site, language) and a default", path)
@@ -207,7 +197,7 @@ func (s Store) Save(f File) error {
 	if err != nil {
 		return err
 	}
-	defer func() { _ = os.Remove(temp.Name()) }() // gone once renamed
+	defer func() { _ = os.Remove(temp.Name()) }()
 	if _, err := temp.Write(append(data, '\n')); err != nil {
 		_ = temp.Close()
 		return err

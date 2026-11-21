@@ -18,7 +18,6 @@ import (
 	"github.com/commerce-cloud-integrations/emporix-cli/internal/emporix"
 )
 
-// runWithInput runs epx with stdin as its standard input.
 func runWithInput(t *testing.T, env map[string]string, stdin io.Reader, args ...string) (
 	code int, stdout, stderr string) {
 	t.Helper()
@@ -29,7 +28,6 @@ func runWithInput(t *testing.T, env map[string]string, stdin io.Reader, args ...
 	return code, out.String(), errOut.String()
 }
 
-// writeBody writes content to a file in a new temporary directory and returns its path.
 func writeBody(t *testing.T, content string) string {
 	t.Helper()
 	file := filepath.Join(t.TempDir(), "body.json")
@@ -39,15 +37,12 @@ func writeBody(t *testing.T, content string) string {
 	return file
 }
 
-// TestSearchSendsTheBodyGiven checks that --body sends a file's JSON, or
-// standard input's for -, as given instead of the body the flags make, also
-// to the search of a child collection below its parent item.
 func TestSearchSendsTheBodyGiven(t *testing.T) {
 	const given = "{ \"q\": \"code:A1\",\n  \"extra\": [1] }"
 	for _, search := range []struct {
-		args       []string // the search without --body
-		path, body string   // where it is sent, and the answer
-		want       string   // in its table
+		args       []string
+		path, body string
+		want       string
 	}{
 		{args: []string{"products", "search"}, path: "/product/acme1/products/search",
 			body: `[{"id":"001234","code":"A1"}]`, want: "001234"},
@@ -70,8 +65,6 @@ func TestSearchSendsTheBodyGiven(t *testing.T) {
 	}
 }
 
-// TestSearchBodyFailuresSendNothing checks that a body that cannot be read
-// or is not JSON is a usage error found before anything is sent.
 func TestSearchBodyFailuresSendNothing(t *testing.T) {
 	directory := t.TempDir()
 	for _, tt := range []struct {
@@ -101,8 +94,6 @@ func TestSearchBodyFailuresSendNothing(t *testing.T) {
 	}
 }
 
-// TestSearchUnreadableStdin checks that a failing standard input is a usage
-// error too.
 func TestSearchUnreadableStdin(t *testing.T) {
 	fake := newFakeEmporix(t)
 	code, _, stderr := runWithInput(t, fake.env(), iotest.ErrReader(os.ErrClosed), "categories", "search", "--body", "-")
@@ -111,9 +102,6 @@ func TestSearchUnreadableStdin(t *testing.T) {
 	}
 }
 
-// TestSearchStdinStopsOnInterrupt checks that an interrupt, which ends the
-// command's context, ends a search waiting on a standard input that never
-// ends: a runtime error (exit 1) that sends nothing.
 func TestSearchStdinStopsOnInterrupt(t *testing.T) {
 	fake := newFakeEmporix(t)
 	exited, errOut := runUntilReading(t, []string{"products", "search", "--body", "-"}, fake.env(), false)
@@ -129,8 +117,6 @@ func TestSearchStdinStopsOnInterrupt(t *testing.T) {
 	}
 }
 
-// priceCommand returns a read with a body sent with method, `price ID`, as a
-// calculation of a thing's price that Emporix serves as PUT, run for "t 1".
 func priceCommand(fake *fakeEmporix, method string) *cobra.Command {
 	a := &app{getenv: func(key string) string { return fake.env()[key] }, timeout: defaultTimeout}
 	cmd := reader[thing]{view: thingView()}.command(a, &command{
@@ -142,9 +128,6 @@ func priceCommand(fake *fakeEmporix, method string) *cobra.Command {
 	return cmd
 }
 
-// TestBodyReadReadsOneResponse checks a read with a body whose answer is one
-// object, as a calculation that Emporix serves as PUT: without typed flags,
-// its body is an empty object.
 func TestBodyReadReadsOneResponse(t *testing.T) {
 	fake := newFakeEmporix(t)
 	fake.route("/things/t%201/price", respond(http.StatusOK, `{"id":"t 1","name":"12.10"}`))
@@ -161,9 +144,6 @@ func TestBodyReadReadsOneResponse(t *testing.T) {
 	}
 }
 
-// TestBodyReadSendsNothingWithAnotherMethod checks that a read with a body
-// declared with a method that may change data is a usage error (exit 2) that
-// sends nothing, not even a token request.
 func TestBodyReadSendsNothingWithAnotherMethod(t *testing.T) {
 	fake := newFakeEmporix(t)
 	cmd := priceCommand(fake, http.MethodDelete)
@@ -174,10 +154,6 @@ func TestBodyReadSendsNothingWithAnotherMethod(t *testing.T) {
 	}
 }
 
-// TestSearchesSayTheyChangeNothing checks the command tree: exactly the
-// commands that take --body send a body, as their read cases state, and the
-// help of every read sent as POST or PUT, with a body or, as a read of a file
-// is, without one, says that it changes nothing.
 func TestSearchesSayTheyChangeNothing(t *testing.T) {
 	root := newTestRoot()
 	searches := commandsWithFlag(bodyFlag)
@@ -199,16 +175,14 @@ func TestSearchesSayTheyChangeNothing(t *testing.T) {
 	}
 }
 
-// TestCompletionOffersFilesForBodyOnly checks that a search's --body
-// completes file names and its other flags do not.
 func TestCompletionOffersFilesForBodyOnly(t *testing.T) {
 	for _, tt := range []struct {
 		args []string
-		want string // the completion directive
+		want string
 	}{
-		{args: []string{"products", "search", "--body", ""}, want: ":0\n"}, // cobra.ShellCompDirectiveDefault
+		{args: []string{"products", "search", "--body", ""}, want: ":0\n"},
 		{args: []string{"category-trees", "search", "--body", "b"}, want: ":0\n"},
-		{args: []string{"products", "search", "--query", ""}, want: ":4\n"}, // cobra.ShellCompDirectiveNoFileComp
+		{args: []string{"products", "search", "--query", ""}, want: ":4\n"},
 		{args: []string{"category-trees", "search", "--category", ""}, want: ":4\n"},
 		{args: []string{"products", "search", ""}, want: ":4\n"},
 	} {
@@ -217,7 +191,6 @@ func TestCompletionOffersFilesForBodyOnly(t *testing.T) {
 			t.Errorf("%v: exit %d, completions %q; want directive %q", tt.args, code, stdout, tt.want)
 		}
 	}
-	// A flag that adds a value or an object to the body repeats, so completion offers it again.
 	for _, args := range [][]string{
 		{"category-trees", "search", "--category", "c1", "--cat"},
 		{"search", "indexes", "export", "--index", "a/b", "--ind"},
@@ -231,10 +204,6 @@ func TestCompletionOffersFilesForBodyOnly(t *testing.T) {
 	}
 }
 
-// TestBodyReadRequiresItsSelections checks the flags of a body that Emporix
-// rejects without them: unless --body gives the body, each is required, as
-// its help says, and a missing one is a usage error that sends nothing; with
-// --body, none may be given.
 func TestBodyReadRequiresItsSelections(t *testing.T) {
 	fake := newFakeEmporix(t)
 	for _, tt := range []struct {
@@ -277,9 +246,6 @@ func TestBodyReadRequiresItsSelections(t *testing.T) {
 	}
 }
 
-// TestBodyReadsWithoutTypedFlags checks what a read with a body sends
-// without its typed flags: the body --body gives, as given, in place of
-// required ones.
 func TestBodyReadsWithoutTypedFlags(t *testing.T) {
 	const exported = `{"data":"W10="}`
 	for _, tt := range []struct {
@@ -311,9 +277,6 @@ func TestBodyReadsWithoutTypedFlags(t *testing.T) {
 	}
 }
 
-// TestBodyReadsRequireTheirFields checks that a read with a body whose
-// members Emporix requires fails as a usage error that sends nothing without
-// their flags, unless --body gives the body whole.
 func TestBodyReadsRequireTheirFields(t *testing.T) {
 	match := []string{"prices", "match", "--product", "100200", "--site", "main", "--currency", "EUR"}
 	for _, tt := range []struct {
@@ -335,7 +298,6 @@ func TestBodyReadsRequireTheirFields(t *testing.T) {
 			t.Errorf("%q: tokens %q, requests %q; want none", tt.args, fake.tokenScopes, fake.gets)
 		}
 	}
-	// --body replaces every flag that makes the body.
 	const given = `{"siteCode":"main","targetCurrency":"EUR","targetLocation":{"countryCode":"NL"},"items":[]}`
 	fake := newFakeEmporix(t)
 	fake.route("/price/acme1/match-prices", respond(http.StatusOK, `[]`))
@@ -346,11 +308,6 @@ func TestBodyReadsRequireTheirFields(t *testing.T) {
 	fake.assertSent(t, http.MethodPost, given)
 }
 
-// TestPostedReadsRejectArgumentsThatSplitTheirPath checks that an argument
-// of a read sent as POST, with a body or without one (a read of a file), may
-// not hold what a service, or a proxy before it, might decode into another
-// path (/, \ or %, the client refuses them), nor be . or .. (as for any
-// read); nothing is sent, not even a token request.
 func TestPostedReadsRejectArgumentsThatSplitTheirPath(t *testing.T) {
 	const split = ": a path segment of a read sent as POST is empty, . or .., or holds /, \\ or %"
 	for _, tt := range []struct {
@@ -363,12 +320,10 @@ func TestPostedReadsRejectArgumentsThatSplitTheirPath(t *testing.T) {
 			want: "POST /customer-segment/{tenant}/segments/s%5Cx/customers/search" + split},
 		{args: []string{"segments", "items", "search", "items%2Fimport"},
 			want: "POST /customer-segment/{tenant}/segments/items%252Fimport/items/search" + split},
-		// A custom entity type, which also names a scope, has letters, digits and underscores only.
 		{args: []string{"custom-entities", "instances", "search", `DOC\x`}, want: `invalid CUSTOM_ENTITY_ID "DOC\\x"`},
 		{args: []string{"search", "documents", "indexes%2Fimport", "--body", "-"}, want: `invalid TYPE "indexes%2Fimport"`},
 		{args: []string{"search", "documents", "..", "--body", "-"}, want: `invalid TYPE ".."`},
 		{args: []string{"search", "documents", "--body", "-"}, want: "accepts 1 arg(s), received 0"},
-		// A read of a file, sent as POST without a body, refuses them as well.
 		{args: []string{"quotes", "pdf", "Q/1", "--out", "-"}, want: "POST /quote/{tenant}/quotes/Q%2F1/pdf" + split},
 		{args: []string{"quotes", "pdf", "..", "--out", "-"}, want: `invalid QUOTE_ID ".."`},
 	} {
@@ -383,9 +338,6 @@ func TestPostedReadsRejectArgumentsThatSplitTheirPath(t *testing.T) {
 	}
 }
 
-// TestBodyFieldsLeaveOutFlagsNotGiven checks that a body leaves out the
-// members of optional flags not given, and holds those given as given, an
-// object member as its object.
 func TestBodyFieldsLeaveOutFlagsNotGiven(t *testing.T) {
 	for _, tt := range []struct {
 		args []string
@@ -409,8 +361,6 @@ func TestBodyFieldsLeaveOutFlagsNotGiven(t *testing.T) {
 	}
 }
 
-// TestRequiredBodyFlagsSaySo checks that the usage of a flag required unless
-// --body is given says so, within the parentheses that end it, if any.
 func TestRequiredBodyFlagsSaySo(t *testing.T) {
 	for _, tt := range []struct {
 		args       []string
@@ -428,10 +378,6 @@ func TestRequiredBodyFlagsSaySo(t *testing.T) {
 	}
 }
 
-// TestSearchedCollectionsNameTheirSearch checks the groups of collections that
-// Emporix lists only by search (newSearchedResourceCommand), which have get
-// and search but no list: every read of theirs that takes an argument, get
-// and the reads below one item, says that search shows the IDs.
 func TestSearchedCollectionsNameTheirSearch(t *testing.T) {
 	found := 0
 	walkCommands(newTestRoot(), func(group *cobra.Command) {

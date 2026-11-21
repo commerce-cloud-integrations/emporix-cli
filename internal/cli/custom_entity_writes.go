@@ -8,12 +8,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// The writes of the Schema Service's custom entities: the types, with the
-// service's manage scope, which its reference names for each, and their
-// instances (customInstanceWrites).
-
-// customEntityWrites returns the writes of custom entity types, entities:
-// create, update ID (an upsert), delete ID and import.
 func customEntityWrites(a *app, entities resource[customEntity]) []*cobra.Command {
 	manage := []string{schemaManage}
 	return []*cobra.Command{
@@ -56,9 +50,6 @@ func customEntityWrites(a *app, entities resource[customEntity]) []*cobra.Comman
 	}
 }
 
-// maxBulkInstances is the most custom instances that Emporix takes in one
-// bulk write, as its reference documents for bulk-create, bulk-update and
-// bulk-patch.
 const maxBulkInstances = 200
 
 // maxBulkDeleteInstances is the most ids of custom instances that Emporix
@@ -67,12 +58,6 @@ const maxBulkInstances = 200
 // 1000.").
 const maxBulkDeleteInstances = 1000
 
-// customInstanceWrites returns the writes of instances, the instances of a
-// custom entity type of typesOf (the types nested as the parent of the
-// instances group): create, update ID (an upsert), patch ID and delete ID one
-// (instanceWrites.one), and each in bulk (instanceWrites.bulk), with the
-// manage scope of the type, and its read scope too where Emporix checks the
-// references of the instances (declareReferenceCheck).
 func customInstanceWrites(a *app, typesOf resource[customEntity], instances child[customInstance]) []*cobra.Command {
 	typeSource, get := typesOf.argumentSource(), childItemTarget(typesOf, instances, getUse, nil)
 	w := &instanceWrites{
@@ -86,24 +71,17 @@ func customInstanceWrites(a *app, typesOf resource[customEntity], instances chil
 	return writeCommands(a, slices.Concat(w.one(), w.bulk()))
 }
 
-// instanceWrites declares the writes of the instances of a custom entity
-// type, each with the manage scope of the type and help that ends saying
-// where its arguments come from, followed, where Emporix may check the
-// references of the instances, by what that check needs (declareReferenceCheck).
 type instanceWrites struct {
-	path    string      // the collection of the instances of the type {parent}
-	typeArg string      // the argument that names the type, {parent}
-	id      string      // the argument that names one instance, {id}
-	manage  []string    // the scopes of each, besides those of checking references
-	ofType  string      // ends the help of a write that takes typeArg alone
-	ofItem  string      // ends the help of a write that takes typeArg and id
-	typeIDs argumentIDs // what typeArg completes with
-	itemIDs argumentIDs // what typeArg and id complete with
+	path    string
+	typeArg string
+	id      string
+	manage  []string
+	ofType  string
+	ofItem  string
+	typeIDs argumentIDs
+	itemIDs argumentIDs
 }
 
-// one returns the writes of one instance: create, update ID (an upsert) and
-// patch ID, whose references Emporix checks unless told otherwise, and
-// delete ID.
 func (in *instanceWrites) one() []write {
 	item := request{path: in.path + "/" + placeholderID}
 	itemUse := func(verb string) string { return verb + " " + in.typeArg + " " + in.id }
@@ -152,13 +130,8 @@ func (in *instanceWrites) one() []write {
 	})
 }
 
-// bulk returns the bulk writes of instances (bulkWrites): bulk-create,
-// bulk-update (an upsert), bulk-patch and bulk-delete. Their defaults of
-// validateReferences differ, and all but bulk-delete send their maps of
-// translations with Content-Language: *: the reference lists the header for
-// bulk-patch only, but Emporix refuses the maps of bulk-create and
-// bulk-update items without it. bulk-delete takes more items than the others
-// (maxBulkDeleteInstances).
+// The reference lists Content-Language for bulk-patch only, but Emporix refuses the maps of
+// translations of bulk-create and bulk-update items without it.
 func (in *instanceWrites) bulk() []write {
 	writes := (&bulkWrites{
 		path: in.path, args: in.typeArg, nouns: "instances of a custom entity type", scopes: in.manage,
@@ -190,23 +163,12 @@ func (in *instanceWrites) bulk() []write {
 	return writes
 }
 
-// validateReferencesParam is the query parameter of a write of custom
-// instances that says whether Emporix checks that what their references name
-// exists.
 const validateReferencesParam = "validateReferences"
 
-// referencesUsage is what the flag that sets validateReferencesParam does;
-// what Emporix does without it follows.
 const referencesUsage = "whether Emporix checks that the items that references in the body name exist"
 
-// declareReferenceCheck declares w as a write of instances whose references
-// Emporix checks where it sends validateReferencesParam true, or does not
-// send it and byDefault says that Emporix then checks them. Emporix reads the
-// items that references name with the write's token, so w takes the flag
-// that sets the parameter with the read scope of the type, which it requests
-// where Emporix checks references (paramScopes), and its help says that the
-// token reads the instances of the type alone, so that a reference to another
-// type is expected to fail the check.
+// Emporix reads the items that references name with the write's token, so a write that checks
+// references needs the read scope of the type.
 func (in *instanceWrites) declareReferenceCheck(w *write, byDefault bool) {
 	w.paramScopes = paramScopes{
 		flag: paramFlag{

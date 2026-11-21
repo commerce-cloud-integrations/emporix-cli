@@ -46,8 +46,6 @@ func WriteCSV(w io.Writer, header []string, rows [][]string) error {
 	return nil
 }
 
-// sanitized returns rows, after header unless it is empty, with every cell
-// sanitized for the terminal.
 func sanitized(header []string, rows [][]string) [][]string {
 	if len(header) > 0 {
 		rows = append([][]string{header}, rows...)

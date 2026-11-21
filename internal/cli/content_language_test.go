@@ -6,11 +6,6 @@ import (
 	"testing"
 )
 
-// TestLocalizedWritesSayHowTheySendMaps checks that the help of a write
-// whose body holds localized text holds the help of its languageMode and of
-// no other, with what the write adds to it, if anything, and that it takes
-// --content-language, with its usage, only where its mode lets it name one
-// language. What they send, the write cases check.
 func TestLocalizedWritesSayHowTheySendMaps(t *testing.T) {
 	const (
 		stringsOrMapsUsage  = "or * for maps of translations (default *)"
@@ -19,9 +14,9 @@ func TestLocalizedWritesSayHowTheySendMaps(t *testing.T) {
 	modes := []string{contentLanguageHelp(), headerlessMapsHelp(), mapsOnlyHelp(), feeLanguageHelp()}
 	for _, tt := range []struct {
 		args  []string
-		mode  string // the help of its languageMode, one of modes
-		extra string // what its help adds to that of its mode; nothing when empty
-		usage string // the usage of its --content-language; no such flag when empty
+		mode  string
+		extra string
+		usage string
 	}{
 		{args: []string{"shipping", "zones", "create"}, mode: headerlessMapsHelp(), usage: headerlessMapsUsage},
 		{args: []string{"shipping", "zones", "methods", "patch"}, mode: headerlessMapsHelp(), usage: headerlessMapsUsage},
@@ -60,9 +55,6 @@ func TestLocalizedWritesSayHowTheySendMaps(t *testing.T) {
 	}
 }
 
-// TestMapsOnlyWritesRefuseALanguage checks that the brand and schema
-// writes, whose services refuse a string for localized text, and the writes
-// of fees, whose service ignores its language, take no --content-language.
 func TestMapsOnlyWritesRefuseALanguage(t *testing.T) {
 	const want = "unknown flag: --" + contentLanguageFlag
 	var cases []refusedWrite

@@ -5,13 +5,6 @@ import (
 	"strings"
 )
 
-// The read cases of the calculations and checks that Emporix serves as POST
-// or PUT with a JSON body but that change nothing: shipping quotes, the sites
-// that ship to a postal code, delivery window and coupon validations, unit
-// conversions and tax calculations (see TestReads).
-
-// calculationReads returns the calculations of the Shipping, Unit Handling,
-// Tax and Coupon services.
 func calculationReads() []readCase {
 	return append(shippingCalculationReads(),
 		readCase{
@@ -25,7 +18,6 @@ func calculationReads() []readCase {
 			want:   "VALID\ntrue\n",
 		},
 		readCase{
-			// Emporix answers with the name as bare text (TestDeliveryCycleNames).
 			args: []string{"delivery-times", "generate-cycle", "--delivery-time", "d1", "--slot", "s1", "--date",
 				"2026-10-19T12:00:00.000Z"},
 			path:   "/shipping/acme1/delivery-cycles/generate",
@@ -36,7 +28,6 @@ func calculationReads() []readCase {
 			want:   "CYCLE\n2026-10-19-6morning\n",
 		},
 		readCase{
-			// The amount is sent as given; Emporix answers 201 Created (TestOnlyDeclaredReadsTakeCreated).
 			args:   []string{"units", "convert", "--from", "g", "--to", "kg", "--amount", "100.50"},
 			path:   "/unit-handling/acme1/units/convert-unit-commands",
 			mode:   getWhole,
@@ -57,7 +48,6 @@ func calculationReads() []readCase {
 			want: "FROM      TO  FACTOR\nus-fl-oz  cl  2.95735296\n",
 		},
 		readCase{
-			// A net price: includesTax is sent as false.
 			args:   []string{"taxes", "calculate", "--price", "1.59", "--country", "DE", "--tax-class", "STANDARD"},
 			path:   "/tax/acme1/taxes/calculation-commands",
 			mode:   getWhole,
@@ -69,7 +59,6 @@ func calculationReads() []readCase {
 			want: "NET   GROSS   SOURCE RATE  TARGET RATE\n1.59  1.8921               19\n",
 		},
 		readCase{
-			// A gross price in one country to a gross price in another.
 			args: []string{"taxes", "calculate", "--price", "1.59", "--country", "PL", "--tax-class", "STANDARD", "--gross",
 				"--source-country", "DE", "--source-tax-class", "REDUCED"},
 			path:   "/tax/acme1/taxes/calculation-commands",
@@ -81,7 +70,6 @@ func calculationReads() []readCase {
 			want: "NET  GROSS  SOURCE RATE  TARGET RATE\n1.5  1.845  6            23\n",
 		},
 		readCase{
-			// Emporix answers a redeemable coupon with an empty 200 response.
 			args: []string{"coupons", "validate", "SAVE 7", "--order-total", "1090 EUR", "--discount", "5.00 EUR",
 				"--customer", "C1", "--allow-write-scope"},
 			path:   "/coupon/acme1/coupons/SAVE%207/validation",
@@ -95,12 +83,9 @@ func calculationReads() []readCase {
 	)
 }
 
-// shippingCalculationReads returns the shipping quotes and the sites that
-// ship to a postal code.
 func shippingCalculationReads() []readCase {
 	return []readCase{
 		{
-			// One row per method of every zone, a zone without methods none.
 			args: []string{"shipping", "quote", "--site", "AcmeStore_NL", "--cart-total", "100.50 EUR", "--country", "NL",
 				"--postal-code", "1012 AB", "--customer", "c1", "--language", "nl"},
 			path:   "/shipping/acme1/AcmeStore_NL/quote",
@@ -130,7 +115,6 @@ func shippingCalculationReads() []readCase {
 			want:   "FEE       TAX CODE\n4.99 EUR  STANDARD\n",
 		},
 		{
-			// The destination is optional for a slot.
 			args: []string{"shipping", "quote-slot", "--site", "main", "--cart-total", "100 EUR", "--delivery-time", "d1",
 				"--slot", "s1"},
 			path:   "/shipping/acme1/main/quote/slot",
@@ -141,7 +125,6 @@ func shippingCalculationReads() []readCase {
 			want:   "FEE      TAX CODE\n2.5 EUR  \n",
 		},
 		{
-			// Emporix answers the sites whole, unpaged.
 			args:   []string{"shipping", "find-sites", "--postal-code", "1012", "--country", "NL"},
 			path:   "/shipping/acme1/findSite",
 			mode:   getWhole,

@@ -9,33 +9,16 @@ import (
 	"github.com/commerce-cloud-integrations/emporix-cli/internal/emporix"
 )
 
-// The writes of the Cart Service: carts, their items and discounts, and the
-// chains of cart commands that execute runs. Each requests cart.cart_manage,
-// the only scope that the reference names for a service token, and those
-// whose body may hold an external price, product, fee or discount also
-// cart.cart_manage_external_prices, only with --allow-external-prices.
-
-// externalPrices returns the choice of a write whose body may hold an
-// external price, product, fee or discount, of a cart or a quote, which
-// Emporix accepts only with the Cart Service's
-// cart.cart_manage_external_prices: --allow-external-prices requests it, to
-// allow what, e.g. "external discounts (externalDiscounts)"; epx requests it
-// only when told so.
 func externalPrices(what string) queryChoice {
 	return queryChoice{options: []choiceOption{{
 		flag: "allow-external-prices", usage: "allow " + what, scopes: []string{"cart.cart_manage_external_prices"},
 	}}}
 }
 
-// cartWrites returns the writes of carts: create; update, delete, refresh,
-// change-site, change-currency and merge CART_ID; and execute CART_ID,
-// which runs a chain of cart commands.
 func cartWrites(a *app, carts resource[cart]) []*cobra.Command {
 	scopes, cartID, one := []string{cartScope}, carts.argument(), carts.itemPath()
 	about := carts.argumentSentence(notFound)
 	action := func(name string) request { return request{path: one + "/" + name} }
-	// posted is the command use CART_ID, a POST to the cart's action name
-	// whose body is the JSON object of field, a required flag, or --file.
 	posted := func(use, name, short, long string, field bodyField) *cobra.Command {
 		return (&write{
 			use: use + " " + cartID, short: short, method: http.MethodPost, long: long + " " + about,
@@ -96,8 +79,6 @@ func cartWrites(a *app, carts resource[cart]) []*cobra.Command {
 	}
 }
 
-// cartExecute declares execute CART_ID, which runs a chain of up to 10 cart
-// commands on one cart in one request, sent to req.
 func cartExecute(cartID string, req request, scopes []string, about string) *write {
 	return &write{
 		use: "execute " + cartID, short: "Run a chain of cart commands", method: http.MethodPost,
@@ -126,17 +107,11 @@ func cartExecute(cartID string, req request, scopes []string, about string) *wri
 	}
 }
 
-// The most items that Emporix adds and updates in one request, as the
-// reference documents.
 const (
 	maxCartItemsAdded   = 200
 	maxCartItemsUpdated = 50
 )
 
-// cartItemWrites returns the writes of items, the items of a cart below
-// itemsOf (carts nested in their group): create, bulk-create, bulk-update and
-// delete-all CART_ID, and update and delete CART_ID ID, which address one
-// item as get reads it.
 func cartItemWrites(a *app, itemsOf resource[cart], items child[cartItem]) []*cobra.Command {
 	scopes, cartID := []string{cartScope}, itemsOf.argument()
 	update, remove := childItemTarget(itemsOf, items, "update", nil), childItemTarget(itemsOf, items, "delete", nil)
@@ -202,13 +177,8 @@ func cartItemWrites(a *app, itemsOf resource[cart], items child[cartItem]) []*co
 	}
 }
 
-// discountCodesParam is the query parameter, and the flag, that names the
-// discounts that delete-all removes.
 const discountCodesParam = "codes"
 
-// cartDiscountWrites returns the writes of discounts, the discounts of a cart
-// below discountsOf (carts nested in their group): create and delete-all
-// CART_ID, and delete CART_ID INDEX, which removes the discount at INDEX.
 func cartDiscountWrites(a *app, discountsOf resource[cart], discounts child[cartDiscount]) []*cobra.Command {
 	scopes, cartID := []string{cartScope}, discountsOf.argument()
 	remove := childItemTarget(discountsOf, discounts, "delete", []string{columnIndex})
@@ -225,8 +195,6 @@ func cartDiscountWrites(a *app, discountsOf resource[cart], discounts child[cart
 				"(restrictions.validFor), even to the cart's own customer, with " + forbiddenRefusal + ", " +
 				literal(`"User not authorized."`) + ", when an API key credential such as epx's applies it. " +
 				about,
-			// The Cart Service answers a missing scope with the same message (its reference's
-			// 403); epx checks cart.cart_manage before it sends, so a 403 here refuses the coupon.
 			req: request{path: collection}, scopes: scopes, answers: emporix.Answers{ForbiddenIsRefusal: true},
 			body: &payload{typed: objectBody{stringField("code", "code", "the `code` of the coupon to apply").require()}},
 		}).command(a),

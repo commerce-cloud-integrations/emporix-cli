@@ -10,14 +10,8 @@ import (
 	"github.com/commerce-cloud-integrations/emporix-cli/internal/emporix"
 )
 
-// mediaManage is the scope of every write of media assets, as the reference
-// names it (media.asset_manage_by_vendor is a vendor's alternative).
 const mediaManage = "media.asset_manage"
 
-// mediaWrites returns the writes of the media assets of assets: create and
-// update, which send the JSON of a link or, with --upload, a form of a file
-// and its JSON (assetForm), patch, delete and start-upload, which starts an
-// upload straight to storage.
 func mediaWrites(a *app, assets resource[mediaAsset]) []*cobra.Command {
 	scopes := []string{mediaManage}
 	unknown := "An unknown ID is not found (exit 4)."
@@ -76,15 +70,9 @@ func mediaWrites(a *app, assets resource[mediaAsset]) []*cobra.Command {
 	}
 }
 
-// blobNeedsFileHelp says in help that the JSON of a BLOB asset is not sent
-// without a file to upload (blobNeedsFile).
 const blobNeedsFileHelp = "Without --" + uploadFlag + ", the JSON of a BLOB asset is refused before anything " +
 	"is sent, as Emporix takes one only with its file."
 
-// assetForm is the body of a write of a media asset: the JSON of --file,
-// sent alone for a LINK asset or, with --upload, as the body field of a form
-// that sends the file it names first, as the file field, for a BLOB asset;
-// that of a BLOB asset is not sent alone (blobNeedsFile).
 func assetForm() *formFile {
 	return &formFile{
 		refuseAlone: blobNeedsFile,
@@ -95,9 +83,6 @@ func assetForm() *formFile {
 	}
 }
 
-// blobNeedsFile returns why the JSON of a media asset cannot be sent without
-// a file to upload: its type is "BLOB", and Emporix takes a BLOB asset only in
-// a form with its file (it answers 400 Bad Request); nil for any other JSON.
 // It reads type from a map, not a struct, whose keys Go matches regardless
 // of case: only a member named exactly type counts, the last where it
 // repeats, as a JSON parser's defaults read it.

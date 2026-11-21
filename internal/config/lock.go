@@ -8,8 +8,6 @@ import (
 	"time"
 )
 
-// lockPoll is how often Lock tries again to lock a configuration file that
-// another epx process has locked.
 const lockPoll = 50 * time.Millisecond
 
 // Lock locks the configuration file against every other epx process that
@@ -28,7 +26,7 @@ func (s Store) Lock(ctx context.Context) (unlock func(), err error) {
 	}
 	err = waitForLock(ctx, lock)
 	if err != nil {
-		_ = lock.Close() // only locked
+		_ = lock.Close()
 		return nil, err
 	}
 	return func() {
@@ -37,7 +35,6 @@ func (s Store) Lock(ctx context.Context) (unlock func(), err error) {
 	}, nil
 }
 
-// waitForLock locks file, trying again every lockPoll until ctx ends.
 func waitForLock(ctx context.Context, file *os.File) error {
 	retry := time.NewTicker(lockPoll)
 	defer retry.Stop()

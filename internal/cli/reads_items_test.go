@@ -1,13 +1,8 @@
 package cli
 
-// The read cases of one item of a nested list, such as one price of a price list or one
-// customer of a segment (see TestReads).
-
-// nestedItemReads returns the reads of one item of a nested list.
 func nestedItemReads() []readCase {
 	return []readCase{
 		{
-			// The price list and the price are escaped path segments.
 			args:   []string{"price-lists", "prices", "get", "pl/1", "p/1"},
 			path:   "/price/acme1/price-lists/pl%2F1/prices/p%2F1",
 			scopes: []string{"price.pricelist_read"},
@@ -17,7 +12,6 @@ func nestedItemReads() []readCase {
 			want: "ID   ITEM    TYPE     MODEL  TIERS\np/1  100200  PRODUCT  pm2    15.90,14\n",
 		},
 		{
-			// One method comes with its fees: unlike the list, it asks for no expansion.
 			args: []string{"shipping", "zones", "methods", "get", "z/1", "m 1", "--site", "AcmeStore_NL", "--language",
 				"nl"},
 			path: "/shipping/acme1/AcmeStore_NL/zones/z%2F1/methods/m%201",
@@ -38,7 +32,6 @@ func nestedItemReads() []readCase {
 				"s/1  standard  08:00  12:00  2026-01-01T06:00:00.000Z  1             40\n",
 		},
 		{
-			// The customer number keeps its leading zero.
 			args:   []string{"customers", "addresses", "get", "0100/01", "a/1"},
 			path:   "/customer/acme1/customers/0100%2F01/addresses/a%2F1",
 			scopes: []string{"customer.customer_read"},
@@ -51,8 +44,6 @@ func nestedItemReads() []readCase {
 	}
 }
 
-// segmentMemberReads returns the Customer Segment Service reads of one customer, IAM group
-// or item of a segment.
 func segmentMemberReads() []readCase {
 	return []readCase{
 		{
@@ -66,7 +57,6 @@ func segmentMemberReads() []readCase {
 				"c-7f3a    Ada Example  ada@example.com                MANUAL\n",
 		},
 		{
-			// Three arguments: the segment, then the customer, then the legal entity, as in the path.
 			args:   []string{"segments", "customers", "get-b2b", "s/1", "c 7f3a", "le/1"},
 			path:   "/customer-segment/acme1/segments/s%2F1/customers/c%207f3a/le%2F1",
 			scopes: []string{"customersegment.segment_read"},
@@ -85,7 +75,6 @@ func segmentMemberReads() []readCase {
 			want:   "GROUP  NAME\ng/1    Groothandel\n",
 		},
 		{
-			// The type comes between the segment and the item, as in the path.
 			args:   []string{"segments", "items", "get", "s/1", "PRODUCT", "p/1", "--language", "nl"},
 			path:   "/customer-segment/acme1/segments/s%2F1/items/PRODUCT/p%2F1",
 			scopes: []string{"customersegment.segment_read"},

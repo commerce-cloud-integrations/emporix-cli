@@ -1,14 +1,4 @@
 #!/usr/bin/env bash
-# Writes the Homebrew formula (epx.rb) and the Scoop manifest (epx.json) of an epx release
-# from the checksums file of its archives. .github/scripts/release.sh runs it for every
-# tagged release, so both are assets of the GitHub release, served as
-# releases/latest/download/epx.{rb,json}: the Homebrew tap
-# (commerce-cloud-integrations/homebrew-tap, brew install commerce-cloud-integrations/tap/epx)
-# and the Scoop bucket (commerce-cloud-integrations/scoop-bucket) copy them from there with
-# workflows of their own, so this repository holds no credential for them.
-#
-#   .github/scripts/packages.sh DIST   write DIST/epx.rb and DIST/epx.json; DIST is
-#                                      dist/<tag>, holding at least its checksums file
 set -euo pipefail
 
 fail() { echo "packages: $*" >&2; exit 1; }
@@ -31,7 +21,6 @@ summary="Command-line client for the Emporix Commerce APIs"
 sums=$dist/epx_${tag}_checksums.txt
 [[ -f "$sums" ]] || fail "$dist has no $(basename "$sums")"
 
-# sha prints the SHA-256 of the archive of a platform (os_arch), as the checksums file lists it.
 sha() {
 	local file=epx_${tag}_$1 sum
 	sum=$(awk -v f="$file" '$2 == f { print $1 }' "$sums")
@@ -49,8 +38,6 @@ linux_amd64=$(sha linux_amd64.tar.gz)
 windows_amd64=$(sha windows_amd64.zip)
 windows_arm64=$(sha windows_arm64.zip)
 
-# platform prints the url and sha256 lines of the formula for the tarball of os_arch with
-# the given checksum.
 platform() {
 	local target=$1 sum=$2
 	printf '      url "%s/epx_%s_%s.tar.gz"\n      sha256 "%s"\n' "$download" "$tag" "$target" "$sum"

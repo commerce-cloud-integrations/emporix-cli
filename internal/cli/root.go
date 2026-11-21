@@ -49,14 +49,11 @@ type ProfileEnv struct {
 	ReadHidden func(context.Context) (string, error)
 }
 
-// usageError marks invalid input detected while a command runs.
 type usageError struct{ err error }
 
 func (e usageError) Error() string { return e.err.Error() }
 func (e usageError) Unwrap() error { return e.err }
 
-// runError marks errors returned by a command's run hooks. Every other error
-// comes from Cobra's parsing and validation, which makes it a usage error.
 type runError struct{ err error }
 
 func (e runError) Error() string { return e.err.Error() }
@@ -86,7 +83,6 @@ func Run(ctx context.Context, args []string, env Env) int {
 	if err == nil {
 		return ExitOK
 	}
-	// Error text can contain API-supplied messages, so it is sanitized for the terminal.
 	_, _ = fmt.Fprintln(env.Err, "Error:", output.Sanitize(err.Error()))
 	code := exitCode(err)
 	if code == ExitUsage {
@@ -95,23 +91,14 @@ func Run(ctx context.Context, args []string, env Env) int {
 	return code
 }
 
-// forbiddenRefusal is how help names a refusal of the input that Emporix
-// answers with 403 Forbidden although the credential is fine, of a write or
-// read that declares it so (write.answers.ForbiddenIsRefusal, bodyRead.forbiddenIsRefusal),
-// and that its help must name (checkRefusalHelp).
 const forbiddenRefusal = "403 Forbidden (exit 1)"
 
-// checkRefusalHelp panics unless the help of cmd, a command that takes a 403
-// Forbidden as a refusal of its input, names that refusal (forbiddenRefusal):
-// its declaration is then a mistake, which every test of the tree finds.
 func checkRefusalHelp(cmd *cobra.Command) {
 	if !strings.Contains(cmd.Long, forbiddenRefusal) {
 		panic(cmd.Use + ": it takes a 403 as a refusal, which its help does not name")
 	}
 }
 
-// exitCode maps an error to the exit-code contract. The emporix package
-// classifies API failures, so no HTTP status is inspected here.
 func exitCode(err error) int {
 	switch {
 	case !errors.As(err, new(runError)), errors.As(err, new(usageError)), errors.Is(err, emporix.ErrInvalidInput):
@@ -127,7 +114,6 @@ func exitCode(err error) int {
 	}
 }
 
-// rootHelp is the long help of the root command.
 const rootHelp = "Command-line client for the Emporix Commerce APIs.\n\n" +
 	"Credentials are read from the environment:\n" +
 	"  EMPORIX_TENANT, EMPORIX_CLIENT_ID, EMPORIX_CLIENT_SECRET (and optionally EMPORIX_API_URL).\n" +
@@ -143,7 +129,6 @@ const rootHelp = "Command-line client for the Emporix Commerce APIs.\n\n" +
 	"services answer a stale version. A 403 Forbidden that the help of a command calls a refusal " +
 	"of its input exits 1."
 
-// newRootCommand builds the command tree writing to out and errOut.
 func newRootCommand(a *app, out, errOut io.Writer) *cobra.Command {
 	root := &cobra.Command{
 		Use:           "epx",
@@ -170,10 +155,7 @@ func newRootCommand(a *app, out, errOut io.Writer) *cobra.Command {
 	root.SetOut(out)
 	root.SetErr(errOut)
 	root.InitDefaultCompletionCmd()
-	// epx reads no files but a request body (--body of a search, --file of a write), so completion
-	// suggests file names only there.
 	root.CompletionOptions.SetDefaultShellCompDirective(cobra.ShellCompDirectiveNoFileComp)
-	// Opt-in: IDs (each read's own) and --site complete from the API.
 	if completion, _, err := root.Find([]string{"completion"}); err == nil {
 		explainCompletion(completion)
 	}
@@ -182,7 +164,6 @@ func newRootCommand(a *app, out, errOut io.Writer) *cobra.Command {
 	return root
 }
 
-// topLevelCommands returns the commands directly under epx, in help order.
 func topLevelCommands(a *app) []*cobra.Command {
 	return []*cobra.Command{
 		newVersionCommand(a),
@@ -243,10 +224,6 @@ func topLevelCommands(a *app) []*cobra.Command {
 	}
 }
 
-// applyExitPolicy enforces the exit-code contract on the whole tree: groups
-// reject unknown subcommands (they print help otherwise), leaves without an
-// explicit argument rule accept none, and errors from every run hook are
-// marked as runtime errors.
 func applyExitPolicy(cmd *cobra.Command) {
 	if cmd.HasSubCommands() {
 		cmd.Args = cobra.NoArgs
@@ -271,9 +248,9 @@ func applyExitPolicy(cmd *cobra.Command) {
 	}
 }
 
-// newHelpCommand replaces Cobra's help command, which exits 0 on unknown topics.
-// Cobra attaches it at execution time, so applyExitPolicy never wraps it: its
-// errors stay unmarked and therefore count as usage errors, which is intended.
+// Cobra's own help command exits 0 on unknown topics. Cobra attaches the help
+// command at execution time, so applyExitPolicy never wraps it: its errors
+// stay unmarked and therefore count as usage errors.
 func newHelpCommand() *cobra.Command {
 	return &cobra.Command{
 		Use:               "help [command]",
@@ -290,8 +267,6 @@ func newHelpCommand() *cobra.Command {
 	}
 }
 
-// errWriter records the first write error, so output that fails to reach the
-// terminal (including Cobra's help text) never ends in a success exit code.
 type errWriter struct {
 	w   io.Writer
 	err error

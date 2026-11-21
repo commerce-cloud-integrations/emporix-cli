@@ -15,7 +15,6 @@ const (
 const providersBody = `[{"provider":"ALGOLIA","active":false,"applicationId":"APP1","indexName":"acme1",` +
 	`"searchKey":"` + algoliaSearchKey + `","writeKey":"` + algoliaWriteKey + `","excludedMixinKeys":["x"]}]`
 
-// assertNoAlgoliaKey checks that tables leave the Algolia keys out.
 func assertNoAlgoliaKey(t *testing.T, outputs ...string) {
 	t.Helper()
 	for _, text := range outputs {
@@ -25,9 +24,6 @@ func assertNoAlgoliaKey(t *testing.T, outputs ...string) {
 	}
 }
 
-// TestIndexingProvidersShowKeysOnlyInJSON checks that tables show their
-// columns only, so the Algolia keys stay out of them, for the tenant's
-// providers and a storefront's view, while -o json prints the keys as sent.
 func TestIndexingProvidersShowKeysOnlyInJSON(t *testing.T) {
 	fake := newFakeEmporix(t)
 	fake.route("/indexing/acme1/configurations", respond(http.StatusOK, providersBody))
@@ -60,14 +56,9 @@ func TestIndexingUnpagedListRejectsMalformedResponses(t *testing.T) {
 	}
 }
 
-// entityBuiltInTypeNames returns the built-in entity types, which TYPE of the
-// RAG reads and reindex and --entity-type of reindex jobs complete without a
-// read.
 func entityBuiltInTypeNames() []string {
 	return []string{"PRODUCT", "ORDER", "CUSTOMER", "LEGAL-ENTITY"}
 }
 
-// entityTypeHelp is what the help of a command whose TYPE is an entity type
-// says it is, as helpText prints it.
 const entityTypeHelp = "TYPE is PRODUCT, ORDER, CUSTOMER or LEGAL-ENTITY in any case, or a custom " +
 	"entity type, whose ID `epx custom-entities list` shows. LEGAL-ENTITY takes a hyphen, not an underscore."

@@ -5,8 +5,6 @@ import (
 	"testing"
 )
 
-// TestCustomersAreIdentifiedByNumber checks that the customer number, not the
-// id, identifies a customer: a profile without one cannot be shown.
 func TestCustomersAreIdentifiedByNumber(t *testing.T) {
 	fake := newFakeEmporix(t)
 	fake.route("/customer/acme1/customers", firstPage(`[{"id":"c-7f3a"}]`))

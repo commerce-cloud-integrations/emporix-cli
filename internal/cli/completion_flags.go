@@ -12,44 +12,27 @@ import (
 // flag, and the functions are registered only for a completion request
 // (completeFlagsFor), never for a run.
 
-// choicesAnnotation is the annotation of a flag that completes with fixed
-// values: the values (completeChoices).
 const choicesAnnotation = "epx_completes_choices"
 
-// fileNamesAnnotation is the annotation of a flag that completes with file
-// names (completeFileNames).
 const fileNamesAnnotation = "epx_completes_files"
 
-// completeChoices makes shells complete --flag, which cmd has just added, with
-// values only, never with file names.
 func completeChoices(cmd *cobra.Command, flag string, values []string) {
 	annotate(cmd.Flag(flag), choicesAnnotation, values)
 }
 
-// completeFileNames makes shells complete --flag, which cmd has just added,
-// with file names: completion suggests none elsewhere (newRootCommand).
 func completeFileNames(cmd *cobra.Command, flag string) {
 	annotate(cmd.Flag(flag), fileNamesAnnotation, nil)
 }
 
-// completeFlagsFor registers how shells complete the flags of the tree of
-// cmd, about to run, when cmd is Cobra's completion request, the hidden
-// command that the completion scripts run (`epx __complete ARGS`), and never
-// otherwise.
 func completeFlagsFor(a *app, cmd *cobra.Command) {
 	if cmd.Name() == cobra.ShellCompRequestCmd {
 		completeFlags(a, cmd.Root(), sites().ids())
 	}
 }
 
-// completeFlags registers, for a completion request, how shells complete the
-// flags, local or persistent, that cmd, a command of a, and every command
-// below it define (flagCompletion).
 func completeFlags(a *app, cmd *cobra.Command, codes *idSource) {
 	cmd.LocalFlags().VisitAll(func(flag *pflag.Flag) {
 		if complete := flagCompletion(a, flag, codes); complete != nil {
-			// Registration fails only for an unknown or already registered flag; each flag
-			// is defined, and registered once, by the command that defines it.
 			_ = cmd.RegisterFlagCompletionFunc(flag.Name, complete)
 		}
 	})
@@ -58,11 +41,6 @@ func completeFlags(a *app, cmd *cobra.Command, codes *idSource) {
 	}
 }
 
-// flagCompletion returns how shells complete flag, or nil where the default
-// applies (no file names): with the values or file names that it records,
-// --profile with the names of the profiles, and --site and --mixin-site,
-// wherever a command has one, with the site codes that codes lists, as
-// listedItems reads them, up to completionSize (offerArgument).
 func flagCompletion(a *app, flag *pflag.Flag, codes *idSource) cobra.CompletionFunc {
 	if values, ok := flag.Annotations[choicesAnnotation]; ok {
 		return cobra.FixedCompletions(values, cobra.ShellCompDirectiveNoFileComp)

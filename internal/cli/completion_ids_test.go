@@ -14,13 +14,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// completionDone is what Cobra writes to standard error after every
-// completion, which shells discard; anything else there would reach the terminal.
 const completionDone = "Completion ended with directive: ShellCompDirectiveNoFileComp\n"
 
-// completionEnded returns what Cobra writes to standard error after a
-// completion with directive, as completionDone: NoFileComp, with NoSpace too
-// where another ID may follow; none for a directive that epx never gives.
 func completionEnded(directive cobra.ShellCompDirective) string {
 	if directive == cobra.ShellCompDirectiveNoFileComp|cobra.ShellCompDirectiveNoSpace {
 		return "Completion ended with directive: ShellCompDirectiveNoSpace, ShellCompDirectiveNoFileComp\n"
@@ -31,17 +26,12 @@ func completionEnded(directive cobra.ShellCompDirective) string {
 	return ""
 }
 
-// completionEnv returns the environment of f with completion from the API
-// switched on.
 func completionEnv(f *fakeEmporix) map[string]string {
 	env := f.env()
 	env[envCompleteIDs] = "1"
 	return env
 }
 
-// completion runs `epx __complete args` in env and returns the completions
-// it offers and how shells complete them, checking that it succeeds, never
-// offers file names and prints nothing else.
 func completion(t *testing.T, env map[string]string, args ...string) ([]string, cobra.ShellCompDirective) {
 	t.Helper()
 	code, stdout, stderr := runCLI(t, env, append([]string{"__complete"}, args...)...)
@@ -60,9 +50,6 @@ func completion(t *testing.T, env map[string]string, args ...string) ([]string, 
 	return got, cobra.ShellCompDirective(directive)
 }
 
-// completed returns the completions that `epx __complete args` offers in env,
-// as completion does, checking that shells complete them as file names never
-// are, and nothing else.
 func completed(t *testing.T, env map[string]string, args ...string) []string {
 	t.Helper()
 	got, directive := completion(t, env, args...)
@@ -72,15 +59,13 @@ func completed(t *testing.T, env map[string]string, args ...string) []string {
 	return got
 }
 
-// completionCase is a completion that reads the API: the routes it is
-// served, what it offers and how, and the requests and token scopes it sends.
 type completionCase struct {
 	args      []string
 	routes    map[string]http.HandlerFunc
-	want      []string                 // each ID|NAME, or ID alone
-	directive cobra.ShellCompDirective // besides NoFileComp: NoSpace where another ID may follow
-	requests  []string                 // request URIs
-	scopes    []string                 // besides the tenant
+	want      []string
+	directive cobra.ShellCompDirective
+	requests  []string
+	scopes    []string
 }
 
 func (tt *completionCase) check(t *testing.T) {
@@ -106,25 +91,25 @@ const (
 func TestCompletionOffersTheIDsOfOnePageOfTheList(t *testing.T) {
 	products := "/product/acme1/products?pageNumber=1&pageSize=100"
 	for _, tt := range []completionCase{
-		{ // get: the resource's own list, described by NAME in the default language
+		{
 			args:     []string{"products", "get", ""},
 			routes:   map[string]http.HandlerFunc{"/product/acme1/products": respond(http.StatusOK, productPage)},
 			want:     []string{"100200|Shirt", "200300|Hose (de)"},
 			requests: []string{products}, scopes: []string{productReadUnpublishedScope},
 		},
-		{ // only the IDs that start with what is typed
+		{
 			args:     []string{"products", "get", "2"},
 			routes:   map[string]http.HandlerFunc{"/product/acme1/products": respond(http.StatusOK, productPage)},
 			want:     []string{"200300|Hose (de)"},
 			requests: []string{products}, scopes: []string{productReadUnpublishedScope},
 		},
-		{ // another resource's list, for an argument that names its items
+		{
 			args:     []string{"categories", "for-product", ""},
 			routes:   map[string]http.HandlerFunc{"/product/acme1/products": respond(http.StatusOK, productPage)},
 			want:     []string{"100200|Shirt", "200300|Hose (de)"},
 			requests: []string{products}, scopes: []string{productReadUnpublishedScope},
 		},
-		{ // a child read: its parent's list
+		{
 			args: []string{"price-lists", "prices", "list", ""},
 			routes: map[string]http.HandlerFunc{
 				"/price/acme1/price-lists": respond(http.StatusOK, `[{"id":"PL1","name":{"en":"Retail"}}]`),
@@ -133,7 +118,7 @@ func TestCompletionOffersTheIDsOfOnePageOfTheList(t *testing.T) {
 			requests: []string{"/price/acme1/price-lists?pageNumber=1&pageSize=100"},
 			scopes:   []string{"price.pricelist_read"},
 		},
-		{ // a child item: the child's list below the parent given
+		{
 			args: []string{"price-lists", "prices", "get", "PL1", ""},
 			routes: map[string]http.HandlerFunc{
 				"/price/acme1/price-lists/PL1/prices": respond(http.StatusOK, `[{"id":"P1"},{"id":"P2"}]`),
@@ -142,7 +127,7 @@ func TestCompletionOffersTheIDsOfOnePageOfTheList(t *testing.T) {
 			requests: []string{"/price/acme1/price-lists/PL1/prices?pageNumber=1&pageSize=100"},
 			scopes:   []string{"price.pricelist_read"},
 		},
-		{ // a child item read from one response: the members of a site's mixins, with the child's scopes (none)
+		{
 			args: []string{"sites", "mixins", "get", "AcmeStore_NL", ""},
 			routes: map[string]http.HandlerFunc{
 				"/site/acme1/sites/AcmeStore_NL/mixins": respond(http.StatusOK, `{"coupon":{},"customer":{}}`),
@@ -150,19 +135,19 @@ func TestCompletionOffersTheIDsOfOnePageOfTheList(t *testing.T) {
 			want:     []string{"coupon", "customer"},
 			requests: []string{"/site/acme1/sites/AcmeStore_NL/mixins"},
 		},
-		{ // --site of any command: the site codes, without a scope
+		{
 			args:     []string{"prices", "list", "--site", "Acme"},
 			routes:   map[string]http.HandlerFunc{"/site/acme1/sites": respond(http.StatusOK, sitePage)},
 			want:     []string{"AcmeStore_NL|Acme NL", "AcmeStore_DE|Acme DE"},
 			requests: []string{"/site/acme1/sites?pageNumber=1&pageSize=100&totalCount=true"},
 		},
-		{ // --mixin-site: the site codes too
+		{
 			args:     []string{"custom-entities", "instances", "get", "--mixin-site", "Acme"},
 			routes:   map[string]http.HandlerFunc{"/site/acme1/sites": respond(http.StatusOK, sitePage)},
 			want:     []string{"AcmeStore_NL|Acme NL", "AcmeStore_DE|Acme DE"},
 			requests: []string{"/site/acme1/sites?pageNumber=1&pageSize=100&totalCount=true"},
 		},
-		{ // a list of a site: the --site given before the ID, the list read whole as its command reads it
+		{
 			args: []string{"shipping", "zones", "get", "--site", "AcmeStore_NL", ""},
 			routes: map[string]http.HandlerFunc{
 				"/shipping/acme1/AcmeStore_NL/zones": respond(http.StatusOK, `[{"id":"Z1","name":{"en":"Benelux"}}]`),
@@ -170,7 +155,7 @@ func TestCompletionOffersTheIDsOfOnePageOfTheList(t *testing.T) {
 			want:     []string{"Z1|Benelux"},
 			requests: []string{"/shipping/acme1/AcmeStore_NL/zones"},
 		},
-		{ // a write: the read scopes of its list, never its write scope
+		{
 			args: []string{"units", "update", "k"},
 			routes: map[string]http.HandlerFunc{
 				"/unit-handling/acme1/units": respond(http.StatusOK, `[{"code":"kg","name":{"en":"kilogram"}},{"code":"g"}]`),
@@ -178,7 +163,7 @@ func TestCompletionOffersTheIDsOfOnePageOfTheList(t *testing.T) {
 			want:     []string{"kg|kilogram"},
 			requests: []string{"/unit-handling/acme1/units?pageNumber=1&pageSize=100"},
 		},
-		{ // the items of the list that get takes: the roots of category trees
+		{
 			args: []string{"catalogs", "for-category", ""},
 			routes: map[string]http.HandlerFunc{"/category/acme1/category-trees": respond(http.StatusOK,
 				`[{"id":"C1","name":"Men","subcategories":[{"id":"C2","name":"Shirts"}]},{"id":"C3"}]`)},
@@ -186,9 +171,7 @@ func TestCompletionOffersTheIDsOfOnePageOfTheList(t *testing.T) {
 			requests: []string{"/category/acme1/category-trees?showUnpublished=true"},
 			scopes:   []string{"category.category_read_unpublished"},
 		},
-		{ // a column other than the first: the built-in search types, then the types of the search indexes,
-			// each once, without the NAME of an index, nor a built-in type written otherwise, which get refuses
-			// (Emporix keeps an index under its type as written)
+		{
 			args: []string{"search", "indexes", "get", ""},
 			routes: map[string]http.HandlerFunc{
 				"/search/acme1/search/indexes": respond(http.StatusOK, `[{"id":"i1","type":"BRAND","name":"Brands"},`+
@@ -218,9 +201,6 @@ func TestCompletionLeavesOutWhatNoArgumentTakes(t *testing.T) {
 	tt.check(t)
 }
 
-// TestCompletionReadsNothingUnlessItCan checks that completion reads nothing
-// where it may not or could not, and then offers only the values that need
-// no read (want), if any.
 func TestCompletionReadsNothingUnlessItCan(t *testing.T) {
 	products := map[string]http.HandlerFunc{"/product/acme1/products": respond(http.StatusOK, productPage)}
 	tests := []struct {
@@ -319,7 +299,7 @@ func TestCompletionSwallowsFailures(t *testing.T) {
 func TestCompletionGivesUpWithinItsTimeout(t *testing.T) {
 	f := newFakeEmporix(t)
 	f.route("/product/acme1/products", func(_ http.ResponseWriter, r *http.Request) {
-		<-r.Context().Done() // never answers before the client gives up
+		<-r.Context().Done()
 	})
 	env := completionEnv(f)
 	const timeout = 50 * time.Millisecond
@@ -352,10 +332,6 @@ func TestCompletionHelpSaysHowToOptIn(t *testing.T) {
 	}
 }
 
-// TestCompletionTakesTheProfileInEffect checks that completion reads with the
-// API key of the profile in effect, its client secret from the keychain, and
-// takes its default site as the command would, but reads no profile unless
-// the user opted in.
 func TestCompletionTakesTheProfileInEffect(t *testing.T) {
 	f := newFakeEmporix(t)
 	f.route("/shipping/acme1/AcmeStore_NL/zones", respond(http.StatusOK, `[{"id":"Z1","name":{"en":"Benelux"}}]`))
@@ -377,10 +353,6 @@ func TestCompletionTakesTheProfileInEffect(t *testing.T) {
 	}
 }
 
-// TestCompletionCountsOnlyWhatTheArgumentTakes checks that a listed type that
-// the argument refuses, CUSTOMER where it takes customer as written, takes no
-// place among the completionSize values offered: the two built-in types and
-// the 98 types listed after it make the 100.
 func TestCompletionCountsOnlyWhatTheArgumentTakes(t *testing.T) {
 	items := []string{`{"id":"i0","type":"CUSTOMER"}`}
 	want := []string{"customer", "legal-entity"}
@@ -401,9 +373,6 @@ func TestCompletionCountsOnlyWhatTheArgumentTakes(t *testing.T) {
 	tt.check(t)
 }
 
-// TestSiteFlagCompletesAtMostTheLimit checks that --site, which completes
-// apart from arguments, offers at most completionSize site codes too, the
-// first ones listed, where the service sends more.
 func TestSiteFlagCompletesAtMostTheLimit(t *testing.T) {
 	var sites, want []string
 	for i := range completionSize + 1 {

@@ -11,7 +11,6 @@ import (
 	"github.com/commerce-cloud-integrations/emporix-cli/internal/emporix"
 )
 
-// changeEntry is the part of a Changelog Service entry shown in tables.
 type changeEntry struct {
 	At       string                     `json:"at"`
 	Type     string                     `json:"type"`
@@ -19,16 +18,13 @@ type changeEntry struct {
 	EntityID string                     `json:"entityId"`
 	Name     string                     `json:"name"`
 	Actor    string                     `json:"actor"`
-	Paths    map[string]json.RawMessage `json:"paths"` // only the changed fields' names are shown
+	Paths    map[string]json.RawMessage `json:"paths"`
 }
 
-// changedFields returns the names of the changed fields, sorted (a long
-// value, which tables cut); -o json shows them with their values.
 func changedFields(paths map[string]json.RawMessage) string {
 	return strings.Join(slices.Sorted(maps.Keys(paths)), ", ")
 }
 
-// newChangelogCommand reads the tenant's change history (audit log).
 func newChangelogCommand(a *app) *cobra.Command {
 	changes := resource[changeEntry]{
 		use:  "changelog",

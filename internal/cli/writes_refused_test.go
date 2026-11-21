@@ -6,18 +6,12 @@ import (
 	"testing"
 )
 
-// refusedWrite is a write command line that must fail as a usage error
-// (exit 2) before anything is sent: its arguments, the body that --file
-// gives (none when empty) and what standard error must hold.
 type refusedWrite struct {
 	args []string
 	file string
 	want string
 }
 
-// assertRefused checks that each of cases, sent with --yes and as a dry run,
-// is a usage error (exit 2) that prints nothing on standard output, says
-// what its want says on standard error and sends nothing.
 func assertRefused(t *testing.T, cases []refusedWrite) {
 	t.Helper()
 	for _, tt := range cases {
@@ -36,11 +30,6 @@ func assertRefused(t *testing.T, cases []refusedWrite) {
 	}
 }
 
-// TestPatchesOfOperationsRefuseAnythingButAnArray checks that every patch
-// whose --file is a JSON array of operations (operationsFile) refuses
-// another JSON value, or an empty array, as a usage error that sends
-// nothing: the Customer Segment Service answers an object as done without
-// applying it.
 func TestPatchesOfOperationsRefuseAnythingButAnArray(t *testing.T) {
 	var cases []refusedWrite
 	for _, args := range [][]string{

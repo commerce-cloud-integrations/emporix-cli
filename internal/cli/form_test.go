@@ -16,22 +16,17 @@ import (
 	"github.com/commerce-cloud-integrations/emporix-cli/internal/emporix"
 )
 
-// schemaFile is the content of testdata/schema.json, the JSON schema file
-// that the cases of forms send.
 const schemaFile = `{"$schema": "https://json-schema.org/draft/2020-12/schema", "type": "object",
   "properties": {"color": {"type": "string"}}}
 `
 
-// sentPart is a part of a form as a request sends it.
 type sentPart struct {
 	name        string
-	file        string // the name of the file it sends; empty for a field
-	contentType string // empty: none
+	file        string
+	contentType string
 	content     string
 }
 
-// described returns what a dry run shows of p: a line that describes it,
-// then its content where it is JSON.
 func (p sentPart) described() string {
 	text := fmt.Sprintf("part %q:", p.name)
 	if p.file != "" {
@@ -47,14 +42,10 @@ func (p sentPart) described() string {
 	return text
 }
 
-// schemaFilePart is the part of a form that sends testdata/schema.json, the
-// file that --json-schema names in the cases.
 func schemaFilePart() sentPart {
 	return sentPart{name: "file", file: "schema.json", contentType: emporix.JSONContentType, content: schemaFile}
 }
 
-// sentForm returns the parts of body, a form whose Content-Type is
-// contentType, which names its boundary; any other body fails the test.
 func sentForm(t *testing.T, contentType, body string) []sentPart {
 	t.Helper()
 	media, params, err := mime.ParseMediaType(contentType)
@@ -82,8 +73,6 @@ func sentForm(t *testing.T, contentType, body string) []sentPart {
 	}
 }
 
-// assertForm checks that request i was sent with method and a form of the
-// parts want, in their order.
 func (f *fakeEmporix) assertForm(t *testing.T, i int, method string, want []sentPart) {
 	t.Helper()
 	if parts := sentForm(t, f.types[i], f.bodies[i]); !strings.HasPrefix(f.sent[i], method+" ") ||
@@ -92,23 +81,16 @@ func (f *fakeEmporix) assertForm(t *testing.T, i int, method string, want []sent
 	}
 }
 
-// TestSchemaFileOfTheCases checks that testdata/schema.json holds schemaFile,
-// which the cases expect to be sent.
 func TestSchemaFileOfTheCases(t *testing.T) {
 	if content, err := os.ReadFile("testdata/schema.json"); err != nil || string(content) != schemaFile {
 		t.Fatalf("testdata/schema.json: %q, %v; want %q", content, err, schemaFile)
 	}
 }
 
-// TestFormFileFailuresSendNothing checks that a file of a form that is not
-// given, cannot be read, is not JSON, or is standard input or named with a
-// control character (whose name cannot be sent), and an empty field, are
-// usage errors (exit 2) found before anything is sent, for a write and for a
-// read with a form.
 func TestFormFileFailuresSendNothing(t *testing.T) {
 	directory := t.TempDir()
 	body := writeBody(t, `{"name":{"en":"Specs"},"types":["PRODUCT"]}`)
-	unsendable := filepath.Join(directory, "schema"+string(rune(0x1b))+".json") // a header cannot carry its name
+	unsendable := filepath.Join(directory, "schema"+string(rune(0x1b))+".json")
 	if err := os.WriteFile(unsendable, []byte(schemaFile), 0o600); err != nil {
 		t.Fatal(err)
 	}
@@ -154,8 +136,6 @@ func TestFormFileFailuresSendNothing(t *testing.T) {
 	}
 }
 
-// TestFormReadsChangeNothing checks that a read with a form says that it
-// changes nothing, and that its JSON prints the response whole.
 func TestFormReadsChangeNothing(t *testing.T) {
 	_, help, _ := runCLI(t, nil, "schemas", "parse", "--help")
 	if !containsFlat(help, "Changes nothing: Emporix serves this read as POST with a multipart/form-data body") {

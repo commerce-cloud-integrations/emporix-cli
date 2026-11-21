@@ -9,8 +9,6 @@ import (
 	"github.com/commerce-cloud-integrations/emporix-cli/internal/emporix"
 )
 
-// paymentMode is the part of a Payment Gateway payment mode shown in tables;
-// its provider configuration holds credentials and is left to -o json.
 type paymentMode struct {
 	ID       string `json:"id"`
 	Code     string `json:"code"`
@@ -18,7 +16,6 @@ type paymentMode struct {
 	Active   *bool  `json:"active"`
 }
 
-// publicPaymentMode is the part of a payment mode as a storefront sees it.
 type publicPaymentMode struct {
 	ID                string `json:"id"`
 	Code              string `json:"code"`
@@ -26,8 +23,6 @@ type publicPaymentMode struct {
 	PaymentMethodType string `json:"paymentMethodType"`
 }
 
-// newPaymentModesCommand reads the tenant's payment modes, which the service
-// returns whole, and the view a storefront gets of them.
 func newPaymentModesCommand(a *app) *cobra.Command {
 	storefront := resource[publicPaymentMode]{
 		use:  "public",
@@ -72,12 +67,8 @@ func newPaymentModesCommand(a *app) *cobra.Command {
 		slices.Concat([]*cobra.Command{newResourceCommand(a, storefront)}, paymentModeWrites(a, modes))...)
 }
 
-// paymentModeWrites returns the writes of payment modes, with the scope that
-// the reference names for them: create, update ID (which Emporix answers
-// with 404 Not Found for an unknown mode) and delete ID.
 func paymentModeWrites(a *app, modes resource[paymentMode]) []*cobra.Command {
 	manage := []string{"payment-gateway.paymentmodes_manage"}
-	// unknown is the second paragraph of the help of update and delete.
 	const unknown = "\n\nID is the ID that `epx payment-modes list` shows; an unknown one is not found (exit 4)."
 	return []*cobra.Command{
 		(&write{

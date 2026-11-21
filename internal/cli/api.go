@@ -55,10 +55,6 @@ func newAPIGetCommand(a *app) *cobra.Command {
 	return cmd
 }
 
-// newAPIWriteCommand returns `api post|put|patch|delete PATH`, a write of
-// method to any API path, which may contain {tenant} and a query, with the
-// query values of -p, the scopes of --scope and the JSON body of --file, if
-// any; its example takes example as the arguments.
 func newAPIWriteCommand(a *app, method, example string) *cobra.Command {
 	use := strings.ToLower(method)
 	cmd := &cobra.Command{
@@ -73,7 +69,6 @@ func newAPIWriteCommand(a *app, method, example string) *cobra.Command {
 		Args:    cobra.ExactArgs(1),
 	}
 	scopes, query := addAPIFlags(cmd)
-	// A delete is confirmed by typing PATH: what it deletes is unknown, and may be many items.
 	s := &sender{a: a, method: method, body: &payload{optional: true},
 		confirm: confirmationFor(method, "PATH", deletion{})}
 	s.bind(cmd)
@@ -85,8 +80,6 @@ func newAPIWriteCommand(a *app, method, example string) *cobra.Command {
 	return cmd
 }
 
-// addAPIFlags adds to cmd, a command of api, --scope and -p, and returns the
-// scopes and the query values that they give.
 func addAPIFlags(cmd *cobra.Command) (scopes *[]string, query queryParams) {
 	scopes, query = new([]string), queryParams{}
 	cmd.Flags().StringSliceVar(scopes, "scope", nil, "OAuth scope to request besides the tenant (repeatable)")
@@ -94,11 +87,8 @@ func addAPIFlags(cmd *cobra.Command) (scopes *[]string, query queryParams) {
 	return scopes, query
 }
 
-// queryParams are --param values; it implements pflag.Value, so a value that
-// is not key=value is rejected while flags are parsed.
 type queryParams url.Values
 
-// Set implements pflag.Value, adding one key=value.
 func (q queryParams) Set(param string) error {
 	key, value, ok := strings.Cut(param, "=")
 	if !ok || key == "" {
@@ -110,8 +100,6 @@ func (q queryParams) Set(param string) error {
 
 func (q queryParams) String() string { return url.Values(q).Encode() }
 
-// GetSlice returns the parameters as key=value pairs; it lets completion offer
-// the repeatable --param again (cobra.SliceValue).
 func (q queryParams) GetSlice() []string {
 	var params []string
 	for _, key := range slices.Sorted(maps.Keys(q)) {
@@ -122,5 +110,4 @@ func (q queryParams) GetSlice() []string {
 	return params
 }
 
-// Type implements pflag.Value.
 func (q queryParams) Type() string { return "key=value" }

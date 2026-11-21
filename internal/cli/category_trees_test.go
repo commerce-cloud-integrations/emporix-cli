@@ -23,21 +23,18 @@ func TestFlattenTreesRejectsMalformedTrees(t *testing.T) {
 	}
 }
 
-// treesBody holds two trees; the first has a subcategory with one of its own.
 const treesBody = `[{"id":"r1","name":"Root one","subcategories":[{"id":"c1","name":"Child",
 	"subcategories":[{"id":"g1","name":"Grandchild"}]}]},{"id":"r2","name":"Root two"}]`
 
 func TestCategoryTreesLimitCountsTrees(t *testing.T) {
 	fake := newFakeEmporix(t)
 	fake.route("/category/acme1/category-trees", respond(http.StatusOK, treesBody))
-	// --limit 1 keeps the first tree whole, its subcategories included.
 	code, stdout, stderr := runCLI(t, fake.env(), "category-trees", "list", "--limit", "1")
 	want := "ID  CODE  PUBLISHED  NAME\nr1                   Root one\nc1                     Child\n" +
 		"g1                       Grandchild\n"
 	if code != ExitOK || stdout != want {
 		t.Fatalf("exit %d, stdout %q, stderr %q", code, stdout, stderr)
 	}
-	// -o json prints the trees as sent, nesting included.
 	code, stdout, _ = runCLI(t, fake.env(), "category-trees", "list", "-o", "json")
 	var trees []struct {
 		Subcategories []struct {

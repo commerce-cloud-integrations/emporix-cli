@@ -1,34 +1,10 @@
 #!/usr/bin/env bash
-# Builds the npm package of epx from the archives of .github/scripts/release.sh;
-# .github/workflows/release.yml runs it for every pushed vMAJOR.MINOR.PATCH tag.
-#
 #   .github/scripts/npm.sh DIST            pack and check: DIST is dist/<version> as
 #                                          release.sh wrote it
 #   .github/scripts/npm.sh DIST --publish  the same, then `npm publish` every version that
 #                                          the registry does not hold yet: in GitHub Actions
 #                                          through trusted publishing (OIDC, with provenance),
 #                                          elsewhere after `npm login`. Re-run it after a failure.
-#
-# The binaries ship inside npm, as @openai/codex does it, in the one package
-# @commercecloudintegrations/epx-cli (the organization's scope: npm refused the unscoped
-# epx-cli as too similar to other names, and epx-cli-win32-* as spam): one version per
-# platform (<version>-<os>-<cpu>, with npm's `os` and `cpu` fields, so npm installs only
-# the matching one, published under the dist-tag <os>-<cpu>) and the main version
-# <version>, which lists them as optional dependencies under the aliases epx-cli-<os>-<cpu>
-# (npm:<package>@<version>-<os>-<cpu>) and runs the right binary from
-# npm/epx-cli/bin/epx.js. No install script runs and nothing is
-# downloaded from GitHub.
-#
-# The platforms are those of the release archives, verified against its checksums file.
-# For a release, every other published file (launcher, manifest, README, LICENSE) comes
-# from the tag, never from the working tree; a snapshot takes them from the working tree.
-# Before anything is published, the tarballs are checked (names, versions, os/cpu, the
-# optional dependencies of the main version, an executable binary) and installed into a
-# temporary project as npm installs them from the registry: the main version from its
-# tarball, its optional dependencies resolved to theirs (offline), so npm itself picks the
-# host's package; the installed epx must then run and carry the release's commit. A package version already on
-# the registry is skipped only when it is byte for byte the local tarball.
-# Output: DIST/npm/*.tgz; a later run packs again and must produce the same bytes.
 set -euo pipefail
 
 fail() { echo "npm: $*" >&2; exit 1; }
@@ -58,7 +34,6 @@ fi
 stage=$(mktemp -d)
 trap 'rm -rf "$stage"' EXIT
 
-# The platforms of the release, from its checksums file: epx_<tag>_<goos>_<goarch>.<ext>.
 sums=epx_${tag}_checksums.txt
 [[ -f "$dist/$sums" ]] || fail "$dist has no $sums"
 (cd "$dist" && shasum -a 256 --check --quiet "$sums") || fail "the archives do not match $sums"
@@ -68,13 +43,11 @@ while read -r _ file; do
 done <"$dist/$sums"
 [[ ${#archives[@]} -gt 0 ]] || fail "$sums lists no archive"
 
-# base strips the extension of an archive name (.tar.gz or .zip, checked above).
 base() {
 	local file=$1
 	if [[ $file == *.zip ]]; then echo "${file%.zip}"; else echo "${file%.tar.gz}"; fi
 }
 
-# npm_platform maps an archive name to npm's <os>-<cpu> (Go's windows/amd64 is win32/x64).
 npm_platform() {
 	local file=$1 rest
 	rest=$(base "$file")
@@ -83,16 +56,12 @@ npm_platform() {
 	echo "${goos/windows/win32}-${goarch/amd64/x64}"
 }
 
-# exe_of prints the binary name of an npm platform.
 exe_of() {
 	local platform=$1
 	if [[ $platform == win32-* ]]; then echo epx.exe; else echo epx; fi
 }
 
-# pkg is the npm package (as npm/epx-cli/package.json names it; check verifies it); npm
-# pack names its tarballs <scope>-<name>-<version>.tgz. alias_of prints the name under
-# which the package installs the version of an npm platform; tgz_of the tarball of that
-# version.
+# npm refused the unscoped epx-cli as too similar to other names, and epx-cli-win32-* as spam.
 pkg=@commercecloudintegrations/epx-cli
 tgz_base=commercecloudintegrations-epx-cli
 alias_of() {
@@ -108,8 +77,6 @@ out=$dist/npm
 main_tgz=$out/$tgz_base-$version.tgz
 packed=$stage/npm
 
-# sources copies the tracked inputs of the packages into the directory into: from the tag
-# for a release.
 sources() {
 	local into=$1
 	if [[ $tag == v* ]]; then
@@ -121,7 +88,6 @@ sources() {
 	fi
 }
 
-# pack_platform packs the platform package of one archive.
 pack_platform() {
 	local file=$1 src=$2 platform name exe dir
 	platform=$(npm_platform "$file")
@@ -148,19 +114,15 @@ pack_platform() {
 	(cd "$packed" && npm pack --silent "$dir" >/dev/null) || fail "cannot pack $name"
 }
 
-# deps prints the optional dependencies of the main version for the given npm platforms.
 deps() {
 	jq -n --arg pkg "$pkg" --arg version "$version" --args \
 		'$ARGS.positional | map({("epx-cli-" + .): "npm:\($pkg)@\($version)-\(.)"}) | add' "$@"
 }
 
-# pack writes every tarball into $packed: the platform versions of the archives, then
-# the main version, whose optional dependencies are exactly the platform versions packed.
 pack() {
 	local src=$stage/src main=$stage/epx-cli file platforms=()
 	mkdir -p "$src" "$packed"
 	sources "$src"
-	# The launcher's own tests, on the launcher that is packed (the tag's for a release).
 	node --test --test-reporter=dot "$src"/npm/epx-cli/test/*.test.js || fail "the launcher tests fail"
 	for file in "${archives[@]}"; do
 		pack_platform "$file" "$src"
@@ -168,7 +130,6 @@ pack() {
 	done
 	cp -R "$src/npm/epx-cli" "$main"
 	cp "$src/LICENSE" "$src/README.md" "$main/"
-	# The man pages of the tarballs (the same in each), which npm links into its man directory.
 	for file in "${archives[@]}"; do
 		[[ $file == *.tar.gz ]] && cp -R "$stage/$(base "$file")/man" "$main/man" && break
 	done
@@ -180,14 +141,11 @@ pack() {
 	(cd "$packed" && npm pack --silent "$main" >/dev/null) || fail "cannot pack $pkg"
 }
 
-# manifest prints the package.json of a tarball.
 manifest() {
 	local tgz=$1
 	tar -xOzf "$tgz" package/package.json
 }
 
-# check verifies every tarball: the platform versions of the archives, nothing else,
-# and the main version depending on exactly those.
 check() {
 	local file platform tgz exe platforms=() actual
 	for file in "${archives[@]}"; do
@@ -217,9 +175,6 @@ check() {
 	done
 }
 
-# smoke installs the package as npm does from the registry, its optional dependencies
-# (aliases) resolved to the tarballs (offline), and runs the epx that npm picked for
-# this host.
 smoke() {
 	local proj=$stage/proj host overrides='{}' file platform reported info
 	mkdir -p "$proj"
@@ -230,7 +185,6 @@ smoke() {
 	done
 	jq -n --arg pkg "$pkg" --arg main "file:$main_tgz" --argjson overrides "$overrides" \
 		'{private: true, dependencies: {($pkg): $main}, overrides: $overrides}' >"$proj/package.json"
-	# The packages have no lifecycle scripts (check), so none needs to run.
 	(cd "$proj" && npm install --offline --ignore-scripts --silent --no-audit --no-fund) ||
 		fail "cannot install the tarballs"
 	reported=$("$proj/node_modules/.bin/epx" version) || fail "the installed epx does not run"
@@ -244,10 +198,7 @@ smoke() {
 	echo "npm: $out checked ($reported)"
 }
 
-# publish publishes the version at of the package from the tarball tgz under dist_tag,
-# or skips it when the registry already holds this version with the same content (a run
-# that stopped halfway); a different content under the same version fails, since npm
-# never replaces a version.
+# npm never replaces a version.
 publish() {
 	local at=$1 tgz=$2 dist_tag=$3 published local_sum
 	published=$(npm view "$pkg@$at" dist.integrity 2>/dev/null) || published=
@@ -260,8 +211,6 @@ publish() {
 	npm publish --access public --tag "$dist_tag" "$tgz" || fail "cannot publish $pkg@$at"
 }
 
-# Every run packs from the verified archives (and the tag); packing is deterministic, so a
-# later run (a resumed publish) must produce exactly the tarballs already in $out.
 pack
 if [[ -e "$out" ]]; then
 	diff -r "$packed" "$out" >/dev/null || fail "$out differs from a fresh pack; delete it to pack again"
@@ -273,8 +222,6 @@ check
 smoke
 ls -1 "$out"
 
-# bounded runs a command for at most the given seconds where timeout(1) exists; npm's own
-# --fetch-timeout bounds its request otherwise.
 bounded() {
 	local seconds=$1
 	shift
@@ -285,10 +232,7 @@ bounded() {
 	fi
 }
 
-# available waits until the registry serves the version at of the package, or fails at
-# deadline (a value of $SECONDS), which all platform versions share: npm processes a
-# publish for a few minutes before installs can fetch it. Each request, and each pause
-# between them, ends by the deadline.
+# npm processes a publish for a few minutes before installs can fetch it.
 available() {
 	local at=$1 deadline=$2 left
 	while left=$((deadline - SECONDS)) && [[ "$left" -gt 0 ]]; do
@@ -311,15 +255,10 @@ if [[ "$mode" = --publish ]]; then
 	if [[ -z "${ACTIONS_ID_TOKEN_REQUEST_URL:-}" ]]; then
 		npm whoami >/dev/null || fail "not logged in to npm; run npm login"
 	fi
-	# The platform versions first: the main version must never depend on a version that does not
-	# exist yet. Each has its own dist-tag, so that latest stays on the launcher.
 	for file in "${archives[@]}"; do
 		platform=$(npm_platform "$file")
 		publish "$version-$platform" "$(tgz_of "$platform")" "$platform"
 	done
-	# Until every platform version is served, an install of the main version would leave
-	# out the binary of that platform.
-	# 15 minutes for all of them, well within the timeout of the release job (release.yml).
 	deadline=$((SECONDS + 15 * 60))
 	for file in "${archives[@]}"; do
 		available "$version-$(npm_platform "$file")" "$deadline"

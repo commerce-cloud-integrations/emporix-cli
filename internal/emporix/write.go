@@ -56,9 +56,6 @@ type Write struct {
 	Batched bool
 	// Answers says how the service answers w beyond its status (Answers).
 	Answers
-	// first is the position of the first item of the body among the items of
-	// the write that Split made w a batch of (ItemFailure.Index); 0 for any
-	// other.
 	first int
 }
 
@@ -67,18 +64,13 @@ type Write struct {
 // sends it, so the request shown is the one sent: to the configured API host,
 // never redirected, with a token limited to the client's scopes.
 type Request struct {
-	by     *Client // the client that prepared it, the only one that sends it
-	method string
-	url    string      // the full URL, with the tenant and the query
-	header http.Header // every header but Authorization, which carries the token
-	body   Body
-	// answers are the answers of the service that Send checks, as the write
-	// declares them; StaleNotFound is set only where the body carries a
-	// metadata.version (carriesVersion), so that a stale version can be told.
+	by      *Client
+	method  string
+	url     string
+	header  http.Header
+	body    Body
 	answers Answers
-	// parts are the parts of a write of parts (Write.Parts), whose results
-	// Send reads; nil for one value.
-	parts *sentParts
+	parts   *sentParts
 }
 
 // Method returns the method of r.
@@ -104,7 +96,6 @@ func (r *Request) Items() int {
 	return len(r.parts.parts)
 }
 
-// writeMethods are the methods of a write.
 func writeMethods() []string {
 	return []string{http.MethodPost, http.MethodPut, http.MethodPatch, http.MethodDelete}
 }
@@ -138,7 +129,7 @@ func (c *Client) Prepare(w *Write) (*Request, error) {
 	}
 	switch {
 	case w.AnsweredWhole:
-		parts = nil // checked, but answered as one value
+		parts = nil
 	case parts != nil:
 		parts.first = w.first
 	}
@@ -148,8 +139,6 @@ func (c *Client) Prepare(w *Write) (*Request, error) {
 		body: w.Body, parts: parts, answers: checked}, nil
 }
 
-// carriedOutNote ends the error of a write that may have been carried out
-// although it failed (Send).
 const carriedOutNote = "it may have been carried out all the same: read the item before you send it again"
 
 // Send sends r, which Prepare of c made (ErrInvalidInput otherwise), with the
@@ -204,7 +193,6 @@ func (c *Client) Send(ctx context.Context, r *Request) ([]byte, error) {
 	}
 }
 
-// responseBody returns the body of result, nil when it is empty.
 func responseBody(result reply) []byte {
 	if result.empty() {
 		return nil
@@ -212,12 +200,6 @@ func responseBody(result reply) []byte {
 	return result.body
 }
 
-// failureClass classifies the failure status of r, answered with body, as a
-// write's (writeErrorClass), but a 404 Not Found that may answer a stale
-// metadata.version (r.answers.StaleNotFound) as a conflict, as the item may have
-// changed since it was read (reading it again tells that apart from an
-// unknown item), and a 403 Forbidden that refuses its input where its service
-// answers so (r.answers.ForbiddenIsRefusal, refusesInput) as of no class.
 func (r *Request) failureClass(status int, body []byte) error {
 	switch {
 	case status == http.StatusNotFound && r.answers.StaleNotFound:
@@ -229,9 +211,6 @@ func (r *Request) failureClass(status int, body []byte) error {
 	}
 }
 
-// carriesVersion reports whether body is a JSON object whose member
-// metadata, an object, has a version other than null (names match exactly,
-// as Emporix matches them).
 func carriesVersion(body []byte) bool {
 	var item, metadata map[string]json.RawMessage
 	if json.Unmarshal(body, &item) != nil || json.Unmarshal(item["metadata"], &metadata) != nil {

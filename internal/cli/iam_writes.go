@@ -6,7 +6,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// The scopes of the IAM writes, as the reference names them.
 const (
 	iamAccessManage     = "iam.access_manage"
 	iamScopeManage      = "iam.scope_manage"
@@ -20,40 +19,24 @@ const (
 // requests it.
 const iamGroupManage = "iam.group_manage"
 
-// accessChange follows what an IAM write sends, in its help (accessChanging).
 const accessChange = "It changes who may do what in the tenant."
 
-// writesChangeAccess ends the help of a group of IAM reads and writes, after
-// what it reads and changes.
 const writesChangeAccess = "Its writes change who may do what in the tenant."
 
-// upsertTerms says, in the help of an IAM upsert, how metadata.version locks
-// it (the IAM Service checks it where the body gives it), and what Emporix
-// answers.
 const upsertTerms = "With metadata.version as read, Emporix changes it only if that is still its version. " +
 	"Emporix answers with the id of one it created, and with nothing when it replaced one."
 
-// unknownUpdate says, in the help of users update, what an unknown ID gets: Emporix answers 204 and
-// makes the ID a member of the groups of groupIds (live), so no refusal is sent by epx: the service
-// decides, and a read first would be a second request that a concurrent delete can outdate.
 const unknownUpdate = "An unknown ID is not refused: Emporix answers 204 No Content and adds that ID as a member of " +
 	"each group of groupIds, so those groups take effect for it. Check the ID with `epx iam users get` " +
 	"first; `epx iam users groups delete-all ID` removes it from every group it is in."
 
-// iamUserTypes returns the only kinds of user that a group's users have, in
-// capitals as the reference names them.
 func iamUserTypes() []string { return []string{"CUSTOMER", "EMPLOYEE"} }
 
-// accessChanging returns w, an IAM write, whose help then says that it
-// changes who may do what (accessChange): every IAM write is declared
-// through it.
 func accessChanging(w *write) *write {
 	w.long = joinSentences(w.long, accessChange)
 	return w
 }
 
-// newIAMAccessControlsCommand returns the group of access controls: their
-// reads, and update ID (an upsert) and delete ID.
 func newIAMAccessControlsCommand(a *app) *cobra.Command {
 	controls := iamAccessControls()
 	controls.short = "Read, upsert and delete access controls"
@@ -78,10 +61,8 @@ func newIAMAccessControlsCommand(a *app) *cobra.Command {
 		}).command(a))
 }
 
-// newIAMScopesCommand returns the group of scopes: their reads, and update ID
-// (an upsert) and delete ID of the tenant's custom scopes. Unlike its other
-// upserts, the reference names no Content-Language for a scope, whose
-// description is a map of translations, so none is sent.
+// The reference names no Content-Language for a scope, whose description is a
+// map of translations, so none is sent.
 func newIAMScopesCommand(a *app) *cobra.Command {
 	scopes := iamScopes()
 	scopes.short = "Read, upsert and delete OAuth scopes"
@@ -106,11 +87,6 @@ func newIAMScopesCommand(a *app) *cobra.Command {
 		}).command(a))
 }
 
-// iamGroupWrites returns the writes of groups: create, update ID (an upsert)
-// and delete ID, which with --force-delete sends forceDelete=true, also
-// removing the group's users, and then needs the scope that manages them
-// too, as the reference documents; without it, it sends no forceDelete,
-// which Emporix takes as false.
 func iamGroupWrites(a *app, groups resource[iamGroup]) []*cobra.Command {
 	scopes := []string{iamGroupManage}
 	return []*cobra.Command{
@@ -148,14 +124,10 @@ func iamGroupWrites(a *app, groups resource[iamGroup]) []*cobra.Command {
 	}
 }
 
-// groupUserWrites returns the writes of members, the users of a group of
-// membersOf (groups nested in `iam groups users`): create GROUP_ID, update
-// GROUP_ID USER_TYPE USER_ID (an upsert), delete GROUP_ID USER_ID and
-// delete-all GROUP_ID.
 func groupUserWrites(a *app, membersOf resource[iamGroup], members child[groupMember]) []*cobra.Command {
 	scopes := []string{iamAssignmentManage}
 	group, collection := membersOf.argument(), members.below(membersOf.path)
-	const user = "USER_ID" // a member, as the USER of the group's members
+	const user = "USER_ID"
 	source := membersOf.argumentSentence(notFound)
 	removal := membersOf.argumentSentence(answeredDeleted)
 	removeOne := membersOf.argumentSource() + "; an unknown GROUP_ID or USER_ID " + string(answeredDeleted) + "."
@@ -204,10 +176,8 @@ func groupUserWrites(a *app, membersOf resource[iamGroup], members child[groupMe
 	}
 }
 
-// userWrites returns the writes of users (employees): create, update ID and
-// delete ID. The reference's forceDelete of a delete, which also deletes the
-// user's Developer Portal account, is left out: only a Developer Portal
-// admin, a person, may send it.
+// The reference's forceDelete of a user, which also deletes the user's Developer
+// Portal account, is left out: only a Developer Portal admin, a person, may send it.
 func userWrites(a *app, users resource[iamUser]) []*cobra.Command {
 	const members = "firstName, lastName, preferredSite, preferredCurrency, preferredLanguage, department"
 	return []*cobra.Command{
@@ -238,9 +208,6 @@ func userWrites(a *app, users resource[iamUser]) []*cobra.Command {
 	}
 }
 
-// userGroupsWrite returns `delete-all USER_ID` of userGroups, the groups of a
-// user of groupsOf (users nested in `iam users groups`), which removes the
-// user from every group.
 func userGroupsWrite(a *app, groupsOf resource[iamUser], userGroups child[iamGroup]) *cobra.Command {
 	user := groupsOf.argument()
 	return accessChanging(&write{

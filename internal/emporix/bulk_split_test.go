@@ -8,10 +8,6 @@ import (
 	"testing"
 )
 
-// TestSplitSendsBatchesOfUpToMaxItems checks that a bulk write that may be
-// sent in batches is split into writes of up to MaxItems items, in order,
-// each item as given, and that any other write, or a body that Prepare
-// refuses, is left whole.
 func TestSplitSendsBatchesOfUpToMaxItems(t *testing.T) {
 	whole := []*Write{
 		{Method: http.MethodPut, Path: bulkPath, Body: jsonBody(t, `[1,2,3]`), Parts: Items(2, "")},
@@ -45,9 +41,6 @@ func TestSplitSendsBatchesOfUpToMaxItems(t *testing.T) {
 	}
 }
 
-// TestBatchesNameTheirItemsInTheWholeWrite checks that the failures of a
-// batch name each item by its position among the items of the write split,
-// and its request the items it sends.
 func TestBatchesNameTheirItemsInTheWholeWrite(t *testing.T) {
 	fake := newFakeEmporix(t)
 	fake.route("/price/acme1/prices/bulk",
@@ -78,9 +71,6 @@ func TestBatchesNameTheirItemsInTheWholeWrite(t *testing.T) {
 	}
 }
 
-// TestJoinItemsJoinsTheFailuresOfBatches checks that the failures of the
-// batches of one write are joined in order, as those of one write of every
-// item, of the class that they all share, if any; none failed, nothing.
 func TestJoinItemsJoinsTheFailuresOfBatches(t *testing.T) {
 	if err := JoinItems(400, nil); err != nil {
 		t.Errorf("no failures: %v; want nil", err)

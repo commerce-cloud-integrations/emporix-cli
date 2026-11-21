@@ -7,11 +7,8 @@ import (
 	"testing"
 )
 
-// couponJSON is a coupon as create takes it.
 const couponJSON = `{"code":"SAVE7","name":"Save 7","discountType":"PERCENT","discountPercentage":7}`
 
-// couponWriteCases are the writes of coupons, their redemptions and referral
-// coupons.
 func couponWriteCases() []writeCase {
 	manage, onBehalf := []string{couponManage}, []string{couponRedeemOnBehalf}
 	return []writeCase{
@@ -61,7 +58,6 @@ func couponWriteCases() []writeCase {
 	}
 }
 
-// rewardPointWriteCases are the writes of reward points and redeem options.
 func rewardPointWriteCases() []writeCase {
 	manage := []string{rewardPointsManage}
 	const option = `{"type":"coupon","name":"10 EUR off","points":90,"coupon":{"name":"10 EUR off",` +
@@ -80,12 +76,10 @@ func rewardPointWriteCases() []writeCase {
 			path: "/reward-points/customer/c1", query: "siteCode=main", scopes: manage, status: http.StatusOK,
 		},
 		{
-			// Without --site, Emporix applies the settings of site main.
 			args: []string{"reward-points", "create", "c 1"}, sent: `{"customerId":"c 1"}`, method: http.MethodPost,
 			path: "/reward-points/customer/c%201", scopes: manage, status: http.StatusOK,
 		},
 		{
-			// --file is sent as given, also without customerId (Emporix answers 500 then).
 			args: []string{"reward-points", "create", "c1"}, file: `{"startPoints":{"points":20}}`,
 			method: http.MethodPost, path: "/reward-points/customer/c1", scopes: manage, status: http.StatusOK,
 		},
@@ -138,7 +132,6 @@ func rewardPointWriteCases() []writeCase {
 	}
 }
 
-// shoppingListWriteCases are the writes of customers' shopping lists.
 func shoppingListWriteCases() []writeCase {
 	manage := []string{"shoppinglist.shoppinglist_manage"}
 	const list = `{"customerId":"c1","name":"default","items":[{"id":1,"productId":"100200","quantity":2}]}`
@@ -166,12 +159,6 @@ func shoppingListWriteCases() []writeCase {
 	}
 }
 
-// TestPromotionWriteUsageErrorsSendNothing checks that the typed writes of
-// coupons, reward points and shopping lists fail as a usage error (exit 2)
-// that sends nothing, also for a dry run, without a flag that their body or
-// request requires, with a value that a flag refuses (a count of points that
-// is no whole number above 0), with a flag that applies only with another, or
-// with --file and a flag that it replaces.
 func TestPromotionWriteUsageErrorsSendNothing(t *testing.T) {
 	file := writeBody(t, `{"points":5}`)
 	cases := []refusedWrite{
@@ -215,10 +202,6 @@ func TestPromotionWriteUsageErrorsSendNothing(t *testing.T) {
 	assertRefused(t, cases)
 }
 
-// TestPromotionWritesHelp pins what the help of coupon, reward points and
-// shopping list writes, and of coupons validate, says of Emporix's answers:
-// the exit code of each refusal, the writes that create nothing, the deletes
-// of unknown items and the settings the site needs.
 func TestPromotionWritesHelp(t *testing.T) {
 	assertHelpHolds(t, map[string][]string{
 		"coupons redeem": {redemptionRefusals, legalEntityNote, "answers with: `{\"id\": ID}`",

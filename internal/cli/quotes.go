@@ -9,10 +9,8 @@ import (
 	"github.com/commerce-cloud-integrations/emporix-cli/internal/emporix"
 )
 
-// quoteScope reads quotes, their history and quote reasons.
 const quoteScope = "quote.quote_read"
 
-// quote is the part of a Quote Service quote shown in tables.
 type quote struct {
 	ID     string `json:"id"`
 	Status struct {
@@ -35,18 +33,14 @@ type quote struct {
 	} `json:"totalPrice"`
 }
 
-// customer returns who asked for the quote: their email, else their name,
-// else their customer id.
 func (q *quote) customer() string {
 	return cmp.Or(q.Customer.ContactEmail, q.Customer.fullName(), q.Customer.CustomerID)
 }
 
-// total returns the gross total in its currency, else the quote's.
 func (q *quote) total() string {
 	return money{Amount: q.TotalPrice.GrossValue, Currency: cmp.Or(q.TotalPrice.Currency, q.Currency)}.String()
 }
 
-// quoteChange is one entry of a quote's history.
 type quoteChange struct {
 	ID            string `json:"id"`
 	ModifiedAt    string `json:"modifiedAt"`
@@ -57,7 +51,6 @@ type quoteChange struct {
 	Path          string `json:"path"`
 }
 
-// quoteReason is a reason for changing or declining a quote.
 type quoteReason struct {
 	ID      string    `json:"id"`
 	Code    string    `json:"code"`
@@ -65,9 +58,6 @@ type quoteReason struct {
 	Message localized `json:"message"`
 }
 
-// newQuotesCommand reads, creates and changes quotes, generates their PDF,
-// reads their history, and reads and changes the reasons for changing their
-// status.
 func newQuotesCommand(a *app) *cobra.Command {
 	quotes := resource[quote]{
 		use:   "quotes",
@@ -95,7 +85,7 @@ func newQuotesCommand(a *app) *cobra.Command {
 		long: "Reads the history of a quote, personal data included: when (MODIFIED), by whom (BY: user " +
 			"type and name) and what changed (CHANGE: the operation and the changed part). Old and new " +
 			"values are only in `-o json`. Emporix sends the whole history in one response.",
-		fetch: listing{read: (*emporix.Client).GetUnpaged}, // live: pageSize and pageNumber are ignored
+		fetch: listing{read: (*emporix.Client).GetUnpaged},
 		view: view[quoteChange]{
 			singular: "quote change",
 			header:   []string{columnID, columnModified, "BY", "CHANGE"},
@@ -108,9 +98,6 @@ func newQuotesCommand(a *app) *cobra.Command {
 		newQuoteReasonsCommand(a)}, commandsOf(a, quoteWrites(quotes))...)...)
 }
 
-// newQuotePDFCommand saves the PDF of a quote, which Emporix generates on a
-// POST that changes neither the quote nor its history, and allows with the
-// read scope (live).
 func newQuotePDFCommand(a *app, quotes resource[quote]) *cobra.Command {
 	return quotes.reader().fileCommand(a, &fileRead{command: command{
 		use: "pdf " + quotes.argument(), short: "Save the PDF of a quote",
@@ -123,8 +110,6 @@ func newQuotePDFCommand(a *app, quotes resource[quote]) *cobra.Command {
 		noun: "PDF", media: "application/pdf"})
 }
 
-// newQuoteReasonsCommand reads, creates, changes and deletes the reasons for
-// changing or declining a quote.
 func newQuoteReasonsCommand(a *app) *cobra.Command {
 	reasons := resource[quoteReason]{
 		use:   "reasons",

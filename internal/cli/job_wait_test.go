@@ -13,15 +13,11 @@ import (
 	"github.com/commerce-cloud-integrations/emporix-cli/internal/output"
 )
 
-// The paths of the reindex jobs, as the fake serves them.
 const (
 	reindexJobsPath = "/indexing/acme1/reindex-jobs"
 	reindexJobPath  = reindexJobsPath + "/j1"
 )
 
-// jobCreate is `indexing reindex-jobs create`, whose --wait may read the job
-// every millisecond, unlike the command's, which reads it every second at
-// most.
 func jobCreate() *write {
 	w := reindexJobCreate(reindexJobs())
 	if job, follows := w.answer.(*jobWait); follows {
@@ -30,15 +26,12 @@ func jobCreate() *write {
 	return w
 }
 
-// waitFor runs `create --entity-type PRODUCT --yes` of jobCreate against
-// fake, polling every millisecond, with the flags.
 func waitFor(t *testing.T, fake *fakeEmporix, flags ...string) (code int, stdout, stderr string) {
 	t.Helper()
 	args := []string{"create", "--entity-type", "PRODUCT", "--yes", "--poll-interval", "1ms"}
 	return runWrite(t.Context(), writeRoot(fake, jobCreate()), append(args, flags...)...)
 }
 
-// asPrinted returns body as epx prints JSON.
 func asPrinted(t *testing.T, body string) string {
 	t.Helper()
 	var printed strings.Builder
@@ -48,13 +41,9 @@ func asPrinted(t *testing.T, body string) string {
 	return printed.String()
 }
 
-// TestReindexJobWaitFollowsTheJob checks that --wait reads the job that
-// create started again, with the read scope too, until it ends, saying on
-// standard error how its status changes, and prints it as it ended.
 func TestReindexJobWaitFollowsTheJob(t *testing.T) {
 	fake := newFakeEmporix(t)
 	fake.route(reindexJobsPath, respond(http.StatusCreated, `{"id":"j1","status":"PENDING"}`))
-	// As Emporix sends it, a job that ended with SUCCESS says only how many items it expected.
 	last := `{"id":"j1","status":"SUCCESS","expectedCount":5}`
 	fake.route(reindexJobPath, inTurn(respond(http.StatusOK, `{"id":"j1","status":"PENDING"}`),
 		respond(http.StatusOK, `{"id":"j1","status":"IN_PROGRESS","expectedCount":5,"processedCount":2}`),
@@ -73,14 +62,11 @@ func TestReindexJobWaitFollowsTheJob(t *testing.T) {
 	}
 }
 
-// TestReindexJobWaitFailsUnlessTheJobSucceeds checks that a job that ends
-// otherwise than with SUCCESS, also one that Emporix answers with as it is
-// created, is printed and fails (exit 1), naming its status and message.
 func TestReindexJobWaitFailsUnlessTheJobSucceeds(t *testing.T) {
 	for _, tt := range []struct {
-		created, read string // the response of create, and of every read of the job (none when empty)
+		created, read string
 		code          int
-		want          string // the end of standard error
+		want          string
 	}{
 		{created: `{"id":"j1","status":"IN_PROGRESS"}`, read: `{"id":"j1","status":"FAILURE","message":"no index"}`,
 			code: ExitError, want: "Error: reindex job j1 ended with FAILURE: no index\n"},
@@ -104,9 +90,6 @@ func TestReindexJobWaitFailsUnlessTheJobSucceeds(t *testing.T) {
 	}
 }
 
-// TestReindexJobWaitTimesOut checks that a job that has not ended when
-// --wait-timeout passes is printed as last read and fails (exit 1), saying
-// how to follow it.
 func TestReindexJobWaitTimesOut(t *testing.T) {
 	fake := newFakeEmporix(t)
 	running := `{"id":"j1","status":"IN_PROGRESS","expectedCount":5,"processedCount":1}`
@@ -121,18 +104,15 @@ func TestReindexJobWaitTimesOut(t *testing.T) {
 	}
 }
 
-// TestReindexJobWaitFailures checks that a response that names no job to
-// wait for, and a read of the job that fails or holds another job, end the
-// wait, keeping the exit code of the failure; what was read last is printed.
 func TestReindexJobWaitFailures(t *testing.T) {
 	const noJob = "Error: sent, but its reindex job cannot be waited for: decoding reindex job response: "
 	const notJob = `{"id":"j1","status":7}`
 	for _, tt := range []struct {
-		created string           // the response of create
-		read    http.HandlerFunc // the reads of the job
+		created string
+		read    http.HandlerFunc
 		stdout  string
 		code    int
-		want    string // the end of standard error
+		want    string
 	}{
 		{created: `{"status":"PENDING"}`, stdout: "{\n  \"status\": \"PENDING\"\n}\n", code: ExitError,
 			want: noJob + "no id or status\n"},
@@ -164,8 +144,6 @@ func TestReindexJobWaitFailures(t *testing.T) {
 	}
 }
 
-// TestReindexJobWaitStopsOnInterrupt checks that an interrupt, which ends
-// the command's context, ends the wait: an error (exit 1).
 func TestReindexJobWaitStopsOnInterrupt(t *testing.T) {
 	fake := newFakeEmporix(t)
 	ctx, cancel := context.WithCancel(t.Context())
@@ -183,9 +161,6 @@ func TestReindexJobWaitStopsOnInterrupt(t *testing.T) {
 	}
 }
 
-// TestReindexJobWaitNeedsTheReadScope checks that --wait requests the scope
-// of reading the job with that of the write, so a credential without it
-// fails (exit 3) before anything is sent.
 func TestReindexJobWaitNeedsTheReadScope(t *testing.T) {
 	fake := newFakeEmporix(t, "indexing.search_view")
 	code, _, stderr := waitFor(t, fake, "--wait")
@@ -195,10 +170,6 @@ func TestReindexJobWaitNeedsTheReadScope(t *testing.T) {
 	}
 }
 
-// TestReindexJobCreateUsageErrors checks that invalid flags of create are
-// usage errors (exit 2) that send nothing: the flags of --wait without it or
-// with a duration shorter than a second, and a body given by neither or both
-// of --entity-type and --file.
 func TestReindexJobCreateUsageErrors(t *testing.T) {
 	file := writeBody(t, `{"entityType":"PRODUCT"}`)
 	const tooShort = "use a duration of 1s or more, such as 30s or 10m"
@@ -227,8 +198,6 @@ func TestReindexJobCreateUsageErrors(t *testing.T) {
 	}
 }
 
-// TestReindexJobCreateSendsRagOnlyWhenGiven checks the body that the typed
-// flags of create make: rag only when --rag is given, also as false.
 func TestReindexJobCreateSendsRagOnlyWhenGiven(t *testing.T) {
 	for flags, want := range map[string]string{
 		"":            `{"entityType":"ORDER"}`,
@@ -245,15 +214,12 @@ func TestReindexJobCreateSendsRagOnlyWhenGiven(t *testing.T) {
 	}
 }
 
-// TestReindexJobWaitOutputFailures checks that a job, or a response without
-// one, that cannot be printed fails the run, joined to how the wait ended,
-// whose exit code it keeps: 4 for a read of the job that was not found.
 func TestReindexJobWaitOutputFailures(t *testing.T) {
 	for _, tt := range []struct {
-		created string           // the response of create
-		read    http.HandlerFunc // the reads of the job
+		created string
+		read    http.HandlerFunc
 		code    int
-		want    []string // what standard error says, the output failure last
+		want    []string
 	}{
 		{created: `{"id":"j1","status":"SUCCESS"}`, code: ExitError, want: []string{"Error: disk full\n"}},
 		{created: `{"status":"SUCCESS"}`, code: ExitError,
@@ -286,8 +252,6 @@ func TestReindexJobWaitOutputFailures(t *testing.T) {
 	}
 }
 
-// TestReindexJobCreateHelp checks what the help of create says about --wait
-// and its flags.
 func TestReindexJobCreateHelp(t *testing.T) {
 	_, help, _ := runCLI(t, nil, "indexing", "reindex-jobs", "create", "--help")
 	for _, want := range []string{

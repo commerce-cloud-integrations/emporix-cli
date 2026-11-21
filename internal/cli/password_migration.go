@@ -6,20 +6,14 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// passwordMigration is the tenant's password migration retention: until when
-// customers imported with a legacy password hash are migrated as they sign in.
 type passwordMigration struct {
 	RetentionEndDate          string `json:"retentionEndDate"`
 	EmailReminderDate         string `json:"emailReminderDate"`
 	EmailNotificationsEnabled *bool  `json:"emailNotificationsEnabled"`
 }
 
-// passwordMigrationPath is the path of the password migration retention.
 const passwordMigrationPath = "/customer/{tenant}/config/password-migration-retention"
 
-// newPasswordMigrationCommand returns the group of the password migration
-// retention, which the Customer Service keeps for customer imports: get
-// reads it, update sets it and delete removes it.
 func newPasswordMigrationCommand(a *app) *cobra.Command {
 	retention := request{path: passwordMigrationPath}
 	scopes := []string{customerImportScope}

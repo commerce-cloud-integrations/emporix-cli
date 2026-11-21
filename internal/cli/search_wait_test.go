@@ -11,8 +11,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// The paths of a search index, of the import of indexes and of two index
-// jobs, as the fake serves them.
 const (
 	searchIndexPath = "/search/acme1/search/vehicle/indexes/vehicles"
 	indexImportPath = "/search/acme1/search/indexes/import"
@@ -20,9 +18,6 @@ const (
 	indexJob2Path   = "/search/acme1/jobs/j2"
 )
 
-// indexWaitRoot returns a root holding only `indexes` of search, which runs
-// against fake, whose --wait may read a job every millisecond, unlike the
-// commands', which read it every second at most.
 func indexWaitRoot(fake *fakeEmporix) *cobra.Command {
 	job := indexJobWait(indexJobs())
 	job.shortest = time.Millisecond
@@ -33,10 +28,6 @@ func indexWaitRoot(fake *fakeEmporix) *cobra.Command {
 	return root
 }
 
-// waitForIndex runs the index write named use, `indexes <use> --yes --wait
-// --poll-interval 1ms` and flags, against fake: update and delete of the
-// index vehicles of the type vehicle, update with a file that holds it, or
-// import, of a package on standard input.
 func waitForIndex(t *testing.T, fake *fakeEmporix, use string, flags ...string) (code int, stdout, stderr string) {
 	t.Helper()
 	root := indexWaitRoot(fake)
@@ -52,7 +43,6 @@ func waitForIndex(t *testing.T, fake *fakeEmporix, use string, flags ...string) 
 		flags)...)
 }
 
-// indexWritePath returns the path that the index write named use sends to.
 func indexWritePath(use string) string {
 	if use == "import" {
 		return indexImportPath
@@ -60,10 +50,6 @@ func indexWritePath(use string) string {
 	return searchIndexPath
 }
 
-// TestIndexWaitReadsTheJobByItsID checks that --wait of update and delete,
-// which Emporix answers with the id of the job alone, reads the job by that
-// id, with the read scope too, then again until it ends, saying on standard
-// error how its status changes, and prints it as it ended.
 func TestIndexWaitReadsTheJobByItsID(t *testing.T) {
 	const last = `{"id":"j1","status":"success","type":"update_index","indexId":"vehicles","response":"Index updated."}`
 	for _, use := range []string{"update", "delete"} {
@@ -80,10 +66,6 @@ func TestIndexWaitReadsTheJobByItsID(t *testing.T) {
 	}
 }
 
-// TestIndexWaitWithoutAJob checks that --wait of a write that started no
-// job, an update that Emporix answers with 204 No Content and an import whose
-// indexes name none, says so and succeeds, reading no job: it prints the
-// response of update, empty, and the jobs of import, none.
 func TestIndexWaitWithoutAJob(t *testing.T) {
 	const unchanged = `[{"id":"bikes","type":"bike"},{"id":"cars","type":"car","jobId":null}]`
 	const noIndexJob = "Emporix started no index job, so there is none to wait for.\n"
@@ -106,8 +88,6 @@ func TestIndexWaitWithoutAJob(t *testing.T) {
 	}
 }
 
-// The jobs of an import as the fake reads them: j1 running, then ended with
-// success or failure, j2 ended with success, and a read of a job not found.
 const (
 	indexJob1Running = `{"id":"j1","status":"in_progress"}`
 	indexJob1Success = `{"id":"j1","status":"success","indexId":"vehicles"}`
@@ -116,12 +96,6 @@ const (
 	indexJobGone     = `{"message":"gone"}`
 )
 
-// TestIndexWaitFollowsEachImportedJob checks that --wait of import follows
-// each job that its result per index names, in turn, naming each by the
-// TYPE/ID of its index, and prints them as a JSON array, as last read,
-// leaving out those never read: it succeeds only when each ended with
-// success, and fails naming each that did not, still following the jobs
-// after it, with the exit code that their failures share, else 1.
 func TestIndexWaitFollowsEachImportedJob(t *testing.T) {
 	const imported = `[{"id":"vehicles","type":"vehicle","jobId":"j1","jobType":"create_index"},` +
 		`{"id":"bikes","type":"bike"},{"id":"cars","type":"car","jobId":"j2","jobType":"update_index"}]`
@@ -137,10 +111,10 @@ func TestIndexWaitFollowsEachImportedJob(t *testing.T) {
 	)
 	for _, tt := range []struct {
 		name   string
-		j1, j2 http.HandlerFunc // the reads of each job
+		j1, j2 http.HandlerFunc
 		code   int
-		stdout string // the jobs printed, as JSON
-		end    string // the end of standard error
+		stdout string
+		end    string
 	}{
 		{name: "each succeeds", j1: ended(indexJob1Success), j2: respond(http.StatusOK, indexJob2Success),
 			code: ExitOK, stdout: "[" + indexJob1Success + "," + indexJob2Success + "]",
@@ -171,16 +145,12 @@ func TestIndexWaitFollowsEachImportedJob(t *testing.T) {
 	}
 }
 
-// TestIndexWaitTimesOut checks that a job that has not ended when
-// --wait-timeout passes is printed as last read and fails (exit 1), saying
-// how to follow it, as does each job of an import after it, which it says
-// was never read.
 func TestIndexWaitTimesOut(t *testing.T) {
 	const notEnded = "index job j1%s has not ended within 20ms (last in_progress); it goes on: " +
 		"`epx search jobs get j1` reads it\n"
 	for _, tt := range []struct {
 		use, answer   string
-		stdout, wants string // standard output, as JSON, and the end of standard error
+		stdout, wants string
 	}{
 		{use: "update", answer: `{"id":"j1"}`, stdout: indexJob1Running, wants: "Error: " + fmt.Sprintf(notEnded, "")},
 		{use: "import",
@@ -200,18 +170,14 @@ func TestIndexWaitTimesOut(t *testing.T) {
 	}
 }
 
-// TestIndexWaitFailures checks that an answer that does not name the jobs as
-// its endpoint does, and a first read of the job that fails or holds another
-// job, end the wait, keeping the exit code of the failure, and print the
-// response as sent.
 func TestIndexWaitFailures(t *testing.T) {
 	const cannot = "Error: sent, but its index job cannot be waited for: decoding the response: "
 	for _, tt := range []struct {
 		use    string
 		answer string
-		read   http.HandlerFunc // the reads of the job j1
+		read   http.HandlerFunc
 		code   int
-		want   string // the end of standard error
+		want   string
 	}{
 		{use: "update", answer: `{"id":7}`, code: ExitError, want: cannot + "id is not the ID of a job\n"},
 		{use: "update", answer: `{"message":"accepted"}`, code: ExitError, want: cannot + "id is not the ID of a job\n"},
@@ -244,9 +210,6 @@ func TestIndexWaitFailures(t *testing.T) {
 	}
 }
 
-// TestIndexWaitNeedsTheReadScope checks that --wait requests the scope of
-// reading index jobs with that of the write, so a credential without it
-// fails (exit 3) before anything is sent.
 func TestIndexWaitNeedsTheReadScope(t *testing.T) {
 	fake := newFakeEmporix(t, "search.search_read")
 	code, _, stderr := waitForIndex(t, fake, "delete")

@@ -7,7 +7,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// priceList is the part of a Price Service price list shown in tables.
 type priceList struct {
 	ID             string    `json:"id"`
 	Name           localized `json:"name"`
@@ -20,7 +19,6 @@ type priceList struct {
 	Validity       validity  `json:"validity"`
 }
 
-// priceListPrice is the part of a price in a price list shown in tables.
 type priceListPrice struct {
 	ID           string     `json:"id"`
 	ItemID       priceItem  `json:"itemId"`
@@ -28,7 +26,6 @@ type priceListPrice struct {
 	TierValues   priceTiers `json:"tierValues"`
 }
 
-// newPriceListsCommand reads and changes price lists and the prices of one.
 func newPriceListsCommand(a *app) *cobra.Command {
 	lists := resource[priceList]{
 		use:   "price-lists",
@@ -63,9 +60,6 @@ func newPriceListsCommand(a *app) *cobra.Command {
 		priceListWrites(a, lists), []*cobra.Command{newPriceListPricesCommand(a, lists)})...)
 }
 
-// priceListPrices is the collection of the prices of one price list, below
-// pricesOf, the price lists nested in a group of their own (`price-lists
-// prices`), which holds its writes too.
 func priceListPrices(pricesOf resource[priceList]) child[priceListPrice] {
 	return child[priceListPrice]{
 		use:     listUse,
@@ -86,8 +80,6 @@ func priceListPrices(pricesOf resource[priceList]) child[priceListPrice] {
 	}
 }
 
-// newPriceListPricesCommand returns `price-lists prices`, the group of the
-// prices of one price list of lists: list, search and get, and their writes.
 func newPriceListPricesCommand(a *app, lists resource[priceList]) *cobra.Command {
 	pricesOf := lists.nested("prices")
 	prices := priceListPrices(pricesOf)

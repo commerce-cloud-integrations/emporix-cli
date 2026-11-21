@@ -11,7 +11,6 @@ import (
 	"github.com/commerce-cloud-integrations/emporix-cli/internal/emporix"
 )
 
-// order is the part of an Order Service sales order shown in tables.
 type order struct {
 	ID        string `json:"id"`
 	OrderType string `json:"orderType"`
@@ -23,31 +22,25 @@ type order struct {
 		Name  string `json:"name"`
 	} `json:"customer"`
 	SiteCode        string            `json:"siteCode"`
-	Entries         []json.RawMessage `json:"entries"` // counted only
+	Entries         []json.RawMessage `json:"entries"`
 	CalculatedPrice calculatedPrice   `json:"calculatedPrice"`
 	Currency        string            `json:"currency"`
 }
 
-// buyer returns the customer's email, or else their name.
 func (o *order) buyer() string {
 	c := o.Customer
 	return cmp.Or(c.Email, c.fullName(), c.Name)
 }
 
-// orderStatus is a status an order can move to.
 type orderStatus struct {
 	Status string `json:"status"`
 }
 
-// orderStatusChange is a status change in an order's history.
 type orderStatusChange struct {
 	Status    string `json:"status"`
 	Timestamp string `json:"timestamp"`
 }
 
-// orderHistoryItems finds the status changes of an order's history, which
-// Emporix returns as the transitions of an object with its metadata; a
-// response without them is not a history.
 func orderHistoryItems(body json.RawMessage) ([]json.RawMessage, error) {
 	var history struct {
 		Transitions *[]json.RawMessage `json:"transitions"`
@@ -58,8 +51,6 @@ func orderHistoryItems(body json.RawMessage) ([]json.RawMessage, error) {
 	return *history.Transitions, nil
 }
 
-// newOrdersCommand reads sales orders, which hold personal data, with their
-// possible and past status changes.
 func newOrdersCommand(a *app) *cobra.Command {
 	orders := resource[order]{
 		use:   "orders",
@@ -110,7 +101,6 @@ func newOrdersCommand(a *app) *cobra.Command {
 				row:      func(s orderStatus, _ language) []string { return []string{s.Status} },
 			},
 		}),
-		// The history is one object holding the status changes, not a list.
 		childCommand(a, orders, child[orderStatusChange]{
 			use:   "history",
 			sub:   "historical-transitions",

@@ -19,7 +19,7 @@ import (
 // nothing after the headers for a nil body. The caller leaves out what must
 // not be shown, such as an Authorization header. A multipart/form-data body,
 // as its Content-Type names it, shows as a line for each part, followed by
-// its content where it is JSON (formParts).
+// its content where it is JSON.
 func WriteRequest(w io.Writer, method, url string, header map[string][]string, body []byte) error {
 	var text bytes.Buffer
 	fmt.Fprintf(&text, "%s %s\n", method, url)
@@ -38,9 +38,6 @@ func WriteRequest(w io.Writer, method, url string, header map[string][]string, b
 	return err
 }
 
-// writeBody writes body, whose Content-Type is contentType: a form as a line
-// for each part (formParts), any other body, a JSON one among them, as sent
-// (writeSent).
 func writeBody(text *bytes.Buffer, contentType string, body []byte) error {
 	if media, params, err := mime.ParseMediaType(contentType); err == nil && media == "multipart/form-data" {
 		return formParts(text, multipart.NewReader(bytes.NewReader(body), params["boundary"]))
@@ -49,8 +46,6 @@ func writeBody(text *bytes.Buffer, contentType string, body []byte) error {
 	return nil
 }
 
-// writeSent writes content as sent, followed by a line break unless it ends
-// with one.
 func writeSent(text *bytes.Buffer, content []byte) {
 	text.Write(content)
 	if !bytes.HasSuffix(content, []byte("\n")) {
@@ -58,15 +53,6 @@ func writeSent(text *bytes.Buffer, content []byte) {
 	}
 }
 
-// formParts writes a line that describes each part of form, in its order: its
-// name, the name of its file and its content type where it has them, and the
-// size of its content, e.g. `part "file": file "schema.json",
-// application/json, 120 bytes`, followed by the content as sent where its
-// content type is JSON and it is JSON, as a JSON body shows; the content of
-// any other part, which may be binary, never shows, nor that of a file that is
-// named as JSON but holds something else, such as terminal controls. Names are
-// quoted, so that control characters show escaped. A form that cannot be read
-// fails.
 func formParts(text *bytes.Buffer, form *multipart.Reader) error {
 	for {
 		part, err := form.NextRawPart()

@@ -10,11 +10,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// TestEveryReadPrintsItsTableAsCSV runs every read case with -o csv: it
-// prints the table's rows as CSV records, each with a field per column
-// (encoding/csv refuses any other count), under the header, and without it
-// with --no-headers; no value is cut, as tables cut long ones (view.long).
-// A read that saves a file prints no table (tableReadCases).
 func TestEveryReadPrintsItsTableAsCSV(t *testing.T) {
 	root := newTestRoot()
 	for _, tt := range tableReadCases() {
@@ -28,16 +23,13 @@ func TestEveryReadPrintsItsTableAsCSV(t *testing.T) {
 	}
 }
 
-// checkTableAsCSV checks that the table of the read tt, of cmd, prints as CSV:
-// a header and one record per row, whole values, and no header with
-// --no-headers.
 func checkTableAsCSV(t *testing.T, cmd *cobra.Command, tt *readCase) {
 	t.Helper()
 	columns, ok := cmd.Flags().Lookup(columnsFlag).Value.(*columnPicks)
 	if !ok {
 		t.Fatalf("--columns is a %T", cmd.Flags().Lookup(columnsFlag).Value)
 	}
-	rows := strings.Count(tt.want, "\n") - 1 // the table's lines but its header
+	rows := strings.Count(tt.want, "\n") - 1
 	headed := readCSV(t, tt, "-o", "csv")
 	if len(headed) != rows+1 || !slices.Equal(headed[0], columns.header) {
 		t.Fatalf("records %q; want the header %q and %d rows", headed, columns.header, rows)
@@ -52,8 +44,6 @@ func checkTableAsCSV(t *testing.T, cmd *cobra.Command, tt *readCase) {
 	}
 }
 
-// readCSV runs the read case tt with flags and returns the CSV records that
-// it prints.
 func readCSV(t *testing.T, tt *readCase, flags ...string) [][]string {
 	t.Helper()
 	fake := newFakeEmporix(t)
@@ -66,8 +56,6 @@ func readCSV(t *testing.T, tt *readCase, flags ...string) [][]string {
 	return records
 }
 
-// TestWritesPrintTheirResponseAsYAML runs every write case whose response
-// epx prints with -o yaml: it prints the response as YAML instead of JSON.
 func TestWritesPrintTheirResponseAsYAML(t *testing.T) {
 	for _, tt := range writeCases() {
 		if tt.want == "" {
@@ -84,11 +72,6 @@ func TestWritesPrintTheirResponseAsYAML(t *testing.T) {
 	}
 }
 
-// TestResponsesPrintAsYAML checks -o yaml where a response is printed
-// otherwise than by a write case: api get, a job that --wait followed, and
-// the response of a bulk write that failed; and that their -o takes no
-// table format, and fails with --dry-run, which prints no response; nothing
-// is sent then.
 func TestResponsesPrintAsYAML(t *testing.T) {
 	fake := newFakeEmporix(t)
 	fake.route("/site/acme1/sites", respond(http.StatusOK, `[{"code":"AcmeStore_NL","active":true}]`))
@@ -102,7 +85,6 @@ func TestResponsesPrintAsYAML(t *testing.T) {
 	}{
 		{args: []string{"api", "get", "/x", "-o", "csv"}, message: "use json or yaml"},
 		{args: []string{"api", "delete", "/x", "-o", "table"}, message: "use json or yaml"},
-		// --dry-run prints the request, so a format of the response cannot apply.
 		{args: []string{"api", "delete", "/x", "--dry-run", "-o", "yaml"},
 			message: "[dry-run output] are set none of the others"},
 		{args: []string{"units", "create", "--file", "-", "--dry-run", "-o", "json"},

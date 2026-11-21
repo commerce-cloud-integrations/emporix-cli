@@ -9,48 +9,32 @@ import (
 	"github.com/commerce-cloud-integrations/emporix-cli/internal/emporix"
 )
 
-// What consumes the AI credits of the AI Service: text generation,
-// completions and chats with agents, and the attachments of a chat.
-
-// openAICredits says what text generation and completions consume.
 const openAICredits = "It consumes AI credits: the LLM tokens of the tenant's own OpenAI account where the tenant " +
 	"configuration openAiApiToken holds its token, or else Emporix's, of which a tenant may use " +
 	"3 million input and 1 million output tokens."
 
-// agentCredits says what a chat with an agent consumes.
 const agentCredits = "It consumes AI credits: the LLM tokens of the agent's model, and of the agents it " +
 	"collaborates with."
 
-// replyTimeout says that a reply, which Emporix sends once it is generated,
-// may take longer than the timeout of a request.
 func replyTimeout() string {
 	return "A reply may take longer than the --timeout of a request (" + defaultTimeout.String() +
 		" by default): then give a longer one, e.g. --timeout 5m"
 }
 
-// sessionFlag is the flag that names the session of a chat or attachment.
 const sessionFlag = "session"
 
-// sessionHeader is the header of a chat or attachment that names its
-// session, which --session sets; a value that cannot be sent as a header is
-// refused while flags are parsed.
 func sessionHeader() paramFlag {
 	return paramFlag{param: "session-id", flag: sessionFlag, usage: "the `ID` of the session to go on with, " +
 		"the sessionId of an earlier chat or attachment; without it, a new one", check: emporix.CheckHeaderValue}
 }
 
-// messageRoles are the roles of the messages of a completion.
 func messageRoles() []string { return []string{"SYSTEM", "USER", "ASSISTANT"} }
 
-// completionMessage is a message of the chat history of a completion.
 type completionMessage struct {
 	Role    string `json:"role"`
 	Content string `json:"content"`
 }
 
-// parseMessage parses a --message of a completion, ROLE:TEXT, e.g.
-// "USER:Describe product 100200", whose role is one of messageRoles in any
-// case, sent upper-cased.
 func parseMessage(value string) (completionMessage, error) {
 	role, text, found := strings.Cut(value, ":")
 	role, text = strings.ToUpper(strings.TrimSpace(role)), strings.TrimSpace(text)
@@ -60,12 +44,10 @@ func parseMessage(value string) (completionMessage, error) {
 	return completionMessage{Role: role, Content: text}, nil
 }
 
-// chatAttachment is a file that a chat sends to its agent, attached first.
 type chatAttachment struct {
 	ID string `json:"attachmentId"`
 }
 
-// parseAttachment parses an --attachment of a chat, the ID of an attachment.
 func parseAttachment(value string) (chatAttachment, error) {
 	if value == "" {
 		return chatAttachment{}, errors.New("empty")
@@ -73,9 +55,6 @@ func parseAttachment(value string) (chatAttachment, error) {
 	return chatAttachment{ID: value}, nil
 }
 
-// chatBody is the body of a chat with an agent that its flags make: the
-// agent, the message and the attachments that it sends, which are those of a
-// session, so --attachment applies only with --session.
 func chatBody() bodyBinder {
 	return objectBody{
 		stringField("agentId", "agent", "the `ID` of the agent, as `epx ai agents list` shows it").require(),
@@ -86,7 +65,6 @@ func chatBody() bodyBinder {
 	}
 }
 
-// chatHelp says how a chat goes on in a session, and with attachments.
 const chatHelp = "With --session, the chat goes on in that session, which the agent remembers where its " +
 	"memory is enabled (enableMemory, as Emporix sends it); an attachment must be one of the session, " +
 	"attached to the same agent " +
@@ -105,13 +83,8 @@ func fileGeneration() queryChoice {
 	}}}
 }
 
-// provenanceMember names where a response holds the provenance of what was
-// generated, as help quotes it.
 const provenanceMember = "mixins.provenance, whose schema metadata.mixins names"
 
-// chatReplyHelp says what the reply of a chat holds besides its messages:
-// the provenance of what the agent generated and the files and images it
-// generated, which it does only with --allow-file-generation.
 const chatReplyHelp = "A message also holds the provenance of what the agent generated " +
 	"(" + provenanceMember + ") and, where it generated files or images, " +
 	"artifacts: each with kind (image or file), filename, mimeType, size and status (ready or failed), " +
@@ -119,8 +92,6 @@ const chatReplyHelp = "A message also holds the provenance of what the agent gen
 	"`epx media download-url`). An agent generates them only with file_generator in its nativeTools and " +
 	"with --allow-file-generation; without it, Emporix creates no files or images."
 
-// agentReplyChat is chat, which prints the agent's reply, with the files and
-// images that it may generate (fileGeneration).
 func agentReplyChat() *write {
 	w := agentChat("chat", "Send a message to an agent and print its reply", "and prints its reply: a "+
 		"message of the agent, or, as the reference documents, a list with those of the agents it "+
@@ -131,16 +102,11 @@ func agentReplyChat() *write {
 	return w
 }
 
-// agentJobChat is chat-async, which Emporix answers with the job in which
-// the agent replies.
 func agentJobChat() *write {
 	return agentChat("chat-async", "Send a message to an agent, which replies in a job", "which replies in a "+
 		"job of type AGENT_CHAT: Emporix answers with its jobId, which `epx ai jobs get JOB_ID` reads.")
 }
 
-// agentChat sends a message to an agent at agentic/<use>, which Emporix
-// answers as answer says, following "Sends the message ... to the agent
-// --agent, ": chat, with the agent's reply, and chat-async, with a job.
 func agentChat(use, short, answer string) *write {
 	return &write{
 		use:   use,
@@ -156,11 +122,8 @@ func agentChat(use, short, answer string) *write {
 	}
 }
 
-// generatedProvenance says that a generation's response holds the provenance
-// of what it generated.
 const generatedProvenance = "The response also holds the provenance of the generated text (" + provenanceMember + ")."
 
-// textGeneration generates a text from a prompt, which consumes AI credits.
 func textGeneration() *write {
 	return &write{
 		use:   "generate-text",
@@ -178,8 +141,6 @@ func textGeneration() *write {
 	}
 }
 
-// completionGeneration generates the next message of a chat history, which
-// consumes AI credits.
 func completionGeneration() *write {
 	return &write{
 		use:   "generate-completion",
@@ -198,11 +159,8 @@ func completionGeneration() *write {
 	}
 }
 
-// mediaFlag is the flag of an attachment that names a media asset to assign.
 const mediaFlag = "media"
 
-// agentAttach attaches a file to an agent in a session: a file it uploads,
-// or a media asset that Emporix stores already.
 func agentAttach() *write {
 	return &write{
 		use:   "attach AGENT_ID",

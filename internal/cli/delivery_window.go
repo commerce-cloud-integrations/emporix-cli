@@ -11,15 +11,9 @@ import (
 	"github.com/commerce-cloud-integrations/emporix-cli/internal/emporix"
 )
 
-// The delivery windows of delivery times: those open to a cart, whether one
-// can take an order, the count of its orders and its delivery cycle. A
-// delivery window is a delivery time on a date in one of its slots, which
-// the flags of deliveryWindowBody name.
-
-// deliveryWindow is the part of a cart's delivery window shown in tables.
 type deliveryWindow struct {
 	ID                string `json:"id"`
-	DeliveryDate      string `json:"deliveryDate"` // the one member the reference requires
+	DeliveryDate      string `json:"deliveryDate"`
 	DeliveryTimeRange struct {
 		StartTime string `json:"startTime"`
 		EndTime   string `json:"endTime"`
@@ -30,11 +24,8 @@ type deliveryWindow struct {
 	SlotID         string `json:"slotId"`
 }
 
-// newDeliveryWindowsCommand reads the delivery windows open to a cart, which
-// Emporix computes from the delivery times and returns whole. The reference
-// declares no scope for them, and Emporix answers a token without scopes
-// (live: the windows of a cart with a postal code, and 404 for an unknown
-// cart).
+// The reference declares no scope for delivery windows, and Emporix answers a
+// token without scopes (live).
 func newDeliveryWindowsCommand(a *app) *cobra.Command {
 	return reader[deliveryWindow]{view: view[deliveryWindow]{
 		singular: "delivery window",
@@ -62,9 +53,8 @@ func newDeliveryWindowsCommand(a *app) *cobra.Command {
 	})
 }
 
-// newDeliveryWindowValidationCommand returns `validate`, which checks whether
-// a delivery window can still take an order: a check that Emporix serves as
-// POST without changing data, with no scope (live; the reference names none).
+// Emporix serves the validation as POST without changing data, with no scope
+// (live; the reference names none).
 func newDeliveryWindowValidationCommand(a *app) *cobra.Command {
 	check := reader[bool]{view: answerView("delivery window validation", "VALID")}
 	return check.command(a, &command{
@@ -80,10 +70,8 @@ func newDeliveryWindowValidationCommand(a *app) *cobra.Command {
 	})
 }
 
-// newDeliveryWindowCountCommand returns `increment-counter`, which counts one
-// more order in a delivery window, as the Checkout Service does for each
-// order with a delivery window that it places. The reference names no scope
-// for it, so it requests the scope of the Shipping Service's writes.
+// The reference names no scope for incrementing the counter, so it requests
+// the scope of the Shipping Service's writes.
 func newDeliveryWindowCountCommand(a *app) *cobra.Command {
 	return (&write{
 		use:   "increment-counter",
@@ -98,15 +86,11 @@ func newDeliveryWindowCountCommand(a *app) *cobra.Command {
 	}).command(a)
 }
 
-// newDeliveryCycleCommand returns `generate-cycle`, which names the delivery
-// cycle of a delivery window: a calculation that Emporix serves as POST and
-// answers with 201 Created, but that changes nothing (live: the delivery time
-// and its slots stay as they were, and the same window gets the same name
-// again). It answers with the name as bare text, although labelled JSON
-// (cycleName). The reference names no scope for it; Emporix refuses it to a
-// token with shipping.shipping_read but not to one without any scope (live),
-// so it requests none; to that token it answers an unknown delivery time with
-// 403 Forbidden (live).
+// Emporix serves the delivery cycle as POST and answers with 201 Created, but
+// changes nothing (live). The reference names no scope for it; Emporix refuses
+// it to a token with shipping.shipping_read but not to one without any scope
+// (live), so it requests none; to that token it answers an unknown delivery
+// time with 403 Forbidden (live).
 func newDeliveryCycleCommand(a *app) *cobra.Command {
 	cycle := reader[string]{view: stringsView("delivery cycle", "CYCLE")}
 	return cycle.command(a, &command{
@@ -123,11 +107,8 @@ func newDeliveryCycleCommand(a *app) *cobra.Command {
 	})
 }
 
-// cycleName reads the name of a delivery cycle, which Emporix answers as
-// bare text labelled JSON, such as 2026-06-20-6morning: the text, trimmed,
-// becomes a JSON string (textAsJSON), which -o json prints. A JSON string is
-// taken as sent; any other JSON, or no text, fails. A name starts with its
-// date, which is never valid JSON, so no bare name is mistaken for JSON.
+// Emporix answers the name of a delivery cycle as bare text labelled JSON,
+// such as 2026-06-20-6morning.
 type cycleName struct{}
 
 func (cycleName) bind(*cobra.Command) (readFunc, shape) {
@@ -141,31 +122,21 @@ func (cycleName) bind(*cobra.Command) (readFunc, shape) {
 	return read, oneName
 }
 
-// deliveryWindowHelp says which delivery window the flags of
-// deliveryWindowBody name.
 const deliveryWindowHelp = "The delivery window is the delivery time --delivery-time on --date, an ISO 8601 " +
 	"date and time such as 2026-11-02T12:00:00.000Z, in its --slot: `epx delivery-times list` " +
 	"and `epx delivery-times slots list` show their IDs."
 
-// wholeBodyNote ends the help of a write whose body flags make
-// (deliveryWindowBody).
 const wholeBodyNote = "The body may also come whole from --file."
 
-// deliveryWindowMember is the member of most bodies that name a delivery
-// window, or a slot, that names its delivery time; the body of a delivery
-// cycle names it deliveryTimeId.
 const deliveryWindowMember = "deliveryWindowId"
 
-// deliveryWindowBody is the body that names a delivery window: a delivery
-// time (its member timeMember), one of its slots and the delivery date.
 func deliveryWindowBody(timeMember string) objectBody {
 	return append(deliverySlotFields(timeMember),
 		stringField("deliveryDate", "date", "the delivery `DATE` and time, ISO 8601").require())
 }
 
-// deliverySlotFields are the members of a body that name a delivery time
-// (its member timeMember) and one of its slots. Both are required, the slot
-// too (seen live; the reference makes it optional for a validation).
+// Both members are required, the slot too (seen live; the reference makes it
+// optional for a validation).
 func deliverySlotFields(timeMember string) []bodyField {
 	return []bodyField{
 		stringField(timeMember, "delivery-time", "the delivery time's `ID`").require(),

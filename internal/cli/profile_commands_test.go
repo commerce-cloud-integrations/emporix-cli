@@ -14,19 +14,15 @@ import (
 	"github.com/commerce-cloud-integrations/emporix-cli/internal/config"
 )
 
-// devProfile is the profile that the add cases add as dev.
 func devProfile() config.Profile {
 	return config.Profile{Tenant: "acme1", ClientID: "client", Site: "AcmeStore_NL", Language: "nl"}
 }
 
-// addDev is the command line that adds devProfile.
 func addDev() []string {
 	return []string{"profile", "add", "dev", "--tenant", "acme1", "--client-id", "client", "--site", "AcmeStore_NL",
 		"--language", "nl"}
 }
 
-// TestProfileAddKeepsTheLanguageAsTyped checks that a profile stores its
-// language as typed (a table finds the translation in any case).
 func TestProfileAddKeepsTheLanguageAsTyped(t *testing.T) {
 	setup := newProfileSetup(t, nil, nil)
 	args := addDev()
@@ -57,7 +53,6 @@ func TestProfileAddStoresTheSecretInTheKeychainOnly(t *testing.T) {
 	if err != nil || strings.Contains(string(saved), testSecret) {
 		t.Errorf("configuration file %q, %v; want no secret in it", saved, err)
 	}
-	// A second profile is not the default; one added again is replaced.
 	code, _, stderr = runIn(t, setup.env(nil, "other-secret\n", false),
 		"profile", "add", "prod", "--tenant", "acme2", "--client-id", "c2", "--api-url", "https://api.example.com")
 	if code != ExitOK || stderr != "Added profile prod; its client secret is in the OS keychain.\n" {
@@ -136,10 +131,6 @@ func TestProfileAddFailures(t *testing.T) {
 	}
 }
 
-// TestProfileAddKeepsTheKeychainAsItWasWhenTheProfileCannotBeSaved checks
-// that a profile that cannot be saved leaves the keychain as it was: without
-// the secret of a new profile, with the previous one of a replaced profile,
-// and that a keychain that cannot be restored is reported.
 func TestProfileAddKeepsTheKeychainAsItWasWhenTheProfileCannotBeSaved(t *testing.T) {
 	if runtime.GOOS == "windows" {
 		t.Skip("a read-only directory takes new files on Windows")
@@ -170,8 +161,6 @@ func TestProfileAddKeepsTheKeychainAsItWasWhenTheProfileCannotBeSaved(t *testing
 	}
 }
 
-// readOnly makes the configuration directory of setup, which holds its
-// configuration file and lock, one where no file can be added.
 func readOnly(t *testing.T, setup *profileSetup) {
 	t.Helper()
 	unlock, err := setup.store().Lock(context.Background())
@@ -242,7 +231,6 @@ func TestProfileListAndShowNeverPrintTheSecret(t *testing.T) {
 		}
 		assertNoSecret(t, stdout, stderr)
 	}
-	// Without a configuration, there are no profiles.
 	empty := newProfileSetup(t, nil, nil).env(nil, "", false)
 	if code, stdout, _ := runIn(t, empty, "profile", "list", "-o", "json"); code != ExitOK || stdout != "[]\n" {
 		t.Errorf("no profiles: exit %d, stdout %q", code, stdout)

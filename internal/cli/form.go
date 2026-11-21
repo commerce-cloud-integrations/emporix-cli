@@ -10,32 +10,16 @@ import (
 	"github.com/commerce-cloud-integrations/emporix-cli/internal/emporix"
 )
 
-// A form is a multipart/form-data body, such as a JSON schema file that the
-// Schema Service parses, or stores with the JSON that describes it. Flags
-// give its parts (formPart): the body of a read (form) or, followed by the
-// JSON of --file, of a write (formFile). A dry run describes its parts and
-// shows the content of the JSON ones only (output.WriteRequest).
-
-// formPart is a part of a form that a flag gives (filePartOf, fieldPart).
 type formPart struct {
-	flag string // the flag that gives it
-	// bind adds the flag to cmd and returns how a run adds the part.
-	bind func(cmd *cobra.Command) addPart
-	// bound is the most bytes that Emporix takes in a request whose form
-	// holds the part, such as maxUploadBytes for a file to upload (uploadPart);
-	// 0 for any.
+	flag  string
+	bind  func(cmd *cobra.Command) addPart
 	bound int
 }
 
-// addPart adds to the parts of a form in a run the part that a flag gives.
 type addPart func(ctx context.Context, parts []emporix.Part) ([]emporix.Part, error)
 
-// form is the form whose parts flags give, in their order: the body of a read
-// (readBinder), and the start of the form of a write (formFile).
 type form []formPart
 
-// parts adds the flags of f's parts to cmd and returns how a run makes the
-// parts, in their order.
 func (f form) parts(cmd *cobra.Command) func(ctx context.Context) ([]emporix.Part, error) {
 	adds := make([]addPart, len(f))
 	for i, part := range f {
@@ -53,8 +37,6 @@ func (f form) parts(cmd *cobra.Command) func(ctx context.Context) ([]emporix.Par
 	}
 }
 
-// limit returns the most bytes that Emporix takes in a request of f: the
-// least bound of its parts, if any; 0 for any.
 func (f form) limit() int {
 	limit := 0
 	for _, part := range f {
@@ -76,16 +58,10 @@ func (f form) bindRead(cmd *cobra.Command) (made makeBody, sends string) {
 	}, "a multipart/form-data body, which the flags make."
 }
 
-// filePart is the part name of a form that sends the JSON file that --flag
-// (described by usage) names, which it requires, as filePartOf sends a file,
-// within the size of --file, as application/json; one that is not JSON is
-// refused (isJSON).
 func filePart(name, flag, usage string) formPart {
 	return filePartOf(name, bodyFile{flag: flag, limit: maxWriteFileBytes}, usage, jsonContent).require()
 }
 
-// require returns p with its flag required (requireFlag): a run without it
-// fails while flags are parsed (exit 2), and nothing is sent.
 func (p formPart) require() formPart {
 	bind := p.bind
 	p.bind = func(cmd *cobra.Command) addPart {
@@ -96,8 +72,6 @@ func (p formPart) require() formPart {
 	return p
 }
 
-// jsonContent returns the content type of a JSON file: application/json, or,
-// for content that is not JSON, why it cannot be sent (isJSON).
 func jsonContent(_ string, content []byte) (string, error) {
 	if err := isJSON(content); err != nil {
 		return "", err
@@ -105,12 +79,6 @@ func jsonContent(_ string, content []byte) (string, error) {
 	return emporix.JSONContentType, nil
 }
 
-// filePartOf is the part name of a form that sends the file that the flag of
-// file (described by usage) names, when it is given: its content byte for
-// byte, read as --file is (bodyFile) up to file.limit, with the name of the
-// file, never its directory, and the content type that typeOf gives for the
-// file's name and content, or why it cannot be sent (a usage error). It
-// reads only from a path, as standard input has no name to send.
 func filePartOf(name string, file bodyFile, usage string,
 	typeOf func(fileName string, content []byte) (string, error)) formPart {
 	return formPart{flag: file.flag, bind: func(cmd *cobra.Command) addPart {
@@ -137,9 +105,6 @@ func filePartOf(name string, file bodyFile, usage string,
 	}}
 }
 
-// fieldPart is the field name of a form that --flag (described by usage)
-// gives, sent as given when the flag is given; an empty value is refused
-// while flags are parsed (paramValue).
 func fieldPart(name, flag, usage string) formPart {
 	return formPart{flag: flag, bind: func(cmd *cobra.Command) addPart {
 		value := &paramValue{paramFlag: paramFlag{param: name, flag: flag, usage: usage}}
@@ -153,21 +118,13 @@ func fieldPart(name, flag, usage string) formPart {
 	}}
 }
 
-// formFile is the body of a write that is a form (a bodySource): the parts
-// of form, then the JSON of --file (described by usage), which it requires,
-// sent byte for byte as the field that field names, e.g. body. Where no part
-// of form is given, as a media asset without a file to upload, the JSON of
-// --file alone is the body, unless refuseAlone refuses it. Each write takes its
-// own.
 type formFile struct {
-	form  form
-	field string
-	usage string // the help of --file
-	// refuseAlone returns why the JSON of --file cannot be the body alone,
-	// without a part of form, as Emporix would refuse it; nil takes any.
+	form        form
+	field       string
+	usage       string
 	refuseAlone func(body json.RawMessage) error
-	parts       func(ctx context.Context) ([]emporix.Part, error) // the parts of form in a run, once bound
-	file        *givenBody                                        // --file, once bound
+	parts       func(ctx context.Context) ([]emporix.Part, error)
+	file        *givenBody
 }
 
 func (f *formFile) bind(cmd *cobra.Command) string {
@@ -196,8 +153,6 @@ func (f *formFile) fill(ctx context.Context, w *emporix.Write, _ []string) error
 	return err
 }
 
-// fillAlone sets the body of w to body, the JSON of --file alone, unless
-// refuseAlone refuses it: then a usage error naming the file.
 func (f *formFile) fillAlone(w *emporix.Write, body json.RawMessage) (err error) {
 	if f.refuseAlone != nil {
 		if refused := f.refuseAlone(body); refused != nil {
@@ -210,14 +165,10 @@ func (f *formFile) fillAlone(w *emporix.Write, body json.RawMessage) (err error)
 
 func (f *formFile) fromStdin() bool { return f.file.fromStdin() }
 
-// formBody is the body of a write that is a form whose parts flags give
-// (form): exactly one of the flags oneOf where it names any, such as a file
-// to upload or the ID of one that Emporix stores already; a part may require
-// its own flag instead (formPart.require). Each write takes its own.
 type formBody struct {
 	form  form
 	oneOf []string
-	parts func(ctx context.Context) ([]emporix.Part, error) // the parts of form in a run, once bound
+	parts func(ctx context.Context) ([]emporix.Part, error)
 }
 
 func (f *formBody) bind(cmd *cobra.Command) string {
@@ -238,10 +189,6 @@ func (f *formBody) fill(ctx context.Context, w *emporix.Write, _ []string) error
 	return err
 }
 
-// encodeForm returns the form of parts (emporix.FormBody), unless limit is
-// not 0 and the form is larger than limit bytes, the most that Emporix takes
-// in one request, such as maxUploadBytes for the form of a file to upload:
-// then a usage error, as nothing was sent.
 func encodeForm(parts []emporix.Part, limit int) (emporix.Body, error) {
 	form, err := emporix.FormBody(parts)
 	if err != nil || limit == 0 || form.Len() <= limit {
@@ -251,6 +198,4 @@ func encodeForm(parts []emporix.Part, limit int) (emporix.Body, error) {
 		"takes in one request: send a smaller file or body", form.Len(), limit)}
 }
 
-// fromStdin implements bodySource: no part of a form comes from standard
-// input (givenBody.fileName).
 func (*formBody) fromStdin() bool { return false }

@@ -8,41 +8,23 @@ import (
 	"github.com/commerce-cloud-integrations/emporix-cli/internal/emporix"
 )
 
-// The writes of the Import Service start, retry and cancel import runs and
-// set or delete the schedule of a configuration. Emporix allows them with
-// importScope, the scope that its reads need too.
-
-// runInFlight is why Emporix refuses a write that starts a run of a
-// configuration: the configuration has a run that has not ended, which the
-// error names (activeRunId), or its data is being purged.
 const runInFlight = "the configuration has a run QUEUED, RUNNING or RESUMABLE, which activeRunId names, or a " +
 	"data purge in progress"
 
-// notRetryable is why Emporix refuses a retry of a run besides runInFlight.
 const notRetryable = "the run is still active, has no failed records that a retry can read again, has a failed " +
 	"stream that reads from a source that cannot fetch records by key (such as an HTTP source), or read a file " +
 	"that was removed or replaced since"
 
-// activeRunConflict is what a 409 Conflict of a write that starts a run
-// means, and how to recover.
 const activeRunConflict = runInFlight + ": wait until the run or the purge ends, or cancel the run"
 
-// retryConflict is what a 409 Conflict of a retry means, and how to recover.
 const retryConflict = activeRunConflict + "; or " + notRetryable + ": import it again with a new run " +
 	"(`epx imports configurations trigger`)"
 
-// importRunJob returns how --wait follows an import run that a write starts:
-// it reads the run as `imports runs get` does, in the run's details, until it
-// is no longer QUEUED, RUNNING or RESUMABLE (interrupted; it resumes by
-// itself), and succeeds only when it ended SUCCEEDED. Emporix answers the
-// write with the run itself (oneItem).
 func importRunJob(runs resource[importRun]) *jobWait {
 	return followJob(runs, (*importRun).state, []string{"QUEUED", "RUNNING", "RESUMABLE"}, "SUCCEEDED").
 		answering(heldJob(jobDecoder(runs, oneItem, (*importRun).state)))
 }
 
-// state returns what --wait follows of r: how many records it read, where
-// it says, and its message, why it failed.
 func (r *importRun) state() jobState {
 	s := jobState{ID: r.ID, Status: r.Status, Failure: r.Message}
 	if r.RecordsRead != "" {
@@ -51,9 +33,6 @@ func (r *importRun) state() jobState {
 	return s
 }
 
-// importConfigurationWrites returns the writes of an import configuration of
-// configurations: trigger, which starts a run that job follows, and
-// update-schedule and delete-schedule.
 func importConfigurationWrites(a *app, configurations resource[importConfig], job *jobWait) []*cobra.Command {
 	scopes := importScopes()
 	configuration := configurations.argument()
@@ -91,8 +70,6 @@ func importConfigurationWrites(a *app, configurations resource[importConfig], jo
 	}
 }
 
-// importTrigger starts a run of an import configuration of configurations,
-// which job follows.
 func importTrigger(configurations resource[importConfig], job *jobWait) *write {
 	configuration := configurations.argument()
 	return &write{
@@ -116,8 +93,6 @@ func importTrigger(configurations resource[importConfig], job *jobWait) *write {
 	}
 }
 
-// importRunWrites returns the writes of an import run of runs: cancel, and
-// retry, which starts a run that job follows.
 func importRunWrites(a *app, runs resource[importRun], job *jobWait) []*cobra.Command {
 	return []*cobra.Command{
 		(&write{
@@ -137,14 +112,9 @@ func importRunWrites(a *app, runs resource[importRun], job *jobWait) []*cobra.Co
 	}
 }
 
-// cancelConflict is what a 409 Conflict of a cancel means: a RESUMABLE run
-// stops only with --force, and an unknown or ended run is answered with
-// accepted false, which Emporix gives the same 409 for.
 const cancelConflict = "a RESUMABLE run stops only with --force; an unknown or ended run is answered " +
 	"with \"accepted\": false"
 
-// importRetry runs the failed records of an import run of runs again, in a
-// run that job follows.
 func importRetry(runs resource[importRun], job *jobWait) *write {
 	return &write{
 		use: runs.itemUse("retry"), short: "Run the failed records of an import run again", method: http.MethodPost,
@@ -157,8 +127,6 @@ func importRetry(runs resource[importRun], job *jobWait) *write {
 	}
 }
 
-// runSource says, in the help of a write of an import run of runs, where its
-// ID comes from.
 func runSource(runs resource[importRun]) string {
 	return "ID is the one that `epx " + runs.listLine() + "` shows."
 }

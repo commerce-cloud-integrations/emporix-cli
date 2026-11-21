@@ -8,7 +8,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// exchangeRate is the part of a Currency Service exchange rate shown in tables.
 type exchangeRate struct {
 	Code           string   `json:"code"`
 	SourceCurrency string   `json:"sourceCurrency"`
@@ -21,7 +20,6 @@ type exchangeRate struct {
 // so any string is accepted as well as a JSON number.
 type rateText string
 
-// UnmarshalJSON implements json.Unmarshaler.
 func (r *rateText) UnmarshalJSON(data []byte) error {
 	var text string
 	if json.Unmarshal(data, &text) == nil {
@@ -36,12 +34,8 @@ func (r *rateText) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-// currencyManageScope is the scope of every write of the Currency Service:
-// currencies and exchange rates.
 const currencyManageScope = "currency.currency_manage"
 
-// newCurrenciesCommand reads, creates, changes and deletes the tenant's
-// currencies.
 func newCurrenciesCommand(a *app) *cobra.Command {
 	currencies := resource[codeName]{
 		use:     "currencies",
@@ -54,8 +48,6 @@ func newCurrenciesCommand(a *app) *cobra.Command {
 	return newResourceCommand(a, currencies, currencyWrites(a, currencies)...)
 }
 
-// currencyWrites returns the writes of currencies, with the scope that the
-// reference names for them: create, update CODE and delete CODE.
 func currencyWrites(a *app, currencies resource[codeName]) []*cobra.Command {
 	manage := []string{currencyManageScope}
 	return []*cobra.Command{
@@ -88,8 +80,6 @@ func currencyWrites(a *app, currencies resource[codeName]) []*cobra.Command {
 	}
 }
 
-// newExchangeRatesCommand reads, creates, changes and deletes currency
-// exchange rates, whose small bodies typed flags make (or --file gives).
 func newExchangeRatesCommand(a *app) *cobra.Command {
 	rates := resource[exchangeRate]{
 		use:     "exchange-rates",
@@ -109,9 +99,6 @@ func newExchangeRatesCommand(a *app) *cobra.Command {
 	return newResourceCommand(a, rates, exchangeRateWrites(a, rates)...)
 }
 
-// exchangeRateWrites returns the writes of exchange rates, with the scope
-// that the reference names for them: create, update CODE and delete CODE,
-// whose small bodies typed flags make (or --file gives).
 func exchangeRateWrites(a *app, rates resource[exchangeRate]) []*cobra.Command {
 	manage := []string{currencyManageScope}
 	rate := stringField("rate", "rate", "the `RATE`: what one unit of the source currency is worth in the "+

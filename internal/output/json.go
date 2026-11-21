@@ -35,8 +35,6 @@ func WriteJSONLines(w io.Writer, items []json.RawMessage) error {
 	return err
 }
 
-// sortedJSON returns v as JSON with sorted object keys and exact numbers,
-// indented by indent (none when empty), ending in a newline.
 func sortedJSON(v any, indent string) ([]byte, error) {
 	tree, err := treeOf(v)
 	if err != nil {
@@ -45,9 +43,6 @@ func sortedJSON(v any, indent string) ([]byte, error) {
 	return encode(tree, indent)
 }
 
-// treeOf returns v, a Go value or a json.RawMessage, as the JSON value it
-// encodes to: maps, slices, strings, json.Numbers that keep their exact text,
-// booleans and nils.
 func treeOf(v any) (any, error) {
 	data, err := json.Marshal(v)
 	if err != nil {
@@ -60,7 +55,6 @@ func treeOf(v any) (any, error) {
 	return tree, nil
 }
 
-// encode returns tree as JSON indented by indent, without HTML escaping.
 func encode(tree any, indent string) ([]byte, error) {
 	var out bytes.Buffer
 	encoder := json.NewEncoder(&out)

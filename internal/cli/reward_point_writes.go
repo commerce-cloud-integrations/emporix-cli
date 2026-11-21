@@ -6,36 +6,17 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// rewardPointsManage is the scope of the Reward Points Service's writes:
-// customers' reward points and the ways to redeem them.
 const rewardPointsManage = "rewardspoints.rewardpoints_manage"
 
-// redeemConflict is what a 409 Conflict of a redemption of reward points
-// means (live): the customer has fewer points active than it redeems.
 const redeemConflict = "the customer has fewer active points than it redeems: `epx reward-points balance` " +
 	"shows them"
 
-// rewardSite is the optional --site of the writes that add reward points:
-// the site whose reward points settings apply, sent as siteCode, which takes
-// the default site of the profile in effect. Without either, Emporix applies
-// those of site main, as its reference documents and a live create showed.
 func rewardSite() queryFlags {
 	return queryFlags{optional: []paramFlag{
 		settingsSiteParam("the site `CODE` whose reward points settings apply, sent as siteCode"),
 	}}
 }
 
-// rewardPointWrites returns the writes of customers' reward points: create
-// and delete CUSTOMER, which create and delete the customer's entry, add and
-// redeem CUSTOMER, which change the points, and the creation, update and
-// deletion of a way to redeem points. The reference documents that deletion
-// for a customer's token only; live, a service token with the manage scope
-// deletes the option (204) and one without it is refused (403). Points are
-// counts (countField), as the reference declares them integers. Create and
-// add take the site whose reward points settings apply (rewardSite). Create
-// repeats CUSTOMER as customerId in its body, which Emporix requires (live:
-// 500 without it). CUSTOMER completes from customers, the ID of a redeem
-// option from options.
 func rewardPointWrites(a *app, customers, options argumentIDs) []*cobra.Command {
 	manage := []string{rewardPointsManage}
 	const customer = customerSentence + "."

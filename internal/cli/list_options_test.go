@@ -14,18 +14,6 @@ import (
 
 func TestLimitIsOfferedOnEveryListAndNoSingleRead(t *testing.T) {
 	limited := commandsWithFlag("limit")
-	// Single reads print one object: every get, an order's history (one object
-	// holding its status changes), an asset's download URL, a user's scopes, the
-	// webhook statistics, one setting of a client, one coupon redemption, a
-	// referral coupon, a reward points balance, a cart found by its criteria,
-	// its delivery restrictions and its validation, the AI Service's LLM
-	// models, commerce events and analytics, the webhook dashboard access, an
-	// export package and the import reads of one object: a schedule, a stream
-	// order, a run's streams and diagnostics, a stream's file queue and upload
-	// limits, the statistics, health thresholds and limits (one response each);
-	// or one response: the order count, the prices and price matches of given
-	// products, the products a segment match finds, the calculations and
-	// checks, and a parsed JSON schema file.
 	single := []string{
 		"epx orders history", "epx media download-url", "epx iam users scopes", "epx webhooks statistics",
 		"epx configurations client-setting",
@@ -42,7 +30,6 @@ func TestLimitIsOfferedOnEveryListAndNoSingleRead(t *testing.T) {
 		"epx units convert", "epx units conversion-factor", "epx taxes calculate", "epx coupons validate",
 		"epx schemas parse", "epx quotes pdf",
 	}
-	// One item of a nested list, and the mixins of a site (one object).
 	single = append(single, "epx segments customers get-b2b", "epx sites mixins list")
 	for _, path := range readCommands() {
 		want := !strings.HasSuffix(path, " get") && !slices.Contains(single, path)
@@ -59,12 +46,10 @@ func TestLimitStopsReading(t *testing.T) {
 	if code != ExitOK || stdout != "ID  NAME\nb1  Alpha\n" {
 		t.Fatalf("exit %d, stdout %q, stderr %q", code, stdout, stderr)
 	}
-	// One page of one item, although the total is 250.
 	assertQueries(t, fake.gets, "/brand/brands", url.Values{})
 	if sent, err := url.Parse(fake.gets[0]); err != nil || len(fake.gets) != 1 || sent.Query().Get("pageSize") != "1" {
 		t.Fatalf("requests %q; want one page of one item", fake.gets)
 	}
-	// A list read whole is cut.
 	fake.route("/configuration/acme1/configurations", respond(http.StatusOK,
 		`[{"key":"a","value":"1"},{"key":"b","value":"2"},{"key":"c","value":"3"}]`))
 	code, stdout, stderr = runCLI(t, fake.env(), "configurations", "list", "--limit", "2", "-o", "json")
@@ -95,7 +80,6 @@ func TestQueryFilteredTotalAndMalformedFilter(t *testing.T) {
 	fake.route("/brand/brands", func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Query().Get("q") {
 		case "name:~a":
-			// The total counts the filtered items, so the read stops after them.
 			respond(http.StatusOK, `[{"id":"b1","name":"Alpha"},{"id":"b2","name":"Gamma"}]`, "X-Total-Count", "2")(w, r)
 		case "name:((":
 			respond(http.StatusBadRequest, `{"message":"Missing closing parenthesis in value '((' of key 'name'"}`)(w, r)
@@ -114,9 +98,6 @@ func TestQueryFilteredTotalAndMalformedFilter(t *testing.T) {
 	}
 }
 
-// TestListFiltersAreOfferedExactlyWhereTheCasesDeclareThem checks --query and
-// --sort against the filters of the read cases: offered exactly where the
-// Emporix endpoint documents q and sort.
 func TestListFiltersAreOfferedExactlyWhereTheCasesDeclareThem(t *testing.T) {
 	var withQuery, withSort []string
 	for path, tt := range casesByCommand(t) {
@@ -129,7 +110,6 @@ func TestListFiltersAreOfferedExactlyWhereTheCasesDeclareThem(t *testing.T) {
 	}
 	slices.Sort(withQuery)
 	slices.Sort(withSort)
-	// A search's --query fills its body instead, as its read cases state.
 	searches := commandsWithFlag(bodyFlag)
 	if got := slices.DeleteFunc(commandsWithFlag("query"), func(path string) bool {
 		return slices.Contains(searches, path)
@@ -141,10 +121,6 @@ func TestListFiltersAreOfferedExactlyWhereTheCasesDeclareThem(t *testing.T) {
 	}
 }
 
-// TestListFiltersReachEveryRequest runs every filterable or sortable list
-// case with --query and --sort, as it takes them: every request (each page)
-// carries them on top of the case's own query, and the user's sort replaces a
-// fixed one.
 func TestListFiltersReachEveryRequest(t *testing.T) {
 	const q, order = `name.en:~(Big shirt) published:true`, "name.en:desc,code"
 	for path, tt := range casesByCommand(t) {
@@ -175,8 +151,6 @@ func TestListFiltersReachEveryRequest(t *testing.T) {
 	}
 }
 
-// TestStreamIsOfferedOnListsOfItems checks that every list takes --stream but
-// category trees (list and search), whose shape restructures their items.
 func TestStreamIsOfferedOnListsOfItems(t *testing.T) {
 	want := slices.DeleteFunc(commandsWithFlag("limit"), func(path string) bool {
 		return path == "epx category-trees list" || path == "epx category-trees search"
@@ -199,17 +173,14 @@ func TestStreamPrintsJSONLines(t *testing.T) {
 	}
 }
 
-// TestStreamFailsAfterThePagesBefore checks that a check failing on a later
-// page exits 1 after the items of the pages before were printed.
 func TestStreamFailsAfterThePagesBefore(t *testing.T) {
 	fake := newFakeEmporix(t)
-	fake.route("/brand/brands", respond(http.StatusOK, `[{"id":"b1"}]`)) // every page repeats page 1
+	fake.route("/brand/brands", respond(http.StatusOK, `[{"id":"b1"}]`))
 	code, stdout, stderr := runCLI(t, fake.env(), "brands", "list", "--stream")
 	if code != ExitError || stdout != "{\"id\":\"b1\"}\n" ||
 		!strings.Contains(stderr, "page 2 repeats an item of page 1") {
 		t.Fatalf("exit %d, stdout %q, stderr %q", code, stdout, stderr)
 	}
-	// Without --stream, nothing is printed.
 	if code, stdout, _ = runCLI(t, fake.env(), "brands", "list", "-o", "json"); code != ExitError || stdout != "" {
 		t.Fatalf("buffered: exit %d, stdout %q", code, stdout)
 	}
@@ -223,8 +194,6 @@ func TestStreamExcludesOutput(t *testing.T) {
 	}
 }
 
-// TestStreamBelongsToOneRun checks that a command run again without --stream
-// prints a table, not JSON Lines into the writer of the run before.
 func TestStreamBelongsToOneRun(t *testing.T) {
 	fake := newFakeEmporix(t)
 	fake.route("/brand/brands", firstPage(`[{"id":"b1","name":"Alpha"}]`))
@@ -247,9 +216,6 @@ func TestStreamBelongsToOneRun(t *testing.T) {
 	}
 }
 
-// TestSortHelpStatesWhatEmporixAnswers checks that the help of --sort says what
-// the list's service does with an unknown field: payment transactions are refused
-// it (400), and the other lists keep the shared help.
 func TestSortHelpStatesWhatEmporixAnswers(t *testing.T) {
 	walkCommands(newTestRoot(), func(cmd *cobra.Command) {
 		flag := cmd.Flags().Lookup("sort")

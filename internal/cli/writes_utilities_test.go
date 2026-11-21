@@ -6,8 +6,6 @@ import (
 	"testing"
 )
 
-// webhookWrites are the writes of webhook configurations and event
-// subscriptions.
 func webhookWrites() []writeCase {
 	manage := []string{"webhook.subscription_manage"}
 	const config = `{"code":"http","provider":"HTTP","active":true,` +
@@ -33,13 +31,11 @@ func webhookWrites() []writeCase {
 			status: http.StatusNoContent,
 		},
 		{
-			// Without --force, force=false: Emporix keeps an active configuration.
 			args: []string{"webhooks", "configurations", "delete", "svix"}, method: http.MethodDelete,
 			path: "/webhook/acme1/config/svix", query: "force=false", scopes: manage, confirmBy: "svix",
 			status: http.StatusNoContent,
 		},
 		{
-			// Emporix answers with the result of each event, named by its eventType, without an index.
 			args: []string{"webhooks", "subscriptions", "bulk-patch"},
 			file: `[{"eventType":"order.created","action":"SUBSCRIBE","metadata":{"version":1}},` +
 				`{"eventType":"cart.closed","action":"UNSUBSCRIBE","fieldsToUnsubscribe":["customer"]}]`,
@@ -52,22 +48,18 @@ func webhookWrites() []writeCase {
 	}
 }
 
-// searchWrites are the writes of search indexes and saved searches.
 func searchWrites() []writeCase {
 	manage := []string{"search.search_manage"}
 	const index = `{"name":{"en":"Vehicles"},"fields":[{"path":"make","text":true,"exact":true}]}`
-	// The package of the index vehicles of the type vehicle, as an export gives it.
 	const pkg = "W3siaWQiOiJ2ZWhpY2xlcyIsInR5cGUiOiJ2ZWhpY2xlIiwiZmllbGRzIjpbeyJwYXRoIjoibWFrZSIsInRleHQiOnRydWUs" +
 		"ImV4YWN0Ijp0cnVlfV19XQ=="
 	return []writeCase{
 		{
-			// A job builds the index: Emporix answers with its id.
 			args: []string{"search", "indexes", "update", "vehicle", "vehicles"}, file: index, method: http.MethodPut,
 			path: "/search/acme1/search/vehicle/indexes/vehicles", scopes: manage, lang: "*",
 			status: http.StatusAccepted, body: `{"id":"job1"}`, want: "{\n  \"id\": \"job1\"\n}\n",
 		},
 		{
-			// An unchanged ready index starts no job.
 			args:   []string{"search", "indexes", "update", "vehicle", "vehicles"},
 			file:   `{"name":{"en":"Vehicles"},"fields":[{"path":"make","text":true,"exact":true}],"metadata":{"version":2}}`,
 			method: http.MethodPut, path: "/search/acme1/search/vehicle/indexes/vehicles", scopes: manage, lang: "*",
@@ -98,7 +90,6 @@ func searchWrites() []writeCase {
 			status: http.StatusNoContent,
 		},
 		{
-			// customer and legal-entity are types too, whose writes request the manage scope alone.
 			args: []string{"search", "indexes", "update", "legal-entity", "companies"}, method: http.MethodPut,
 			file: `{"name":{"en":"Companies"},"fields":[{"path":"name","text":true}]}`,
 			path: "/search/acme1/search/legal-entity/indexes/companies", scopes: manage, lang: "*",
@@ -112,8 +103,6 @@ func searchWrites() []writeCase {
 	}
 }
 
-// sequentialIDWrites are the writes of sequence schemas and those that issue
-// IDs, which request the view scope.
 func sequentialIDWrites() []writeCase {
 	manage, view := []string{"sequentialid.schema_manage"}, []string{"sequentialid.schema_view"}
 	const id = "6915e2eb3b4c2e6c7c80711b"
@@ -126,7 +115,6 @@ func sequentialIDWrites() []writeCase {
 			body: `{"id":"` + id + `"}`, want: "{\n  \"id\": \"" + id + "\"\n}\n",
 		},
 		{
-			// Emporix answers the new ID as bare text, although labelled JSON (live): epx prints it as a JSON string.
 			args:   []string{"sequential-ids", "create"},
 			file:   `{"name":"Orders","schemaType":"orderNoSequence","startValue":1,"maxValue":999999,"numberOfDigits":6}`,
 			method: http.MethodPost, path: "/sequential-id/acme1/schemas", scopes: manage, status: http.StatusCreated,
@@ -147,7 +135,6 @@ func sequentialIDWrites() []writeCase {
 			status: http.StatusCreated, body: `{"id":"ORD-000045"}`, want: "{\n  \"id\": \"ORD-000045\"\n}\n",
 		},
 		{
-			// Without flags, the body is empty: the default sequence, placeholders from the site.
 			args: []string{"sequential-ids", "next-id", "orderNoSequence", "--site", "AcmeStore_NL"}, sent: `{}`,
 			method: http.MethodPost, path: "/sequential-id/acme1/schemas/types/orderNoSequence/nextId",
 			query: "siteCode=AcmeStore_NL", scopes: view, status: http.StatusCreated, body: `{"id":"ORD-000046"}`,
@@ -160,7 +147,6 @@ func sequentialIDWrites() []writeCase {
 			status: http.StatusCreated, body: `{"id":"INV-2026-7"}`, want: "{\n  \"id\": \"INV-2026-7\"\n}\n",
 		},
 		{
-			// The batch has no tenant in its path: Emporix takes it from the token.
 			args: []string{"sequential-ids", "next-ids", "--site", "AcmeStore_NL"},
 			file: `{"orderNoSequence":{"numberOfIds":2}}`, method: http.MethodPost,
 			path: "/sequential-id/sequenceSchemaBatch/nextIds", query: "siteCode=AcmeStore_NL", scopes: view,
@@ -171,12 +157,6 @@ func sequentialIDWrites() []writeCase {
 	}
 }
 
-// TestSubscriptionChangesListTheEventsThatFailed checks that bulk-patch of
-// webhook subscriptions, which Emporix answers per event without an index,
-// finds the result of each change by its eventType, whatever their order,
-// lists the events that failed by it and exits with the code they share (5
-// for a stale version); and that it sends up to 200 changes, Emporix's
-// default limit, refusing more before anything is sent.
 func TestSubscriptionChangesListTheEventsThatFailed(t *testing.T) {
 	fake := newFakeEmporix(t)
 	fake.route("/webhook/acme1/event-subscriptions", respond(http.StatusMultiStatus,
@@ -208,13 +188,6 @@ func TestSubscriptionChangesListTheEventsThatFailed(t *testing.T) {
 	refused.assertNothingSent(t)
 }
 
-// TestIDsAreIssuedAsWrites checks that next-id and next-ids, which Emporix
-// carries out with the view scope, are writes all the same: their help says
-// that they change data, they ask for confirmation, --sequence-key and
-// --file exclude each other, and --site is checked as every site is. A write
-// declared readScoped with a write-capable scope is refused while the tree
-// is built, as one with read scopes only that is not declared so is
-// (TestWritesRequestAWriteCapableScope).
 func TestIDsAreIssuedAsWrites(t *testing.T) {
 	for _, use := range []string{"next-id", "next-ids"} {
 		_, help, _ := runCLI(t, nil, "sequential-ids", use, "--help")

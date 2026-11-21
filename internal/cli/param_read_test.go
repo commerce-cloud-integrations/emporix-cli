@@ -6,14 +6,6 @@ import (
 	"testing"
 )
 
-// TestParamReadFailuresSendNothing checks the query parameters that flags set:
-// on `carts find`, exactly one of --customer and --session is required and
-// none may be empty, also when the read is opted in to; on
-// `ai analytics executions`, --granularity takes only the granularities that
-// Emporix names, in capitals, and on `category-trees list`, --type only the
-// category types; search and get of category trees take no --type. Any other
-// use is a usage error found while flags are parsed, before a token is
-// requested or anything is read.
 func TestParamReadFailuresSendNothing(t *testing.T) {
 	find := []string{"carts", "find", "--site", "AcmeStore_NL", "--allow-write-scope"}
 	executions := []string{"ai", "analytics", "executions", "helper"}
@@ -58,10 +50,6 @@ func TestParamReadFailuresSendNothing(t *testing.T) {
 	}
 }
 
-// TestParamFlagsNameTheirChoices checks the help of the flags that set query
-// parameters: a flag with choices names them after its own help, from the
-// same list that it accepts and completes; any other keeps its help as
-// declared.
 func TestParamFlagsNameTheirChoices(t *testing.T) {
 	root := newTestRoot()
 	for _, tt := range []struct {
@@ -84,8 +72,6 @@ func TestParamFlagsNameTheirChoices(t *testing.T) {
 	}
 }
 
-// TestParamValueWithoutChoicesTakesAnyValue checks that a flag whose
-// choices are empty, not only nil, takes any value but an empty one.
 func TestParamValueWithoutChoicesTakesAnyValue(t *testing.T) {
 	for _, choices := range [][]string{nil, {}} {
 		v := paramValue{paramFlag: paramFlag{choices: choices}}

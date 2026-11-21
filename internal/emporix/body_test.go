@@ -6,7 +6,6 @@ import (
 	"testing"
 )
 
-// jsonBody returns the body that sends text, one JSON value (JSONBody).
 func jsonBody(t *testing.T, text string) Body {
 	t.Helper()
 	body, err := JSONBody([]byte(text))
@@ -16,9 +15,6 @@ func jsonBody(t *testing.T, text string) Body {
 	return body
 }
 
-// TestJSONBodyTakesOneJSONValue checks that a JSON body holds one JSON value,
-// byte for byte, a copy of what it was given, with its content type; anything
-// else is ErrInvalidInput, and the zero Body is none.
 func TestJSONBodyTakesOneJSONValue(t *testing.T) {
 	data := []byte("{ \"code\": \"box\" }\n")
 	body, err := JSONBody(data)
@@ -38,9 +34,6 @@ func TestJSONBodyTakesOneJSONValue(t *testing.T) {
 	}
 }
 
-// TestJSONBodyOfEncodesAValue checks that the JSON body of a value is encoded
-// as EncodeBody encodes it, with its content type, and that a value that JSON
-// cannot encode is no body.
 func TestJSONBodyOfEncodesAValue(t *testing.T) {
 	body, err := JSONBodyOf(map[string]string{"q": "price:>10"})
 	if err != nil || string(body.data) != `{"q":"price:>10"}` || body.contentType != JSONContentType {

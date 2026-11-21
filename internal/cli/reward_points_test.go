@@ -6,8 +6,6 @@ import (
 	"testing"
 )
 
-// TestRewardPointsBalanceIsOneNumber checks that a balance must be a JSON
-// number, also for -o json, and that an empty response is not found.
 func TestRewardPointsBalanceIsOneNumber(t *testing.T) {
 	for _, body := range []string{`{"points":5}`, `"5"`, `null`, `[5]`, `true`, `5 6`} {
 		fake := newFakeEmporix(t)

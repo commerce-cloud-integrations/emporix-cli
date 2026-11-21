@@ -1,8 +1,5 @@
 package cli
 
-// The read cases of the Site Settings, Currency, Country, Tax, Configuration and Indexing services (see TestReads).
-
-// sitesBody holds two sites; the second has mixins, which only -o json shows.
 const sitesBody = `[
 	{"code":"main","name":"Default","active":true,"default":false,"languages":["en","de"],"currency":"EUR",
 	 "homeBase":{"address":{"country":"DE"}},"shipToCountries":["DE","AT"]},
@@ -10,11 +7,9 @@ const sitesBody = `[
 	 "homeBase":{"address":{"country":"NL"}},"shipToCountries":["NL"],"mixins":{"apiKey":"site-secret"}}
 ]`
 
-// siteReads returns the Site Settings Service reads.
 func siteReads() []readCase {
 	return []readCase{
 		{
-			// Sites send their total only as hybris-count, when asked with totalCount=true.
 			args:    []string{"sites", "list"},
 			path:    "/site/acme1/sites",
 			mode:    getAllHybrisCounted,
@@ -34,7 +29,6 @@ func siteReads() []readCase {
 				"AcmeStore_NL  AcmeStore  true     nl         EUR       NL    NL\n",
 		},
 		{
-			// A boolean the service leaves out stays empty instead of looking like false.
 			args: []string{"sites", "get", "x"},
 			path: "/site/acme1/sites/x",
 			mode: getWhole,
@@ -43,7 +37,6 @@ func siteReads() []readCase {
 				"x     X                                         \n",
 		},
 		{
-			// Opt-in: inactive sites need the write-capable scope. Emporix sends no total for the codes.
 			args:    []string{"sites", "codes", "--allow-write-scope"},
 			path:    "/site/acme1/siteslist",
 			query:   "includeInactive=true",
@@ -53,8 +46,6 @@ func siteReads() []readCase {
 			want:    "CODE\nmain\nAcmeStore_NL\nAcmeStore_old\n",
 		},
 		{
-			// The mixins are the members of one object, sorted by name; a value is kept as sent (text as
-			// is, other JSON compacted, null empty) and cut.
 			args: []string{"sites", "mixins", "list", "AcmeStore NL"},
 			path: "/site/acme1/sites/AcmeStore%20NL/mixins",
 			mode: getWhole,
@@ -67,7 +58,6 @@ func siteReads() []readCase {
 				"orderSettings     {\"minimumOrderValue\":20,\"metadata\":{\"schema\":\"https://examp…\n",
 		},
 		{
-			// One mixin shows its fields.
 			args: []string{"sites", "mixins", "get", "AcmeStore_NL", "customerSettings"},
 			path: "/site/acme1/sites/AcmeStore_NL/mixins/customerSettings",
 			mode: getWhole,
@@ -79,7 +69,6 @@ func siteReads() []readCase {
 	}
 }
 
-// currencyReads returns the Currency Service reads.
 func currencyReads() []readCase {
 	return []readCase{
 		{
@@ -98,7 +87,6 @@ func currencyReads() []readCase {
 			want: "CODE  NAME\nCHF   Zwitserse frank\n",
 		},
 		{
-			// A rate is kept as sent: a string with a dot or a comma, a number, or nothing.
 			args:    []string{"exchange-rates", "list"},
 			path:    "/currency/acme1/exchanges",
 			scopes:  []string{"currency.currency_read"},
@@ -128,11 +116,9 @@ EUR_SEK  EUR     SEK
 	}
 }
 
-// countryReads returns the Country Service reads.
 func countryReads() []readCase {
 	return []readCase{
 		{
-			// Sorted by code, so the output is the same on every run.
 			args:    []string{"regions", "list", "--language", "de"},
 			path:    "/country/acme1/regions",
 			query:   "sort=code",
@@ -141,8 +127,6 @@ func countryReads() []readCase {
 			want:    "CODE    NAME\nEurope  Europa\n",
 		},
 		{
-			// The Country Service orders countries differently on every request: one page of 1000,
-			// sorted by code.
 			args:    []string{"countries", "list", "--language", "de"},
 			path:    "/country/acme1/countries",
 			query:   "sort=code",
@@ -173,11 +157,9 @@ func countryReads() []readCase {
 	}
 }
 
-// taxAndConfigurationReads returns the Tax and Configuration Service reads.
 func taxAndConfigurationReads() []readCase {
 	return []readCase{
 		{
-			// Rates keep their text (21.0, not 21); the default class is marked.
 			args:    []string{"taxes", "list"},
 			path:    "/tax/acme1/taxes",
 			scopes:  []string{"tax.tax_read"},
@@ -203,7 +185,6 @@ func taxAndConfigurationReads() []readCase {
 			want: "LOCATION  COUNTRY  CLASSES\nNL        NL       STANDARD 21.0 (default)\n",
 		},
 		{
-			// The service ignores paging, so the settings are read with one request.
 			args:   []string{"configurations", "list"},
 			path:   "/configuration/acme1/configurations",
 			scopes: []string{"configuration.configuration_view"},
@@ -222,7 +203,6 @@ func taxAndConfigurationReads() []readCase {
 				"project_lang  [{\"id\":\"nl\"}]  2        false    true\n",
 		},
 		{
-			// Global settings need no scope; a secured one shows its value as sent.
 			args: []string{"configurations", "global"},
 			path: "/configuration/acme1/global-configurations",
 			mode: getWhole,
@@ -249,7 +229,6 @@ func taxAndConfigurationReads() []readCase {
 			want:   "KEY        VALUE  VERSION  SECURED  READ ONLY\nbatchSize  100    1                 \n",
 		},
 		{
-			// The client, then the key, address one setting.
 			args:   []string{"configurations", "client-setting", "acme.indexing-client", "batchSize"},
 			path:   "/configuration/acme1/clients/acme.indexing-client/configurations/batchSize",
 			scopes: []string{"configuration.configuration_view"},
@@ -261,11 +240,9 @@ func taxAndConfigurationReads() []readCase {
 	}
 }
 
-// indexingReads returns the Indexing Service reads.
 func indexingReads() []readCase {
 	return []readCase{
 		{
-			// Providers come whole, without their keys (see TestIndexingProvidersHideKeys).
 			args:   []string{"indexing", "providers", "list"},
 			path:   "/indexing/acme1/configurations",
 			scopes: []string{"indexing.search_view"},
@@ -282,7 +259,6 @@ func indexingReads() []readCase {
 			want:   "PROVIDER  ACTIVE  APPLICATION ID  INDEX\nALGOLIA   true    APP1            acme1\n",
 		},
 		{
-			// A storefront's view needs no scope.
 			args: []string{"indexing", "providers", "public", "list"},
 			path: "/indexing/acme1/public/configurations",
 			mode: getWhole,
@@ -297,7 +273,6 @@ func indexingReads() []readCase {
 			want: "PROVIDER  ACTIVE  APPLICATION ID  INDEX\nALGOLIA           APP1            acme1\n",
 		},
 		{
-			// Emporix fails when asked for the jobs' total, so their pages are read without it.
 			args:    []string{"indexing", "reindex-jobs", "list"},
 			path:    "/indexing/acme1/reindex-jobs",
 			scopes:  []string{"indexing.search_view"},

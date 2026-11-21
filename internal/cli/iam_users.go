@@ -11,7 +11,6 @@ import (
 	"github.com/commerce-cloud-integrations/emporix-cli/internal/emporix"
 )
 
-// iamUser is the part of an IAM user (an employee) shown in tables.
 type iamUser struct {
 	personName
 	ID              string   `json:"id"`
@@ -35,8 +34,6 @@ const iamUsersPage = 500
 // as an empty next page proves nothing there: a page cut short fails.
 const userAccessControlsPage = 1000
 
-// newIAMUsersCommand reads the tenant's users, their groups, what they may do
-// and the users of a vendor.
 func newIAMUsersCommand(a *app) *cobra.Command {
 	users := resource[iamUser]{
 		use:   "users",
@@ -70,9 +67,6 @@ func newIAMUsersCommand(a *app) *cobra.Command {
 		[]*cobra.Command{vendorUsers(a, users)})...)
 }
 
-// newUserGroupsCommand returns `groups`, the group of the reads of the groups
-// a user of users belongs to, all of them and one, and of the write that
-// removes the user from all of them.
 func newUserGroupsCommand(a *app, users resource[iamUser]) *cobra.Command {
 	groups := iamGroups()
 	groupsOf := users.nested(groups.use)
@@ -94,8 +88,6 @@ func newUserGroupsCommand(a *app, users resource[iamUser]) *cobra.Command {
 		userGroupsWrite(a, groupsOf, userGroups))
 }
 
-// userAccessReads returns the reads of what a user may do: the scopes and the
-// access controls that their groups grant them.
 func userAccessReads(a *app, users resource[iamUser]) []*cobra.Command {
 	accessControls := iamAccessControls().reader()
 	return []*cobra.Command{
@@ -123,10 +115,6 @@ func userAccessReads(a *app, users resource[iamUser]) []*cobra.Command {
 	}
 }
 
-// vendorUsers returns `for-vendor VENDOR_ID`, the users of a vendor. The
-// reference documents no paging for them, unlike the tenant's users, and the
-// tenant tested has no vendor to check it on, so they are read with GetAll,
-// which fails rather than repeat or miss users wherever paging misbehaves.
 func vendorUsers(a *app, users resource[iamUser]) *cobra.Command {
 	sellers := vendors()
 	return users.reader().command(a, &command{
@@ -141,8 +129,6 @@ func vendorUsers(a *app, users resource[iamUser]) *cobra.Command {
 	})
 }
 
-// userScopeItems returns the scopes of a user's scopes response, a text of
-// scopes separated by spaces, as items, sorted; the tenant entry is left out.
 func userScopeItems(body json.RawMessage) ([]json.RawMessage, error) {
 	var granted struct {
 		Scopes *string `json:"scopes"`

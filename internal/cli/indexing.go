@@ -9,9 +9,6 @@ import (
 	"github.com/commerce-cloud-integrations/emporix-cli/internal/emporix"
 )
 
-// indexProvider is the part of an Indexing Service provider configuration
-// shown in tables. It deliberately has no key fields: tables leave the search
-// and write keys out, and -o json prints them.
 type indexProvider struct {
 	Provider      string `json:"provider"`
 	Active        *bool  `json:"active"`
@@ -19,7 +16,6 @@ type indexProvider struct {
 	IndexName     string `json:"indexName"`
 }
 
-// reindexJob is the part of an Indexing Service reindex job shown in tables.
 type reindexJob struct {
 	ID             string       `json:"id"`
 	EntityType     string       `json:"entityType"`
@@ -30,17 +26,13 @@ type reindexJob struct {
 	Metadata       itemMetadata `json:"metadata"`
 }
 
-// indexingUse is the name of the group of the Indexing Service.
 const indexingUse = "indexing"
 
-// The scopes of the Indexing Service: of the tenant's own reads, and of its
-// writes, which change or delete a provider or start a reindex.
 const (
 	indexingScope       = "indexing.search_view"
 	indexingManageScope = "indexing.search_manage"
 )
 
-// providerView is the table of index providers; singular names them.
 func providerView(singular string) view[indexProvider] {
 	return view[indexProvider]{
 		singular: singular,
@@ -51,9 +43,6 @@ func providerView(singular string) view[indexProvider] {
 	}
 }
 
-// newIndexingCommand groups the Indexing Service commands: the index
-// providers, which it reads, creates, updates and deletes, and reindexing,
-// which it starts and follows.
 func newIndexingCommand(a *app) *cobra.Command {
 	storefront := resource[indexProvider]{
 		use:  "public",
@@ -90,9 +79,6 @@ func newIndexingCommand(a *app) *cobra.Command {
 	)
 }
 
-// batteryIncludedSettings says what the BatteryIncluded-only settings of a
-// provider configuration hold, when Emporix refuses them and when a change
-// reaches the index.
 const batteryIncludedSettings = "For BATTERY_INCLUDED only, it may hold excludedMixinKeys or " +
 	"includedMixinPaths, and: apiUrl, the BatteryIncluded API that holds the index, an https address of " +
 	"a host that Emporix allows, " +
@@ -105,15 +91,12 @@ const batteryIncludedSettings = "For BATTERY_INCLUDED only, it may hold excluded
 	"host (400 Bad Request, exit 1). A change of any of the three takes effect within 10 minutes; a new " +
 	"enrichments or siteAwareMixinsStrategy reaches a product when it is next updated or reindexed."
 
-// providerFields says what the body of a provider configuration holds.
 const providerFields = "The JSON in --file holds provider (ALGOLIA or BATTERY_INCLUDED, required), active, " +
 	"applicationId, indexName, searchKey and writeKey. " + batteryIncludedSettings + " Only one provider " +
 	"can be active at a time. Emporix checks the keys of BATTERY_INCLUDED before it stores them, against " +
 	"the host of apiUrl: it refuses invalid ones (400 Bad Request, exit 1) and stores nothing when it " +
 	"cannot check them (502 Bad Gateway)."
 
-// providerCreate creates the configuration of an index provider in
-// providers, from --file.
 func providerCreate(providers resource[indexProvider]) *write {
 	return &write{
 		use:     createUse,
@@ -127,8 +110,6 @@ func providerCreate(providers resource[indexProvider]) *write {
 	}
 }
 
-// providerUpdate replaces the configuration of an index provider in
-// providers, from --file.
 func providerUpdate(providers resource[indexProvider]) *write {
 	return &write{
 		use:   providers.itemUse("update"),
@@ -153,8 +134,6 @@ func providerUpdate(providers resource[indexProvider]) *write {
 	}
 }
 
-// reindexProducts reindexes every product, as Emporix did before reindex
-// jobs, which it deprecated the endpoint for.
 func reindexProducts() *write {
 	return &write{
 		use:   "reindex",
@@ -171,14 +150,11 @@ func reindexProducts() *write {
 	}
 }
 
-// newReindexJobsCommand reads reindex jobs and starts them.
 func newReindexJobsCommand(a *app) *cobra.Command {
 	jobs := reindexJobs()
 	return newResourceCommand(a, jobs, reindexJobCreate(jobs).command(a))
 }
 
-// reindexJobs is the collection of reindex jobs. The endpoint answers 500
-// when asked for its total, so list pages without X-Total-Count.
 func reindexJobs() resource[reindexJob] {
 	return resource[reindexJob]{
 		use:   "reindex-jobs",
@@ -206,9 +182,7 @@ func reindexJobs() resource[reindexJob] {
 	}
 }
 
-// state returns what --wait follows of j: how many entities it processed of
-// those it expects, where it says both (one that ended with SUCCESS says only
-// how many it expected), and its message, why it failed.
+// A job that ended with SUCCESS says only how many entities it expected.
 func (j *reindexJob) state() jobState {
 	s := jobState{ID: j.ID, Status: j.Status, Failure: j.Message}
 	if j.ProcessedCount != "" && j.ExpectedCount != "" {
@@ -217,21 +191,14 @@ func (j *reindexJob) state() jobState {
 	return s
 }
 
-// entityBuiltInTypes returns the entity types that reindex jobs and the AI
-// RAG Indexer take besides the custom ones, in any case.
 func entityBuiltInTypes() builtInTypes {
 	return anyCaseTypes("PRODUCT", "ORDER", "CUSTOMER", "LEGAL-ENTITY")
 }
 
-// entityTypeSentences say, for help, what TYPE, an entity type, is: one of
-// builtIn, the entityBuiltInTypes that its caller declares a command with,
-// LEGAL-ENTITY with a hyphen, or a custom one.
 func entityTypeSentences(builtIn builtInTypes) string {
 	return builtIn.clause("TYPE") + ". LEGAL-ENTITY takes a hyphen, not an underscore."
 }
 
-// reindexJobCreate starts a reindex job in jobs, which --wait follows as
-// the get of jobs reads it.
 func reindexJobCreate(jobs resource[reindexJob]) *write {
 	types := entityBuiltInTypes()
 	return &write{

@@ -9,8 +9,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// iamWrites are the writes of the IAM Service: access controls, custom
-// scopes, groups and their users, users and their groups.
 func iamWrites() []writeCase {
 	assignment := []string{iamAssignmentManage}
 	return append([]writeCase{
@@ -21,7 +19,6 @@ func iamWrites() []writeCase {
 			lang: "*", status: http.StatusNoContent,
 		},
 		{
-			// Emporix refuses a string here, so the name is a map sent with Content-Language: *.
 			args:   []string{"iam", "access-controls", "update", "ac2"},
 			file:   `{"name":{"en":"Vehicle readers"},"scopes":["acme.vehicle_read"],"restrictedTo":"EMPLOYEE"}`,
 			method: http.MethodPut, path: "/iam/acme1/access-controls/ac2", scopes: []string{iamAccessManage},
@@ -33,7 +30,6 @@ func iamWrites() []writeCase {
 			confirmBy: "ac1",
 		},
 		{
-			// The reference names no Content-Language for a scope, so none is sent.
 			args: []string{"iam", "scopes", "update", "acme.vehicle_manage"},
 			file: `{"domain":"vehicle","description":{"en":"Manage vehicles"}}`, method: http.MethodPut,
 			path: "/iam/acme1/scopes/acme.vehicle_manage", scopes: []string{iamScopeManage},
@@ -59,13 +55,10 @@ func iamWrites() []writeCase {
 			status: http.StatusNoContent,
 		},
 		{
-			// Without --force-delete, no forceDelete is sent (Emporix takes it as false): the group's users
-			// are kept.
 			args: []string{"iam", "groups", "delete", "g1"}, method: http.MethodDelete, path: "/iam/acme1/groups/g1",
 			scopes: []string{iamGroupManage}, status: http.StatusNoContent, confirmBy: "g1",
 		},
 		{
-			// --force-delete removes the group's users too, with the scope that manages them.
 			args: []string{"iam", "groups", "delete", "g1", "--force-delete"}, method: http.MethodDelete,
 			path: "/iam/acme1/groups/g1", query: "forceDelete=true",
 			scopes: []string{iamGroupManage, iamAssignmentManage}, status: http.StatusNoContent,
@@ -74,8 +67,6 @@ func iamWrites() []writeCase {
 	}, slices.Concat(iamMembershipWrites(assignment), iamUserWrites())...)
 }
 
-// iamMembershipWrites are the writes of the users of a group and of the
-// groups of a user, which need the scope that manages assignments.
 func iamMembershipWrites(assignment []string) []writeCase {
 	return []writeCase{
 		{
@@ -84,7 +75,6 @@ func iamMembershipWrites(assignment []string) []writeCase {
 			scopes: assignment, status: http.StatusCreated, body: `{"id":"m1"}`, want: "{\n  \"id\": \"m1\"\n}\n",
 		},
 		{
-			// Without --user-type, Emporix takes the user to be an employee.
 			args: []string{"iam", "groups", "users", "create", "g1", "--user", "u2"}, sent: `{"userId":"u2"}`,
 			method: http.MethodPost, path: "/iam/acme1/groups/g1/users", scopes: assignment,
 			status: http.StatusCreated, body: `{"id":"m3"}`, want: "{\n  \"id\": \"m3\"\n}\n",
@@ -117,7 +107,6 @@ func iamMembershipWrites(assignment []string) []writeCase {
 	}
 }
 
-// iamUserWrites are the writes of users, each with a scope of its own.
 func iamUserWrites() []writeCase {
 	const user = `{"firstName":"Jane","lastName":"Doe","preferredSite":"AcmeStore_NL","preferredCurrency":"EUR",` +
 		`"preferredLanguage":"en","department":"Sales","contactEmail":"jane@example.com","groupIds":["g1"]}`
@@ -140,9 +129,6 @@ func iamUserWrites() []writeCase {
 	}
 }
 
-// TestIAMGroupDeleteForcedFailsWithoutTheAssignmentScope checks that a
-// forced delete with a credential that lacks the scope that manages
-// assignments fails before anything is sent (exit 3).
 func TestIAMGroupDeleteForcedFailsWithoutTheAssignmentScope(t *testing.T) {
 	fake := newFakeEmporix(t, iamAssignmentManage)
 	code, stdout, stderr := runIn(t, writeEnv(fake, false, ""), "iam", "groups", "delete", "g1", "--force-delete",
@@ -153,10 +139,6 @@ func TestIAMGroupDeleteForcedFailsWithoutTheAssignmentScope(t *testing.T) {
 	fake.assertRequests(t)
 }
 
-// TestIAMWritesRefuseInvalidInput checks that an IAM write without its
-// arguments or body, with both a body file and typed flags, or with an
-// argument that does not address one item, is a usage error (exit 2) that
-// sends nothing, also for a dry run.
 func TestIAMWritesRefuseInvalidInput(t *testing.T) {
 	file := writeBody(t, `{"userId":"u1"}`)
 	for _, tt := range []struct {
@@ -175,7 +157,6 @@ func TestIAMWritesRefuseInvalidInput(t *testing.T) {
 		{args: []string{"scopes", "update", "acme.vehicle_manage"}, want: `required flag(s) "file" not set`},
 		{args: []string{"scopes", "update", "acme.x", "--file", file, "--content-language", "en"},
 			want: "unknown flag: --content-language"},
-		// Emporix refuses a string as their name, so the flag is not offered.
 		{args: []string{"access-controls", "update", "ac1", "--file", file, "--content-language", "en"},
 			want: "unknown flag: --content-language"},
 		{args: []string{"groups", "create", "--file", file, "--content-language", "en"},
@@ -183,7 +164,6 @@ func TestIAMWritesRefuseInvalidInput(t *testing.T) {
 		{args: []string{"groups", "update", "g1", "--file", file, "--content-language", "en"},
 			want: "unknown flag: --content-language"},
 		{args: []string{"users", "delete", "u1", "--force-delete"}, want: "unknown flag: --force-delete"},
-		// The kind of user is CUSTOMER or EMPLOYEE, in capitals, as a flag and as an argument.
 		{args: []string{"groups", "users", "create", "g1", "--user", "u1", "--user-type", "ALIEN"},
 			want: `invalid argument "ALIEN" for "--user-type" flag: use CUSTOMER or EMPLOYEE`},
 		{args: []string{"groups", "users", "create", "g1", "--user", "u1", "--user-type", "employee"},
@@ -211,8 +191,6 @@ func TestIAMWritesRefuseInvalidInput(t *testing.T) {
 	}
 }
 
-// TestIAMWritesSayTheyChangeAccess checks that the help of every IAM write
-// says that it changes who may do what.
 func TestIAMWritesSayTheyChangeAccess(t *testing.T) {
 	var writes int
 	walkCommands(newTestRoot(), func(cmd *cobra.Command) {

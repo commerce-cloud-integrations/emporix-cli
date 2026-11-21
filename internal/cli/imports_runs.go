@@ -12,7 +12,6 @@ import (
 	"github.com/commerce-cloud-integrations/emporix-cli/internal/emporix"
 )
 
-// importRun is the part of an import run shown in tables.
 type importRun struct {
 	ID          string      `json:"id"`
 	Status      string      `json:"status"`
@@ -22,11 +21,9 @@ type importRun struct {
 	FinishedAt  string      `json:"finishedAt"`
 	RecordsRead json.Number `json:"recordsRead"`
 	Failed      json.Number `json:"failed"`
-	Message     string      `json:"message"` // why it failed, where it says; only in -o json
+	Message     string      `json:"message"`
 }
 
-// mode returns the run's mode, FULL or DELTA, followed by "dry run" for a run
-// that wrote nothing.
 func (r *importRun) mode() string {
 	if r.DryRun {
 		return spaced(r.Mode, "dry run")
@@ -34,8 +31,6 @@ func (r *importRun) mode() string {
 	return r.Mode
 }
 
-// runStream is the progress of one stream in an import run: the records it
-// read, which its other counters add up to, and its message.
 type runStream struct {
 	StreamName        string      `json:"streamName"`
 	Status            string      `json:"status"`
@@ -49,12 +44,9 @@ type runStream struct {
 	Collapsed         json.Number `json:"collapsed"`
 	Embedded          json.Number `json:"embedded"`
 	Message           string      `json:"message"`
-	Sweep             bool        `json:"sweep"` // the repair pass of a stream, not a second stream
+	Sweep             bool        `json:"sweep"`
 }
 
-// stream returns the name of the stream of s, followed by "sweep" for the
-// repair pass that read again the parents a child stream had not found; a
-// progress without a name has no identifier, also when it is a sweep.
 func (s *runStream) stream() string {
 	if s.Sweep && s.StreamName != "" {
 		return spaced(s.StreamName, "sweep")
@@ -62,8 +54,6 @@ func (s *runStream) stream() string {
 	return s.StreamName
 }
 
-// importError is the part of an error recorded during an import run shown in
-// tables.
 type importError struct {
 	ID         string `json:"id"`
 	NaturalKey string `json:"naturalKey"`
@@ -72,7 +62,6 @@ type importError struct {
 	Message    string `json:"message"`
 }
 
-// diagnosticRow is a source row behind a run's feed-quality counters.
 type diagnosticRow struct {
 	Kind         string      `json:"kind"`
 	StreamName   string      `json:"streamName"`
@@ -83,11 +72,8 @@ type diagnosticRow struct {
 	Occurrence   json.Number `json:"occurrence"`
 }
 
-// maxDiagnosticRows is the most diagnostic rows the Import Service returns at
-// once; diagnostics asks for that many and fails when a run recorded more.
 const maxDiagnosticRows = 50000
 
-// configurationRuns declares the runs of an import configuration.
 func configurationRuns() child[importRun] {
 	return child[importRun]{
 		use:   "runs",
@@ -100,8 +86,6 @@ func configurationRuns() child[importRun] {
 	}
 }
 
-// importRuns returns import runs, which the service reads one at a time by
-// id; the command line listedBy lists them (the runs of a configuration).
 func importRuns(listedBy string) resource[importRun] {
 	return resource[importRun]{
 		use:      "runs",
@@ -112,13 +96,12 @@ func importRuns(listedBy string) resource[importRun] {
 		long: "Reads import runs; a run's ID is the one that `epx " + listedBy + "` shows. " +
 			"Its `-o json` adds the progress of each stream of the run, which `epx imports runs streams` shows.",
 		path:   "/importtool/{tenant}/runs",
-		item:   detailRun, // the run of its details
+		item:   detailRun,
 		scopes: importScopes(),
 		view:   importRunView(),
 	}
 }
 
-// importRunView is the table of import runs.
 func importRunView() view[importRun] {
 	return view[importRun]{
 		singular: "run",
@@ -140,8 +123,6 @@ func importRunView() view[importRun] {
 	}
 }
 
-// newImportRunsCommand reads one import run, the progress of its streams, its
-// errors and its diagnostics, followed by writes.
 func newImportRunsCommand(a *app, runs resource[importRun], writes ...*cobra.Command) *cobra.Command {
 	limit := strconv.Itoa(maxDiagnosticRows)
 	return newGroup(runs.use, runs.summary(), runs.long, append([]*cobra.Command{
@@ -191,7 +172,6 @@ func newImportRunsCommand(a *app, runs resource[importRun], writes ...*cobra.Com
 	}, writes...)...)
 }
 
-// runStreamView is the table of the progress of each stream of a run.
 func runStreamView() view[runStream] {
 	return view[runStream]{
 		singular: "run stream",
@@ -208,7 +188,6 @@ func runStreamView() view[runStream] {
 	}
 }
 
-// runErrors declares the errors recorded during an import run.
 func runErrors() child[importError] {
 	return child[importError]{
 		use:   "errors",
@@ -244,7 +223,6 @@ func runErrors() child[importError] {
 	}
 }
 
-// diagnosticView is the table of the diagnostic rows of a run.
 func diagnosticView() view[diagnosticRow] {
 	return view[diagnosticRow]{
 		singular: "run diagnostics",
@@ -258,16 +236,11 @@ func diagnosticView() view[diagnosticRow] {
 	}
 }
 
-// runDetail is a run with the progress of its streams, as the Import Service
-// reads one run.
 type runDetail struct {
 	Run     json.RawMessage   `json:"run"`
-	Streams []json.RawMessage `json:"streams"` // none for a queued run
+	Streams []json.RawMessage `json:"streams"`
 }
 
-// decodeRunDetail decodes a run's details, which must hold the run as one
-// item (oneItem): details whose run is null, empty or not an object are
-// malformed, also where only the streams are read.
 func decodeRunDetail(body json.RawMessage) (runDetail, error) {
 	var detail runDetail
 	err := json.Unmarshal(body, &detail)
@@ -280,7 +253,6 @@ func decodeRunDetail(body json.RawMessage) (runDetail, error) {
 	return detail, nil
 }
 
-// detailRun returns the run of a run's details.
 func detailRun(body json.RawMessage) ([]json.RawMessage, error) {
 	detail, err := decodeRunDetail(body)
 	if err != nil {
@@ -289,19 +261,15 @@ func detailRun(body json.RawMessage) ([]json.RawMessage, error) {
 	return []json.RawMessage{detail.Run}, nil
 }
 
-// detailStreams returns the progress of each stream of a run's details.
 func detailStreams(body json.RawMessage) ([]json.RawMessage, error) {
 	detail, err := decodeRunDetail(body)
 	return detail.Streams, err
 }
 
-// diagnosticRows returns the rows of a run's diagnostics, failing when the
-// service recorded more rows than it returned (a run that recorded more than
-// maxDiagnosticRows), as the rows would then be a part only.
 func diagnosticRows(body json.RawMessage) ([]json.RawMessage, error) {
 	var diagnostics struct {
 		Rows     []json.RawMessage `json:"rows"`
-		Recorded *int              `json:"recorded"` // the rows recorded for the run; unchecked when left out
+		Recorded *int              `json:"recorded"`
 	}
 	if err := json.Unmarshal(body, &diagnostics); err != nil || diagnostics.Rows == nil {
 		return nil, errors.New("expected an object with the diagnostic rows and an integer recorded, if any")

@@ -6,21 +6,13 @@ import (
 	"testing"
 )
 
-// The read cases of the searches of orders, prices, price lists and
-// availability, the order count and price matching, which Emporix serves as
-// POST with a JSON body, or HEAD, but which change nothing (see TestReads).
-
-// commerceSearchReads returns the searches of the Order, Price and
-// Availability services, the order count and price matching.
 func commerceSearchReads() []readCase {
 	return append(orderSearchReads(), priceSearchReads()...)
 }
 
-// orderSearchReads returns the order search and count and the availability search.
 func orderSearchReads() []readCase {
 	return []readCase{
 		{
-			// Without --query, the body's q filters nothing; pages are read as list reads them.
 			args:    []string{"orders", "search"},
 			path:    "/order-v2/acme1/salesorders/search",
 			scopes:  []string{"order.order_read"},
@@ -45,7 +37,6 @@ func orderSearchReads() []readCase {
 				"EON1003        CONFIRMED           Acme Ltd        0      \n",
 		},
 		{
-			// The count is the X-Total-Count of a HEAD request, which reads no orders.
 			args:    []string{"orders", "count"},
 			path:    "/order-v2/acme1/salesorders",
 			scopes:  []string{"order.order_read"},
@@ -67,7 +58,6 @@ func orderSearchReads() []readCase {
 			want:    "COUNT\n0\n",
 		},
 		{
-			// Records come from every site; like list, the search needs no scope.
 			args:    []string{"availability", "search", "--query", "available:false"},
 			path:    "/availability/acme1/availability/search",
 			filters: listFilters{kinds: sortable},
@@ -82,14 +72,10 @@ func orderSearchReads() []readCase {
 	}
 }
 
-// priceSearchReads returns the searches of prices, price lists and their
-// prices, and price matching.
 func priceSearchReads() []readCase {
 	const priceScope, listScope = "price.price_read", "price.pricelist_read"
 	return []readCase{
 		{
-			// Without --site or --currency, the body names only the products (every site and
-			// currency); a product without prices adds no row.
 			args:   []string{"prices", "search", "--product", "001234", "--product", "ZZ 1"},
 			path:   "/price/acme1/prices/search",
 			scopes: []string{priceScope},
@@ -112,8 +98,6 @@ func priceSearchReads() []readCase {
 			want: "ID  ITEM  TYPE  CURRENCY  COUNTRY  SITES  TIERS  FROM  TO\n",
 		},
 		{
-			// One unit of each product; values keep their text (0.0000317); the item is itemId as
-			// Emporix sends it, or itemRef as the API reference's schema names it.
 			args: []string{"prices", "match", "--product", "001234", "--product", "100200", "--site", "AcmeStore_NL",
 				"--country", "NL", "--currency", "EUR"},
 			path:   "/price/acme1/match-prices",
@@ -148,7 +132,6 @@ func priceSearchReads() []readCase {
 				"pl3  Detailhandel  EUR             NL                                                       \n",
 		},
 		{
-			// An unknown price list lists nothing, as prices does.
 			args:    []string{"price-lists", "prices", "search", "pl 1", "--query", "itemId.id:100200"},
 			path:    "/price/acme1/price-lists/pl%201/prices/search",
 			scopes:  []string{listScope},
@@ -161,8 +144,6 @@ func priceSearchReads() []readCase {
 	}
 }
 
-// instanceAndDocumentSearchReads returns the searches of custom instances
-// and of the documents of the Search Service.
 func instanceAndDocumentSearchReads() []readCase {
 	return []readCase{
 		{
@@ -178,7 +159,6 @@ func instanceAndDocumentSearchReads() []readCase {
 			want: "ID   NAME         OWNER        VERSION\n125  Handleiding  EMPLOYEE u2  1\n",
 		},
 		{
-			// A saved search runs with the text given; SCORE keeps its text (3.10).
 			args: []string{"search", "documents", "DOCUMENT", "--saved-search", "manuals", "--text", "diesel engine",
 				"--language", "nl"},
 			path:    "/search/acme1/search/DOCUMENT",
@@ -191,8 +171,6 @@ func instanceAndDocumentSearchReads() []readCase {
 			want: "ID  NAME                   SCORE\nd1  Dieselmotor            4.2\nd2  Diesel generator (en)  3.10\n",
 		},
 		{
-			// Customers, with the scope that reads every customer in place of a custom entity type's;
-			// a customer document has no name.
 			args:    []string{"search", "documents", "customer", "--saved-search", "by-city", "--text", "Utrecht"},
 			path:    "/search/acme1/search/customer",
 			scopes:  []string{"search.search_read", "customer.customer_read"},
@@ -203,7 +181,6 @@ func instanceAndDocumentSearchReads() []readCase {
 			want:    "ID  NAME  SCORE\nc1        2.5\n",
 		},
 		{
-			// Legal entities, with the scope that reads every legal entity; their name is plain text.
 			args:    []string{"search", "documents", "legal-entity", "--saved-search", "by-name", "--text", "acme"},
 			path:    "/search/acme1/search/legal-entity",
 			scopes:  []string{"search.search_read", "customermanagement.legalentity_read"},
@@ -216,8 +193,6 @@ func instanceAndDocumentSearchReads() []readCase {
 	}
 }
 
-// TestPriceSearchChecksItsShape checks that a price search fails, also with
-// -o json, on a response that does not list each product with its prices.
 func TestPriceSearchChecksItsShape(t *testing.T) {
 	const notAList = "decoding price response: expected a JSON array of products with their prices"
 	for body, want := range map[string]string{
@@ -236,9 +211,6 @@ func TestPriceSearchChecksItsShape(t *testing.T) {
 	}
 }
 
-// TestPriceMatchReadsAnArrayOrOneObject checks that prices match reads its
-// response as Emporix sends it, an array, or as the API reference documents
-// it, one object, and fails, also with -o json, on any other.
 func TestPriceMatchReadsAnArrayOrOneObject(t *testing.T) {
 	args := []string{"prices", "match", "--product", "100200", "--site", "main", "--country", "NL", "--currency", "EUR"}
 	const match = `{"priceId":"p1","itemId":{"id":"100200"},"currency":"EUR","originalValue":9.50,` +
@@ -265,8 +237,6 @@ func TestPriceMatchReadsAnArrayOrOneObject(t *testing.T) {
 	}
 }
 
-// TestOrderCountOutput checks that -o json prints the count alone, and that
-// a response without a count fails.
 func TestOrderCountOutput(t *testing.T) {
 	fake := newFakeEmporix(t)
 	fake.route("/order-v2/acme1/salesorders", respond(http.StatusOK, "", "X-Total-Count", "1250"))

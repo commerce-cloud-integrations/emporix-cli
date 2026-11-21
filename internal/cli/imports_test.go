@@ -8,14 +8,11 @@ import (
 	"testing"
 )
 
-// runImports runs `epx imports args… --allow-write-scope` against fake.
 func runImports(t *testing.T, fake *fakeEmporix, args ...string) (code int, stdout, stderr string) {
 	t.Helper()
 	return runCLI(t, fake.env(), append(append([]string{"imports"}, args...), "--"+writeScopeFlag)...)
 }
 
-// TestImportScheduleWithoutOneIsNotFound checks that a configuration without
-// a schedule, which the service answers with 204 No Content, is not found.
 func TestImportScheduleWithoutOneIsNotFound(t *testing.T) {
 	fake := newFakeEmporix(t)
 	fake.route("/importtool/acme1/configs/c1/schedule", respond(http.StatusNoContent, ""))
@@ -26,9 +23,6 @@ func TestImportScheduleWithoutOneIsNotFound(t *testing.T) {
 	}
 }
 
-// TestImportShapesRejectMalformedResponses checks the reads whose items the
-// response holds in a member, or which restructure it: a response of another
-// shape fails (exit 1) and prints nothing, also with -o json.
 func TestImportShapesRejectMalformedResponses(t *testing.T) {
 	for _, tt := range []struct {
 		args       []string
@@ -49,7 +43,6 @@ func TestImportShapesRejectMalformedResponses(t *testing.T) {
 			},
 		},
 		{
-			// Streams without their run are malformed too, not a run without progress.
 			args: []string{"runs", "streams", "r1"}, path: "/importtool/acme1/runs/r1",
 			want: "decoding run stream response: expected an object with a run and its streams",
 			bodies: []string{
@@ -98,9 +91,6 @@ func TestImportShapesRejectMalformedResponses(t *testing.T) {
 	}
 }
 
-// TestImportDiagnosticsFailWithoutEveryRecordedRow checks that diagnostics
-// fail (exit 1), also with -o json, when the service recorded more rows than
-// it returned: a run that recorded more than epx asks for.
 func TestImportDiagnosticsFailWithoutEveryRecordedRow(t *testing.T) {
 	for _, output := range []string{"table", "json"} {
 		fake := newFakeEmporix(t)
@@ -115,11 +105,6 @@ func TestImportDiagnosticsFailWithoutEveryRecordedRow(t *testing.T) {
 	}
 }
 
-// TestImportReadsOfPartialResponses checks what the import reads show for
-// responses that leave values out: a queued run has no streams yet, a run
-// without diagnostics none to list, a tenant without thresholds of its own
-// falls back to the defaults, and statistics and limits without their first
-// value still show their row.
 func TestImportReadsOfPartialResponses(t *testing.T) {
 	for _, tt := range []struct {
 		args       []string
@@ -155,11 +140,6 @@ func TestImportReadsOfPartialResponses(t *testing.T) {
 	}
 }
 
-// TestImportTablesRejectWhatJSONPrintsAsSent checks that a table of the
-// progress of a run's streams or of import streams fails (exit 1, nothing
-// printed) for a counter that is not a number, a sweep or file mode of
-// another type, and a sweep without the name of its stream, which a table
-// cannot identify; -o json prints them as sent.
 func TestImportTablesRejectWhatJSONPrintsAsSent(t *testing.T) {
 	type failure struct{ body, want string }
 	const runStreams = "decoding run stream response: "
@@ -201,7 +181,6 @@ func TestImportTablesRejectWhatJSONPrintsAsSent(t *testing.T) {
 	}
 }
 
-// decodedJSON returns the JSON value of text, its numbers kept as written.
 func decodedJSON(t *testing.T, text string) any {
 	t.Helper()
 	decoder := json.NewDecoder(strings.NewReader(text))
@@ -213,12 +192,6 @@ func decodedJSON(t *testing.T, text string) any {
 	return value
 }
 
-// TestImportHelpExplainsItsReads checks the help of the import reads: the
-// reads of a run or stream, which have no list, take their ID from the reads of
-// a configuration that list them; a run's columns, and how its counters add
-// up to READ, are explained wherever runs are shown, and per stream with the
-// counters only -o json has; every error code of a run is named; and a stream
-// imports an entity or files, which its SOURCE shows.
 func TestImportHelpExplainsItsReads(t *testing.T) {
 	const runs = "`epx imports configurations runs CONFIGURATION_ID` shows"
 	const modes = "SNAPSHOT files or INCREMENTAL files, read as `epx imports streams files` explains"
@@ -301,8 +274,6 @@ func TestImportHelpExplainsItsReads(t *testing.T) {
 	}
 }
 
-// TestImportRunJSONKeepsItsStreams checks that -o json prints a run's whole
-// details, the progress of its streams included, which its table leaves out.
 func TestImportRunJSONKeepsItsStreams(t *testing.T) {
 	fake := newFakeEmporix(t)
 	fake.route("/importtool/acme1/runs/r1", respond(http.StatusOK,
@@ -313,8 +284,6 @@ func TestImportRunJSONKeepsItsStreams(t *testing.T) {
 	}
 }
 
-// TestImportRecordsArePagedFromZero checks that imported records are read in
-// pages numbered from 0 until the reported total, the type kept on each.
 func TestImportRecordsArePagedFromZero(t *testing.T) {
 	fake := newFakeEmporix(t)
 	fake.route("/importtool/acme1/data/records", func(w http.ResponseWriter, r *http.Request) {

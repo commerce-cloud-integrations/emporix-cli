@@ -7,7 +7,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// returnRequest is the part of a Returns Service return shown in tables.
 type returnRequest struct {
 	ID             string          `json:"id"`
 	ApprovalStatus string          `json:"approvalStatus"`
@@ -25,18 +24,14 @@ type returnRequest struct {
 	} `json:"metadata"`
 }
 
-// returnedOrder is an order whose items are returned.
 type returnedOrder struct {
 	ID string `json:"id"`
 }
 
-// requestor returns who requested the return: their email, else their name,
-// else their customer id.
 func (r *returnRequest) requestor() string {
 	return cmp.Or(r.Requestor.Email, r.Requestor.fullName(), r.Requestor.CustomerID)
 }
 
-// newReturnsCommand reads, creates, changes and deletes return requests.
 func newReturnsCommand(a *app) *cobra.Command {
 	returns := resource[returnRequest]{
 		use:   "returns",
@@ -75,13 +70,8 @@ func newReturnsCommand(a *app) *cobra.Command {
 	return newResourceCommand(a, returns, commandsOf(a, returnWrites(returns))...)
 }
 
-// returnsManageScope is the scope of the Returns Service's writes made by an
-// employee on behalf of a customer (returns.returns_manage_own is a
-// customer's, with the customer's own token).
 const returnsManageScope = "returns.returns_manage"
 
-// returnWrites returns the writes of returns: create, update ID, patch ID
-// and delete ID.
 func returnWrites(returns resource[returnRequest]) []*write {
 	item := request{path: returns.itemPath()}
 	manage := []string{returnsManageScope}
