@@ -7,6 +7,11 @@ change or remove commands, columns or flags, and its notes list each such change
 
 ## Unreleased
 
+### Changed
+
+- `epx fees get` reads the fee only from the `fee` member of the response, where Emporix and its API
+  reference put it, and fails (exit 1) on a response without it. Before, it read such a response as the fee.
+
 ### Fixed
 
 - `epx ai agents update` help names `enableMemory`, the member Emporix keeps: it ignores

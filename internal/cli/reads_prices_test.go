@@ -172,15 +172,6 @@ func feeReads() []readCase {
 			want: feeTable,
 		},
 		{
-			args: []string{"fees", "get", "f2"},
-			path: "/fee/acme1/fees/f2",
-			mode: getWhole,
-			body: `{"id":"f2","code":"deposit","name":"Deposit","feeType":"ABSOLUTE","feeAbsolute":{"amount":3.5,
-				"currency":"EUR"}}`,
-			want: "ID  CODE     NAME     TYPE      AMOUNT   ITEM TYPE  SITE  ACTIVE  TAXABLE  FROM  TO\n" +
-				"f2  deposit  Deposit  ABSOLUTE  3.5 EUR                                          \n",
-		},
-		{
 			args:  []string{"fees", "for-product", "100 200", "--site", "AcmeStore_NL", "--language", "nl"},
 			path:  "/fee/acme1/productFees/100%20200/fees",
 			query: "expand=true&siteCode=AcmeStore_NL",

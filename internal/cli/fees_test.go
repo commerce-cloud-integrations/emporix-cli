@@ -7,12 +7,17 @@ import (
 	"testing"
 )
 
-func TestFeesGetRejectsAnArray(t *testing.T) {
-	fake := newFakeEmporix(t)
-	fake.route("/fee/acme1/fees/f1", respond(http.StatusOK, `[{"id":"f1","feeType":"ABSOLUTE"}]`))
-	code, stdout, stderr := runCLI(t, fake.env(), "fees", "get", "f1", "-o", "json")
-	if code != ExitError || stdout != "" || !strings.Contains(stderr, "expected one item as a JSON object") {
-		t.Fatalf("exit %d, stdout %q, stderr %q", code, stdout, stderr)
+func TestFeesGetRejectsAFeeOutsideItsWrapper(t *testing.T) {
+	for _, body := range []string{
+		`[{"id":"f1","feeType":"ABSOLUTE"}]`,
+		`{"id":"f1","feeType":"ABSOLUTE"}`,
+	} {
+		fake := newFakeEmporix(t)
+		fake.route("/fee/acme1/fees/f1", respond(http.StatusOK, body))
+		code, stdout, stderr := runCLI(t, fake.env(), "fees", "get", "f1", "-o", "json")
+		if code != ExitError || stdout != "" || !strings.Contains(stderr, "expected the fee in the member fee") {
+			t.Errorf("%s: exit %d, stdout %q, stderr %q", body, code, stdout, stderr)
+		}
 	}
 }
 

@@ -2,6 +2,7 @@ package cli
 
 import (
 	"encoding/json"
+	"errors"
 	"net/url"
 
 	"github.com/spf13/cobra"
@@ -40,12 +41,10 @@ func (f *fee) amount() string {
 
 func feeItem(body json.RawMessage) ([]json.RawMessage, error) {
 	var wrapper map[string]json.RawMessage
-	if json.Unmarshal(body, &wrapper) == nil {
-		if wrapped, ok := wrapper["fee"]; ok {
-			return oneItem(wrapped)
-		}
+	if json.Unmarshal(body, &wrapper) != nil || wrapper["fee"] == nil {
+		return nil, errors.New("expected the fee in the member fee of a JSON object")
 	}
-	return oneItem(body)
+	return oneItem(wrapper["fee"])
 }
 
 func newFeesCommand(a *app) *cobra.Command {
