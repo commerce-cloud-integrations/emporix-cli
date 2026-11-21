@@ -96,9 +96,10 @@ func returnWrites(returns resource[returnRequest]) []*write {
 				"Emporix refuses an id unknown for that type with 400 Bad Request, exit 1), expiryDate and " +
 				"mixins. Emporix answers with the return's id. It does not check quantities against earlier " +
 				"returns: sending the body again creates another return, even beyond the entry's amount. " +
-				"Its reference documents that Emporix copies siteCode and restriction from the orders, so the body " +
-				"may leave them out, and refuses a value that differs from the orders (400 Bad Request, " +
-				literal(`"site does not match order"`) + ", exit 1) and orders of different sites or restrictions (" +
+				"Emporix copies siteCode and restriction from the orders, so the body may leave them out, and " +
+				"refuses a value that differs from the orders (400 Bad Request, " +
+				literal(`"site does not match order"`) + ", exit 1) and, as its reference documents, orders of " +
+				"different sites or restrictions (" +
 				literal(`"orders belong to different sites"`) + "). " +
 				"It fails with 500 Internal Server Error (exit 1) for an order whose entries lack the " +
 				"deprecated unitPrice (nothing is created).",
@@ -108,8 +109,8 @@ func returnWrites(returns resource[returnRequest]) []*write {
 			use: returns.itemUse("update"), short: "Replace a return",
 			long: "Replaces the return ID with the return in --file, a JSON object as " +
 				"`epx returns get ID -o json` prints it, metadata.version included (Emporix refuses a body " +
-				"without metadata with 400 Bad Request), with siteCode and restriction left out, which stay as " +
-				"copied from the orders: its reference documents that an update does not accept them. Emporix " +
+				"without metadata with 400 Bad Request). siteCode and restriction stay as copied from the orders: " +
+				"Emporix ignores them in an update, whether the body has them or not. Emporix " +
 				"refuses an order of another site or restriction as create does (400 Bad Request, exit 1). It " +
 				"replaces only the latest version: an older metadata.version, like an unknown return, is not " +
 				"found (exit 4). " + source,
@@ -119,8 +120,9 @@ func returnWrites(returns resource[returnRequest]) []*write {
 			use: returns.itemUse("patch"), short: "Change a return",
 			long: "Changes the return ID with the JSON Patch (RFC 6902) in --file: an array of " +
 				"operations, each with op (add, remove or replace), path and value, e.g. " +
-				literal(`[{"op": "replace", "path": "/approvalStatus", "value": "APPROVED"}]`) + "; its reference documents that " +
-				"a patch does not accept /siteCode or /restriction. Emporix requires its" +
+				literal(`[{"op": "replace", "path": "/approvalStatus", "value": "APPROVED"}]`) + ". Emporix accepts an " +
+				"operation on /siteCode or /restriction but leaves them as they are, though metadata.version still goes up, " +
+				"and applies the other operations. Emporix requires its" +
 				" read scope for it too, and answers a token without it with 400 Bad Request. " + source,
 			method: http.MethodPatch, req: item, scopes: []string{"returns.returns_read", returnsManageScope},
 			body: operationsFile(), ids: returns.itemIDs(),

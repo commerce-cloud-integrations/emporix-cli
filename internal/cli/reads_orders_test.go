@@ -459,10 +459,11 @@ func TestReturnsHelpNamesTheirSiteAndAnswers(t *testing.T) {
 			"`\"site does not match order\"`", "`\"orders belong to different sites\"`",
 		},
 		"returns update": {
-			"with siteCode and restriction left out, which stay as copied from the orders: its reference documents " +
-				"that an update does not accept them",
+			"siteCode and restriction stay as copied from the orders: Emporix ignores them in an update, " +
+				"whether the body has them or not",
 		},
-		"returns patch":  {"a patch does not accept /siteCode or /restriction"},
+		"returns patch": {"accepts an operation on /siteCode or /restriction but leaves them as they are, though " +
+			"metadata.version still goes up"},
 		"returns delete": {"its reference now documents 404 Not Found (exit 4)"},
 	})
 }

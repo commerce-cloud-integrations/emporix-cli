@@ -13,6 +13,10 @@ change or remove commands, columns or flags, and its notes list each such change
   `enabledMemory`, the name its API reference gives, and says the JSON that `epx ai agents get ID -o json`
   prints can be sent back as it is. `epx ai chat` help says a reply can be one message, not only a
   list.
+- `epx ai agents update` help says Emporix refuses a mixin without a schema URL in
+  `metadata.mixins`, one whose schema it cannot download and a value its schema does not allow.
+- `epx returns update` and `patch` help say Emporix ignores siteCode and restriction there,
+  where its reference documents that it refuses them.
 
 ## 0.5.0 (2026-11-19)
 
