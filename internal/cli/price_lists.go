@@ -60,13 +60,12 @@ func newPriceListsCommand(a *app) *cobra.Command {
 		priceListWrites(a, lists), []*cobra.Command{newPriceListPricesCommand(a, lists)})...)
 }
 
-func priceListPrices(pricesOf resource[priceList]) child[priceListPrice] {
-	return child[priceListPrice]{
+func priceListPrices(pricesOf resource[priceList]) listedChild[priceListPrice] {
+	return listedChildOf(listing{filters: listFilters{kinds: filterable}}, child[priceListPrice]{
 		use:     listUse,
 		sub:     pricesOf.use,
 		short:   "List the prices of a price list",
 		long:    "Reads the prices of a price list, in its currency.",
-		fetch:   listing{filters: listFilters{kinds: filterable}},
 		unknown: listsNothing,
 		view: view[priceListPrice]{
 			singular: "price list price",
@@ -77,17 +76,18 @@ func priceListPrices(pricesOf resource[priceList]) child[priceListPrice] {
 				return []string{p.ID, p.ItemID.ID, p.ItemID.ItemType, p.PriceModelID, p.TierValues.String()}
 			},
 		},
-	}
+	})
 }
 
 func newPriceListPricesCommand(a *app, lists resource[priceList]) *cobra.Command {
 	pricesOf := lists.nested("prices")
-	prices := priceListPrices(pricesOf)
+	listed := priceListPrices(pricesOf)
+	prices := listed.child
 	reads := []*cobra.Command{
 		childCommand(a, pricesOf, prices),
-		childSearchCommand(a, pricesOf, prices, "Search the prices of a price list",
-			"Reads the prices of a price list, in its currency, that an Emporix q filter finds "+
-				"(--query; without it, every one).", queryField()),
+		childSearchCommand(a, pricesOf, listed, &childSearch{short: "Search the prices of a price list",
+			long: "Reads the prices of a price list, in its currency, that an Emporix q filter finds " +
+				"(--query; without it, every one).", fields: []bodyField{queryField()}}),
 		childItemCommand(a, pricesOf, prices, &childItem{
 			use:   getUse,
 			short: "Show one price of a price list",

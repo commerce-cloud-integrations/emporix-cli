@@ -11,21 +11,21 @@ import (
 )
 
 type readCase struct {
-	args    []string
-	path    string
-	query   string
-	scopes  []string
-	mode    readMode
-	page    string
-	filters listFilters
-	method  string
-	sent    string
-	form    []sentPart
-	body    string
-	total   string
-	media   string
-	site    string
-	want    string
+	args        []string
+	path        string
+	query       string
+	scopes      []string
+	mode        readMode
+	pageSize    string
+	filters     listFilters
+	method      string
+	requestBody string
+	form        []sentPart
+	response    string
+	totalHeader string
+	contentType string
+	siteHeader  string
+	want        string
 }
 
 func readCases() []readCase {
@@ -91,7 +91,7 @@ func tableReadCases() []readCase {
 	all := readCases()
 	var tables []readCase
 	for i := range all {
-		if all[i].media == "" {
+		if all[i].contentType == "" {
 			tables = append(tables, all[i])
 		}
 	}
@@ -108,15 +108,15 @@ func TestReads(t *testing.T) {
 				t.Fatalf("exit %d, stderr %q, stdout:\n%s\nwant:\n%s", code, stderr, stdout, tt.want)
 			}
 			fake.assertScopes(t, tt.scopes...)
-			fake.assertMode(t, tt.mode, tt.page, tt.path, tt.query)
-			fake.assertHeader(t, siteHeader, tt.site)
+			fake.assertMode(t, tt.mode, tt.pageSize, tt.path, tt.query)
+			fake.assertHeader(t, siteHeader, tt.siteHeader)
 			if tt.form != nil {
 				for i := range fake.sent {
 					fake.assertForm(t, i, tt.method, tt.form)
 				}
 				return
 			}
-			fake.assertSent(t, cmp.Or(tt.method, http.MethodGet), tt.sent)
+			fake.assertSent(t, cmp.Or(tt.method, http.MethodGet), tt.requestBody)
 		})
 	}
 }

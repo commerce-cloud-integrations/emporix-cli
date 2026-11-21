@@ -17,7 +17,7 @@ func priceAndAvailabilityWrites() []writeCase {
 	return []writeCase{
 		{
 			args: []string{"prices", "create"}, file: priceJSON, method: http.MethodPost, path: "/price/acme1/prices",
-			scopes: scopes, status: http.StatusCreated, body: `{"id":"p1"}`, want: "{\n  \"id\": \"p1\"\n}\n",
+			scopes: scopes, status: http.StatusCreated, response: `{"id":"p1"}`, want: "{\n  \"id\": \"p1\"\n}\n",
 		},
 		{
 			args: []string{"prices", "update", "p1"}, file: `{"id":"p1","metadata":{"version":3}}`, method: http.MethodPut,
@@ -26,25 +26,27 @@ func priceAndAvailabilityWrites() []writeCase {
 		{
 			args: []string{"prices", "update", "p 1", "--partial"}, file: `{"tierValues":[{"id":"t1","priceValue":14.90}]}`,
 			method: http.MethodPut, path: "/price/acme1/prices/p%201", query: "partial=true", scopes: scopes,
-			status: http.StatusCreated, body: `{"id":"p 1"}`, want: "{\n  \"id\": \"p 1\"\n}\n",
+			status: http.StatusCreated, response: `{"id":"p 1"}`, want: "{\n  \"id\": \"p 1\"\n}\n",
 		},
 		{
 			args: []string{"prices", "bulk-create"}, file: "[" + priceJSON + ",\n" + priceJSON + "]\n",
 			method: http.MethodPost, path: "/price/acme1/prices/bulk", scopes: scopes, status: http.StatusMultiStatus,
-			body: `[{"index":0,"id":"p1","code":201,"status":"CREATED"},{"index":1,"id":"p2","code":201,"status":"CREATED"}]`,
+			response: `[{"index":0,"id":"p1","code":201,"status":"CREATED"},` +
+				`{"index":1,"id":"p2","code":201,"status":"CREATED"}]`,
 			want: "[\n  {\n    \"code\": 201,\n    \"id\": \"p1\",\n    \"index\": 0,\n    \"status\": \"CREATED\"\n  },\n" +
 				"  {\n    \"code\": 201,\n    \"id\": \"p2\",\n    \"index\": 1,\n    \"status\": \"CREATED\"\n  }\n]\n",
 		},
 		{
 			args: []string{"prices", "bulk-update"}, file: `[{"id":"p1","currency":"EUR"}]`, method: http.MethodPut,
 			path: "/price/acme1/prices/bulk", scopes: scopes, status: http.StatusMultiStatus,
-			body: `[{"index":0,"id":"p1","code":204,"status":"NO_CONTENT"}]`,
-			want: "[\n  {\n    \"code\": 204,\n    \"id\": \"p1\",\n    \"index\": 0,\n    \"status\": \"NO_CONTENT\"\n  }\n]\n",
+			response: `[{"index":0,"id":"p1","code":204,"status":"NO_CONTENT"}]`,
+			want: "[\n  {\n    \"code\": 204,\n    \"id\": \"p1\",\n    \"index\": 0,\n" +
+				"    \"status\": \"NO_CONTENT\"\n  }\n]\n",
 		},
 		{
 			args: []string{"availability", "create", "100200", "--site", "AcmeStore_NL"}, file: stockJSON,
 			method: http.MethodPost, path: "/availability/acme1/availability/100200/AcmeStore_NL", scopes: stockScopes,
-			status: http.StatusCreated, body: `{"id":"AcmeStore_NL:100200"}`,
+			status: http.StatusCreated, response: `{"id":"AcmeStore_NL:100200"}`,
 			want: "{\n  \"id\": \"AcmeStore_NL:100200\"\n}\n",
 		},
 		{
@@ -55,14 +57,14 @@ func priceAndAvailabilityWrites() []writeCase {
 		{
 			args: []string{"availability", "bulk-create"}, file: "[" + stockItem + "]", method: http.MethodPost,
 			path: "/availability/acme1/availability/bulk", scopes: stockScopes, status: http.StatusMultiStatus,
-			body: `[{"id":"AcmeStore_NL:100200","index":0,"code":201,"status":"Created"}]`,
+			response: `[{"id":"AcmeStore_NL:100200","index":0,"code":201,"status":"Created"}]`,
 			want: "[\n  {\n    \"code\": 201,\n    \"id\": \"AcmeStore_NL:100200\",\n    \"index\": 0,\n" +
 				"    \"status\": \"Created\"\n  }\n]\n",
 		},
 		{
 			args: []string{"availability", "bulk-update"}, file: "[" + stockItem + "," + stockItem + "]",
 			method: http.MethodPut, path: "/availability/acme1/availability/bulk", scopes: stockScopes,
-			status: http.StatusMultiStatus, body: `[{"id":"AcmeStore_NL:100200","index":0,"code":204},` +
+			status: http.StatusMultiStatus, response: `[{"id":"AcmeStore_NL:100200","index":0,"code":204},` +
 				`{"id":"AcmeStore_NL:100200","index":1,"code":201}]`,
 			want: "[\n  {\n    \"code\": 204,\n    \"id\": \"AcmeStore_NL:100200\",\n    \"index\": 0\n  },\n" +
 				"  {\n    \"code\": 201,\n    \"id\": \"AcmeStore_NL:100200\",\n    \"index\": 1\n  }\n]\n",

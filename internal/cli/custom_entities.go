@@ -70,13 +70,12 @@ func customEntities() resource[customEntity] {
 
 func newCustomInstancesCommand(a *app, entities resource[customEntity]) *cobra.Command {
 	typesOf := entities.nested(instancesUse)
-	instances := child[customInstance]{
+	listed := listedChildOf(listing{filters: listFilters{kinds: filterable}}, child[customInstance]{
 		use:    listUse,
 		sub:    typesOf.use,
 		short:  "List the instances of a custom entity type",
 		long:   "Reads the instances of a custom entity type (`epx custom-entities instances get` shows one).",
-		scopes: []string{customTypeReadScope},
-		fetch:  listing{filters: listFilters{kinds: filterable}},
+		scopes: ownScopes{customTypeReadScope},
 		view: view[customInstance]{
 			singular:  "custom instance",
 			header:    []string{columnID, columnName, "OWNER", columnVersion},
@@ -89,12 +88,13 @@ func newCustomInstancesCommand(a *app, entities resource[customEntity]) *cobra.C
 				return []string{i.ID, i.Name.in(lang), i.Owner.String(), i.Metadata.Version.String()}
 			},
 		},
-	}
+	})
+	instances := listed.child
 	reads := []*cobra.Command{
 		childCommand(a, typesOf, instances),
-		childSearchCommand(a, typesOf, instances, "Search the instances of a custom entity type",
-			"Reads the instances of a custom entity type that an Emporix q filter finds (--query; "+
-				"without it, every one).", queryField()),
+		childSearchCommand(a, typesOf, listed, &childSearch{short: "Search the instances of a custom entity type",
+			long: "Reads the instances of a custom entity type that an Emporix q filter finds (--query; " +
+				"without it, every one).", fields: []bodyField{queryField()}}),
 		childItemCommand(a, typesOf, instances, &childItem{
 			use:   "get",
 			short: "Show one instance of a custom entity type",

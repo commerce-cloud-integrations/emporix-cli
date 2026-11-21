@@ -62,7 +62,7 @@ func (e runError) Unwrap() error { return e.err }
 // Run executes the CLI with args (excluding the program name) and returns the exit code.
 func Run(ctx context.Context, args []string, env Env) int {
 	a := &app{
-		getenv: env.Getenv, terminal: env.Terminal, outTerminal: env.OutTerminal, version: "unknown",
+		getenv: env.Getenv, inTerminal: env.Terminal, outTerminal: env.OutTerminal, version: "unknown",
 		goVersion: "unknown", completionTimeout: defaultCompletionTimeout,
 	}
 	if env.Profiles != nil {
@@ -139,7 +139,9 @@ func newRootCommand(a *app, out, errOut io.Writer) *cobra.Command {
 		// The one persistent hook of the tree: Cobra runs only the nearest, so no command below may
 		// define another (TestOnlyTheRootHasAPersistentHook).
 		PersistentPreRunE: func(cmd *cobra.Command, _ []string) error {
-			completeFlagsFor(a, cmd)
+			if err := completeFlagsFor(a, cmd); err != nil {
+				return err
+			}
 			return a.applyProfileDefaults(cmd)
 		},
 	}

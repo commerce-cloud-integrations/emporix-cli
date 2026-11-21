@@ -26,8 +26,8 @@ func (c *Client) Count(ctx context.Context, path string, query url.Values, filte
 		return 0, err
 	}
 	total := count.total(result.header)
-	if total < 0 {
+	if !total.known {
 		return 0, fmt.Errorf("%s: the service reported no count in %s", head.named(path), count.from)
 	}
-	return total, nil
+	return total.items, nil
 }

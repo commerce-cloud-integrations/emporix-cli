@@ -13,7 +13,7 @@ func unitWrites() []writeCase {
 			args:   []string{"units", "create"},
 			file:   `{"code":"g","name":{"en":"gram","de":"Gramm"},"type":"mass","baseUnit":false,"factor":0.0010}`,
 			method: http.MethodPost, path: "/unit-handling/acme1/units", scopes: scopes, lang: "*",
-			status: http.StatusCreated, body: `{"code":"g"}`, want: "{\n  \"code\": \"g\"\n}\n",
+			status: http.StatusCreated, response: `{"code":"g"}`, want: "{\n  \"code\": \"g\"\n}\n",
 		},
 		{
 			args: []string{"units", "update", "kg m", "--content-language", "EN"},

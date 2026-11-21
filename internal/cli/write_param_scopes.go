@@ -21,7 +21,7 @@ func (p *paramScopes) bind(cmd *cobra.Command) func(query url.Values) []string {
 	flag := p.flag
 	flag.usage += ", requesting " + strings.Join(p.scopes, ", ") + " where " + p.when("it is")
 	set := queryFlags{optional: []paramFlag{flag}}.bind(cmd)
-	_ = cmd.Flags().SetAnnotation(flag.flag, writeScopesAnnotation, p.scopes)
+	annotate(cmd, flag.flag, writeScopesAnnotation, p.scopes)
 	return func(query url.Values) []string {
 		set(query)
 		if p.needed(query) {

@@ -110,33 +110,35 @@ func TestIndexWaitFollowsEachImportedJob(t *testing.T) {
 		j2Succeeds = "index job j2 of car/cars: success\n"
 	)
 	for _, tt := range []struct {
-		name   string
-		j1, j2 http.HandlerFunc
-		code   int
-		stdout string
-		end    string
+		name         string
+		j1, j2       http.HandlerFunc
+		code         int
+		stdout       string
+		stderrSuffix string
 	}{
 		{name: "each succeeds", j1: ended(indexJob1Success), j2: respond(http.StatusOK, indexJob2Success),
 			code: ExitOK, stdout: "[" + indexJob1Success + "," + indexJob2Success + "]",
-			end: "index job j1 of vehicle/vehicles: in_progress\nindex job j1 of vehicle/vehicles: success\n" + j2Succeeds},
+			stderrSuffix: "index job j1 of vehicle/vehicles: in_progress\n" +
+				"index job j1 of vehicle/vehicles: success\n" + j2Succeeds},
 		{name: "one fails", j1: ended(indexJob1Failure), j2: respond(http.StatusOK, indexJob2Success),
 			code: ExitError, stdout: "[" + indexJob1Failure + "," + indexJob2Success + "]",
-			end: "index job j1 of vehicle/vehicles: failure\n" + j2Succeeds + "Error: " + failed},
+			stderrSuffix: "index job j1 of vehicle/vehicles: failure\n" + j2Succeeds + "Error: " + failed},
 		{name: "one is not found", j1: gone, j2: respond(http.StatusOK, indexJob2Success), code: ExitNotFound,
-			stdout: "[" + indexJob2Success + "]", end: j2Succeeds + "Error: " + j1Gone},
+			stdout: "[" + indexJob2Success + "]", stderrSuffix: j2Succeeds + "Error: " + j1Gone},
 		{name: "each is not found", j1: gone, j2: gone, code: ExitNotFound, stdout: "[]",
-			end: "Error: " + j1Gone + j2Gone},
+			stderrSuffix: "Error: " + j1Gone + j2Gone},
 		{name: "they fail differently", j1: ended(indexJob1Failure), j2: gone, code: ExitError,
-			stdout: "[" + indexJob1Failure + "]", end: "index job j1 of vehicle/vehicles: failure\nError: " + failed + j2Gone},
+			stdout:       "[" + indexJob1Failure + "]",
+			stderrSuffix: "index job j1 of vehicle/vehicles: failure\nError: " + failed + j2Gone},
 	} {
 		fake := newFakeEmporix(t)
 		fake.route(indexImportPath, respond(http.StatusOK, imported))
 		fake.route(indexJob1Path, tt.j1)
 		fake.route(indexJob2Path, tt.j2)
 		code, stdout, stderr := waitForIndex(t, fake, "import")
-		if code != tt.code || stdout != asPrinted(t, tt.stdout) || !strings.HasSuffix(stderr, tt.end) {
+		if code != tt.code || stdout != asPrinted(t, tt.stdout) || !strings.HasSuffix(stderr, tt.stderrSuffix) {
 			t.Errorf("%s: exit %d, stdout %q, stderr %q; want exit %d and %q", tt.name, code, stdout, stderr, tt.code,
-				tt.end)
+				tt.stderrSuffix)
 		}
 		if gets := fake.gets; !slices.Equal(gets[:2], []string{indexImportPath, indexJob1Path}) ||
 			gets[len(gets)-1] != indexJob2Path {
@@ -149,13 +151,13 @@ func TestIndexWaitTimesOut(t *testing.T) {
 	const notEnded = "index job j1%s has not ended within 20ms (last in_progress); it goes on: " +
 		"`epx search jobs get j1` reads it\n"
 	for _, tt := range []struct {
-		use, answer   string
-		stdout, wants string
+		use, answer          string
+		stdout, stderrSuffix string
 	}{
-		{use: "update", answer: `{"id":"j1"}`, stdout: indexJob1Running, wants: "Error: " + fmt.Sprintf(notEnded, "")},
+		{use: "update", answer: `{"id":"j1"}`, stdout: indexJob1Running, stderrSuffix: "Error: " + fmt.Sprintf(notEnded, "")},
 		{use: "import",
 			answer: `[{"id":"vehicles","type":"vehicle","jobId":"j1"},{"id":"cars","type":"car","jobId":"j2"}]`,
-			stdout: "[" + indexJob1Running + "]", wants: "Error: " + fmt.Sprintf(notEnded, " of vehicle/vehicles") +
+			stdout: "[" + indexJob1Running + "]", stderrSuffix: "Error: " + fmt.Sprintf(notEnded, " of vehicle/vehicles") +
 				"index job j2 of car/cars was not read before --wait-timeout (20ms) passed: " +
 				"`epx search jobs get j2` reads it\n"},
 	} {
@@ -163,7 +165,7 @@ func TestIndexWaitTimesOut(t *testing.T) {
 		fake.route(indexWritePath(tt.use), respond(http.StatusOK, tt.answer))
 		fake.route(indexJob1Path, respond(http.StatusOK, indexJob1Running))
 		code, stdout, stderr := waitForIndex(t, fake, tt.use, "--wait-timeout", "20ms")
-		if code != ExitError || stdout != asPrinted(t, tt.stdout) || !strings.HasSuffix(stderr, tt.wants) ||
+		if code != ExitError || stdout != asPrinted(t, tt.stdout) || !strings.HasSuffix(stderr, tt.stderrSuffix) ||
 			strings.Count(stderr, ": in_progress\n") != 1 {
 			t.Errorf("%s: exit %d, stdout %q, stderr %q", tt.use, code, stdout, stderr)
 		}

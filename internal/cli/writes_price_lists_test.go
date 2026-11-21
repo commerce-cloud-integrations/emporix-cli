@@ -24,7 +24,7 @@ func priceModelAndListWrites() []writeCase {
 		{
 			args: []string{"price-models", "create"}, file: priceModelJSON, method: http.MethodPost,
 			path: "/price/acme1/priceModels", scopes: models, lang: "*", status: http.StatusCreated,
-			body: `{"id":"pm1"}`, want: "{\n  \"id\": \"pm1\"\n}\n",
+			response: `{"id":"pm1"}`, want: "{\n  \"id\": \"pm1\"\n}\n",
 		},
 		{
 			args: []string{"price-models", "update", "pm 1", "--content-language", "en"},
@@ -38,25 +38,25 @@ func priceModelAndListWrites() []writeCase {
 		{
 			args: []string{"price-models", "delete", "pm1", "--force"}, method: http.MethodDelete,
 			path: "/price/acme1/priceModels/pm1", query: "forceDelete=true", scopes: []string{priceModelManage, priceModelAdmin},
-			confirmBy: "pm1", many: "the price model and every price that uses it", status: http.StatusNoContent,
+			confirmBy: "pm1", deletedMany: "the price model and every price that uses it", status: http.StatusNoContent,
 		},
 		{
 			args: []string{"price-lists", "create"}, file: priceListJSON, method: http.MethodPost,
 			path: "/price/acme1/price-lists", scopes: lists, lang: "*", status: http.StatusCreated,
-			body: `{"id":"pl1"}`, want: "{\n  \"id\": \"pl1\"\n}\n",
+			response: `{"id":"pl1"}`, want: "{\n  \"id\": \"pl1\"\n}\n",
 		},
 		{
 			args: []string{"price-lists", "update", "pl 1"}, file: priceListJSON, method: http.MethodPut,
 			path: "/price/acme1/price-lists/pl%201", scopes: lists, lang: "*", status: http.StatusCreated,
-			body: `{"id":"pl 1"}`, want: "{\n  \"id\": \"pl 1\"\n}\n",
+			response: `{"id":"pl 1"}`, want: "{\n  \"id\": \"pl 1\"\n}\n",
 		},
 		{
 			args: []string{"price-lists", "delete", "pl1"}, method: http.MethodDelete, path: "/price/acme1/price-lists/pl1",
-			scopes: lists, confirmBy: "pl1", many: "the price list and every price in it", status: http.StatusNoContent,
+			scopes: lists, confirmBy: "pl1", deletedMany: "the price list and every price in it", status: http.StatusNoContent,
 		},
 		{
 			args: []string{"price-lists", "prices", "create", "pl1"}, file: listPriceJSON, method: http.MethodPost,
-			path: prices, scopes: lists, status: http.StatusCreated, body: `{"id":"p1"}`,
+			path: prices, scopes: lists, status: http.StatusCreated, response: `{"id":"p1"}`,
 			want: "{\n  \"id\": \"p1\"\n}\n",
 		},
 		{
@@ -70,20 +70,21 @@ func priceModelAndListWrites() []writeCase {
 		{
 			args: []string{"price-lists", "prices", "bulk-create", "pl1"}, file: "[" + listPriceJSON + "]",
 			method: http.MethodPost, path: prices + "/bulk", scopes: lists, status: http.StatusMultiStatus,
-			body: `[{"index":0,"id":"p1","code":201,"status":"CREATED"}]`,
-			want: "[\n  {\n    \"code\": 201,\n    \"id\": \"p1\",\n    \"index\": 0,\n    \"status\": \"CREATED\"\n  }\n]\n",
+			response: `[{"index":0,"id":"p1","code":201,"status":"CREATED"}]`,
+			want: "[\n  {\n    \"code\": 201,\n    \"id\": \"p1\",\n    \"index\": 0,\n" +
+				"    \"status\": \"CREATED\"\n  }\n]\n",
 		},
 		{
 			args: []string{"price-lists", "prices", "bulk-update", "pl1"}, file: `[{"id":"p1","tierValues":[]},{"id":"p2"}]`,
 			method: http.MethodPut, path: prices + "/bulk", scopes: lists, status: http.StatusMultiStatus,
-			body: `[{"index":0,"id":"p1","code":204},{"index":1,"id":"p2","code":201}]`,
+			response: `[{"index":0,"id":"p1","code":204},{"index":1,"id":"p2","code":201}]`,
 			want: "[\n  {\n    \"code\": 204,\n    \"id\": \"p1\",\n    \"index\": 0\n  },\n" +
 				"  {\n    \"code\": 201,\n    \"id\": \"p2\",\n    \"index\": 1\n  }\n]\n",
 		},
 		{
 			args: []string{"price-lists", "prices", "bulk-delete", "pl1"}, file: `["p1","p2"]`,
 			method: http.MethodDelete, path: prices + "/bulk", scopes: lists, confirmBy: "pl1",
-			many: "the prices of a price list that --file names", status: http.StatusNoContent,
+			deletedMany: "the prices of a price list that --file names", status: http.StatusNoContent,
 		},
 	}
 }
@@ -102,12 +103,12 @@ func feeAndItemFeeWrites() []writeCase {
 		{
 			args: []string{"fees", "create"}, file: feeJSON, method: http.MethodPost, path: "/fee/acme1/fees",
 			scopes: []string{feeCreate}, lang: "*", status: http.StatusCreated,
-			body: `{"id":"f1","yrn":"urn:yaas:saasag:fee:id:acme1;f1"}`,
-			want: "{\n  \"id\": \"f1\",\n  \"yrn\": \"urn:yaas:saasag:fee:id:acme1;f1\"\n}\n",
+			response: `{"id":"f1","yrn":"urn:yaas:saasag:fee:id:acme1;f1"}`,
+			want:     "{\n  \"id\": \"f1\",\n  \"yrn\": \"urn:yaas:saasag:fee:id:acme1;f1\"\n}\n",
 		},
 		{
 			args: []string{"fees", "update", "f1"}, file: feeJSON, method: http.MethodPut, path: "/fee/acme1/fees/f1",
-			query: "partial=false", scopes: []string{feeUpdate}, lang: "*", status: http.StatusOK, body: `{"id":"f1"}`,
+			query: "partial=false", scopes: []string{feeUpdate}, lang: "*", status: http.StatusOK, response: `{"id":"f1"}`,
 			want: "{\n  \"id\": \"f1\"\n}\n", conflict: feeUpdateConflict,
 		},
 		{
@@ -125,18 +126,18 @@ func feeAndItemFeeWrites() []writeCase {
 				"--fee", "f2"},
 			sent:   `{"feeIds":["f1","f2"],"itemYrn":"` + productYRN + `","siteCode":"AcmeStore_NL"}`,
 			method: http.MethodPost, path: "/fee/acme1/itemFees", scopes: []string{itemFeeCreate},
-			status: http.StatusCreated, body: itemFeeBody, want: itemFeeJSON,
+			status: http.StatusCreated, response: itemFeeBody, want: itemFeeJSON,
 		},
 		{
 			args: []string{"fees", "assignments", "create"}, file: `{"itemYrn":"` + paymentYRN + `","siteCode":"main",` +
 				`"feeIds":["f1"]}`,
 			method: http.MethodPost, path: "/fee/acme1/itemFees", scopes: []string{itemFeeCreate},
-			status: http.StatusCreated, body: itemFeeBody, want: itemFeeJSON,
+			status: http.StatusCreated, response: itemFeeBody, want: itemFeeJSON,
 		},
 		{
 			args: []string{"fees", "assignments", "update", productYRN, "--fee", "f1"}, sent: `{"feeIds":["f1"]}`,
 			method: http.MethodPut, path: itemFees, query: "partial=false", scopes: update, status: http.StatusOK,
-			body: `{"feeIds":["f1"]}`, want: "{\n  \"feeIds\": [\n    \"f1\"\n  ]\n}\n",
+			response: `{"feeIds":["f1"]}`, want: "{\n  \"feeIds\": [\n    \"f1\"\n  ]\n}\n",
 		},
 		{
 			args: []string{"fees", "assignments", "update", paymentYRN, "--partial"}, file: `{"feeIds":["f2"]}`,
@@ -161,22 +162,22 @@ func feeAndItemFeeWrites() []writeCase {
 		},
 		{
 			args: []string{"fees", "assignments", "delete", productYRN}, method: http.MethodDelete, path: itemFees,
-			scopes: remove, confirmBy: productYRN, many: "every fee of the item YRN", status: http.StatusNoContent,
+			scopes: remove, confirmBy: productYRN, deletedMany: "every fee of the item YRN", status: http.StatusNoContent,
 		},
 		{
 			args:   []string{"fees", "assignments", "delete", productYRN, "--site", "AcmeStore_DE"},
 			method: http.MethodDelete, path: itemFees, query: "siteCode=AcmeStore_DE", scopes: remove,
-			confirmBy: productYRN, many: "every fee of the item YRN", status: http.StatusNoContent,
+			confirmBy: productYRN, deletedMany: "every fee of the item YRN", status: http.StatusNoContent,
 		},
 		{
 			args: []string{"fees", "assignments", "delete-product", "100200"}, method: http.MethodDelete,
-			path: productFees, scopes: remove, confirmBy: "100200", many: "every fee of the product PRODUCT_ID",
+			path: productFees, scopes: remove, confirmBy: "100200", deletedMany: "every fee of the product PRODUCT_ID",
 			status: http.StatusNoContent,
 		},
 		{
 			args:   []string{"fees", "assignments", "delete-product", "100200", "--site", "AcmeStore_DE"},
 			method: http.MethodDelete, path: productFees, query: "siteCode=AcmeStore_DE", scopes: remove,
-			confirmBy: "100200", many: "every fee of the product PRODUCT_ID", status: http.StatusNoContent,
+			confirmBy: "100200", deletedMany: "every fee of the product PRODUCT_ID", status: http.StatusNoContent,
 		},
 		{
 			args: []string{"fees", "assignments", "delete-fee", productYRN, "f1"}, method: http.MethodDelete,

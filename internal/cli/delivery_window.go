@@ -102,7 +102,7 @@ func newDeliveryCycleCommand(a *app) *cobra.Command {
 			"slot's cut-off time and the deliveryCycleName of its cutOffTime, such as 2026-06-20-6morning. " +
 			deliveryWindowHelp + " Emporix answers an unknown delivery time with 403 Forbidden (exit 3), not as not found.",
 		req: request{path: "/shipping/{tenant}/delivery-cycles/generate"},
-		fetch: bodyRead{method: http.MethodPost, created: true, body: deliveryWindowBody("deliveryTimeId"),
+		fetch: bodyRead{method: http.MethodPost, acceptCreated: true, body: deliveryWindowBody("deliveryTimeId"),
 			fetch: cycleName{}},
 	})
 }
@@ -111,7 +111,7 @@ func newDeliveryCycleCommand(a *app) *cobra.Command {
 // such as 2026-06-20-6morning.
 type cycleName struct{}
 
-func (cycleName) bind(*cobra.Command) (readFunc, shape) {
+func (cycleName) bind(*cobra.Command) boundRead {
 	read := func(c *emporix.Client, ctx context.Context, path string, query url.Values) (json.RawMessage, error) {
 		answer, err := c.Get(ctx, path, query)
 		if err != nil {
@@ -119,7 +119,7 @@ func (cycleName) bind(*cobra.Command) (readFunc, shape) {
 		}
 		return textAsJSON(answer)
 	}
-	return read, oneName
+	return boundRead{read: read, items: oneName}
 }
 
 const deliveryWindowHelp = "The delivery window is the delivery time --delivery-time on --date, an ISO 8601 " +

@@ -9,18 +9,17 @@ import (
 	"testing"
 )
 
-func streamedIDs(t *testing.T, opts ListOptions) (streaming ListOptions, pages *[][]string) {
+func streamedIDs(t *testing.T) (sink func(items []json.RawMessage) error, pages *[][]string) {
 	t.Helper()
 	pages = &[][]string{}
-	opts.Stream = func(items []json.RawMessage) error {
+	return func(items []json.RawMessage) error {
 		body, err := json.Marshal(items)
 		if err != nil {
 			return err
 		}
 		*pages = append(*pages, itemIDs(t, body))
 		return nil
-	}
-	return opts, pages
+	}, pages
 }
 
 func TestGetAllStreamsPagesAsItChecksThem(t *testing.T) {
@@ -38,14 +37,31 @@ func TestGetAllStreamsPagesAsItChecksThem(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			fake := newFakeEmporix(t)
 			fake.route("/items", pagedRoute(5, tt.maxSize, "5"))
-			opts, pages := streamedIDs(t, ListOptions{Limit: tt.limit})
-			body, err := pagedClient(t, fake).GetAll(context.Background(), "/items", nil, opts)
+			sink, pages := streamedIDs(t)
+			body, err := pagedClient(t, fake).Streaming(sink).GetAll(context.Background(), "/items", nil,
+				ListOptions{Limit: tt.limit})
 			if err != nil || body != nil || !slices.EqualFunc(*pages, tt.want, slices.Equal) ||
 				len(fake.requests) != tt.reads {
 				t.Fatalf("body %s, error %v, pages %q, requests %d; want no body, pages %q, %d requests",
 					body, err, *pages, len(fake.requests), tt.want, tt.reads)
 			}
 		})
+	}
+}
+
+func TestClientsDerivedFromAStreamingOneKeepTheirItems(t *testing.T) {
+	fake := newFakeEmporix(t)
+	fake.route("/items", pagedRoute(3, 0, "3"))
+	sink, pages := streamedIDs(t)
+	streaming := pagedClient(t, fake).Streaming(sink)
+	derived := map[string]*Client{"WithHeader": withHeader(t, streaming, siteHeader, "main"),
+		"AcceptCreated": streaming.AcceptCreated(), "ForbiddenIsRefusal": streaming.ForbiddenIsRefusal()}
+	for name, client := range derived {
+		body, err := client.GetAll(context.Background(), "/items", nil, ListOptions{})
+		if err != nil || !slices.Equal(itemIDs(t, body), []string{"i0", "i1", "i2"}) || len(*pages) != 0 {
+			t.Fatalf("%s: body %s, error %v, %d pages streamed; want the items kept, none streamed", name, body, err,
+				len(*pages))
+		}
 	}
 }
 
@@ -65,8 +81,8 @@ func TestGetAllStreamFailsAfterThePagesBefore(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			fake := newFakeEmporix(t)
 			fake.route("/items", pagedRoute(3, tt.maxSize, tt.total))
-			opts, pages := streamedIDs(t, ListOptions{})
-			_, err := pagedClient(t, fake).GetAll(context.Background(), "/items", nil, opts)
+			sink, pages := streamedIDs(t)
+			_, err := pagedClient(t, fake).Streaming(sink).GetAll(context.Background(), "/items", nil, ListOptions{})
 			if err == nil || !strings.Contains(err.Error(), tt.message) || !slices.EqualFunc(*pages, tt.want, slices.Equal) {
 				t.Fatalf("error %v, pages %q; want %q after pages %q", err, *pages, tt.message, tt.want)
 			}
@@ -78,14 +94,13 @@ func TestReadsStopWhenTheStreamFails(t *testing.T) {
 	fake := newFakeEmporix(t)
 	fake.route("/items", pagedRoute(5, 0, "5"))
 	failed := errors.New("broken pipe")
-	failing := ListOptions{Stream: func([]json.RawMessage) error { return failed }}
-	client := pagedClient(t, fake)
-	_, err := client.GetAll(context.Background(), "/items", nil, failing)
+	client := pagedClient(t, fake).Streaming(func([]json.RawMessage) error { return failed })
+	_, err := client.GetAll(context.Background(), "/items", nil, ListOptions{})
 	if !errors.Is(err, failed) || len(fake.requests) != 1 {
 		t.Fatalf("error %v after %d requests; want the stream's error after one", err, len(fake.requests))
 	}
 	fake.route("/items", pagedRoute(5, -1, "5"))
-	if _, err := client.GetUnpaged(context.Background(), "/items", nil, failing); !errors.Is(err, failed) {
+	if _, err := client.GetUnpaged(context.Background(), "/items", nil, ListOptions{}); !errors.Is(err, failed) {
 		t.Fatalf("unpaged: error %v; want the stream's error", err)
 	}
 }
@@ -94,14 +109,15 @@ func TestWholeCollectionReadsStreamOnceChecked(t *testing.T) {
 	fake := newFakeEmporix(t)
 	fake.route("/items", pagedRoute(3, -1, "3"))
 	client := pagedClient(t, fake)
-	opts, pages := streamedIDs(t, ListOptions{Limit: 2})
-	body, err := client.GetUnpaged(context.Background(), "/items", nil, opts)
+	sink, pages := streamedIDs(t)
+	body, err := client.Streaming(sink).GetUnpaged(context.Background(), "/items", nil, ListOptions{Limit: 2})
 	if err != nil || body != nil || !slices.EqualFunc(*pages, [][]string{{"i0", "i1"}}, slices.Equal) {
 		t.Fatalf("unpaged: body %s, error %v, pages %q", body, err, *pages)
 	}
 	fake.route("/items", pagedRoute(3, 0, "2"))
-	opts, pages = streamedIDs(t, ListOptions{})
-	if _, err := client.GetAllInOnePage(context.Background(), "/items", nil, 10, opts); err == nil || len(*pages) != 0 {
+	sink, pages = streamedIDs(t)
+	if _, err := client.Streaming(sink).GetAllInOnePage(context.Background(), "/items", nil, 10,
+		ListOptions{}); err == nil || len(*pages) != 0 {
 		t.Fatalf("one page: error %v, pages %q; want a failure before streaming", err, *pages)
 	}
 }
@@ -121,8 +137,8 @@ func TestGetAllStreamsNoPageBeyondTheTotal(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			fake := newFakeEmporix(t)
 			fake.route("/items", pageSequence(tt.pages, tt.total, tt.total))
-			opts, pages := streamedIDs(t, ListOptions{})
-			_, err := pagedClient(t, fake).GetAll(context.Background(), "/items", nil, opts)
+			sink, pages := streamedIDs(t)
+			_, err := pagedClient(t, fake).Streaming(sink).GetAll(context.Background(), "/items", nil, ListOptions{})
 			if err == nil || !strings.Contains(err.Error(), "but the service reports "+tt.total) ||
 				!slices.EqualFunc(*pages, tt.want, slices.Equal) {
 				t.Fatalf("error %v, pages %q; want the count mismatch after pages %q", err, *pages, tt.want)
@@ -151,11 +167,13 @@ func TestStreamedReadsTakeMorePages(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			fake := newFakeEmporix(t)
 			fake.route("/items", pagedRoute(tt.count, 0, tt.total))
-			opts, pages := ListOptions{}, &[][]string{}
+			client, pages := pagedClient(t, fake), &[][]string{}
 			if tt.stream {
-				opts, pages = streamedIDs(t, opts)
+				var sink func(items []json.RawMessage) error
+				sink, pages = streamedIDs(t)
+				client = client.Streaming(sink)
 			}
-			_, err := pagedClient(t, fake).GetAll(context.Background(), "/items", nil, opts)
+			_, err := client.GetAll(context.Background(), "/items", nil, ListOptions{})
 			if got := errorText(err); got != tt.want {
 				t.Fatalf("error %q; want %q (empty: none)", got, tt.want)
 			}
@@ -176,8 +194,7 @@ func TestDefaultPageCaps(t *testing.T) {
 		len(fake.requests) != 1000 {
 		t.Fatalf("kept: error %v after %d requests; want %q after 1000", err, len(fake.requests), want)
 	}
-	streamed := ListOptions{Stream: func([]json.RawMessage) error { return nil }}
-	if got := client.paging.pages(streamed); got != 10000 {
+	if got := client.paging.pages(true); got != 10000 {
 		t.Fatalf("a streamed read takes %d pages; want 10000", got)
 	}
 }

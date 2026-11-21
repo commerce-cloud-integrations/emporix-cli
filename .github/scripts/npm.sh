@@ -63,7 +63,8 @@ exe_of() {
 
 # npm refused the unscoped epx-cli as too similar to other names, and epx-cli-win32-* as spam.
 pkg=@commercecloudintegrations/epx-cli
-tgz_base=commercecloudintegrations-epx-cli
+tgz_base=${pkg#@}
+tgz_base=${tgz_base/\//-}
 alias_of() {
 	local platform=$1
 	echo "epx-cli-$platform"

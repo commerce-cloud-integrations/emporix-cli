@@ -80,7 +80,7 @@ func newQuotesCommand(a *app) *cobra.Command {
 		},
 	}
 	history := childCommand(a, quotes, child[quoteChange]{
-		use:   "history",
+		sub:   "history",
 		short: "List the changes of a quote",
 		long: "Reads the history of a quote, personal data included: when (MODIFIED), by whom (BY: user " +
 			"type and name) and what changed (CHANGE: the operation and the changed part). Old and new " +

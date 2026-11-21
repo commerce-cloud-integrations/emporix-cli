@@ -75,7 +75,7 @@ const blobNeedsFileHelp = "Without --" + uploadFlag + ", the JSON of a BLOB asse
 
 func assetForm() *formFile {
 	return &formFile{
-		refuseAlone: blobNeedsFile,
+		aloneRefusal: blobNeedsFile,
 		form: form{uploadPart("file", "upload the file in `PATH` ("+uploadLimitHelp+") as the file of a "+
 			"BLOB asset, in a multipart/form-data form with the JSON of --file; a large file may need a longer --timeout")},
 		field: "body", usage: "JSON in `PATH`, sent byte for byte: the request body, or the body field of the form " +

@@ -33,13 +33,14 @@ const mixinSiteHelp = "Where a mixin's schema is site-aware, an item may hold, b
 
 type mixinSiteRead struct{ fetch fetcher }
 
-func (m mixinSiteRead) bind(cmd *cobra.Command) (readFunc, shape) {
+func (m mixinSiteRead) bind(cmd *cobra.Command) boundRead {
 	site := &paramValue{paramFlag: paramFlag{param: siteHeader, flag: mixinSiteFlag,
 		usage: "merge the site-aware mixin overlays of the site `SITE` (NAME__SITE) into their mixins",
 		check: mixinSite}}
 	site.register(cmd)
-	read, items := m.fetch.bind(cmd)
-	return func(c *emporix.Client, ctx context.Context, path string, query url.Values) (json.RawMessage, error) {
+	bound := m.fetch.bind(cmd)
+	read := bound.read
+	bound.read = func(c *emporix.Client, ctx context.Context, path string, query url.Values) (json.RawMessage, error) {
 		if site.given == "" {
 			return read(c, ctx, path, query)
 		}
@@ -48,7 +49,8 @@ func (m mixinSiteRead) bind(cmd *cobra.Command) (readFunc, shape) {
 			return nil, err
 		}
 		return read(merging, ctx, path, query)
-	}, items
+	}
+	return bound
 }
 
 func mixinSite(value string) error {

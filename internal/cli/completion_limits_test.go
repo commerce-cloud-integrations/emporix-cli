@@ -30,16 +30,19 @@ func TestCompletionOffersUpTo100IDsThatStartWithWhatIsTyped(t *testing.T) {
 	mixins := "{" + numbered(101, func(i int) string { return fmt.Sprintf(`"m%03d":{}`, i) }) + "}"
 	for _, tt := range []completionCase{
 		{
+			name: "a list read whole: the IDs past its 100th item that start with what is typed",
 			args: []string{"configurations", "get", "b"}, routes: configurations,
 			want:     keys("b", 30),
 			requests: []string{"/configuration/acme1/configurations"}, scopes: []string{configurationScope},
 		},
 		{
+			name: "no more than 100 IDs",
 			args: []string{"configurations", "get", ""}, routes: configurations,
 			want:     keys("a", 100),
 			requests: []string{"/configuration/acme1/configurations"}, scopes: []string{configurationScope},
 		},
 		{
+			name: "a single response of more than 100 items",
 			args: []string{"sites", "mixins", "get", "AcmeStore_NL", ""},
 			routes: map[string]http.HandlerFunc{
 				"/site/acme1/sites/AcmeStore_NL/mixins": respond(http.StatusOK, mixins),
@@ -48,6 +51,7 @@ func TestCompletionOffersUpTo100IDsThatStartWithWhatIsTyped(t *testing.T) {
 			requests: []string{"/site/acme1/sites/AcmeStore_NL/mixins"},
 		},
 		{
+			name: "a list read as one page of its own size",
 			args: []string{"iam", "users", "get", ""},
 			routes: map[string]http.HandlerFunc{
 				"/iam/acme1/users": respond(http.StatusOK, `[{"id":"u1"},{"id":"u2"}]`),
@@ -56,7 +60,7 @@ func TestCompletionOffersUpTo100IDsThatStartWithWhatIsTyped(t *testing.T) {
 			requests: []string{"/iam/acme1/users?pageNumber=1&pageSize=500"}, scopes: []string{"iam.user_read"},
 		},
 	} {
-		tt.check(t)
+		t.Run(tt.name, tt.check)
 	}
 }
 
@@ -78,6 +82,7 @@ func TestCompletionOfWritesAndOtherReadsReadsTheirLists(t *testing.T) {
 	products := map[string]http.HandlerFunc{"/product/acme1/products": respond(http.StatusOK, productPage)}
 	for _, tt := range []completionCase{
 		{
+			name: "a write with a required flag, after what is typed, its list read without a scope",
 			args: []string{"brands", "update", "B"}, // typed, as Cobra offers the required --file before it
 			routes: map[string]http.HandlerFunc{
 				"/brand/brands": respond(http.StatusOK, `[{"id":"B1","name":"Acme"}]`),
@@ -86,6 +91,7 @@ func TestCompletionOfWritesAndOtherReadsReadsTheirLists(t *testing.T) {
 			requests: []string{"/brand/brands?pageNumber=1&pageSize=100"},
 		},
 		{
+			name: "a write that many groups share",
 			args: []string{"vendors", "delete", ""},
 			routes: map[string]http.HandlerFunc{
 				"/vendor/acme1/vendors": respond(http.StatusOK, `[{"id":"v1","name":"Acme Supply"}]`),
@@ -95,18 +101,21 @@ func TestCompletionOfWritesAndOtherReadsReadsTheirLists(t *testing.T) {
 			scopes:   []string{vendorScope},
 		},
 		{
+			name: "the second argument: every product",
 			args: []string{"categories", "assignments", "update", "C1", ""}, routes: products,
 			want:     []string{"100200|Shirt", "200300|Hose (de)"},
 			requests: []string{"/product/acme1/products?pageNumber=1&pageSize=100"},
 			scopes:   []string{productReadUnpublishedScope},
 		},
 		{
+			name:     "a group nested in the group of a resource: the items of its list",
 			args:     []string{"sites", "mixins", "delete", ""},
 			routes:   map[string]http.HandlerFunc{"/site/acme1/sites": respond(http.StatusOK, sitePage)},
 			want:     []string{"AcmeStore_NL|Acme NL", "AcmeStore_DE|Acme DE"},
 			requests: []string{"/site/acme1/sites?pageNumber=1&pageSize=100&totalCount=true"},
 		},
 		{
+			name: "the type of a write per type: the built-in search types, then those its list shows",
 			args: []string{"search", "queries", "delete", ""},
 			routes: map[string]http.HandlerFunc{
 				"/search/acme1/search/queries": respond(http.StatusOK, `[{"id":"q1","type":"vehicle","name":"By make"}]`),
@@ -116,6 +125,7 @@ func TestCompletionOfWritesAndOtherReadsReadsTheirLists(t *testing.T) {
 			scopes:   []string{searchScope},
 		},
 		{
+			name: "a read whose list another read of the group gives",
 			args: []string{"reward-points", "balance", ""},
 			routes: map[string]http.HandlerFunc{
 				"/reward-points/summaryBatch": respond(http.StatusOK, `[{"customerId":"c1"},{"customerId":"c2"}]`),
@@ -125,6 +135,7 @@ func TestCompletionOfWritesAndOtherReadsReadsTheirLists(t *testing.T) {
 			scopes:   []string{"rewardspoints.rewardpoints_view"},
 		},
 		{
+			name: "a write below an item of the list of a site: the --site given before it",
 			args: []string{"shipping", "zones", "methods", "create", "--site", "AcmeStore_NL", "Z"},
 			routes: map[string]http.HandlerFunc{
 				"/shipping/acme1/AcmeStore_NL/zones": respond(http.StatusOK, `[{"id":"Z1","name":{"en":"Benelux"}}]`),
@@ -133,6 +144,7 @@ func TestCompletionOfWritesAndOtherReadsReadsTheirLists(t *testing.T) {
 			requests: []string{"/shipping/acme1/AcmeStore_NL/zones"},
 		},
 		{
+			name: "a root category, as get takes it",
 			args: []string{"category-trees", "rebuild", ""},
 			routes: map[string]http.HandlerFunc{"/category/acme1/category-trees": respond(http.StatusOK,
 				`[{"id":"C1","name":"Men","subcategories":[{"id":"C2","name":"Shirts"}]}]`)},
@@ -141,13 +153,14 @@ func TestCompletionOfWritesAndOtherReadsReadsTheirLists(t *testing.T) {
 			scopes:   []string{"category.category_read_unpublished"},
 		},
 	} {
-		tt.check(t)
+		t.Run(tt.name, tt.check)
 	}
 }
 
 func TestCompletionOfDeletesAndActionsReadsTheirLists(t *testing.T) {
 	for _, tt := range []completionCase{
 		{
+			name: "a delete of a product below a category: the products assigned to it",
 			args: []string{"categories", "assignments", "delete", "C1", ""},
 			routes: map[string]http.HandlerFunc{"/category/acme1/categories/C1/assignments": respond(http.StatusOK,
 				`[{"id":"A1","ref":{"id":"100200","type":"PRODUCT","localizedName":{"en":"Shirt"}}}]`)},
@@ -156,6 +169,7 @@ func TestCompletionOfDeletesAndActionsReadsTheirLists(t *testing.T) {
 			scopes:   []string{"category.category_read_unpublished"},
 		},
 		{
+			name: "a delete of an item of a site: the --site given before it",
 			args: []string{"availability", "delete", "--site", "AcmeStore_NL", ""},
 			routes: map[string]http.HandlerFunc{"/availability/acme1/availability/site/AcmeStore_NL": respond(
 				http.StatusOK, `[{"productId":"100200","site":"AcmeStore_NL"}]`)},
@@ -163,6 +177,7 @@ func TestCompletionOfDeletesAndActionsReadsTheirLists(t *testing.T) {
 			requests: []string{"/availability/acme1/availability/site/AcmeStore_NL?pageNumber=1&pageSize=100"},
 		},
 		{
+			name: "a payment operation on a transaction",
 			args: []string{"payment-transactions", "cancel", ""},
 			routes: map[string]http.HandlerFunc{"/payment-gateway/acme1/transactions": respond(http.StatusOK,
 				`[{"id":"T1","provider":"INVOICE"}]`)},
@@ -171,6 +186,7 @@ func TestCompletionOfDeletesAndActionsReadsTheirLists(t *testing.T) {
 			scopes:   []string{"payment-gateway.paymenttransactions_read"},
 		},
 		{
+			name: "a group: its IDs in the order of list, by id",
 			args: []string{"iam", "groups", "delete", ""},
 			routes: map[string]http.HandlerFunc{"/iam/acme1/groups": respond(http.StatusOK,
 				`[{"id":"g1","code":"BO_ADMIN","name":{"en":"Administrators"}}]`)},
@@ -179,6 +195,7 @@ func TestCompletionOfDeletesAndActionsReadsTheirLists(t *testing.T) {
 			scopes:   []string{"iam.group_read"},
 		},
 		{
+			name: "a user of a group: the USER of its members",
 			args: []string{"iam", "groups", "users", "delete", "G1", ""},
 			routes: map[string]http.HandlerFunc{"/iam/acme1/groups/G1/users": respond(http.StatusOK,
 				`[{"id":"m1","userId":"u1","userType":"EMPLOYEE"}]`)},
@@ -187,6 +204,7 @@ func TestCompletionOfDeletesAndActionsReadsTheirLists(t *testing.T) {
 			scopes:   []string{"iam.user_read"},
 		},
 		{
+			name: "a write that names an item of another collection: the agent templates",
 			args: []string{"ai", "agents", "create", "t"},
 			routes: map[string]http.HandlerFunc{"/ai-service/acme1/agentic/templates": respond(http.StatusOK,
 				`[{"id":"t1","name":{"en":"Complaints"}}]`)},
@@ -195,6 +213,7 @@ func TestCompletionOfDeletesAndActionsReadsTheirLists(t *testing.T) {
 			scopes:   []string{aiScope},
 		},
 		{
+			name: "an instance of a custom entity type: the instances of the type, with its own scope",
 			args: []string{"custom-entities", "instances", "delete", "CUSTOM_DOCUMENT", ""},
 			routes: map[string]http.HandlerFunc{"/schema/acme1/custom-entities/CUSTOM_DOCUMENT/instances": respond(
 				http.StatusOK, `[{"id":"123","name":{"en":"Report"}}]`)},
@@ -203,6 +222,7 @@ func TestCompletionOfDeletesAndActionsReadsTheirLists(t *testing.T) {
 			scopes:   []string{"custom.custom_document_read"},
 		},
 		{
+			name: "a customer assigned to a segment: the CUSTOMER of its customers",
 			args: []string{"segments", "customers", "delete", "s1", ""},
 			routes: map[string]http.HandlerFunc{"/customer-segment/acme1/segments/s1/customers": respond(http.StatusOK,
 				`[{"customer":{"id":"c-7f3a","firstName":"Ada","lastName":"Example"}}]`)},
@@ -211,6 +231,7 @@ func TestCompletionOfDeletesAndActionsReadsTheirLists(t *testing.T) {
 			scopes:   []string{"customersegment.segment_read"},
 		},
 		{
+			name: "an address of a customer: the addresses of the customer",
 			args: []string{"customers", "addresses", "delete", "0100", ""},
 			routes: map[string]http.HandlerFunc{"/customer/acme1/customers/0100/addresses": respond(http.StatusOK,
 				`[{"id":"a1","contactName":"Ada Example"}]`)},
@@ -219,6 +240,7 @@ func TestCompletionOfDeletesAndActionsReadsTheirLists(t *testing.T) {
 			scopes:   []string{"customer.customer_read"},
 		},
 		{
+			name: "an action on an order",
 			args: []string{"orders", "split", ""},
 			routes: map[string]http.HandlerFunc{"/order-v2/acme1/salesorders": respond(http.StatusOK,
 				`[{"id":"O1"}]`)},
@@ -227,7 +249,7 @@ func TestCompletionOfDeletesAndActionsReadsTheirLists(t *testing.T) {
 			scopes:   []string{"order.order_read"},
 		},
 	} {
-		tt.check(t)
+		t.Run(tt.name, tt.check)
 	}
 }
 

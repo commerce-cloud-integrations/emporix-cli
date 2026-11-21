@@ -103,33 +103,33 @@ func TestOnlyDeclaredReadsTakeCreated(t *testing.T) {
 		args       []string
 		path, body string
 		code       int
-		want       string
+		stdout     string
+		stderr     string
 	}{
 		{args: []string{"units", "conversion-factor", "--from", "g", "--to", "kg"},
-			path: "/unit-handling/acme1/units/conversion-factor-commands",
-			body: `{"input":{"sourceUnit":"g","targetUnit":"kg"},"output":{"conversionFactor":0.001}}`,
-			want: "FROM  TO  FACTOR\ng     kg  0.001\n"},
+			path:   "/unit-handling/acme1/units/conversion-factor-commands",
+			body:   `{"input":{"sourceUnit":"g","targetUnit":"kg"},"output":{"conversionFactor":0.001}}`,
+			stdout: "FROM  TO  FACTOR\ng     kg  0.001\n"},
 		{args: []string{"units", "convert", "--from", "g", "--to", "kg", "--amount", "1"},
-			path: "/unit-handling/acme1/units/convert-unit-commands",
-			body: `{"input":{"sourceUnitAmount":1,"sourceUnit":"g"},"output":{"targetUnitAmount":0.001,"targetUnit":"kg"}}`,
-			want: "FROM  TO\n1 g   0.001 kg\n"},
+			path:   "/unit-handling/acme1/units/convert-unit-commands",
+			body:   `{"input":{"sourceUnitAmount":1,"sourceUnit":"g"},"output":{"targetUnitAmount":0.001,"targetUnit":"kg"}}`,
+			stdout: "FROM  TO\n1 g   0.001 kg\n"},
 		{args: []string{"taxes", "calculate", "--price", "1", "--country", "DE", "--tax-class", "STANDARD"},
 			path: "/tax/acme1/taxes/calculation-commands", body: `{"output":{"netPrice":1}}`, code: ExitError,
-			want: "PUT /tax/acme1/taxes/calculation-commands: 201 Created"},
+			stderr: "PUT /tax/acme1/taxes/calculation-commands: 201 Created"},
 		{args: []string{"coupons", "validate", "SAVE7", "--order-total", "10 EUR", "--discount", "1 EUR",
 			"--allow-write-scope"},
 			path: "/coupon/acme1/coupons/SAVE7/validation", body: `{"id":"r1"}`, code: ExitError,
-			want: "POST /coupon/acme1/coupons/SAVE7/validation: 201 Created"},
+			stderr: "POST /coupon/acme1/coupons/SAVE7/validation: 201 Created"},
 		{args: []string{"products", "search"}, path: "/product/acme1/products/search", body: `[]`, code: ExitError,
-			want: "POST /product/acme1/products/search: 201 Created"},
+			stderr: "POST /product/acme1/products/search: 201 Created"},
 	} {
 		fake := newFakeEmporix(t)
 		fake.route(tt.path, respond(http.StatusCreated, tt.body))
 		code, stdout, stderr := runCLI(t, fake.env(), tt.args...)
-		if code != tt.code || (code == ExitOK && stdout != tt.want) ||
-			(code != ExitOK && (stdout != "" || !strings.Contains(stderr, tt.want))) {
-			t.Errorf("%q: exit %d, stdout %q, stderr %q; want exit %d and %q", tt.args, code, stdout, stderr, tt.code,
-				tt.want)
+		if code != tt.code || stdout != tt.stdout || !strings.Contains(stderr, tt.stderr) {
+			t.Errorf("%q: exit %d, stdout %q, stderr %q; want exit %d, stdout %q and stderr with %q",
+				tt.args, code, stdout, stderr, tt.code, tt.stdout, tt.stderr)
 		}
 	}
 }
@@ -141,24 +141,25 @@ func TestCouponValidationAnswers(t *testing.T) {
 		answer http.HandlerFunc
 		json   bool
 		code   int
-		want   string
+		stdout string
+		stderr string
 	}{
-		{answer: respond(http.StatusOK, ""), want: "REDEEMABLE\ntrue\n"},
-		{answer: respond(http.StatusOK, " \n"), json: true, want: "true\n"},
-		{answer: respond(http.StatusNoContent, ""), json: true, want: "true\n"},
-		{answer: respond(http.StatusOK, "true"), json: true, want: "true\n"},
-		{answer: respond(http.StatusOK, "false"), want: "REDEEMABLE\nfalse\n"},
-		{answer: respond(http.StatusOK, "false"), json: true, want: "false\n"},
+		{answer: respond(http.StatusOK, ""), stdout: "REDEEMABLE\ntrue\n"},
+		{answer: respond(http.StatusOK, " \n"), json: true, stdout: "true\n"},
+		{answer: respond(http.StatusNoContent, ""), json: true, stdout: "true\n"},
+		{answer: respond(http.StatusOK, "true"), json: true, stdout: "true\n"},
+		{answer: respond(http.StatusOK, "false"), stdout: "REDEEMABLE\nfalse\n"},
+		{answer: respond(http.StatusOK, "false"), json: true, stdout: "false\n"},
 		{answer: respond(http.StatusOK, `{"code":"SAVE7"}`), code: ExitError,
-			want: "decoding coupon validation response: expected true or false"},
+			stderr: "decoding coupon validation response: expected true or false"},
 		{answer: respond(http.StatusOK, `{"code":"SAVE7"}`), json: true, code: ExitError,
-			want: "decoding coupon validation response: expected true or false"},
+			stderr: "decoding coupon validation response: expected true or false"},
 		{answer: respond(http.StatusOK, "OK"), code: ExitError,
-			want: "decoding coupon validation response: expected true or false"},
+			stderr: "decoding coupon validation response: expected true or false"},
 		{answer: respond(http.StatusBadRequest, `{"message":"Coupon has expired"}`), code: ExitError,
-			want: "POST /coupon/acme1/coupons/SAVE7/validation: 400 Bad Request: Coupon has expired"},
+			stderr: "POST /coupon/acme1/coupons/SAVE7/validation: 400 Bad Request: Coupon has expired"},
 		{answer: respond(http.StatusNotFound, `{"message":"Coupon not found"}`), code: ExitNotFound,
-			want: "404 Not Found: Coupon not found"},
+			stderr: "404 Not Found: Coupon not found"},
 	} {
 		fake := newFakeEmporix(t)
 		fake.route("/coupon/acme1/coupons/SAVE7/validation", tt.answer)
@@ -167,9 +168,9 @@ func TestCouponValidationAnswers(t *testing.T) {
 			args = append(args, "-o", "json")
 		}
 		code, stdout, stderr := runCLI(t, fake.env(), args...)
-		if code != tt.code || (code == ExitOK && stdout != tt.want) ||
-			(code != ExitOK && (stdout != "" || !strings.Contains(stderr, tt.want))) {
-			t.Errorf("%q: exit %d, stdout %q, stderr %q; want exit %d and %q", args, code, stdout, stderr, tt.code, tt.want)
+		if code != tt.code || stdout != tt.stdout || !strings.Contains(stderr, tt.stderr) {
+			t.Errorf("%q: exit %d, stdout %q, stderr %q; want exit %d, stdout %q and stderr with %q",
+				args, code, stdout, stderr, tt.code, tt.stdout, tt.stderr)
 		}
 	}
 }
@@ -183,28 +184,29 @@ func TestCalculationResponsesAreChecked(t *testing.T) {
 		args       []string
 		path, body string
 		code       int
-		want       string
+		stdout     string
+		stderr     string
 		tableOnly  bool
 	}{
-		{args: validate, path: "/shipping/acme1/deliveryWindowValidation", body: "false", want: "VALID\nfalse\n"},
+		{args: validate, path: "/shipping/acme1/deliveryWindowValidation", body: "false", stdout: "VALID\nfalse\n"},
 		{args: validate, path: "/shipping/acme1/deliveryWindowValidation", body: `{"valid":true}`, code: ExitError,
-			want: "decoding delivery window validation response: expected true or false"},
+			stderr: "decoding delivery window validation response: expected true or false"},
 		{args: validate, path: "/shipping/acme1/deliveryWindowValidation", body: "null", code: ExitError,
-			want: "expected true or false"},
+			stderr: "expected true or false"},
 		{args: quote, path: "/shipping/acme1/main/quote", body: `{"zone":{}}`, code: ExitError,
-			want: "decoding shipping quote response: expected a JSON array"},
+			stderr: "decoding shipping quote response: expected a JSON array"},
 		{args: quote, path: "/shipping/acme1/main/quote", body: `["nl"]`, code: ExitError,
-			want: "decoding shipping quote response: expected zones as JSON objects"},
+			stderr: "decoding shipping quote response: expected zones as JSON objects"},
 		{args: quote, path: "/shipping/acme1/main/quote", body: `[null]`, code: ExitError,
-			want: "decoding shipping quote response: expected zones as JSON objects"},
+			stderr: "decoding shipping quote response: expected zones as JSON objects"},
 		{args: quote, path: "/shipping/acme1/main/quote", body: `[{"zone":{"id":"nl"},"methods":"post"}]`,
-			code: ExitError, want: "decoding shipping quote response: expected zones as JSON objects"},
+			code: ExitError, stderr: "decoding shipping quote response: expected zones as JSON objects"},
 		{args: quote, path: "/shipping/acme1/main/quote", body: `[{"zone":{"id":"nl"},"methods":[null]}]`,
-			code: ExitError, want: "decoding shipping quote response: expected shipping methods as JSON objects"},
+			code: ExitError, stderr: "decoding shipping quote response: expected shipping methods as JSON objects"},
 		{args: quote, path: "/shipping/acme1/main/quote", body: `[{"zone":{"id":"nl"},"methods":[{"name":"Post"}]}]`,
-			code: ExitError, want: "decoding shipping quote response: item 1 has no identifier", tableOnly: true},
+			code: ExitError, stderr: "decoding shipping quote response: item 1 has no identifier", tableOnly: true},
 		{args: quote, path: "/shipping/acme1/main/quote", body: `[{"methods":[{"id":"post"}]}]`, code: ExitError,
-			want: "decoding shipping quote response: item 1 has no identifier", tableOnly: true},
+			stderr: "decoding shipping quote response: item 1 has no identifier", tableOnly: true},
 	} {
 		for _, format := range []string{"table", "json"} {
 			if format == "json" && (tt.code == ExitOK || tt.tableOnly) {
@@ -213,10 +215,9 @@ func TestCalculationResponsesAreChecked(t *testing.T) {
 			fake := newFakeEmporix(t)
 			fake.route(tt.path, respond(http.StatusOK, tt.body))
 			code, stdout, stderr := runCLI(t, fake.env(), append(slices.Clone(tt.args), "-o", format)...)
-			if code != tt.code || (code == ExitOK && stdout != tt.want) ||
-				(code != ExitOK && (stdout != "" || !strings.Contains(stderr, tt.want))) {
-				t.Errorf("%q -o %s on %s: exit %d, stdout %q, stderr %q; want exit %d and %q",
-					tt.args, format, tt.body, code, stdout, stderr, tt.code, tt.want)
+			if code != tt.code || stdout != tt.stdout || !strings.Contains(stderr, tt.stderr) {
+				t.Errorf("%q -o %s on %s: exit %d, stdout %q, stderr %q; want exit %d, stdout %q and stderr with %q",
+					tt.args, format, tt.body, code, stdout, stderr, tt.code, tt.stdout, tt.stderr)
 			}
 		}
 	}
@@ -266,26 +267,26 @@ func TestDeliveryCycleNames(t *testing.T) {
 	for _, tt := range []struct {
 		body, format string
 		code         int
-		want         string
+		stdout       string
+		stderr       string
 	}{
-		{body: "2026-10-19-6morning\n", format: "table", want: "CYCLE\n2026-10-19-6morning\n"},
-		{body: "2026-10-19-6morning", format: "json", want: "\"2026-10-19-6morning\"\n"},
-		{body: `"2026-10-19-6 morning"`, format: "table", want: "CYCLE\n2026-10-19-6 morning\n"},
-		{body: `"2026-10-19-6morning"`, format: "json", want: "\"2026-10-19-6morning\"\n"},
+		{body: "2026-10-19-6morning\n", format: "table", stdout: "CYCLE\n2026-10-19-6morning\n"},
+		{body: "2026-10-19-6morning", format: "json", stdout: "\"2026-10-19-6morning\"\n"},
+		{body: `"2026-10-19-6 morning"`, format: "table", stdout: "CYCLE\n2026-10-19-6 morning\n"},
+		{body: `"2026-10-19-6morning"`, format: "json", stdout: "\"2026-10-19-6morning\"\n"},
 		{body: `{"name":"2026-10-19-6morning"}`, format: "table", code: ExitError,
-			want: "decoding delivery cycle response: expected a name"},
-		{body: `{"name":"2026-10-19-6morning"}`, format: "json", code: ExitError, want: "expected a name"},
-		{body: `" "`, format: "table", code: ExitError, want: "expected a name"},
-		{body: "null", format: "json", code: ExitError, want: "expected a name"},
-		{body: "", format: "table", code: ExitNotFound, want: "empty response"},
+			stderr: "decoding delivery cycle response: expected a name"},
+		{body: `{"name":"2026-10-19-6morning"}`, format: "json", code: ExitError, stderr: "expected a name"},
+		{body: `" "`, format: "table", code: ExitError, stderr: "expected a name"},
+		{body: "null", format: "json", code: ExitError, stderr: "expected a name"},
+		{body: "", format: "table", code: ExitNotFound, stderr: "empty response"},
 	} {
 		fake := newFakeEmporix(t)
 		fake.route("/shipping/acme1/delivery-cycles/generate", respond(http.StatusCreated, tt.body))
 		code, stdout, stderr := runCLI(t, fake.env(), append(args, "-o", tt.format)...)
-		if code != tt.code || (code == ExitOK && stdout != tt.want) ||
-			(code != ExitOK && (stdout != "" || !strings.Contains(stderr, tt.want))) {
-			t.Errorf("%q as %s: exit %d, stdout %q, stderr %q; want exit %d and %q", tt.body, tt.format, code, stdout,
-				stderr, tt.code, tt.want)
+		if code != tt.code || stdout != tt.stdout || !strings.Contains(stderr, tt.stderr) {
+			t.Errorf("%q as %s: exit %d, stdout %q, stderr %q; want exit %d, stdout %q and stderr with %q",
+				tt.body, tt.format, code, stdout, stderr, tt.code, tt.stdout, tt.stderr)
 		}
 	}
 }

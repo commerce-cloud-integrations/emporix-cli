@@ -17,7 +17,7 @@ func productWriteCases() []writeCase {
 			args:   []string{"products", "create"},
 			file:   "{\"id\": \"100200\", \"code\": \"100200\", \"productType\": \"BASIC\"}\n",
 			method: http.MethodPost, path: products, query: productSwitches, scopes: manage, lang: "*",
-			status: http.StatusCreated, body: `{"id":"100200","yrn":"urn:yaas:saasag:caasproduct:product:acme1;100200"}`,
+			status: http.StatusCreated, response: `{"id":"100200","yrn":"urn:yaas:saasag:caasproduct:product:acme1;100200"}`,
 			want: "{\n  \"id\": \"100200\",\n  \"yrn\": \"urn:yaas:saasag:caasproduct:product:acme1;100200\"\n}\n",
 		},
 		{
@@ -26,7 +26,7 @@ func productWriteCases() []writeCase {
 			file: `{"id":"100200","name":"Chair","published":true}`, method: http.MethodPost, path: products,
 			query:  "doIndex=false&skipRelatedItemsValidation=true&skipVariantGeneration=true",
 			scopes: []string{productManageScope, "product.product_publish"}, lang: "en",
-			status: http.StatusCreated, body: `{"id":"100200"}`, want: "{\n  \"id\": \"100200\"\n}\n",
+			status: http.StatusCreated, response: `{"id":"100200"}`, want: "{\n  \"id\": \"100200\"\n}\n",
 		},
 		{
 			args: []string{"products", "update", "100200"}, file: `{"code":"100200","metadata":{"version":3}}`,
@@ -38,7 +38,7 @@ func productWriteCases() []writeCase {
 			file: `{"code":"100200","published":false}`, method: http.MethodPut, path: products + "/100200",
 			query: productSwitches, lang: "*",
 			scopes: []string{productManageScope, "product.product_publish", "product.product_unpublish"},
-			status: http.StatusCreated, body: `{"id":"100200"}`, want: "{\n  \"id\": \"100200\"\n}\n",
+			status: http.StatusCreated, response: `{"id":"100200"}`, want: "{\n  \"id\": \"100200\"\n}\n",
 		},
 		{
 			args: []string{"products", "patch", "100 200"}, file: `{"name":{"en":"Chair"}}`, method: http.MethodPatch,
@@ -48,25 +48,25 @@ func productWriteCases() []writeCase {
 		{
 			args: []string{"products", "bulk-create"}, file: two, method: http.MethodPost, path: bulk,
 			query: productSwitches, scopes: manage, lang: "*", status: http.StatusMultiStatus,
-			body: `[{"index":0,"id":"100200","code":201},{"index":1,"id":"100201","code":201}]`,
+			response: `[{"index":0,"id":"100200","code":201},{"index":1,"id":"100201","code":201}]`,
 			want: "[\n  {\n    \"code\": 201,\n    \"id\": \"100200\",\n    \"index\": 0\n  },\n" +
 				"  {\n    \"code\": 201,\n    \"id\": \"100201\",\n    \"index\": 1\n  }\n]\n",
 		},
 		{
 			args: []string{"products", "bulk-update"}, file: "[\n  {\"id\": \"100200\"}\n]\n", method: http.MethodPut,
 			path: bulk, query: productSwitches, scopes: manage, lang: "*", status: http.StatusMultiStatus,
-			body: `[{"index":0,"id":"100200","code":204}]`,
-			want: "[\n  {\n    \"code\": 204,\n    \"id\": \"100200\",\n    \"index\": 0\n  }\n]\n",
+			response: `[{"index":0,"id":"100200","code":204}]`,
+			want:     "[\n  {\n    \"code\": 204,\n    \"id\": \"100200\",\n    \"index\": 0\n  }\n]\n",
 		},
 		{
 			args: []string{"products", "import"}, file: two, method: http.MethodPut, path: bulk, query: productSwitches,
-			scopes: manage, lang: "*", status: http.StatusMultiStatus, body: `[{"code":204},{"code":201}]`,
+			scopes: manage, lang: "*", status: http.StatusMultiStatus, response: `[{"code":204},{"code":201}]`,
 			want: "[\n  {\n    \"code\": 204\n  },\n  {\n    \"code\": 201\n  }\n]\n",
 		},
 		{
 			args: []string{"products", "recalculate"}, file: `{"productIds":["100200","100201"]}`,
 			method: http.MethodPost, path: products + "/recalculate", scopes: manage, status: http.StatusAccepted,
-			body: `{"jobs":[{"id":"job-1","parentRoot":"100200","status":"PENDING"}],"skippedProductIds":["100201"]}`,
+			response: `{"jobs":[{"id":"job-1","parentRoot":"100200","status":"PENDING"}],"skippedProductIds":["100201"]}`,
 			want: "{\n  \"jobs\": [\n    {\n      \"id\": \"job-1\",\n      \"parentRoot\": \"100200\",\n" +
 				"      \"status\": \"PENDING\"\n    }\n  ],\n  \"skippedProductIds\": [\n    \"100201\"\n  ]\n}\n",
 		},
@@ -74,13 +74,13 @@ func productWriteCases() []writeCase {
 			args:   []string{"products", "recalculate", "--product", "100200", "--product", "100 201"},
 			sent:   `{"productIds":["100200","100 201"]}`,
 			method: http.MethodPost, path: products + "/recalculate", scopes: manage, status: http.StatusAccepted,
-			body: `{"jobs":[],"skippedProductIds":[]}`, want: "{\n  \"jobs\": [],\n  \"skippedProductIds\": []\n}\n",
+			response: `{"jobs":[],"skippedProductIds":[]}`, want: "{\n  \"jobs\": [],\n  \"skippedProductIds\": []\n}\n",
 		},
 		{
 			args: []string{"product-templates", "create"}, file: `{"name":{"en":"Furniture"},"attributes":[]}`,
 			method: http.MethodPost, path: "/product/acme1/product-templates", lang: "*",
 			scopes: []string{"product.product_template_manage"},
-			status: http.StatusCreated, body: `{"id":"tmpl-1"}`, want: "{\n  \"id\": \"tmpl-1\"\n}\n",
+			status: http.StatusCreated, response: `{"id":"tmpl-1"}`, want: "{\n  \"id\": \"tmpl-1\"\n}\n",
 		},
 		{
 			args: []string{"product-templates", "update", "tmpl-1", "--content-language", "de"},

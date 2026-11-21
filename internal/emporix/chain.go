@@ -59,10 +59,10 @@ func (r commandResult) at(position int) bool {
 
 func (r commandResult) failures(position int, command json.RawMessage) ([]ItemFailure, bool) {
 	items, isBatch := within(command, "data")
-	entries, isList := within(r.Data, "")
+	entries, isList := within(r.Data, topLevel)
 	switch {
 	case isBatch && len(items) > 0 && isList:
-		return r.itemFailures(position, namedItems(items, ""), entries)
+		return r.itemFailures(position, namedItems(items, unkeyed), entries)
 	case isBatch && len(items) > 0 && succeeded(r.Code):
 		return nil, false
 	case succeeded(r.Code):

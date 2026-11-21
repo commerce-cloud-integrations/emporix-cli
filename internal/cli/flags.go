@@ -5,7 +5,6 @@ import (
 	"strings"
 
 	"github.com/spf13/cobra"
-	"github.com/spf13/pflag"
 )
 
 func requireFlag(cmd *cobra.Command, flag string) {
@@ -47,14 +46,18 @@ func addSiteFlag(cmd *cobra.Command, site *siteCode) {
 const profileDefault = "epx_profile_default"
 
 func takeProfileDefault(cmd *cobra.Command, flag, setting string, unless ...string) {
-	annotate(cmd.Flag(flag), profileDefault, append([]string{setting}, unless...))
+	annotate(cmd, flag, profileDefault, append([]string{setting}, unless...))
 }
 
-func annotate(flag *pflag.Flag, key string, values []string) {
-	if flag.Annotations == nil {
-		flag.Annotations = map[string][]string{}
+func annotate(cmd *cobra.Command, flag, key string, values []string) {
+	given := cmd.Flag(flag)
+	if given == nil {
+		panic(cmd.Use + ": it annotates --" + flag + ", a flag that it lacks")
 	}
-	flag.Annotations[key] = values
+	if given.Annotations == nil {
+		given.Annotations = map[string][]string{}
+	}
+	given.Annotations[key] = values
 }
 
 const writeScopeFlag = "allow-write-scope"

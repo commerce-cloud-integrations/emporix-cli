@@ -16,22 +16,22 @@ const (
 func feeAssignmentReads() []readCase {
 	return []readCase{
 		{
-			args:  []string{"fees", "assignments", "list", "--site", "AcmeStore_NL"},
-			path:  "/fee/acme1/itemFees",
-			query: "siteCode=AcmeStore_NL",
-			body:  feeAssignments,
-			want:  assignmentTable,
+			args:     []string{"fees", "assignments", "list", "--site", "AcmeStore_NL"},
+			path:     "/fee/acme1/itemFees",
+			query:    "siteCode=AcmeStore_NL",
+			response: feeAssignments,
+			want:     assignmentTable,
 		},
 		{
 			args: []string{
 				"fees", "assignments", "search", "--item", productYRN, "--item", paymentYRN, "--site", "AcmeStore_NL",
 			},
-			path:   "/fee/acme1/itemFees/search",
-			query:  "siteCode=AcmeStore_NL",
-			mode:   getWhole,
-			method: http.MethodPost,
-			sent:   `{"itemYrns":["` + productYRN + `","` + paymentYRN + `"],"siteCode":"AcmeStore_NL"}`,
-			body: `[{"id":"if1","itemYrn":"` + productYRN + `","siteCode":"AcmeStore_NL","feeIds":["f1","f2"]},
+			path:        "/fee/acme1/itemFees/search",
+			query:       "siteCode=AcmeStore_NL",
+			mode:        getWhole,
+			method:      http.MethodPost,
+			requestBody: `{"itemYrns":["` + productYRN + `","` + paymentYRN + `"],"siteCode":"AcmeStore_NL"}`,
+			response: `[{"id":"if1","itemYrn":"` + productYRN + `","siteCode":"AcmeStore_NL","feeIds":["f1","f2"]},
 				{"itemYrn":"` + paymentYRN + `","siteCode":"AcmeStore_NL","feeIds":[]}]`,
 			want: assignmentHeader +
 				productYRN + "  if1  AcmeStore_NL  f1,f2\n" +
@@ -45,9 +45,9 @@ func feeAssignmentReads() []readCase {
 			path:   "/fee/acme1/itemFees/searchByProductId",
 			mode:   getAllBodyPaged,
 			method: http.MethodPost,
-			sent: `{"pageNumber":{page},"pageSize":100,"productId":"100200",` +
+			requestBody: `{"pageNumber":{page},"pageSize":100,"productId":"100200",` +
 				`"siteCodes":["AcmeStore_NL","AcmeStore_BE"]}`,
-			body: `[{"id":"if1","itemYrn":"` + productYRN + `","siteCode":"AcmeStore_NL","feeIds":["f1"],
+			response: `[{"id":"if1","itemYrn":"` + productYRN + `","siteCode":"AcmeStore_NL","feeIds":["f1"],
 				"fees":[{"id":"f1","code":"deposit"}]}]`,
 			want: assignmentHeader + productYRN + "  if1  AcmeStore_NL  f1\n",
 		},
@@ -55,12 +55,12 @@ func feeAssignmentReads() []readCase {
 			args: []string{
 				"fees", "assignments", "search-by-products", "--products", "100200,100201", "--site", "AcmeStore_NL",
 			},
-			path:   "/fee/acme1/itemFees/searchByProductIds",
-			mode:   getAllBodyPaged,
-			method: http.MethodPost,
-			sent:   `{"pageNumber":{page},"pageSize":100,"productIds":"100200,100201","siteCode":"AcmeStore_NL"}`,
-			body:   feeAssignments,
-			want:   assignmentTable,
+			path:        "/fee/acme1/itemFees/searchByProductIds",
+			mode:        getAllBodyPaged,
+			method:      http.MethodPost,
+			requestBody: `{"pageNumber":{page},"pageSize":100,"productIds":"100200,100201","siteCode":"AcmeStore_NL"}`,
+			response:    feeAssignments,
+			want:        assignmentTable,
 		},
 	}
 }

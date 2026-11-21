@@ -87,19 +87,32 @@ func listedIDs[T any](rd reader[T], req request, f fetcher, column string) *idSo
 		return nil
 	}
 	read, items := g.glance()
-	name := -1
+	var described descriptionColumn
 	if n := slices.Index(rd.header, columnName); at == 0 && n > 0 {
-		name = n
+		described = descriptionColumn{at: n, shown: true}
 	}
 	return &idSource{
 		req: req, scopes: rd.scopes, rule: newTypeRule(rd.scopes, builtInTypes{}), read: read, items: items,
 		offer: func(found []json.RawMessage, prefix string) []cobra.Completion {
-			return offeredIDs(rd.view, found, at, name, prefix)
+			return offeredIDs(rd.view, found, at, described, prefix)
 		},
 	}
 }
 
-func offeredIDs[T any](v view[T], items []json.RawMessage, column, name int, prefix string) []cobra.Completion {
+type descriptionColumn struct {
+	at    int
+	shown bool
+}
+
+func (d descriptionColumn) of(cells []string) string {
+	if !d.shown {
+		return ""
+	}
+	return cells[d.at]
+}
+
+func offeredIDs[T any](v view[T], items []json.RawMessage, column int, described descriptionColumn,
+	prefix string) []cobra.Completion {
 	var ids []cobra.Completion
 	seen := map[string]bool{}
 	for _, raw := range items {
@@ -113,8 +126,8 @@ func offeredIDs[T any](v view[T], items []json.RawMessage, column, name int, pre
 			continue
 		}
 		seen[id] = true
-		if name >= 0 && cells[name] != "" {
-			id = cobra.CompletionWithDesc(id, output.Sanitize(cells[name]))
+		if description := described.of(cells); description != "" {
+			id = cobra.CompletionWithDesc(id, output.Sanitize(description))
 		}
 		ids = append(ids, id)
 	}
@@ -131,20 +144,31 @@ func completeArguments(a *app, cmd *cobra.Command, site *siteCode, ids argumentI
 	first := ids[names[0]].accepting(rule)
 	cmd.ValidArgsFunction = func(c *cobra.Command, args []string, toComplete string) (
 		[]cobra.Completion, cobra.ShellCompDirective) {
-		if len(args) >= len(names) || len(args) > 0 && rule.accepts(args[0]) != nil {
+		if len(args) >= len(names) || typeRefused(rule, args) {
 			return nil, cobra.ShellCompDirectiveNoFileComp
 		}
-		name, src := names[len(args)], first
-		if len(args) > 0 {
-			src = ids[name]
+		name := names[len(args)]
+		src := ids[name]
+		if len(args) == 0 {
+			src = first
 		}
-		var items []json.RawMessage
-		// Cobra runs no hook while it completes.
-		if src != nil && a.completesIDs() && a.applyProfileDefaults(c) == nil {
-			items = a.listedItems(c.Context(), src, args, *site)
-		}
-		return offerArgument(fixed[name], src, items, toComplete)
+		return offerArgument(fixed[name], src, a.completionItems(c, src, args, site), toComplete)
 	}
+}
+
+func typeRefused(rule typeRule, args []string) bool {
+	return len(args) > 0 && rule.accepts(args[0]) != nil
+}
+
+func (a *app) completionItems(c *cobra.Command, src *idSource, args []string, site *siteCode) []json.RawMessage {
+	if src == nil || !a.completesIDs() {
+		return nil
+	}
+	// Cobra runs no hook while it completes.
+	if err := a.applyProfileDefaults(c); err != nil {
+		return nil
+	}
+	return a.listedItems(c.Context(), src, args, *site)
 }
 
 func completedArguments(cmd *cobra.Command, names []string, fixed map[string][]string, ids argumentIDs) []string {

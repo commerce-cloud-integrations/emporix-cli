@@ -146,7 +146,7 @@ func TestListFiltersReachEveryRequest(t *testing.T) {
 			if code, _, stderr := runCLI(t, fake.env(), args...); code != ExitOK {
 				t.Fatalf("exit %d, stderr %q", code, stderr)
 			}
-			fake.assertMode(t, tt.mode, tt.page, tt.path, want.Encode())
+			fake.assertMode(t, tt.mode, tt.pageSize, tt.path, want.Encode())
 		})
 	}
 }

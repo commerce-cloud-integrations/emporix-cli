@@ -26,7 +26,7 @@ func cartChanges() []writeCase {
 		{
 			args: []string{"carts", "create"}, file: `{"siteCode":"AcmeStore_NL","currency":"EUR","type":"shopping"}`,
 			method: http.MethodPost, path: "/cart/acme1/carts", scopes: scopes, status: http.StatusCreated,
-			body: `{"cartId":"c1"}`, want: "{\n  \"cartId\": \"c1\"\n}\n",
+			response: `{"cartId":"c1"}`, want: "{\n  \"cartId\": \"c1\"\n}\n",
 		},
 		{
 			args: []string{"carts", "update", "c 1"}, file: `{"status":"CLOSED"}`, method: http.MethodPut,
@@ -71,7 +71,7 @@ func cartChanges() []writeCase {
 		},
 		{
 			args: []string{"carts", "execute", "c1"}, file: cartChainJSON, method: http.MethodPost,
-			path: "/cart/acme1/carts/c1/execute", scopes: scopes, status: http.StatusMultiStatus, body: cartChainResults,
+			path: "/cart/acme1/carts/c1/execute", scopes: scopes, status: http.StatusMultiStatus, response: cartChainResults,
 			want: "{\n  \"results\": [\n    {\n      \"code\": 201,\n      \"data\": {\n        \"itemId\": \"3\"\n      },\n" +
 				"      \"index\": 0,\n      \"status\": \"Created\",\n      \"type\": \"AddCartItem\"\n    },\n" +
 				"    {\n      \"code\": 200,\n      \"data\": {\n        \"id\": \"c1\"\n      },\n      \"index\": 1,\n" +
@@ -82,7 +82,7 @@ func cartChanges() []writeCase {
 				"--allow-external-prices"},
 			file: cartChainJSON, method: http.MethodPost, path: "/cart/acme1/carts/c1/execute",
 			query: "onError=resume&versioning=follow", scopes: externalScopes(),
-			status: http.StatusMultiStatus, body: `{"results":[{"index":0,"code":201},{"index":1,"code":200}]}`,
+			status: http.StatusMultiStatus, response: `{"results":[{"index":0,"code":201},{"index":1,"code":200}]}`,
 			want: "{\n  \"results\": [\n    {\n      \"code\": 201,\n      \"index\": 0\n    },\n" +
 				"    {\n      \"code\": 200,\n      \"index\": 1\n    }\n  ]\n}\n",
 		},
@@ -95,7 +95,7 @@ func cartItemChanges() []writeCase {
 		{
 			args: []string{"carts", "items", "create", "c1", "--site", "AcmeStore_NL"}, file: cartItemJSON,
 			method: http.MethodPost, path: "/cart/acme1/carts/c1/items", query: "siteCode=AcmeStore_NL", scopes: scopes,
-			status: http.StatusCreated, body: `{"itemId":"0"}`, want: "{\n  \"itemId\": \"0\"\n}\n",
+			status: http.StatusCreated, response: `{"itemId":"0"}`, want: "{\n  \"itemId\": \"0\"\n}\n",
 		},
 		{
 			args:   []string{"carts", "items", "create", "c1", "--site", "AcmeStore_NL", "--allow-external-prices"},
@@ -119,19 +119,19 @@ func cartItemChanges() []writeCase {
 		{
 			args: []string{"carts", "items", "delete-all", "c1"}, method: http.MethodDelete,
 			path: "/cart/acme1/carts/c1/items", scopes: scopes, confirmBy: "c1",
-			many: "every item of the cart", status: http.StatusNoContent,
+			deletedMany: "every item of the cart", status: http.StatusNoContent,
 		},
 		{
 			args: []string{"carts", "items", "bulk-create", "c1"}, file: "[" + cartItemJSON + "," + cartItemJSON + "]",
 			method: http.MethodPost, path: "/cart/acme1/carts/c1/itemsBatch", scopes: scopes, status: http.StatusOK,
-			body: `[{"index":0,"status":201,"id":"1"},{"index":1,"status":201,"id":"2"}]`,
+			response: `[{"index":0,"status":201,"id":"1"},{"index":1,"status":201,"id":"2"}]`,
 			want: "[\n  {\n    \"id\": \"1\",\n    \"index\": 0,\n    \"status\": 201\n  },\n" +
 				"  {\n    \"id\": \"2\",\n    \"index\": 1,\n    \"status\": 201\n  }\n]\n",
 		},
 		{
 			args: []string{"carts", "items", "bulk-update", "c1"}, file: `[{"id":"1","quantity":5}]`,
 			method: http.MethodPut, path: "/cart/acme1/carts/c1/itemsBatch", scopes: scopes,
-			status: http.StatusMultiStatus, body: `[{"index":0,"id":"1","code":204,"status":"No Content"}]`,
+			status: http.StatusMultiStatus, response: `[{"index":0,"id":"1","code":204,"status":"No Content"}]`,
 			want: "[\n  {\n    \"code\": 204,\n    \"id\": \"1\",\n    \"index\": 0,\n    \"status\": \"No Content\"\n  }\n]\n",
 		},
 	}
@@ -144,7 +144,7 @@ func cartDiscountChanges() []writeCase {
 		{
 			args: []string{"carts", "discounts", "create", "c1", "--code", "SAVE10"}, sent: `{"code":"SAVE10"}`,
 			method: http.MethodPost, path: "/cart/acme1/carts/c1/discounts", scopes: scopes, status: http.StatusCreated,
-			body: `{"code":"SAVE10","discountIndex":0}`, want: "{\n  \"code\": \"SAVE10\",\n  \"discountIndex\": 0\n}\n",
+			response: `{"code":"SAVE10","discountIndex":0}`, want: "{\n  \"code\": \"SAVE10\",\n  \"discountIndex\": 0\n}\n",
 			refuses: true,
 		},
 		{
@@ -159,12 +159,12 @@ func cartDiscountChanges() []writeCase {
 		{
 			args: []string{"carts", "discounts", "delete-all", "c1"}, method: http.MethodDelete,
 			path: "/cart/acme1/carts/c1/discounts", scopes: scopes, confirmBy: "c1",
-			many: cartDiscountsDeleted, status: http.StatusNoContent,
+			deletedMany: cartDiscountsDeleted, status: http.StatusNoContent,
 		},
 		{
 			args: []string{"carts", "discounts", "delete-all", "c1", "--codes", "SAVE10,TEN"}, method: http.MethodDelete,
 			path: "/cart/acme1/carts/c1/discounts", query: "codes=SAVE10%2CTEN", scopes: scopes,
-			confirmBy: "c1", many: cartDiscountsDeleted, status: http.StatusNoContent,
+			confirmBy: "c1", deletedMany: cartDiscountsDeleted, status: http.StatusNoContent,
 		},
 	}
 }

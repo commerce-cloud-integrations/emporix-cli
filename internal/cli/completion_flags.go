@@ -1,6 +1,9 @@
 package cli
 
 import (
+	"errors"
+	"fmt"
+
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 )
@@ -17,28 +20,33 @@ const choicesAnnotation = "epx_completes_choices"
 const fileNamesAnnotation = "epx_completes_files"
 
 func completeChoices(cmd *cobra.Command, flag string, values []string) {
-	annotate(cmd.Flag(flag), choicesAnnotation, values)
+	annotate(cmd, flag, choicesAnnotation, values)
 }
 
 func completeFileNames(cmd *cobra.Command, flag string) {
-	annotate(cmd.Flag(flag), fileNamesAnnotation, nil)
+	annotate(cmd, flag, fileNamesAnnotation, nil)
 }
 
-func completeFlagsFor(a *app, cmd *cobra.Command) {
-	if cmd.Name() == cobra.ShellCompRequestCmd {
-		completeFlags(a, cmd.Root(), sites().ids())
+func completeFlagsFor(a *app, cmd *cobra.Command) error {
+	if cmd.Name() != cobra.ShellCompRequestCmd {
+		return nil
 	}
+	return completeFlags(a, cmd.Root(), sites().ids())
 }
 
-func completeFlags(a *app, cmd *cobra.Command, codes *idSource) {
+func completeFlags(a *app, cmd *cobra.Command, codes *idSource) error {
+	var failures []error
 	cmd.LocalFlags().VisitAll(func(flag *pflag.Flag) {
 		if complete := flagCompletion(a, flag, codes); complete != nil {
-			_ = cmd.RegisterFlagCompletionFunc(flag.Name, complete)
+			if err := cmd.RegisterFlagCompletionFunc(flag.Name, complete); err != nil {
+				failures = append(failures, fmt.Errorf("%s: %w", cmd.Use, err))
+			}
 		}
 	})
 	for _, sub := range cmd.Commands() {
-		completeFlags(a, sub, codes)
+		failures = append(failures, completeFlags(a, sub, codes))
 	}
+	return errors.Join(failures...)
 }
 
 func flagCompletion(a *app, flag *pflag.Flag, codes *idSource) cobra.CompletionFunc {

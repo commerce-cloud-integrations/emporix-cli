@@ -27,14 +27,14 @@ type aiConversation struct {
 }
 
 type aiLog struct {
-	ID             string             `json:"id"`
-	RequestID      string             `json:"requestId"`
-	SessionID      string             `json:"sessionId"`
-	TriggerAgentID string             `json:"triggerAgentId"`
-	Severity       string             `json:"severity"`
-	Messages       *[]json.RawMessage `json:"messages"`
-	Duration       json.Number        `json:"duration"`
-	Metadata       itemMetadata       `json:"metadata"`
+	ID              string                        `json:"id"`
+	RequestID       string                        `json:"requestId"`
+	SessionID       string                        `json:"sessionId"`
+	TriggerAgentID  string                        `json:"triggerAgentId"`
+	Severity        string                        `json:"severity"`
+	Messages        optionalList[json.RawMessage] `json:"messages"`
+	DurationSeconds json.Number                   `json:"duration"`
+	Metadata        itemMetadata                  `json:"metadata"`
 }
 
 func (l *aiLog) messageCount() string {
@@ -50,7 +50,7 @@ func aiLogView(singular string, ids func(aiLog) []string, idColumns ...string) v
 		header:   slices.Concat(idColumns, []string{columnAgent, columnSeverity, "MESSAGES", "SECONDS", columnCreated}),
 		row: func(l aiLog, _ language) []string {
 			return slices.Concat(ids(l),
-				[]string{l.TriggerAgentID, l.Severity, l.messageCount(), l.Duration.String(), l.Metadata.CreatedAt})
+				[]string{l.TriggerAgentID, l.Severity, l.messageCount(), l.DurationSeconds.String(), l.Metadata.CreatedAt})
 		},
 	}
 }

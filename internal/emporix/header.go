@@ -19,11 +19,11 @@ func (c *Client) WithHeader(name, value string) (*Client, error) {
 	if err := CheckHeaderValue(value); err != nil {
 		return nil, fmt.Errorf("%w: the header %s %w", ErrInvalidInput, name, err)
 	}
-	sending := *c
+	sending := c.withoutSink()
 	sending.header = http.Header{}
 	maps.Copy(sending.header, c.header)
 	sending.header.Set(name, value)
-	return &sending, nil
+	return sending, nil
 }
 
 func checkHeaders(named string, header http.Header) error {

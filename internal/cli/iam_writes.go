@@ -130,7 +130,7 @@ func groupUserWrites(a *app, membersOf resource[iamGroup], members child[groupMe
 	const user = "USER_ID"
 	source := membersOf.argumentSentence(notFound)
 	removal := membersOf.argumentSentence(answeredDeleted)
-	removeOne := membersOf.argumentSource() + "; an unknown GROUP_ID or USER_ID " + string(answeredDeleted) + "."
+	removeOne := membersOf.argumentSource() + "; an unknown GROUP_ID or USER_ID " + answeredDeleted.String() + "."
 	ofGroup := argumentIDs{group: membersOf.ids()}
 	gets := "The user then gets the scopes of the group's access controls; a group of a vendor takes " +
 		"only the vendor's employees."

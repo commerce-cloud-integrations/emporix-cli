@@ -259,7 +259,7 @@ func cartDeliveryRestrictions() child[deliveryRestrictions] {
 
 func cartValidationChild() child[cartValidation] {
 	return child[cartValidation]{
-		use:   "validate",
+		sub:   "validate",
 		short: "Check the prices of a cart's items",
 		long: "Reads whether a cart's items pass Emporix's checks, which find prices that are no longer " +
 			"valid and prices duplicated for a product; it changes nothing. VALID is true or false and " +

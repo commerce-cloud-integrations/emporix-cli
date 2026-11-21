@@ -23,15 +23,6 @@ import (
 // repeated item still fails it. Reads of a whole collection are checked first,
 // then cut.
 //
-// Stream, when set, receives the items as a paged read checks them, page by
-// page (at most Limit in all), instead of the read keeping them: the read then
-// returns no items (nil). A check that fails on a later page (an item read
-// twice, a total that changes or differs from the count) fails the read after
-// the items before it were streamed. A read of a whole collection streams its
-// items once they are checked. A paged read that streams keeps only a key per
-// item, to find one read twice, so it may request more pages than a read that
-// keeps its items (StreamedPages, KeptPages).
-//
 // FirstPage, when set, reads the first page of a paged collection only and
 // returns its items, checked for an item listed twice but neither against a
 // total nor against the pages after it, which it does not request. A read of a
@@ -40,8 +31,22 @@ type ListOptions struct {
 	Limit     int
 	Query     string
 	Sort      string
-	Stream    func(items []json.RawMessage) error
 	FirstPage bool
+}
+
+// Streaming returns a copy of c whose collection reads (GetAll and its
+// siblings) hand their items to sink as they check them, page by page (at
+// most the limit in all), instead of keeping them: such a read then returns no
+// items (nil). A check that fails on a later page (an item read twice, a total
+// that changes or differs from the count) fails the read after the items
+// before it were streamed. A read of a whole collection streams its items once
+// they are checked. A paged read that streams keeps only a key per item, to
+// find one read twice, so it may request more pages than a read that keeps
+// its items (StreamedPages, KeptPages).
+func (c *Client) Streaming(sink func(items []json.RawMessage) error) *Client {
+	streaming := c.withoutSink()
+	streaming.sink = sink
+	return streaming
 }
 
 func (o ListOptions) apply(query url.Values) url.Values {
@@ -57,8 +62,6 @@ func (o ListOptions) apply(query url.Values) url.Values {
 	return merged
 }
 
-func (o ListOptions) streams() bool { return o.Stream != nil }
-
 func (o ListOptions) pageSize(size int) int {
 	if o.Limit > 0 {
 		return min(size, o.Limit)
@@ -66,23 +69,24 @@ func (o ListOptions) pageSize(size int) int {
 	return size
 }
 
-func (o ListOptions) deliverFirstPage(read string, items []json.RawMessage) (json.RawMessage, error) {
-	if err := (itemPages{}).add(read, 1, items); err != nil {
-		return nil, err
-	}
-	return o.deliver(items)
-}
-
 func (o ListOptions) reached(n int) bool { return o.Limit > 0 && n >= o.Limit }
 
-func (o ListOptions) deliver(items []json.RawMessage) (json.RawMessage, error) {
-	return (&delivery{opts: o}).last(items)
-}
+func (c *Client) delivery(opts ListOptions) *delivery { return &delivery{opts: opts, sink: c.sink} }
 
 type delivery struct {
 	opts   ListOptions
+	sink   func(items []json.RawMessage) error
 	kept   []json.RawMessage
 	handed int
+}
+
+func (d *delivery) streams() bool { return d.sink != nil }
+
+func (d *delivery) firstPage(read string, items []json.RawMessage) (json.RawMessage, error) {
+	if err := (itemPages{}).add(read, 1, items); err != nil {
+		return nil, err
+	}
+	return d.last(items)
 }
 
 func (d *delivery) add(items []json.RawMessage) error {
@@ -91,13 +95,13 @@ func (d *delivery) add(items []json.RawMessage) error {
 	}
 	d.handed += len(items)
 	switch {
-	case !d.opts.streams():
+	case !d.streams():
 		d.kept = append(d.kept, items...)
 		return nil
 	case len(items) == 0:
 		return nil
 	default:
-		return d.opts.Stream(items)
+		return d.sink(items)
 	}
 }
 
@@ -109,7 +113,7 @@ func (d *delivery) last(items []json.RawMessage) (json.RawMessage, error) {
 }
 
 func (d *delivery) result() (json.RawMessage, error) {
-	if d.opts.streams() {
+	if d.streams() {
 		return nil, nil
 	}
 	if d.kept == nil {

@@ -123,20 +123,15 @@ func (c *Client) Prepare(w *Write) (*Request, error) {
 	if err != nil {
 		return nil, err
 	}
-	parts, err := w.Parts.split(named, w.Body.data, target.Query())
+	parts, err := w.Parts.split(named, w.Body.data, target.Query(), w.first)
 	if err != nil {
 		return nil, err
 	}
-	switch {
-	case w.AnsweredWhole:
+	if w.AnsweredWhole {
 		parts = nil
-	case parts != nil:
-		parts.first = w.first
 	}
-	checked := w.Answers
-	checked.StaleNotFound = w.StaleNotFound && carriesVersion(w.Body.data)
 	return &Request{by: c, method: w.Method, url: target.String(), header: c.headers(w.Body.contentType, w.Header),
-		body: w.Body, parts: parts, answers: checked}, nil
+		body: w.Body, parts: parts, answers: w.Answers}, nil
 }
 
 const carriedOutNote = "it may have been carried out all the same: read the item before you send it again"
@@ -202,7 +197,7 @@ func responseBody(result reply) []byte {
 
 func (r *Request) failureClass(status int, body []byte) error {
 	switch {
-	case status == http.StatusNotFound && r.answers.StaleNotFound:
+	case status == http.StatusNotFound && r.answers.StaleNotFound && carriesVersion(r.body.data):
 		return ErrConflict
 	case r.answers.ForbiddenIsRefusal && refusesInput(status, body):
 		return nil

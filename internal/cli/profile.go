@@ -221,15 +221,22 @@ func (a *app) applyProfileDefaults(cmd *cobra.Command) error {
 	if err != nil || key.profile == "" || a.tenant.or(key.settings.Tenant) != key.settings.Tenant {
 		return err
 	}
-	defaults := map[string]string{siteFlag: key.settings.Site, languageFlag: key.settings.Language}
 	for _, flag := range pending {
-		setting := flag.Annotations[profileDefault][0]
-		if value := defaults[setting]; value != "" && cmd.Flags().Set(flag.Name, value) != nil {
-			return usageError{fmt.Errorf("profile %s has an invalid default %s; `epx profile add` replaces the profile",
-				key.profile, setting)}
+		if err := key.setFromProfile(cmd.Flags(), flag); err != nil {
+			return err
 		}
 	}
 	return nil
+}
+
+func (k *apiKey) setFromProfile(flags *pflag.FlagSet, flag *pflag.Flag) error {
+	setting := flag.Annotations[profileDefault][0]
+	value := map[string]string{siteFlag: k.settings.Site, languageFlag: k.settings.Language}[setting]
+	if value == "" || flags.Set(flag.Name, value) == nil {
+		return nil
+	}
+	return usageError{fmt.Errorf("profile %s has an invalid default %s; `epx profile add` replaces the profile",
+		k.profile, setting)}
 }
 
 func (a *app) profileNames() []string {

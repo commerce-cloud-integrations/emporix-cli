@@ -19,7 +19,7 @@ func cartWrites(a *app, carts resource[cart]) []*cobra.Command {
 	scopes, cartID, one := []string{cartScope}, carts.argument(), carts.itemPath()
 	about := carts.argumentSentence(notFound)
 	action := func(name string) request { return request{path: one + "/" + name} }
-	posted := func(use, name, short, long string, field bodyField) *cobra.Command {
+	postAction := func(use, name, short, long string, field bodyField) *cobra.Command {
 		return (&write{
 			use: use + " " + cartID, short: short, method: http.MethodPost, long: long + " " + about,
 			req: action(name), scopes: scopes, body: &payload{typed: objectBody{field.require()}},
@@ -60,16 +60,16 @@ func cartWrites(a *app, carts resource[cart]) []*cobra.Command {
 				"those that changed. It sends no body. " + about,
 			req: action("refresh"), scopes: scopes, body: noBody{},
 		}).command(a),
-		posted("change-site", "changeSite", "Move a cart to another site",
+		postAction("change-site", "changeSite", "Move a cart to another site",
 			"Moves the cart "+cartID+" to the site that --site names, whose language, currency, "+
 				"shipping, tax and payment the cart then takes; where the site's currency differs, Emporix "+
 				"matches the prices of the cart's items in it.",
 			stringField("siteCode", "site", "the `code` of the site to move the cart to")),
-		posted("change-currency", "changeCurrency", "Change the currency of a cart",
+		postAction("change-currency", "changeCurrency", "Change the currency of a cart",
 			"Changes the currency of the cart "+cartID+" to the one that --currency names; Emporix "+
 				"matches the prices of the cart's items in it.",
 			stringField("currency", "currency", "the three-letter `code` of the currency, e.g. USD")),
-		posted("merge", "merge", "Merge anonymous carts into a customer's cart",
+		postAction("merge", "merge", "Merge anonymous carts into a customer's cart",
 			"Merges the anonymous carts that --cart names into the cart "+cartID+", which must belong "+
 				"to a customer. Emporix answers with no body and closes the merged carts rather than "+
 				"deleting them: `epx carts search` still lists them as CLOSED, but get and delete no "+
@@ -95,7 +95,7 @@ func cartExecute(cartID string, req request, scopes []string, about string) *wri
 			"CONFLICT), so epx exits 1 and says it may have been carried out; it was not. " + about,
 		example: "  epx carts execute 6a86b20c2f5961330a8b3eb6 --file add-then-get.json --dry-run\n" +
 			"  epx carts execute 6a86b20c2f5961330a8b3eb6 --file chain.json --on-error resume --yes",
-		req: req, scopes: scopes, body: &chain{most: 10},
+		req: req, scopes: scopes, body: &chain{maxCommands: 10},
 		params: queryFlags{optional: []paramFlag{
 			{param: "onError", flag: "on-error", choices: []string{"fail", "resume"},
 				usage: "whether Emporix stops after a command that failed (fail, the default) or runs the rest (resume)"},

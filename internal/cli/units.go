@@ -129,7 +129,7 @@ func newUnitConvertCommand(a *app) *cobra.Command {
 			"their codes and types): FROM is the amount given, TO what it converts to. " +
 			unitConversionHelp,
 		req: request{path: "/unit-handling/{tenant}/units/convert-unit-commands"},
-		fetch: bodyRead{method: http.MethodPut, created: true, body: objectBody(append(unitPairFields(),
+		fetch: bodyRead{method: http.MethodPut, acceptCreated: true, body: objectBody(append(unitPairFields(),
 			numberField("input.sourceUnitAmount", "amount", "the `AMOUNT` to convert, in --from units").require())),
 			fetch: single{items: oneItem}},
 	})
@@ -150,7 +150,7 @@ func newUnitConversionFactorCommand(a *app) *cobra.Command {
 			"the amount in TO units. " +
 			unitConversionHelp,
 		req: request{path: "/unit-handling/{tenant}/units/conversion-factor-commands"},
-		fetch: bodyRead{method: http.MethodPut, created: true, body: objectBody(unitPairFields()),
+		fetch: bodyRead{method: http.MethodPut, acceptCreated: true, body: objectBody(unitPairFields()),
 			fetch: single{items: oneItem}},
 	})
 }

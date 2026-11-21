@@ -36,11 +36,11 @@ func mediaWriteCases() []writeCase {
 	return []writeCase{
 		{
 			args: []string{"media", "create"}, file: linkAsset, method: http.MethodPost, path: assets, scopes: manage,
-			status: http.StatusCreated, body: `{"id":"a1"}`, want: "{\n  \"id\": \"a1\"\n}\n",
+			status: http.StatusCreated, response: `{"id":"a1"}`, want: "{\n  \"id\": \"a1\"\n}\n",
 		},
 		{
 			args: []string{"media", "create", "--upload", "testdata/asset.png"}, file: blobAsset, form: uploadForm(blobAsset),
-			method: http.MethodPost, path: assets, scopes: manage, status: http.StatusCreated, body: `{"id":"a1"}`,
+			method: http.MethodPost, path: assets, scopes: manage, status: http.StatusCreated, response: `{"id":"a1"}`,
 			want: "{\n  \"id\": \"a1\"\n}\n",
 		},
 		{
@@ -62,8 +62,8 @@ func mediaWriteCases() []writeCase {
 		{
 			args: []string{"media", "start-upload"}, file: `{"type":"BLOB","access":"PRIVATE","uploadType":"form"}`,
 			method: http.MethodPost, path: assets + "/upload-session", scopes: manage, status: http.StatusCreated,
-			body: `{"id":"a2","provider":"GCS","status":"PENDING"}`,
-			want: "{\n  \"id\": \"a2\",\n  \"provider\": \"GCS\",\n  \"status\": \"PENDING\"\n}\n", refuses: true,
+			response: `{"id":"a2","provider":"GCS","status":"PENDING"}`,
+			want:     "{\n  \"id\": \"a2\",\n  \"provider\": \"GCS\",\n  \"status\": \"PENDING\"\n}\n", refuses: true,
 		},
 	}
 }

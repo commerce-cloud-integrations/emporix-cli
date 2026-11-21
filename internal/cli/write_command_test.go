@@ -105,7 +105,7 @@ func flagScope(cmd *cobra.Command, fill func([]string) []string) func(scope stri
 func writeRoot(fake *fakeEmporix, w *write) *cobra.Command { return writeRootOn(fake, w, false) }
 
 func writeRootOn(fake *fakeEmporix, w *write, terminal bool) *cobra.Command {
-	a := &app{getenv: func(key string) string { return fake.env()[key] }, timeout: defaultTimeout, terminal: terminal}
+	a := &app{getenv: func(key string) string { return fake.env()[key] }, timeout: defaultTimeout, inTerminal: terminal}
 	root := &cobra.Command{Use: "epx", SilenceErrors: true, SilenceUsage: true}
 	root.AddCommand(w.command(a))
 	applyExitPolicy(root)
@@ -185,7 +185,7 @@ func TestFormFilesCompleteFileNames(t *testing.T) {
 		{"schemas", "parse", "--json-schema", "s"},
 	} {
 		code, stdout, _ := runCLI(t, nil, append([]string{cobra.ShellCompRequestCmd}, args...)...)
-		if code != ExitOK || !strings.HasSuffix(stdout, ":0\n") {
+		if code != ExitOK || !strings.HasSuffix(stdout, fmt.Sprintf(":%d\n", cobra.ShellCompDirectiveDefault)) {
 			t.Errorf("%v: exit %d, completions %q; want file names", args, code, stdout)
 		}
 	}

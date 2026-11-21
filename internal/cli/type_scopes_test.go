@@ -56,7 +56,7 @@ func TestTypedCommandsRefuseWhatNoTypeIs(t *testing.T) {
 		}
 		typed = append(typed, cmd.CommandPath())
 		if slices.ContainsFunc(read, namesType) && !strings.Contains(strings.ReplaceAll(cmd.Long, "\n", " "),
-			"; an unknown one "+string(unscoped)+".") {
+			"; an unknown one "+unscoped.String()+".") {
 			t.Errorf("%s: help %q; want it to say what an unknown type gives", cmd.CommandPath(), cmd.Long)
 		}
 		for _, typ := range []string{"DOC MANAGE", "DOC.x", "a-b", "9X", "_X", "DÖC", "DOC%20X", "DOC\n"} {

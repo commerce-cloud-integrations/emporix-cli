@@ -80,19 +80,19 @@ const (
 )
 
 func priceModelWrites(a *app, models resource[priceModel]) []*cobra.Command {
-	at := models.at()
+	at := models.tenantCollection()
 	create, update, remove := (&collectionWrites{
 		at: at, one: "a price model", scopes: []string{priceModelManage}, language: stringsOrMaps, upsert: true,
-		create: "Creates the price model in --file, a JSON object with name, includesTax, includesMarkup, " +
+		createHelp: "Creates the price model in --file, a JSON object with name, includesTax, includesMarkup, " +
 			"measurementUnit and tierDefinition: tierType (BASIC, TIERED or VOLUME) and the minQuantity of " +
 			"each tier, e.g. " + literal(`{"name": {"en": "Per kilogram"}, "includesTax": true, `+
 			`"includesMarkup": false, "measurementUnit": {"quantity": 1, "unitCode": "kg"}, `+
 			`"tierDefinition": {"tierType": "BASIC", "tiers": [{"minQuantity": {"quantity": 0, `+
 			`"unitCode": "kg"}}]}}`) + ". Without an id, Emporix makes one, which the response gives.",
-		update: "Replaces the price model ID with the one in --file, a JSON object as " +
+		updateHelp: "Replaces the price model ID with the one in --file, a JSON object as " +
 			"`epx " + at.get + " -o json` prints it, or creates it with that id where none exists " +
 			"(an upsert).",
-		remove: "Deletes the price model ID. Emporix refuses a model that prices use (400 Bad Request, " +
+		deleteHelp: "Deletes the price model ID. Emporix refuses a model that prices use (400 Bad Request, " +
 			"exit 1) unless --force is given, which needs both scopes below and deletes those prices " +
 			"too: Emporix deletes them after the model, in the background. " + unknownAsDeleted("ID"),
 	}).writes()

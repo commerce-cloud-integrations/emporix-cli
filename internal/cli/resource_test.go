@@ -34,28 +34,28 @@ func runThings(t *testing.T, fake *fakeEmporix, args ...string) (code int, stdou
 		use: "vaults", under: "things", path: "/vaults", scopes: []string{"vault.manage"}, view: view,
 	}
 	parts := child[thing]{
-		use: "parts", scopes: []string{"part.read"}, fetch: listing{}, view: view,
+		sub: "parts", scopes: ownScopes{"part.read"}, fetch: listing{}, view: view,
 		query: url.Values{"all": {"true"}}, listQuery: url.Values{"expand": {"tags"}},
 	}
 	parts.legend = "NAME is a part's name."
-	keys := child[thing]{use: "keys", fetch: listing{}, view: view}
+	keys := child[thing]{sub: "keys", fetch: listing{}, view: view}
 	root.AddCommand(newResourceCommand(a, things,
 		childCommand(a, things, parts),
 		childItemCommand(a, things, parts, &childItem{
 			use: "named-part", short: "Show one part by name", long: "Reads one part of a thing by name.",
 			columns: []string{"NAME", "ID"},
 		}),
-		childCommand(a, things, child[thing]{use: "kin", fetch: listing{}, view: view}),
-		childCommand(a, things, child[thing]{use: "notes", scopes: []string{}, fetch: listing{}, view: view}),
+		childCommand(a, things, child[thing]{sub: "kin", fetch: listing{}, view: view}),
+		childCommand(a, things, child[thing]{sub: "notes", scopes: noScopes{}, fetch: listing{}, view: view}),
 		childCommand(a, things, child[thing]{
-			use: "secrets", scopes: []string{"secret.manage"}, fetch: listing{}, view: view,
+			sub: "secrets", scopes: ownScopes{"secret.manage"}, fetch: listing{}, view: view,
 		}),
 		childItemCommand(a, things, parts, &childItem{use: "part", short: "Show one part of a thing",
 			long: "Reads one part of a thing."}),
 		newResourceCommand(a, vaults,
 			childCommand(a, vaults, keys),
 			childItemCommand(a, vaults, keys, &childItem{use: "key", long: "Reads one key of a vault."}),
-			childCommand(a, vaults, child[thing]{use: "tags", scopes: []string{"tag.read"}, fetch: listing{}, view: view}),
+			childCommand(a, vaults, child[thing]{sub: "tags", scopes: ownScopes{"tag.read"}, fetch: listing{}, view: view}),
 		)))
 	applyExitPolicy(root)
 	var out bytes.Buffer

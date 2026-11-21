@@ -14,7 +14,7 @@ func orderWriteCases() []writeCase {
 	return []writeCase{
 		{
 			args: []string{"orders", "create"}, file: order, method: http.MethodPost, path: orders,
-			scopes: []string{"order.order_create"}, status: http.StatusCreated, body: `{"id":"O1001"}`,
+			scopes: []string{"order.order_create"}, status: http.StatusCreated, response: `{"id":"O1001"}`,
 			want: "{\n  \"id\": \"O1001\"\n}\n",
 		},
 		{
@@ -43,19 +43,19 @@ func orderWriteCases() []writeCase {
 			args:   []string{"orders", "add-entries", "O1001", "--store"},
 			file:   `{"entries":[{"productId":"100200","quantity":2},{"entryId":"e1","quantity":0}]}`,
 			method: http.MethodPost, path: orders + "/O1001/entries", query: "store=true", scopes: update,
-			status: http.StatusOK, body: `{"id":"O1001","status":"CREATED"}`,
+			status: http.StatusOK, response: `{"id":"O1001","status":"CREATED"}`,
 			want: "{\n  \"id\": \"O1001\",\n  \"status\": \"CREATED\"\n}\n",
 		},
 		{
 			args: []string{"orders", "recalculate", "O1001"}, file: `{"entries":[{"entryId":"e1","deliveredAmount":10}]}`,
 			method: http.MethodPost, path: orders + "/O1001/calculations", scopes: update, status: http.StatusOK,
-			body: "Order with id: O1001 calculated successfully",
-			want: "\"Order with id: O1001 calculated successfully\"\n",
+			response: "Order with id: O1001 calculated successfully",
+			want:     "\"Order with id: O1001 calculated successfully\"\n",
 		},
 		{
 			args: []string{"orders", "split", "O1001"}, sent: `{"splitBy":"VENDOR_ID"}`, method: http.MethodPost,
 			path: orders + "/O1001/split", scopes: update, status: http.StatusOK,
-			body: `{"masterOrder":"O1001","splitBy":"VENDOR_ID","subOrders":[{"id":"O1002","uniqueValue":"V1"}]}`,
+			response: `{"masterOrder":"O1001","splitBy":"VENDOR_ID","subOrders":[{"id":"O1002","uniqueValue":"V1"}]}`,
 			want: "{\n  \"masterOrder\": \"O1001\",\n  \"splitBy\": \"VENDOR_ID\",\n  \"subOrders\": [\n    {\n" +
 				"      \"id\": \"O1002\",\n      \"uniqueValue\": \"V1\"\n    }\n  ]\n}\n",
 		},
@@ -72,7 +72,7 @@ func invoiceJobWriteCases() []writeCase {
 		{
 			args: []string{"invoice-jobs", "create", "--type", "MANUAL", "--order", "O1001", "--order", "O1002"},
 			sent: `{"jobType":"MANUAL","orderIds":["O1001","O1002"]}`, method: http.MethodPost,
-			path: "/invoice/acme1/jobs/invoices", scopes: invoice, status: http.StatusCreated, body: `{"jobId":"J1"}`,
+			path: "/invoice/acme1/jobs/invoices", scopes: invoice, status: http.StatusCreated, response: `{"jobId":"J1"}`,
 			want: "{\n  \"jobId\": \"J1\"\n}\n",
 		},
 		{

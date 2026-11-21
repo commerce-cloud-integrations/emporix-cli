@@ -18,8 +18,8 @@ func (tt *writeCase) confirmation(t *testing.T) (answers map[string]bool, questi
 		t.Fatalf("%q: a delete case states what confirms it (confirmBy)", tt.args)
 	}
 	deletes := "It cannot be undone"
-	if tt.many != "" {
-		deletes = "It deletes " + deletesMany(tt.many) + " and cannot be undone"
+	if tt.deletedMany != "" {
+		deletes = "It deletes " + deletesMany(tt.deletedMany) + " and cannot be undone"
 	}
 	word := tt.confirmBy
 	return map[string]bool{"y\n": false, "yes\n": false, "": false, "\n": false, word + "x\n": false,

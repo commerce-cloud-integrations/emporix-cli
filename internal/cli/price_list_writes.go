@@ -16,19 +16,19 @@ func priceListLanguageHelp() string {
 }
 
 func priceListWrites(a *app, lists resource[priceList]) []*cobra.Command {
-	at := lists.at()
+	at := lists.tenantCollection()
 	create, update, remove := (&collectionWrites{
 		at: at, one: "a price list", scopes: []string{priceListManage}, language: stringsOrMaps,
 		languageHelp: priceListLanguageHelp(), upsert: true,
-		create: "Creates the price list in --file, a JSON object with name, currency, siteCode and validity " +
+		createHelp: "Creates the price list in --file, a JSON object with name, currency, siteCode and validity " +
 			"(from and to), and optionally countries or regions, and customerGroups or legalEntityId, " +
 			"e.g. " + literal(`{"name": {"en": "Wholesale"}, "currency": "EUR", "siteCode": "AcmeStore_NL", `+
 			`"countries": ["NL"], "validity": {"from": "2026-01-01T00:00:00.000Z"}}`) + ". Without an id, Emporix " +
 			"makes one, which the response gives.",
-		update: "Replaces the price list ID with the one in --file, a JSON object as " +
+		updateHelp: "Replaces the price list ID with the one in --file, a JSON object as " +
 			"`epx " + at.get + " -o json` prints it, or creates it with that id where none exists " +
 			"(an upsert).",
-		remove: "Deletes the price list ID and the prices in it, which Emporix deletes after it, in the " +
+		deleteHelp: "Deletes the price list ID and the prices in it, which Emporix deletes after it, in the " +
 			"background. " + unknownAsDeleted("ID"),
 	}).writes()
 	remove.deletes = deletion{many: "the price list and every price in it"}
@@ -42,14 +42,15 @@ func priceListPriceWrites(a *app, pricesOf resource[priceList], prices child[pri
 	const shape = "a JSON object with itemId (itemType and id) and " + tierValuesHelp
 	return (&collectionWrites{
 		at: at, one: "a price of a price list", scopes: []string{priceListManage}, upsert: true,
-		create: "Adds the price in --file to the price list PRICE_LIST_ID, in its currency: " + shape + ", e.g. " + literal(
+		createHelp: "Adds the price in --file to the price list PRICE_LIST_ID, in its currency: " + shape +
+			", e.g. " + literal(
 			`{"itemId": {"itemType": "PRODUCT", "id": "100200"}, "priceModelId": "pm1", `+
 				`"tierValues": [{"id": "t1", "priceValue": 15.90}]}`) + ". Without an id, Emporix makes one, which the " +
 			"response gives. " + of,
-		update: "Replaces the price ID of the price list PRICE_LIST_ID with the one in --file, a JSON object " +
+		updateHelp: "Replaces the price ID of the price list PRICE_LIST_ID with the one in --file, a JSON object " +
 			"as `epx " + at.get + " -o json` prints it, or creates it with that id where none exists " +
 			"(an upsert). " + of + " " + id,
-		remove: "Deletes the price ID of the price list PRICE_LIST_ID. " + unknownAsDeleted("ID") + " " + of + " " + id,
+		deleteHelp: "Deletes the price ID of the price list PRICE_LIST_ID. " + unknownAsDeleted("ID") + " " + of + " " + id,
 		bulk: &bulkWrites{
 			nouns: "prices of a price list", maxItems: 200, deleteWhole: true,
 			create: "Adds the prices in --file to the price list PRICE_LIST_ID: a JSON array of prices, each " +

@@ -13,11 +13,11 @@ func aiJobReads() []readCase {
 		{"conversationId":"19:def@thread.v2","agentId":"helper"}]`
 	return []readCase{
 		{
-			args:    []string{"ai", "jobs", "list"},
-			path:    "/ai-service/acme1/jobs",
-			scopes:  []string{scope},
-			filters: listFilters{kinds: filterable},
-			body:    jobs,
+			args:     []string{"ai", "jobs", "list"},
+			path:     "/ai-service/acme1/jobs",
+			scopes:   []string{scope},
+			filters:  listFilters{kinds: filterable},
+			response: jobs,
 			want: "ID     TYPE        STATUS       AGENT            SESSION  EVENT          CREATED\n" +
 				"job-1  AGENT_CHAT  success      complaint-agent  sess-1   order.created  2026-09-01T10:30:27Z\n" +
 				"job-2  EXPORT      in_progress                                           \n",
@@ -27,40 +27,40 @@ func aiJobReads() []readCase {
 			path:   "/ai-service/acme1/jobs/job-2",
 			scopes: []string{scope},
 			mode:   getWhole,
-			body: `{"id":"job-2","type":"IMPORT","status":"failure","importResult":{"message":"1 failed"},
+			response: `{"id":"job-2","type":"IMPORT","status":"failure","importResult":{"message":"1 failed"},
 				"metadata":{"createdAt":"2026-09-03T07:00:00Z"}}`,
 			want: "ID     TYPE    STATUS   AGENT  SESSION  EVENT  CREATED\n" +
 				"job-2  IMPORT  failure                         2026-09-03T07:00:00Z\n",
 		},
 		{
-			args:    []string{"ai", "jobs", "search", "--query", "status:failure"},
-			path:    "/ai-service/acme1/jobs/search",
-			scopes:  []string{scope},
-			filters: listFilters{kinds: sortable},
-			method:  http.MethodPost,
-			sent:    `{"q":"status:failure"}`,
-			body:    `[{"id":"job-3","type":"AGENT_CHAT","status":"failure","agentId":"helper"}]`,
+			args:        []string{"ai", "jobs", "search", "--query", "status:failure"},
+			path:        "/ai-service/acme1/jobs/search",
+			scopes:      []string{scope},
+			filters:     listFilters{kinds: sortable},
+			method:      http.MethodPost,
+			requestBody: `{"q":"status:failure"}`,
+			response:    `[{"id":"job-3","type":"AGENT_CHAT","status":"failure","agentId":"helper"}]`,
 			want: "ID     TYPE        STATUS   AGENT   SESSION  EVENT  CREATED\n" +
 				"job-3  AGENT_CHAT  failure  helper                  \n",
 		},
 		{
-			args:    []string{"ai", "conversations", "list"},
-			path:    "/ai-service/acme1/agentic/conversations",
-			scopes:  []string{scope},
-			filters: listFilters{kinds: filterable},
-			body:    conversations,
+			args:     []string{"ai", "conversations", "list"},
+			path:     "/ai-service/acme1/agentic/conversations",
+			scopes:   []string{scope},
+			filters:  listFilters{kinds: filterable},
+			response: conversations,
 			want: "ID                   NAME     AGENT            SESSION  LAST MESSAGE\n" +
 				"19:abc@thread.tacv2  Support  complaint-agent  sess-1   2026-09-02T08:00:00Z\n" +
 				"19:def@thread.v2              helper                    \n",
 		},
 		{
-			args:    []string{"ai", "conversations", "search"},
-			path:    "/ai-service/acme1/agentic/conversations/search",
-			scopes:  []string{scope},
-			filters: listFilters{kinds: sortable},
-			method:  http.MethodPost,
-			sent:    `{"q":""}`,
-			body:    `[{"conversationId":"19:def@thread.v2","conversationName":"Sales","agentId":"helper"}]`,
+			args:        []string{"ai", "conversations", "search"},
+			path:        "/ai-service/acme1/agentic/conversations/search",
+			scopes:      []string{scope},
+			filters:     listFilters{kinds: sortable},
+			method:      http.MethodPost,
+			requestBody: `{"q":""}`,
+			response:    `[{"conversationId":"19:def@thread.v2","conversationName":"Sales","agentId":"helper"}]`,
 			want: "ID                NAME   AGENT   SESSION  LAST MESSAGE\n" +
 				"19:def@thread.v2  Sales  helper           \n",
 		},
@@ -80,11 +80,11 @@ func aiLogReads() []readCase {
 		"metadata":{"createdAt":"2026-09-01T10:30:27Z"}},{"sessionId":"sess-2","severity":"ERROR"}]`
 	return []readCase{
 		{
-			args:    []string{"ai", "logs", "requests", "list"},
-			path:    "/ai-service/acme1/agentic/logs/requests",
-			scopes:  []string{scope},
-			filters: listFilters{kinds: filterable},
-			body:    requests,
+			args:     []string{"ai", "logs", "requests", "list"},
+			path:     "/ai-service/acme1/agentic/logs/requests",
+			scopes:   []string{scope},
+			filters:  listFilters{kinds: filterable},
+			response: requests,
 			want: "ID     REQUEST  SESSION  AGENT            SEVERITY  MESSAGES  SECONDS  CREATED\n" +
 				"log-1  req-1    sess-1   complaint-agent  WARNING   2         45       2026-09-01T10:30:27Z\n" +
 				"log-2  req-2    sess-1                              0                  \n" +
@@ -95,50 +95,50 @@ func aiLogReads() []readCase {
 			path:   "/ai-service/acme1/agentic/logs/requests/log-1",
 			scopes: []string{scope},
 			mode:   getWhole,
-			body: `{"id":"log-1","requestId":"req-1","sessionId":"sess-1","triggerAgentId":"helper","severity":"ERROR",
+			response: `{"id":"log-1","requestId":"req-1","sessionId":"sess-1","triggerAgentId":"helper","severity":"ERROR",
 				"duration":3}`,
 			want: "ID     REQUEST  SESSION  AGENT   SEVERITY  MESSAGES  SECONDS  CREATED\n" +
 				"log-1  req-1    sess-1   helper  ERROR               3        \n",
 		},
 		{
-			args:    []string{"ai", "logs", "requests", "search", "--query", "severity:ERROR"},
-			path:    "/ai-service/acme1/agentic/logs/requests/search",
-			scopes:  []string{scope},
-			filters: listFilters{kinds: sortable},
-			method:  http.MethodPost,
-			sent:    `{"q":"severity:ERROR"}`,
-			body: `[{"id":"log-4","requestId":"req-4","sessionId":"sess-2","severity":"ERROR",
+			args:        []string{"ai", "logs", "requests", "search", "--query", "severity:ERROR"},
+			path:        "/ai-service/acme1/agentic/logs/requests/search",
+			scopes:      []string{scope},
+			filters:     listFilters{kinds: sortable},
+			method:      http.MethodPost,
+			requestBody: `{"q":"severity:ERROR"}`,
+			response: `[{"id":"log-4","requestId":"req-4","sessionId":"sess-2","severity":"ERROR",
 				"messages":[{"message":"Failed"}]}]`,
 			want: "ID     REQUEST  SESSION  AGENT  SEVERITY  MESSAGES  SECONDS  CREATED\n" +
 				"log-4  req-4    sess-2          ERROR     1                  \n",
 		},
 		{
-			args:    []string{"ai", "logs", "sessions", "list"},
-			path:    "/ai-service/acme1/agentic/logs/sessions",
-			scopes:  []string{scope},
-			filters: listFilters{kinds: filterable},
-			body:    sessions,
+			args:     []string{"ai", "logs", "sessions", "list"},
+			path:     "/ai-service/acme1/agentic/logs/sessions",
+			scopes:   []string{scope},
+			filters:  listFilters{kinds: filterable},
+			response: sessions,
 			want: "ID      AGENT            SEVERITY  MESSAGES  SECONDS  CREATED\n" +
 				"sess-1  complaint-agent  INFO      1         120      2026-09-01T10:30:27Z\n" +
 				"sess-2                   ERROR                        \n",
 		},
 		{
-			args:   []string{"ai", "logs", "sessions", "get", "sess-1"},
-			path:   "/ai-service/acme1/agentic/logs/sessions/sess-1",
-			scopes: []string{scope},
-			mode:   getWhole,
-			body:   `{"sessionId":"sess-1","triggerAgentId":"helper","severity":"INFO","messages":[{},{}],"duration":7}`,
+			args:     []string{"ai", "logs", "sessions", "get", "sess-1"},
+			path:     "/ai-service/acme1/agentic/logs/sessions/sess-1",
+			scopes:   []string{scope},
+			mode:     getWhole,
+			response: `{"sessionId":"sess-1","triggerAgentId":"helper","severity":"INFO","messages":[{},{}],"duration":7}`,
 			want: "ID      AGENT   SEVERITY  MESSAGES  SECONDS  CREATED\n" +
 				"sess-1  helper  INFO      2         7        \n",
 		},
 		{
-			args:    []string{"ai", "logs", "sessions", "search", "--query", "triggerAgentId:helper"},
-			path:    "/ai-service/acme1/agentic/logs/sessions/search",
-			scopes:  []string{scope},
-			filters: listFilters{kinds: sortable},
-			method:  http.MethodPost,
-			sent:    `{"q":"triggerAgentId:helper"}`,
-			body:    `[{"sessionId":"sess-3","triggerAgentId":"helper","severity":"INFO"}]`,
+			args:        []string{"ai", "logs", "sessions", "search", "--query", "triggerAgentId:helper"},
+			path:        "/ai-service/acme1/agentic/logs/sessions/search",
+			scopes:      []string{scope},
+			filters:     listFilters{kinds: sortable},
+			method:      http.MethodPost,
+			requestBody: `{"q":"triggerAgentId:helper"}`,
+			response:    `[{"sessionId":"sess-3","triggerAgentId":"helper","severity":"INFO"}]`,
 			want: "ID      AGENT   SEVERITY  MESSAGES  SECONDS  CREATED\n" +
 				"sess-3  helper  INFO                         \n",
 		},
@@ -153,22 +153,22 @@ func aiAnalyticsReads() []readCase {
 		"sessionTrend":[{"date":"2026-09-07T00:00:00Z","totalSessions":10,"errorSessions":1,"errorRate":0.1}]}`
 	return []readCase{
 		{
-			args:   []string{"ai", "analytics", "tenant"},
-			path:   "/ai-service/acme1/agentic/analytics",
-			scopes: []string{scope},
-			mode:   getWhole,
-			body:   totals,
+			args:     []string{"ai", "analytics", "tenant"},
+			path:     "/ai-service/acme1/agentic/analytics",
+			scopes:   []string{scope},
+			mode:     getWhole,
+			response: totals,
 			want: "LOGS      TOTAL  WARNING  ERROR  ERROR RATE\n" +
 				"requests  120    15       5      0.0417\n" +
 				"sessions  40     1        2      0.05\n",
 		},
 		{
-			args:   []string{"ai", "analytics", "agent", "complaint-agent"},
-			path:   "/ai-service/acme1/agentic/analytics",
-			query:  "agentId=complaint-agent",
-			scopes: []string{scope},
-			mode:   getWhole,
-			body:   `{"requests":{"total":0,"bySeverity":{"error":0}},"sessions":{"total":0}}`,
+			args:     []string{"ai", "analytics", "agent", "complaint-agent"},
+			path:     "/ai-service/acme1/agentic/analytics",
+			query:    "agentId=complaint-agent",
+			scopes:   []string{scope},
+			mode:     getWhole,
+			response: `{"requests":{"total":0,"bySeverity":{"error":0}},"sessions":{"total":0}}`,
 			want: "LOGS      TOTAL  WARNING  ERROR  ERROR RATE\n" +
 				"requests  0               0      \n" +
 				"sessions  0                      \n",
@@ -179,7 +179,7 @@ func aiAnalyticsReads() []readCase {
 			query:  "agentIds=complaint-agent%2Chelper",
 			scopes: []string{scope},
 			mode:   getWhole,
-			body: `{"granularity":"QUARTER","periods":[{"label":"2026-Q2","start":"2026-04-01T00:00:00Z",
+			response: `{"granularity":"QUARTER","periods":[{"label":"2026-Q2","start":"2026-04-01T00:00:00Z",
 				"end":"2026-07-01T00:00:00Z"},{"label":"2026-Q3","start":"2026-07-01T00:00:00Z","end":"2026-10-01T00:00:00Z"}],
 				"series":[{"agentId":"complaint-agent","counts":[12,3]},{"agentId":"helper","counts":[0,null]}]}`,
 			want: "AGENT            PERIOD   FROM                  TO                    EXECUTIONS\n" +
@@ -194,7 +194,7 @@ func aiAnalyticsReads() []readCase {
 			query:  "agentIds=helper&granularity=MONTH",
 			scopes: []string{scope},
 			mode:   getWhole,
-			body: `{"granularity":"MONTH","periods":[{"label":"2026-09","start":"2026-09-01T00:00:00Z",
+			response: `{"granularity":"MONTH","periods":[{"label":"2026-09","start":"2026-09-01T00:00:00Z",
 				"end":"2026-10-01T00:00:00Z"}],"series":[{"agentId":"helper","counts":[4]}]}`,
 			want: "AGENT   PERIOD   FROM                  TO                    EXECUTIONS\n" +
 				"helper  2026-09  2026-09-01T00:00:00Z  2026-10-01T00:00:00Z  4\n",

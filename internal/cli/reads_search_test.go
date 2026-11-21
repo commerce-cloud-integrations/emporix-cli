@@ -18,11 +18,11 @@ func searchReads() []readCase {
 		{"id":"all-parts","type":"part","indexId":"parts","filters":{"field":"code","operator":"EXISTS"}}]`
 	return []readCase{
 		{
-			args:    []string{"search", "indexes", "list", "--language", "nl"},
-			path:    "/search/acme1/search/indexes",
-			scopes:  []string{scope},
-			filters: listFilters{kinds: filterable},
-			body:    indexes,
+			args:     []string{"search", "indexes", "list", "--language", "nl"},
+			path:     "/search/acme1/search/indexes",
+			scopes:   []string{scope},
+			filters:  listFilters{kinds: filterable},
+			response: indexes,
 			want: "ID        TYPE     NAME        STATUS    FIELDS              VERSION\n" +
 				"vehicles  vehicle  Voertuigen  ready     name, mixins.power  2\n" +
 				"parts     part     Teile (de)  building                      \n",
@@ -32,7 +32,7 @@ func searchReads() []readCase {
 			path:    "/search/acme1/search/vehicle/indexes",
 			scopes:  []string{scope},
 			filters: listFilters{kinds: filterable},
-			body: `[{"id":"vehicles","type":"vehicle","name":{"en":"Vehicles"},"status":"failed","fields":[
+			response: `[{"id":"vehicles","type":"vehicle","name":{"en":"Vehicles"},"status":"failed","fields":[
 				{"path":"name"},{"path":"description"},{"path":"mixins.engine.power"},{"path":"mixins.engine.fuel"}]}]`,
 			want: "ID        TYPE     NAME      STATUS  FIELDS                                                      VERSION\n" +
 				"vehicles  vehicle  Vehicles  failed  name, description, mixins.engine.power, mixins.engine.fuel  \n",
@@ -42,27 +42,27 @@ func searchReads() []readCase {
 			path:   "/search/acme1/search/vehicle/indexes/vehicles",
 			scopes: []string{scope},
 			mode:   getWhole,
-			body: `{"id":"vehicles","type":"vehicle","name":{"en":"Vehicles","de":"Fahrzeuge"},"status":"ready",
+			response: `{"id":"vehicles","type":"vehicle","name":{"en":"Vehicles","de":"Fahrzeuge"},"status":"ready",
 				"fields":[{"path":"name"}],"metadata":{"version":3}}`,
 			want: "ID        TYPE     NAME       STATUS  FIELDS  VERSION\n" +
 				"vehicles  vehicle  Fahrzeuge  ready   name    3\n",
 		},
 		{
-			args:    []string{"search", "queries", "list", "--language", "nl"},
-			path:    "/search/acme1/search/queries",
-			scopes:  []string{scope},
-			filters: listFilters{kinds: filterable},
-			body:    queries,
+			args:     []string{"search", "queries", "list", "--language", "nl"},
+			path:     "/search/acme1/search/queries",
+			scopes:   []string{scope},
+			filters:  listFilters{kinds: filterable},
+			response: queries,
 			want: "ID         TYPE     NAME         INDEX     VERSION\n" +
 				"red-cars   vehicle  Rode auto's  vehicles  1\n" +
 				"all-parts  part                  parts     \n",
 		},
 		{
-			args:    []string{"search", "queries", "for-type", "part", "--language", "en"},
-			path:    "/search/acme1/search/part/queries",
-			scopes:  []string{scope},
-			filters: listFilters{kinds: filterable},
-			body:    `[{"id":"all-parts","type":"part","name":{"en":"All parts"},"indexId":"parts"}]`,
+			args:     []string{"search", "queries", "for-type", "part", "--language", "en"},
+			path:     "/search/acme1/search/part/queries",
+			scopes:   []string{scope},
+			filters:  listFilters{kinds: filterable},
+			response: `[{"id":"all-parts","type":"part","name":{"en":"All parts"},"indexId":"parts"}]`,
 			want: "ID         TYPE  NAME       INDEX  VERSION\n" +
 				"all-parts  part  All parts  parts  \n",
 		},
@@ -71,7 +71,8 @@ func searchReads() []readCase {
 			path:   "/search/acme1/search/vehicle/queries/red-cars",
 			scopes: []string{scope},
 			mode:   getWhole,
-			body:   `{"id":"red-cars","type":"vehicle","name":{"en":"Red cars"},"indexId":"vehicles","metadata":{"version":2}}`,
+			response: `{"id":"red-cars","type":"vehicle","name":{"en":"Red cars"},"indexId":"vehicles",` +
+				`"metadata":{"version":2}}`,
 			want: "ID        TYPE     NAME      INDEX     VERSION\n" +
 				"red-cars  vehicle  Red cars  vehicles  2\n",
 		},
@@ -80,17 +81,17 @@ func searchReads() []readCase {
 			path:    "/search/acme1/search/legal-entity/indexes",
 			scopes:  []string{scope},
 			filters: listFilters{kinds: filterable},
-			body: `[{"id":"companies","type":"legal-entity","name":{"en":"Companies"},"status":"ready",
+			response: `[{"id":"companies","type":"legal-entity","name":{"en":"Companies"},"status":"ready",
 				"fields":[{"path":"name","text":true}]}]`,
 			want: "ID         TYPE          NAME       STATUS  FIELDS  VERSION\n" +
 				"companies  legal-entity  Companies  ready   name    \n",
 		},
 		{
-			args:   []string{"search", "queries", "get", "customer", "by-city", "--language", "en"},
-			path:   "/search/acme1/search/customer/queries/by-city",
-			scopes: []string{scope},
-			mode:   getWhole,
-			body:   `{"id":"by-city","type":"customer","name":{"en":"By city"},"indexId":"customers"}`,
+			args:     []string{"search", "queries", "get", "customer", "by-city", "--language", "en"},
+			path:     "/search/acme1/search/customer/queries/by-city",
+			scopes:   []string{scope},
+			mode:     getWhole,
+			response: `{"id":"by-city","type":"customer","name":{"en":"By city"},"indexId":"customers"}`,
 			want: "ID       TYPE      NAME     INDEX      VERSION\n" +
 				"by-city  customer  By city  customers  \n",
 		},
@@ -101,12 +102,12 @@ func searchJobReads() []readCase {
 	const scope = "search.search_read"
 	return []readCase{
 		{
-			args:    []string{"search", "jobs", "list", "--query", "status:success"},
-			path:    "/search/acme1/jobs",
-			query:   "q=status%3Asuccess",
-			scopes:  []string{scope},
-			filters: listFilters{kinds: filterable},
-			body:    `[{"id":"66f1a2b3c4d5e6f708192a3b","status":"success","type":"create_index","indexId":"vehicles"}]`,
+			args:     []string{"search", "jobs", "list", "--query", "status:success"},
+			path:     "/search/acme1/jobs",
+			query:    "q=status%3Asuccess",
+			scopes:   []string{scope},
+			filters:  listFilters{kinds: filterable},
+			response: `[{"id":"66f1a2b3c4d5e6f708192a3b","status":"success","type":"create_index","indexId":"vehicles"}]`,
 			want: "ID                        TYPE          STATUS   INDEX     CREATED  MODIFIED  RESULT\n" +
 				"66f1a2b3c4d5e6f708192a3b  create_index  success  vehicles                     \n",
 		},
@@ -115,7 +116,7 @@ func searchJobReads() []readCase {
 			path:    "/search/acme1/jobs",
 			scopes:  []string{scope},
 			filters: listFilters{kinds: filterable},
-			body: `[{"id":"66f1a2b3c4d5e6f708192a3b","status":"success","type":"create_index","indexId":"vehicles",
+			response: `[{"id":"66f1a2b3c4d5e6f708192a3b","status":"success","type":"create_index","indexId":"vehicles",
 				"message":"Creating index vehicles","response":"Index created.","metadata":{"version":2,
 				"createdAt":"2026-03-12T10:00:00.000Z","modifiedAt":"2026-03-12T10:04:00.000Z"}},
 				{"id":"66f1a2b3c4d5e6f708192a3c","status":"in_progress","type":"update_index","indexId":"parts",
@@ -132,7 +133,7 @@ func searchJobReads() []readCase {
 			path:   "/search/acme1/jobs/66f1a2b3c4d5e6f708192a3b",
 			scopes: []string{scope},
 			mode:   getWhole,
-			body: `{"id":"66f1a2b3c4d5e6f708192a3b","status":"failure","type":"delete_index","indexId":"parts",
+			response: `{"id":"66f1a2b3c4d5e6f708192a3b","status":"failure","type":"delete_index","indexId":"parts",
 				"response":"The index could not be deleted because the search engine did not answer in time."}`,
 			want: "ID                        TYPE          STATUS   INDEX  CREATED  MODIFIED  RESULT\n" +
 				"66f1a2b3c4d5e6f708192a3b  delete_index  failure  parts                     " +
@@ -146,13 +147,13 @@ func searchExportReads() []readCase {
 		{
 			args: []string{"search", "indexes", "export", "--index", "vehicle/vehicles", "--index", "two/part/bikes",
 				"--allow-write-scope"},
-			path:   "/search/acme1/search/indexes/export",
-			scopes: []string{"search.search_manage"},
-			mode:   getWhole,
-			method: http.MethodPost,
-			sent:   `[{"type":"vehicle","id":"vehicles"},{"type":"two/part","id":"bikes"}]`,
-			body:   `{"exportedAt":"2026-03-12T10:00:00.000Z","data":"W10="}`,
-			want:   "DATA  EXPORTED AT\nW10=  2026-03-12T10:00:00.000Z\n",
+			path:        "/search/acme1/search/indexes/export",
+			scopes:      []string{"search.search_manage"},
+			mode:        getWhole,
+			method:      http.MethodPost,
+			requestBody: `[{"type":"vehicle","id":"vehicles"},{"type":"two/part","id":"bikes"}]`,
+			response:    `{"exportedAt":"2026-03-12T10:00:00.000Z","data":"W10="}`,
+			want:        "DATA  EXPORTED AT\nW10=  2026-03-12T10:00:00.000Z\n",
 		},
 	}
 }

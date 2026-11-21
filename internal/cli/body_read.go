@@ -16,7 +16,7 @@ import (
 
 type bodyRead struct {
 	method             string
-	created            bool
+	acceptCreated      bool
 	body               readBinder
 	fetch              fetcher
 	forbiddenIsRefusal bool
@@ -30,17 +30,13 @@ const bodyFlag = "body"
 
 const maxBodyFileBytes = 1 << 20
 
-func (b bodyRead) bind(cmd *cobra.Command) (readFunc, shape) {
-	var body readBinder = objectBody{}
-	if b.body != nil {
-		body = b.body
-	}
+func (b bodyRead) bind(cmd *cobra.Command) boundRead {
 	if b.forbiddenIsRefusal {
 		checkRefusalHelp(cmd)
 	}
-	made, sends := body.bindRead(cmd)
-	cmd.Long += "\n\n" + changesNothing(b.method, sends)
-	read, items := b.fetch.bind(cmd)
+	made, sends := b.body.bindRead(cmd)
+	inner := b.fetch.bind(cmd)
+	read := inner.read
 	sent := func(c *emporix.Client, ctx context.Context, path string, query url.Values) (json.RawMessage, error) {
 		body, err := made(ctx)
 		if err != nil {
@@ -50,7 +46,7 @@ func (b bodyRead) bind(cmd *cobra.Command) (readFunc, shape) {
 		if err != nil {
 			return nil, err
 		}
-		if b.created {
+		if b.acceptCreated {
 			sending = sending.AcceptCreated()
 		}
 		if b.forbiddenIsRefusal {
@@ -58,7 +54,7 @@ func (b bodyRead) bind(cmd *cobra.Command) (readFunc, shape) {
 		}
 		return read(sending, ctx, path, query)
 	}
-	return sent, items
+	return boundRead{read: sent, items: inner.items, help: joinParagraphs(changesNothing(b.method, sends), inner.help)}
 }
 
 type readBinder interface {

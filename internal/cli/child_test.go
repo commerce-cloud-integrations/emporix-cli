@@ -67,13 +67,11 @@ func TestChildSearch(t *testing.T) {
 	stores := resource[thing]{
 		use: "stores", under: "things", path: "/stores/{site}", scopes: []string{"store.read"}, view: thingView(),
 	}
-	shelves := child[thing]{
-		use: "shelves", sub: "racks", query: url.Values{"expand": {"bins"}},
-		fetch: listing{filters: listFilters{kinds: filterable}},
-		view:  thingView(),
-	}
-	search := childSearchCommand(a, stores, shelves, "Search shelves", "Reads the shelves a q filter finds.",
-		queryField())
+	shelves := listedChildOf(listing{filters: listFilters{kinds: filterable}}, child[thing]{
+		use: "shelves", sub: "racks", query: url.Values{"expand": {"bins"}}, view: thingView(),
+	})
+	search := childSearchCommand(a, stores, shelves, &childSearch{short: "Search shelves",
+		long: "Reads the shelves a q filter finds.", fields: []bodyField{queryField()}})
 	if want := "search-shelves THING_ID"; search.Use != want {
 		t.Errorf("use %q, want %q", search.Use, want)
 	}
@@ -95,17 +93,6 @@ func TestChildSearch(t *testing.T) {
 	assertQueries(t, fake.gets, "/stores/main/s%201/racks/search", url.Values{"expand": {"bins"}, "sort": {"name"}})
 	fake.assertSent(t, http.MethodPost, `{"q":"id:x1"}`)
 	fake.assertScopes(t, "store.read")
-}
-
-func TestChildSearchNeedsAListedChild(t *testing.T) {
-	defer func() {
-		if got := recover(); got != "search-shelves: only a listed child collection has a search" {
-			t.Fatalf("recovered %v; want the declaration named", got)
-		}
-	}()
-	stores := resource[thing]{use: "stores", path: "/stores", view: thingView()}
-	shelves := child[thing]{use: "shelves", fetch: single{items: oneItem}, view: thingView()}
-	childSearchCommand(&app{}, stores, shelves, "", "")
 }
 
 func TestChildItemReadsWithTheChildsScopes(t *testing.T) {
@@ -242,14 +229,4 @@ func TestSegmentItemTypeIsAChoice(t *testing.T) {
 		!strings.Contains(stdout, "c1  s1       CATEGORY") {
 		t.Fatalf("CATEGORY: exit %d, stdout %q, error %q", code, stdout, stderr)
 	}
-}
-
-func TestChildGroupNeedsANestedParent(t *testing.T) {
-	defer func() {
-		if got := recover(); got != "thing: a child in a group of its own is below a nested parent" {
-			t.Fatalf("recovered %v; want the declaration named", got)
-		}
-	}()
-	stores := resource[thing]{use: "stores", path: "/stores", view: thingView()}
-	newChildGroup(&app{}, stores, child[thing]{use: listUse, fetch: listing{}, view: thingView()}, &childGroup{})
 }

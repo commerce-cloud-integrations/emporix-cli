@@ -8,11 +8,11 @@ func utilityReads() []readCase {
 		"preText":null,"postText":null,"numberOfDigits":4,"counter":109,"maxValue":null,"metadata":null,"placeholders":null}]`
 	return []readCase{
 		{
-			args:   []string{"sequential-ids", "list"},
-			path:   "/sequential-id/acme1/schemas",
-			scopes: []string{scope},
-			mode:   getWhole,
-			body:   schemas,
+			args:     []string{"sequential-ids", "list"},
+			path:     "/sequential-id/acme1/schemas",
+			scopes:   []string{scope},
+			mode:     getWhole,
+			response: schemas,
 			want: "ID                        TYPE                NAME       ACTIVE  PREFIX        DIGITS  SUFFIX  COUNTER  " +
 				"MAX\n" +
 				"6512a0f3c1d2e3f4a5b6c7d8  orderNoSequence     Orders     true    EC-__year__-  9       -D      45684    " +
@@ -25,7 +25,7 @@ func utilityReads() []readCase {
 			path:   "/sequential-id/acme1/schemas/6512a0f3c1d2e3f4a5b6c7d8",
 			scopes: []string{scope},
 			mode:   getWhole,
-			body: `{"id":"6512a0f3c1d2e3f4a5b6c7d8","name":"Orders","schemaType":"orderNoSequence","active":true,
+			response: `{"id":"6512a0f3c1d2e3f4a5b6c7d8","name":"Orders","schemaType":"orderNoSequence","active":true,
 				"preText":"EC-","numberOfDigits":9,"counter":0,"maxValue":99}`,
 			want: "ID                        TYPE             NAME    ACTIVE  PREFIX  DIGITS  SUFFIX  COUNTER  MAX\n" +
 				"6512a0f3c1d2e3f4a5b6c7d8  orderNoSequence  Orders  true    EC-     9               0        99\n",
@@ -35,7 +35,7 @@ func utilityReads() []readCase {
 			path:   "/sequential-id/acme1/schemas/types/orderNoSequence",
 			scopes: []string{scope},
 			mode:   getWhole,
-			body: `[{"id":"6512a0f3c1d2e3f4a5b6c7d8","name":"Orders","schemaType":"orderNoSequence","active":true,
+			response: `[{"id":"6512a0f3c1d2e3f4a5b6c7d8","name":"Orders","schemaType":"orderNoSequence","active":true,
 				"numberOfDigits":9,"counter":7}]`,
 			want: "ID                        TYPE             NAME    ACTIVE  PREFIX  DIGITS  SUFFIX  COUNTER  MAX\n" +
 				"6512a0f3c1d2e3f4a5b6c7d8  orderNoSequence  Orders  true            9               7        \n",
@@ -46,7 +46,7 @@ func utilityReads() []readCase {
 			scopes:  []string{"changelog.changelog_read"},
 			mode:    getAllPageObjects,
 			filters: listFilters{kinds: queryable},
-			body: `{"items":[{"at":"2026-10-01T13:01:29.123Z","type":"update","entity":"order","entityId":"EON1001",
+			response: `{"items":[{"at":"2026-10-01T13:01:29.123Z","type":"update","entity":"order","entityId":"EON1001",
 				"paths":{"status":{"before":"CREATED","after":"CONFIRMED"},"mixins.payment.token":{"after":"S1"}},
 				"actor":"Jane Doe"},{"at":"2026-10-02T10:00:00.000Z","type":"create","entity":"product","entityId":"100200",
 				"name":"Monkey wrench","actor":"system"}],"page":1,"size":100,"totalElements":2,"totalPages":1}`,

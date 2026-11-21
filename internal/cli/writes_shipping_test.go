@@ -19,7 +19,7 @@ func shippingWrites() []writeCase {
 		{
 			args: append([]string{"shipping", "zones", "create"}, site...), file: shippingZoneJSON,
 			method: http.MethodPost, path: "/shipping/acme1/AcmeStore_NL/zones", scopes: manage,
-			status: http.StatusCreated, body: `{"id":"nl"}`, want: "{\n  \"id\": \"nl\"\n}\n",
+			status: http.StatusCreated, response: `{"id":"nl"}`, want: "{\n  \"id\": \"nl\"\n}\n",
 		},
 		{
 			args: []string{"shipping", "zones", "update", "nl 1", "--site", "AcmeStore_NL", "--content-language",
@@ -41,7 +41,7 @@ func shippingWrites() []writeCase {
 		{
 			args: append([]string{"shipping", "zones", "methods", "create", "nl 1"}, site...), file: shippingMethodJSON,
 			method: http.MethodPost, path: "/shipping/acme1/AcmeStore_NL/zones/nl%201/methods", scopes: manage,
-			status: http.StatusCreated, body: `{"id":"post"}`, want: "{\n  \"id\": \"post\"\n}\n",
+			status: http.StatusCreated, response: `{"id":"post"}`, want: "{\n  \"id\": \"post\"\n}\n",
 		},
 		{
 			args: append([]string{"shipping", "zones", "methods", "update", "nl", "post 1"}, site...),
@@ -63,7 +63,7 @@ func shippingWrites() []writeCase {
 			args: append([]string{"shipping", "groups", "create"}, site...),
 			file: `{"id":"vip","description":{"en":"Free shipping"}}`, method: http.MethodPost,
 			path: "/shipping/acme1/AcmeStore_NL/groups", scopes: manage, status: http.StatusCreated,
-			body: `{"id":"vip"}`, want: "{\n  \"id\": \"vip\"\n}\n",
+			response: `{"id":"vip"}`, want: "{\n  \"id\": \"vip\"\n}\n",
 		},
 		{
 			args: append([]string{"shipping", "groups", "update", "vip"}, site...),
@@ -80,7 +80,7 @@ func shippingWrites() []writeCase {
 			args: append([]string{"shipping", "customers", "create"}, site...),
 			file: `{"customerId":"c1","groupId":"vip"}`, method: http.MethodPost,
 			path: "/shipping/acme1/AcmeStore_NL/cgrelations", scopes: manage, status: http.StatusCreated,
-			body: `{"id":"c1"}`, want: "{\n  \"id\": \"c1\"\n}\n",
+			response: `{"id":"c1"}`, want: "{\n  \"id\": \"c1\"\n}\n",
 		},
 		{
 			args: append([]string{"shipping", "customers", "update", "c1"}, site...),

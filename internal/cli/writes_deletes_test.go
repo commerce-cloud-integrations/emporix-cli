@@ -11,7 +11,7 @@ func deleteWrites() []writeCase {
 		{
 			args: []string{"units", "bulk-delete"}, file: `["g", "kg"]`, method: http.MethodDelete,
 			path: "/unit-handling/acme1/units", scopes: []string{unitManageScope}, confirmBy: "acme1",
-			many: "the units whose codes --file names", status: http.StatusNoContent,
+			deletedMany: "the units whose codes --file names", status: http.StatusNoContent,
 		},
 		{
 			args: []string{"brands", "delete", "b1"}, method: http.MethodDelete, path: "/brand/brands/b1",
@@ -42,8 +42,8 @@ func deleteWrites() []writeCase {
 		{
 			args: []string{"availability", "bulk-delete"}, file: "[" + stockItem + "]", method: http.MethodDelete,
 			path: "/availability/acme1/availability/bulk", scopes: []string{availabilityManageScope},
-			confirmBy: "acme1", many: "the availability that --file names",
-			status: http.StatusMultiStatus, body: `[{"id":"AcmeStore_NL:100200","index":0,"code":204}]`,
+			confirmBy: "acme1", deletedMany: "the availability that --file names",
+			status: http.StatusMultiStatus, response: `[{"id":"AcmeStore_NL:100200","index":0,"code":204}]`,
 			want: "[\n  {\n    \"code\": 204,\n    \"id\": \"AcmeStore_NL:100200\",\n    \"index\": 0\n  }\n]\n",
 		},
 		{
@@ -78,7 +78,7 @@ func catalogDeleteWrites() []writeCase {
 		{
 			args: []string{"categories", "delete", "c1", "--with-subcategories"}, method: http.MethodDelete,
 			path: "/category/acme1/categories/c1", query: "withSubcategories=true", scopes: categories,
-			confirmBy: "c1", many: "the category and every category below it", status: http.StatusNoContent,
+			confirmBy: "c1", deletedMany: "the category and every category below it", status: http.StatusNoContent,
 		},
 		{
 			args: []string{"categories", "assignments", "delete", "c1", "001 234"}, method: http.MethodDelete,
@@ -94,12 +94,12 @@ func catalogDeleteWrites() []writeCase {
 			args: []string{"categories", "assignments", "delete-all", "c1"}, method: http.MethodDelete,
 			path: "/category/acme1/categories/c1/assignments", query: "showUnpublished=true",
 			scopes: []string{categoryManageScope, "category.category_read_unpublished"}, confirmBy: "c1",
-			many: "the assignments of every product to the category", status: http.StatusNoContent,
+			deletedMany: "the assignments of every product to the category", status: http.StatusNoContent,
 		},
 		{
 			args: []string{"categories", "assignments", "delete-product-everywhere", "100200"}, method: http.MethodDelete,
 			path: "/category/acme1/assignments/references/100200", scopes: categories, confirmBy: "100200",
-			many: "the assignments of the product to every category", status: http.StatusNoContent,
+			deletedMany: "the assignments of the product to every category", status: http.StatusNoContent,
 		},
 		{
 			args: []string{"products", "delete", "100200"}, method: http.MethodDelete, path: "/product/acme1/products/100200",
@@ -109,7 +109,7 @@ func catalogDeleteWrites() []writeCase {
 		{
 			args: []string{"products", "delete", "100200", "--force"}, method: http.MethodDelete,
 			path: "/product/acme1/products/100200", query: "force=true", scopes: []string{"product.product_manage"},
-			confirmBy: "100200", many: "the product and every variant below it", status: http.StatusNoContent,
+			confirmBy: "100200", deletedMany: "the product and every variant below it", status: http.StatusNoContent,
 		},
 		{
 			args: []string{"product-templates", "delete", "t1"}, method: http.MethodDelete,

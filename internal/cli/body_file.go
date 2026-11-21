@@ -16,9 +16,9 @@ import (
 )
 
 type bodyFile struct {
-	flag  string
-	limit int
-	array bool
+	flag          string
+	limit         int
+	nonEmptyArray bool
 }
 
 func (f bodyFile) bind(cmd *cobra.Command, usage string) *givenBody {
@@ -50,7 +50,7 @@ func (g *givenBody) readJSON(ctx context.Context) (json.RawMessage, error) {
 	if err := isJSON(data); err != nil {
 		return nil, g.failure(g.file, err)
 	}
-	if g.array && !isJSONArray(data) {
+	if g.nonEmptyArray && !isNonEmptyJSONArray(data) {
 		return nil, g.failure(g.file, errors.New("not a JSON array of one or more items"))
 	}
 	return data, nil
@@ -63,7 +63,7 @@ func isJSON(data []byte) error {
 	return nil
 }
 
-func isJSONArray(data []byte) bool {
+func isNonEmptyJSONArray(data []byte) bool {
 	var items []json.RawMessage
 	return json.Unmarshal(data, &items) == nil && len(items) > 0
 }

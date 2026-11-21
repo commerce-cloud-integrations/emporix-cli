@@ -70,7 +70,7 @@ func newAPIWriteCommand(a *app, method, example string) *cobra.Command {
 	}
 	scopes, query := addAPIFlags(cmd)
 	s := &sender{a: a, method: method, body: &payload{optional: true},
-		confirm: confirmationFor(method, "PATH", deletion{})}
+		confirm: confirmationFor(method, "PATH", deletionOfUnknownExtent())}
 	s.bind(cmd)
 	cmd.Long += "\n\nRequests only the scopes given with --scope besides the tenant: name every write scope " +
 		"that the endpoint needs, as Emporix grants only requested scopes."
@@ -79,6 +79,8 @@ func newAPIWriteCommand(a *app, method, example string) *cobra.Command {
 	}
 	return cmd
 }
+
+func deletionOfUnknownExtent() deletion { return deletion{} }
 
 func addAPIFlags(cmd *cobra.Command) (scopes *[]string, query queryParams) {
 	scopes, query = new([]string), queryParams{}

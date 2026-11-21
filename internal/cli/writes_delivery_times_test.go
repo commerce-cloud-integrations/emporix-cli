@@ -19,14 +19,14 @@ func deliveryTimeWriteCases() []writeCase {
 	return []writeCase{
 		{
 			args: []string{"delivery-times", "create"}, file: deliveryTimeJSON, method: http.MethodPost,
-			path: "/shipping/acme1/delivery-times", scopes: manage, status: http.StatusCreated, body: `{"id":"d1"}`,
+			path: "/shipping/acme1/delivery-times", scopes: manage, status: http.StatusCreated, response: `{"id":"d1"}`,
 			want: "{\n  \"id\": \"d1\"\n}\n",
 		},
 		{
 			args: []string{"delivery-times", "bulk-create", "--validate-overlap", "false"},
 			file: "[" + deliveryTimeJSON + ",\n" + deliveryTimeJSON + "]", method: http.MethodPost,
 			path: "/shipping/acme1/delivery-times/bulk", query: "validateOverlap=false", scopes: manage,
-			status: http.StatusMultiStatus, body: `[{"id":"d1","index":0,"code":201,"status":"CREATED"},` +
+			status: http.StatusMultiStatus, response: `[{"id":"d1","index":0,"code":201,"status":"CREATED"},` +
 				`{"id":"d2","index":1,"code":201,"status":"CREATED"}]`,
 			want: "[\n  {\n    \"code\": 201,\n    \"id\": \"d1\",\n    \"index\": 0,\n    \"status\": \"CREATED\"\n  },\n" +
 				"  {\n    \"code\": 201,\n    \"id\": \"d2\",\n    \"index\": 1,\n    \"status\": \"CREATED\"\n  }\n]\n",
@@ -48,7 +48,7 @@ func deliveryTimeWriteCases() []writeCase {
 		{
 			args: []string{"delivery-times", "slots", "create", "d1"}, file: deliverySlotJSON, method: http.MethodPost,
 			path: "/shipping/acme1/delivery-times/d1/slots", scopes: manage, status: http.StatusCreated,
-			body: `{"id":"s1"}`, want: "{\n  \"id\": \"s1\"\n}\n",
+			response: `{"id":"s1"}`, want: "{\n  \"id\": \"s1\"\n}\n",
 		},
 		{
 			args: []string{"delivery-times", "slots", "update", "d1", "s 1", "--validate-overlap", "false"},
@@ -68,18 +68,18 @@ func deliveryTimeWriteCases() []writeCase {
 		{
 			args: []string{"delivery-times", "slots", "delete-all", "d1"}, method: http.MethodDelete,
 			path: "/shipping/acme1/delivery-times/d1/slots", scopes: manage, confirmBy: "d1",
-			many: "every time slot of the delivery time", status: http.StatusNoContent,
+			deletedMany: "every time slot of the delivery time", status: http.StatusNoContent,
 		},
 		{
 			args: []string{"delivery-times", "increment-counter", "--delivery-time", "d1", "--slot", "s1", "--date",
 				"2026-11-02T12:00:00.000Z"},
 			sent: window, method: http.MethodPost, path: "/shipping/acme1/actualDeliveryWindows/incrementCounter",
-			scopes: manage, status: http.StatusOK, body: "true", want: "true\n",
+			scopes: manage, status: http.StatusOK, response: "true", want: "true\n",
 		},
 		{
 			args: []string{"delivery-times", "increment-counter"}, file: window, method: http.MethodPost,
 			path: "/shipping/acme1/actualDeliveryWindows/incrementCounter", scopes: manage, status: http.StatusOK,
-			body: "true", want: "true\n",
+			response: "true", want: "true\n",
 		},
 	}
 }

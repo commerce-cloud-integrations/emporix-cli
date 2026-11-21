@@ -30,17 +30,35 @@ func hybrisCounting() counting {
 	return counting{query: url.Values{"totalCount": {"true"}}, from: "hybris-count"}
 }
 
-func (c counting) total(header http.Header) int {
+func (c counting) total(header http.Header) reportedTotal {
 	total, err := strconv.Atoi(header.Get(c.from))
 	if err != nil || total < 0 {
-		return -1
+		return reportedTotal{}
 	}
-	return total
+	return reported(total)
+}
+
+type reportedTotal struct {
+	items int
+	known bool
+}
+
+func reported(items int) reportedTotal { return reportedTotal{items: items, known: true} }
+
+func (t reportedTotal) exceeds(count int) bool { return t.known && t.items > count }
+
+func (t reportedTotal) reachedBy(count int) bool { return t.known && count >= t.items }
+
+func (t reportedTotal) check(read string, count int) error {
+	if t.known && t.items != count {
+		return fmt.Errorf("%s: read %d items but the service reports %d; retry the command", read, count, t.items)
+	}
+	return nil
 }
 
 // The page caps of a client as New makes it, with pages of 100: a read that
 // keeps its items takes at most KeptPages (100,000 items); a read that streams
-// them (ListOptions.Stream) keeps only the key of each item's duplicate check
+// them (Streaming) keeps only the key of each item's duplicate check
 // (itemPages, about 100 bytes), so it takes up to StreamedPages (a million
 // items, whose checks take about 100 MB).
 const (
@@ -58,8 +76,8 @@ func defaultPagingPolicy() pagingPolicy {
 	return pagingPolicy{size: 100, keptPages: KeptPages, streamedPages: StreamedPages}
 }
 
-func (p pagingPolicy) pages(opts ListOptions) int {
-	if opts.streams() {
+func (p pagingPolicy) pages(streamed bool) int {
+	if streamed {
 		return p.streamedPages
 	}
 	return p.keptPages
@@ -150,7 +168,7 @@ func (c *Client) GetUnpaged(ctx context.Context, path string, query url.Values, 
 	if err := (itemPages{}).add(c.named(path), 1, items); err != nil {
 		return nil, err
 	}
-	return opts.deliver(items)
+	return c.delivery(opts).last(items)
 }
 
 // GetAllInOnePage reads a collection whose pages cannot be combined as one
@@ -162,13 +180,13 @@ func (c *Client) GetUnpaged(ctx context.Context, path string, query url.Values, 
 // page to the limit.
 func (c *Client) GetAllInOnePage(ctx context.Context, path string, query url.Values, size int,
 	opts ListOptions) (json.RawMessage, error) {
-	return c.getOnePage(ctx, path, query, size, opts, func(query url.Values) (int, error) {
+	return c.getOnePage(ctx, path, query, size, opts, func(query url.Values) (reportedTotal, error) {
 		next, total, err := c.getPage(ctx, path, query, 2, size, totalCounting())
 		if err != nil {
-			return 0, err
+			return reportedTotal{}, err
 		}
 		if len(next) > 0 {
-			return 0, fmt.Errorf("%s: the collection does not fit one page of %d items", c.named(path), size)
+			return reportedTotal{}, fmt.Errorf("%s: the collection does not fit one page of %d items", c.named(path), size)
 		}
 		return total, nil
 	})
@@ -182,14 +200,14 @@ func (c *Client) GetAllInOnePage(ctx context.Context, path string, query url.Val
 // to the limit.
 func (c *Client) GetAllOnFirstPage(ctx context.Context, path string, query url.Values, size int,
 	opts ListOptions) (json.RawMessage, error) {
-	return c.getOnePage(ctx, path, query, size, opts, func(url.Values) (int, error) {
-		return 0, fmt.Errorf("%s: the service reported no total, so one page of %d may not hold every item",
+	return c.getOnePage(ctx, path, query, size, opts, func(url.Values) (reportedTotal, error) {
+		return reportedTotal{}, fmt.Errorf("%s: the service reported no total, so one page of %d may not hold every item",
 			c.named(path), size)
 	})
 }
 
 func (c *Client) getOnePage(ctx context.Context, path string, query url.Values, size int, opts ListOptions,
-	untotalled func(query url.Values) (int, error)) (json.RawMessage, error) {
+	untotalled func(query url.Values) (reportedTotal, error)) (json.RawMessage, error) {
 	query, err := c.collectionQuery(path, query, opts)
 	if err != nil {
 		return nil, err
@@ -199,13 +217,13 @@ func (c *Client) getOnePage(ctx context.Context, path string, query url.Values, 
 		return nil, err
 	}
 	if opts.FirstPage {
-		return opts.deliverFirstPage(c.named(path), items)
+		return c.delivery(opts).firstPage(c.named(path), items)
 	}
-	if total > len(items) {
+	if total.exceeds(len(items)) {
 		return nil, fmt.Errorf("%s: one page of %d returned %d of %d items; the service may limit the page size",
-			c.named(path), size, len(items), total)
+			c.named(path), size, len(items), total.items)
 	}
-	if total < 0 {
+	if !total.known {
 		if total, err = untotalled(query); err != nil {
 			return nil, err
 		}
@@ -213,10 +231,10 @@ func (c *Client) getOnePage(ctx context.Context, path string, query url.Values, 
 	if err := (itemPages{}).add(c.named(path), 1, items); err != nil {
 		return nil, err
 	}
-	if err := checkCount(c.named(path), len(items), total); err != nil {
+	if err := total.check(c.named(path), len(items)); err != nil {
 		return nil, err
 	}
-	return opts.deliver(items)
+	return c.delivery(opts).last(items)
 }
 
 type itemPages map[[sha256.Size]byte]int
@@ -263,10 +281,11 @@ func canonical(item json.RawMessage) string {
 }
 
 type readPage func(ctx context.Context, path string, query url.Values, page, size int) (
-	items []json.RawMessage, total int, err error)
+	items []json.RawMessage, total reportedTotal, err error)
 
 func (c *Client) arrayPages(count counting) readPage {
-	return func(ctx context.Context, path string, query url.Values, page, size int) ([]json.RawMessage, int, error) {
+	return func(ctx context.Context, path string, query url.Values, page, size int) ([]json.RawMessage,
+		reportedTotal, error) {
 		return c.getPage(ctx, path, query, page, size, count)
 	}
 }
@@ -287,7 +306,7 @@ func (c *Client) getAllFrom(ctx context.Context, path string, query url.Values, 
 		if err != nil {
 			return nil, err
 		}
-		return opts.deliverFirstPage(c.named(path), items)
+		return c.delivery(opts).firstPage(c.named(path), items)
 	}
 	return c.readPages(ctx, path, query, opts, first, read)
 }
@@ -295,18 +314,19 @@ func (c *Client) getAllFrom(ctx context.Context, path string, query url.Values, 
 type pageReader struct {
 	name          string
 	opts          ListOptions
-	out           delivery
+	out           *delivery
 	seen          itemPages
-	total, count  int
+	total         reportedTotal
+	count         int
 	size          int
-	everyPageFull bool
+	shortPageSeen bool
 }
 
 func (c *Client) readPages(ctx context.Context, path string, query url.Values, opts ListOptions, first int,
 	read readPage) (json.RawMessage, error) {
-	r := &pageReader{name: c.named(path), opts: opts, out: delivery{opts: opts}, seen: itemPages{}, total: -1,
-		size: opts.pageSize(c.paging.size), everyPageFull: true}
-	pages := c.paging.pages(opts)
+	r := &pageReader{name: c.named(path), opts: opts, out: c.delivery(opts), seen: itemPages{},
+		size: opts.pageSize(c.paging.size)}
+	pages := c.paging.pages(r.out.streams())
 	for page := first; page < first+pages; page++ {
 		result, done, err := r.step(ctx, read, path, query, page)
 		if done || err != nil {
@@ -328,8 +348,8 @@ func (r *pageReader) step(ctx context.Context, read readPage, path string, query
 	if err := r.seen.add(r.name, page, batch); err != nil {
 		return nil, false, err
 	}
-	if r.count += len(batch); len(batch) == 0 || (r.total >= 0 && r.count >= r.total) {
-		if err := checkCount(r.name, r.count, r.total); err != nil {
+	if r.count += len(batch); len(batch) == 0 || r.total.reachedBy(r.count) {
+		if err := r.total.check(r.name, r.count); err != nil {
 			return nil, false, err
 		}
 		result, err := r.out.last(batch)
@@ -338,74 +358,75 @@ func (r *pageReader) step(ctx context.Context, read readPage, path string, query
 	if err := r.out.add(batch); err != nil {
 		return nil, false, err
 	}
-	if r.everyPageFull && r.opts.reached(r.count) {
+	if !r.shortPageSeen && r.opts.reached(r.count) {
 		result, err := r.out.result()
 		return result, true, err
 	}
-	r.everyPageFull = r.everyPageFull && len(batch) >= r.size
+	r.shortPageSeen = r.shortPageSeen || len(batch) < r.size
 	return nil, false, nil
 }
 
 func (c *Client) named(path string) string { return c.method + " " + path }
 
-func keepTotal(read string, total, pageTotal int) (int, error) {
+func keepTotal(read string, total, pageTotal reportedTotal) (reportedTotal, error) {
 	switch {
-	case pageTotal < 0 || pageTotal == total:
+	case !pageTotal.known || pageTotal == total:
 		return total, nil
-	case total < 0:
+	case !total.known:
 		return pageTotal, nil
 	default:
 		return total, fmt.Errorf("%s: the total changed from %d to %d while paging; retry the command",
-			read, total, pageTotal)
+			read, total.items, pageTotal.items)
 	}
 }
 
 func (c *Client) getPage(ctx context.Context, path string, query url.Values, page, size int, count counting) (
-	items []json.RawMessage, total int, err error) {
+	items []json.RawMessage, total reportedTotal, err error) {
 	asked := pageQuery(query, "pageNumber", page, "pageSize", size)
 	maps.Copy(asked, count.query)
 	return c.arrayPage(ctx, path, asked, page, count)
 }
 
 func (c *Client) arrayPage(ctx context.Context, path string, query url.Values, page int, count counting) (
-	items []json.RawMessage, total int, err error) {
+	items []json.RawMessage, total reportedTotal, err error) {
 	result, err := c.get(ctx, path, query, count.header)
 	if err != nil {
-		return nil, 0, err
+		return nil, reportedTotal{}, err
 	}
 	if err := json.Unmarshal(result.body, &items); err != nil || items == nil {
-		return nil, 0, fmt.Errorf("%s page %d: expected a JSON array", c.named(path), page)
+		return nil, reportedTotal{}, fmt.Errorf("%s page %d: expected a JSON array", c.named(path), page)
 	}
 	return items, count.total(result.header), nil
 }
 
 func (c *Client) pageObjects(member string) readPage {
-	return func(ctx context.Context, path string, query url.Values, page, size int) ([]json.RawMessage, int, error) {
+	return func(ctx context.Context, path string, query url.Values, page, size int) ([]json.RawMessage,
+		reportedTotal, error) {
 		result, err := c.get(ctx, path, pageQuery(query, "page", page, "size", size), nil)
 		if err != nil {
-			return nil, 0, err
+			return nil, reportedTotal{}, err
 		}
 		return pageObjectItems(result.body, member, fmt.Sprintf("%s page %d", c.named(path), page))
 	}
 }
 
-func pageObjectItems(body []byte, member, read string) (items []json.RawMessage, total int, err error) {
+func pageObjectItems(body []byte, member, read string) (items []json.RawMessage, total reportedTotal, err error) {
 	malformed := func() error {
 		return fmt.Errorf("%s: expected an object with the items in %q and an integer totalElements, if any",
 			read, member)
 	}
 	var members map[string]json.RawMessage
 	if json.Unmarshal(body, &members) != nil || json.Unmarshal(members[member], &items) != nil || items == nil {
-		return nil, 0, malformed()
+		return nil, reportedTotal{}, malformed()
 	}
-	var reported *int
-	if raw, ok := members["totalElements"]; ok && json.Unmarshal(raw, &reported) != nil {
-		return nil, 0, malformed()
+	var given *int
+	if raw, ok := members["totalElements"]; ok && json.Unmarshal(raw, &given) != nil {
+		return nil, reportedTotal{}, malformed()
 	}
-	if reported == nil || *reported < 0 {
-		return items, -1, nil
+	if given == nil || *given < 0 {
+		return items, reportedTotal{}, nil
 	}
-	return items, *reported, nil
+	return items, reported(*given), nil
 }
 
 func pageQuery(query url.Values, pageName string, page int, sizeName string, size int) url.Values {
@@ -414,11 +435,4 @@ func pageQuery(query url.Values, pageName string, page int, sizeName string, siz
 	paged.Set(pageName, strconv.Itoa(page))
 	paged.Set(sizeName, strconv.Itoa(size))
 	return paged
-}
-
-func checkCount(read string, count, total int) error {
-	if total >= 0 && total != count {
-		return fmt.Errorf("%s: read %d items but the service reports %d; retry the command", read, count, total)
-	}
-	return nil
 }

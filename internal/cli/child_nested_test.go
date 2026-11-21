@@ -11,9 +11,10 @@ import (
 func TestNestedChildSearchAndWrites(t *testing.T) {
 	stores := resource[thing]{use: "stores", under: "things", path: "/stores/{site}", view: thingView()}
 	shelvesOf := stores.nested("shelves")
-	shelves := child[thing]{use: listUse, sub: shelvesOf.use, fetch: listing{}, view: thingView()}
-	search := childSearchCommand(&app{}, shelvesOf, shelves, "Search shelves", "Reads the shelves a q filter finds.",
-		queryField())
+	listed := listedChildOf(listing{}, child[thing]{use: listUse, sub: shelvesOf.use, view: thingView()})
+	shelves := listed.child
+	search := childSearchCommand(&app{}, shelvesOf, listed, &childSearch{short: "Search shelves",
+		long: "Reads the shelves a q filter finds.", fields: []bodyField{queryField()}})
 	const help = "It reads and shows them as `epx things stores shelves list THING_ID --site S` does."
 	if search.Use != "search THING_ID" || !strings.Contains(search.Long, help) {
 		t.Errorf("search %q, help %q; want search THING_ID and %q", search.Use, search.Long, help)
@@ -31,7 +32,7 @@ func TestNestedChildSearchAndWrites(t *testing.T) {
 			completes: []string{"ID", "THING_ID"},
 		},
 		{
-			at: stores.at(),
+			at: stores.tenantCollection(),
 			want: collectionAt{path: "/stores/{site}", item: "ID", itemPath: "/stores/{site}/{id}",
 				get: "things stores get ID --site S"},
 			uses:      [2]string{"create", "update ID"},
@@ -69,12 +70,41 @@ func TestNestedKeepsWhereItsItemsAreListed(t *testing.T) {
 	}
 }
 
-func TestChildListedByListNamesItsPath(t *testing.T) {
+func TestChildNamesItsPath(t *testing.T) {
 	defer func() {
-		if got, want := fmt.Sprint(recover()), "thing: a child listed by list names its path in sub"; got != want {
+		if got, want := fmt.Sprint(recover()), "shelves: a child names its path below the parent item in sub"; got != want {
 			t.Fatalf("panic %q; want %q", got, want)
 		}
 	}()
 	stores := resource[thing]{use: "stores", path: "/stores", view: thingView()}
-	childCommand(&app{}, stores.nested("shelves"), child[thing]{use: listUse, fetch: listing{}, view: thingView()})
+	childCommand(&app{}, stores, child[thing]{use: "shelves", fetch: listing{}, view: thingView()})
+}
+
+func TestChildGroupNeedsANestedParent(t *testing.T) {
+	defer func() {
+		if got := recover(); got != "thing: a child in a group of its own is below a nested parent" {
+			t.Fatalf("recovered %v; want the declaration named", got)
+		}
+	}()
+	stores := resource[thing]{use: "stores", path: "/stores", view: thingView()}
+	newChildGroup(&app{}, stores, child[thing]{use: listUse, sub: "shelves", fetch: listing{}, view: thingView()},
+		&childGroup{})
+}
+
+func TestChildOwnScopesNameOne(t *testing.T) {
+	defer func() {
+		if got, want := fmt.Sprint(recover()),
+			"a child's own scopes name one at least: one that requests none declares noScopes"; got != want {
+			t.Fatalf("panic %q; want %q", got, want)
+		}
+	}()
+	child[thing]{scopes: ownScopes{}}.reader([]string{"thing.read"})
+}
+
+func TestListedChildListsAsItsSearchReads(t *testing.T) {
+	members := listing{filters: listFilters{kinds: filterable}}
+	listed := listedChildOf(members, child[thing]{sub: "shelves", view: thingView()})
+	if got, ok := listed.fetch.(listing); !ok || got.filters.kinds != members.filters.kinds {
+		t.Fatalf("fetch %#v; want the listing its search reads", listed.fetch)
+	}
 }

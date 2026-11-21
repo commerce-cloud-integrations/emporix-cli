@@ -17,40 +17,27 @@ const customTypeManageScope = "custom." + placeholderType + "_manage"
 
 const exampleType = "DOCUMENT"
 
-const unscoped unknownParent = "has no scope that Emporix grants (exit code 3), and a type created in the last " +
-	"minutes has none yet"
-
 var typeIDPattern = regexp.MustCompile(`^[A-Za-z][A-Za-z0-9_]*$`)
 
 func namesType(scope string) bool { return strings.Contains(scope, placeholderType) }
 
-func typeScopes(cmd *cobra.Command, req request, scopes []string, builtIn builtInTypes) typeRule {
+func typeScopes(use string, req request, scopes []string, builtIn builtInTypes) typeRule {
 	rule := newTypeRule(scopes, builtIn)
-	if !rule.custom() && len(builtIn.types) == 0 {
+	if !rule.checks() {
 		return rule
 	}
 	if len(req.arguments()) == 0 {
 		panic(fmt.Sprintf("%s: its type (a scope that names %s, or built-in types) is the command's first "+
-			"argument, which its request lacks", cmd.Use, placeholderType))
+			"argument, which its request lacks", use, placeholderType))
 	}
 	for _, t := range builtIn.types {
 		switch {
 		case writeCapable(t.scopes):
-			panic(fmt.Sprintf("%s: the built-in type %s requests a write-capable scope", cmd.Use, t.name))
+			panic(fmt.Sprintf("%s: the built-in type %s requests a write-capable scope", use, t.name))
 		case len(t.scopes) > 0 && !rule.custom():
-			panic(fmt.Sprintf("%s: the built-in type %s requests scopes in place of none that names %s", cmd.Use,
+			panic(fmt.Sprintf("%s: the built-in type %s requests scopes in place of none that names %s", use,
 				t.name, placeholderType))
 		}
-	}
-	accept := cmd.Args
-	cmd.Args = func(cmd *cobra.Command, args []string) error {
-		if err := accept(cmd, args); err != nil {
-			return err
-		}
-		if err := rule.accepts(args[0]); err != nil {
-			return fmt.Errorf("invalid %s %q: %w", argumentNames(cmd.Use, 1)[0], args[0], err)
-		}
-		return nil
 	}
 	return rule
 }
@@ -65,6 +52,23 @@ func newTypeRule(scopes []string, builtIn builtInTypes) typeRule {
 }
 
 func (r typeRule) custom() bool { return len(r.typed) > 0 }
+
+func (r typeRule) checks() bool { return r.custom() || len(r.builtIn.types) > 0 }
+
+func (r typeRule) args(accept cobra.PositionalArgs) cobra.PositionalArgs {
+	if !r.checks() {
+		return accept
+	}
+	return func(cmd *cobra.Command, args []string) error {
+		if err := accept(cmd, args); err != nil {
+			return err
+		}
+		if err := r.accepts(args[0]); err != nil {
+			return fmt.Errorf("invalid %s %q: %w", argumentNames(cmd.Use, 1)[0], args[0], err)
+		}
+		return nil
+	}
+}
 
 func (r typeRule) accepts(arg string) error {
 	if err := r.builtIn.spelling(arg); err != nil {
@@ -113,7 +117,7 @@ func unknownFor(scopes []string, otherwise unknownParent) unknownParent {
 }
 
 func typeSentence(builtIn builtInTypes) string {
-	return builtIn.clause("TYPE") + "; an unknown one " + string(unscoped) + "."
+	return builtIn.clause("TYPE") + "; an unknown one " + unscoped.String() + "."
 }
 
 func typedScopes(scopes []string) []string {

@@ -16,6 +16,10 @@ type formPart struct {
 	bound int
 }
 
+const noSizeLimit = 0
+
+func limited(bound int) bool { return bound > noSizeLimit }
+
 type addPart func(ctx context.Context, parts []emporix.Part) ([]emporix.Part, error)
 
 type form []formPart
@@ -38,9 +42,9 @@ func (f form) parts(cmd *cobra.Command) func(ctx context.Context) ([]emporix.Par
 }
 
 func (f form) limit() int {
-	limit := 0
+	limit := noSizeLimit
 	for _, part := range f {
-		if part.bound > 0 && (limit == 0 || part.bound < limit) {
+		if limited(part.bound) && (!limited(limit) || part.bound < limit) {
 			limit = part.bound
 		}
 	}
@@ -119,12 +123,12 @@ func fieldPart(name, flag, usage string) formPart {
 }
 
 type formFile struct {
-	form        form
-	field       string
-	usage       string
-	refuseAlone func(body json.RawMessage) error
-	parts       func(ctx context.Context) ([]emporix.Part, error)
-	file        *givenBody
+	form         form
+	field        string
+	usage        string
+	aloneRefusal func(body json.RawMessage) error
+	parts        func(ctx context.Context) ([]emporix.Part, error)
+	file         *givenBody
 }
 
 func (f *formFile) bind(cmd *cobra.Command) string {
@@ -154,8 +158,8 @@ func (f *formFile) fill(ctx context.Context, w *emporix.Write, _ []string) error
 }
 
 func (f *formFile) fillAlone(w *emporix.Write, body json.RawMessage) (err error) {
-	if f.refuseAlone != nil {
-		if refused := f.refuseAlone(body); refused != nil {
+	if f.aloneRefusal != nil {
+		if refused := f.aloneRefusal(body); refused != nil {
 			return f.file.failure(f.file.file, refused)
 		}
 	}
@@ -191,7 +195,7 @@ func (f *formBody) fill(ctx context.Context, w *emporix.Write, _ []string) error
 
 func encodeForm(parts []emporix.Part, limit int) (emporix.Body, error) {
 	form, err := emporix.FormBody(parts)
-	if err != nil || limit == 0 || form.Len() <= limit {
+	if err != nil || !limited(limit) || form.Len() <= limit {
 		return form, err
 	}
 	return emporix.Body{}, usageError{fmt.Errorf("the form is %d bytes, larger than the %d bytes that Emporix "+

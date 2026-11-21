@@ -82,11 +82,11 @@ func newCouponsCommand(a *app) *cobra.Command {
 		view:    couponView(),
 	}
 	redemptions := child[redemption]{
-		use:   "redemptions",
+		sub:   "redemptions",
 		short: "List the redemptions of a coupon",
 		long: "Reads the redemptions of a coupon (personal data): the order, customer and legal entity " +
 			"of each, and when it was redeemed (`epx coupons redemption` shows one).",
-		scopes: []string{couponManage},
+		scopes: ownScopes{couponManage},
 		fetch:  listing{filters: listFilters{kinds: filterable}},
 		view: view[redemption]{
 			singular: "redemption",

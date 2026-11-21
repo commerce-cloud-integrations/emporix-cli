@@ -61,7 +61,10 @@ def rewriter(base: str, names: list, root_links: bool = True):
     """Returns a function that prefixes base to root-absolute paths to names, and with
     root_links to links to the root itself."""
     alternatives = "|".join(re.escape(name) for name in names)
-    path = re.compile(r'(?<=["\'`(=])/(?=(?:%s)(?:\.md)?(?:[/"\'?#)\\]|$))' % alternatives)
+    string_start = r'(?<=["\'`(=])'
+    entry = r'(?:%s)(?:\.md)?' % alternatives
+    entry_end = r'(?:[/"\'?#)\\]|$)'
+    path = re.compile(string_start + "/(?=" + entry + entry_end + ")")
     root = re.compile(r'(?<=href=")/(?=")|(?<=href\\":\\")/(?=\\")|(?<=href":")/(?=")')
 
     def rewrite(text: str) -> str:

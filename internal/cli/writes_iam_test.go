@@ -22,7 +22,7 @@ func iamWrites() []writeCase {
 			args:   []string{"iam", "access-controls", "update", "ac2"},
 			file:   `{"name":{"en":"Vehicle readers"},"scopes":["acme.vehicle_read"],"restrictedTo":"EMPLOYEE"}`,
 			method: http.MethodPut, path: "/iam/acme1/access-controls/ac2", scopes: []string{iamAccessManage},
-			lang: "*", status: http.StatusCreated, body: `{"id":"ac2"}`, want: "{\n  \"id\": \"ac2\"\n}\n",
+			lang: "*", status: http.StatusCreated, response: `{"id":"ac2"}`, want: "{\n  \"id\": \"ac2\"\n}\n",
 		},
 		{
 			args: []string{"iam", "access-controls", "delete", "ac1"}, method: http.MethodDelete,
@@ -33,7 +33,7 @@ func iamWrites() []writeCase {
 			args: []string{"iam", "scopes", "update", "acme.vehicle_manage"},
 			file: `{"domain":"vehicle","description":{"en":"Manage vehicles"}}`, method: http.MethodPut,
 			path: "/iam/acme1/scopes/acme.vehicle_manage", scopes: []string{iamScopeManage},
-			status: http.StatusCreated, body: `{"id":"acme.vehicle_manage"}`,
+			status: http.StatusCreated, response: `{"id":"acme.vehicle_manage"}`,
 			want: "{\n  \"id\": \"acme.vehicle_manage\"\n}\n",
 		},
 		{
@@ -46,7 +46,7 @@ func iamWrites() []writeCase {
 			file: `{"id":"vehicle-managers","name":{"en":"Vehicle managers"},"accessControls":["ac1"],` +
 				`"userType":"EMPLOYEE"}`,
 			method: http.MethodPost, path: "/iam/acme1/groups", scopes: []string{iamGroupManage}, lang: "*",
-			status: http.StatusCreated, body: `{"id":"vehicle-managers"}`, want: "{\n  \"id\": \"vehicle-managers\"\n}\n",
+			status: http.StatusCreated, response: `{"id":"vehicle-managers"}`, want: "{\n  \"id\": \"vehicle-managers\"\n}\n",
 		},
 		{
 			args:   []string{"iam", "groups", "update", "g1"},
@@ -62,7 +62,7 @@ func iamWrites() []writeCase {
 			args: []string{"iam", "groups", "delete", "g1", "--force-delete"}, method: http.MethodDelete,
 			path: "/iam/acme1/groups/g1", query: "forceDelete=true",
 			scopes: []string{iamGroupManage, iamAssignmentManage}, status: http.StatusNoContent,
-			confirmBy: "g1", many: "the group and the membership of every user of it",
+			confirmBy: "g1", deletedMany: "the group and the membership of every user of it",
 		},
 	}, slices.Concat(iamMembershipWrites(assignment), iamUserWrites())...)
 }
@@ -72,22 +72,22 @@ func iamMembershipWrites(assignment []string) []writeCase {
 		{
 			args: []string{"iam", "groups", "users", "create", "g1", "--user", "u1", "--user-type", "EMPLOYEE"},
 			sent: `{"userId":"u1","userType":"EMPLOYEE"}`, method: http.MethodPost, path: "/iam/acme1/groups/g1/users",
-			scopes: assignment, status: http.StatusCreated, body: `{"id":"m1"}`, want: "{\n  \"id\": \"m1\"\n}\n",
+			scopes: assignment, status: http.StatusCreated, response: `{"id":"m1"}`, want: "{\n  \"id\": \"m1\"\n}\n",
 		},
 		{
 			args: []string{"iam", "groups", "users", "create", "g1", "--user", "u2"}, sent: `{"userId":"u2"}`,
 			method: http.MethodPost, path: "/iam/acme1/groups/g1/users", scopes: assignment,
-			status: http.StatusCreated, body: `{"id":"m3"}`, want: "{\n  \"id\": \"m3\"\n}\n",
+			status: http.StatusCreated, response: `{"id":"m3"}`, want: "{\n  \"id\": \"m3\"\n}\n",
 		},
 		{
 			args: []string{"iam", "groups", "users", "create", "g1"}, file: `{"userId":"c1","userType":"CUSTOMER"}`,
 			method: http.MethodPost, path: "/iam/acme1/groups/g1/users", scopes: assignment,
-			status: http.StatusCreated, body: `{"id":"m2"}`, want: "{\n  \"id\": \"m2\"\n}\n",
+			status: http.StatusCreated, response: `{"id":"m2"}`, want: "{\n  \"id\": \"m2\"\n}\n",
 		},
 		{
 			args: []string{"iam", "groups", "users", "update", "g1", "EMPLOYEE", "u 1"}, method: http.MethodPut,
 			path: "/iam/acme1/groups/g1/users/EMPLOYEE/u%201", scopes: assignment, status: http.StatusCreated,
-			body: `{"id":"m1"}`, want: "{\n  \"id\": \"m1\"\n}\n",
+			response: `{"id":"m1"}`, want: "{\n  \"id\": \"m1\"\n}\n",
 		},
 		{
 			args: []string{"iam", "groups", "users", "delete", "g1", "u1"}, method: http.MethodDelete,
@@ -97,12 +97,12 @@ func iamMembershipWrites(assignment []string) []writeCase {
 		{
 			args: []string{"iam", "groups", "users", "delete-all", "g1"}, method: http.MethodDelete,
 			path: "/iam/acme1/groups/g1/users", scopes: assignment, status: http.StatusNoContent,
-			confirmBy: "g1", many: "the membership of every user of the group",
+			confirmBy: "g1", deletedMany: "the membership of every user of the group",
 		},
 		{
 			args: []string{"iam", "users", "groups", "delete-all", "u1"}, method: http.MethodDelete,
 			path: "/iam/acme1/users/u1/groups", scopes: assignment, status: http.StatusNoContent,
-			confirmBy: "u1", many: "the user's membership of every group",
+			confirmBy: "u1", deletedMany: "the user's membership of every group",
 		},
 	}
 }
@@ -113,7 +113,7 @@ func iamUserWrites() []writeCase {
 	return []writeCase{
 		{
 			args: []string{"iam", "users", "create"}, file: user, method: http.MethodPost, path: "/iam/acme1/users",
-			scopes: []string{"iam.user_create"}, status: http.StatusCreated, body: `{"id":"u1"}`,
+			scopes: []string{"iam.user_create"}, status: http.StatusCreated, response: `{"id":"u1"}`,
 			want: "{\n  \"id\": \"u1\"\n}\n",
 		},
 		{

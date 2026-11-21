@@ -81,8 +81,8 @@ func (r *siteAwareRead) sent(t *testing.T, extra http.Header) string {
 func (r *siteAwareRead) readCase() readCase {
 	return readCase{
 		args: slices.Concat(r.args, []string{"--" + mixinSiteFlag, overlaySite}), path: r.path, scopes: r.scopes,
-		mode: r.mode, filters: r.filters, method: r.method, sent: r.body, site: overlaySite,
-		body: r.response(r.merged), want: r.tables[string(defaultLanguage)],
+		mode: r.mode, filters: r.filters, method: r.method, requestBody: r.body, siteHeader: overlaySite,
+		response: r.response(r.merged), want: r.tables[string(defaultLanguage)],
 	}
 }
 

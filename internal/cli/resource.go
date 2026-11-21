@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"net/url"
 	"strconv"
 	"strings"
@@ -54,8 +55,18 @@ type command struct {
 	builtIn builtInTypes
 }
 
+func (c *command) binding() *argumentBinding {
+	return &argumentBinding{req: c.req, choices: c.choices, builtIn: c.builtIn, ids: c.ids}
+}
+
 type fetcher interface {
-	bind(cmd *cobra.Command) (readFunc, shape)
+	bind(cmd *cobra.Command) boundRead
+}
+
+type boundRead struct {
+	read  readFunc
+	items shape
+	help  string
 }
 
 type listing struct {
@@ -64,7 +75,7 @@ type listing struct {
 	items   shape
 }
 
-func (l listing) bind(cmd *cobra.Command) (readFunc, shape) {
+func (l listing) bind(cmd *cobra.Command) boundRead {
 	var opts emporix.ListOptions
 	l.filters.register(&opts, cmd)
 	read, stream := l.collection(), false
@@ -75,14 +86,16 @@ func (l listing) bind(cmd *cobra.Command) (readFunc, shape) {
 		if !stream {
 			return read(c, ctx, path, query, opts)
 		}
-		run, out := opts, cmd.OutOrStdout()
-		run.Stream = func(items []json.RawMessage) error { return output.WriteJSONLines(out, items) }
-		if _, err := read(c, ctx, path, query, run); err != nil {
+		if _, err := read(c.Streaming(jsonLinesTo(cmd.OutOrStdout())), ctx, path, query, opts); err != nil {
 			return nil, err
 		}
 		return nil, errStreamed
 	}
-	return listed, l.found()
+	return boundRead{read: listed, items: l.found()}
+}
+
+func jsonLinesTo(out io.Writer) func(items []json.RawMessage) error {
+	return func(items []json.RawMessage) error { return output.WriteJSONLines(out, items) }
 }
 
 func (l listing) glance() (readFunc, shape) {
@@ -113,7 +126,10 @@ type single struct {
 	read  readFunc
 }
 
-func (s single) bind(*cobra.Command) (readFunc, shape) { return s.glance() }
+func (s single) bind(*cobra.Command) boundRead {
+	read, items := s.glance()
+	return boundRead{read: read, items: items}
+}
 
 func (s single) glance() (readFunc, shape) {
 	if s.read == nil {
@@ -153,26 +169,27 @@ func onePage(size int) string { return "one page of up to " + strconv.Itoa(size)
 
 type resource[T any] struct {
 	view[T]
-	use        string
-	noun       string
-	short      string
-	long       string
-	listNote   string
-	about      string
-	under      string
-	listedBy   string
-	atPath     bool
-	path       string
-	query      url.Values
-	listQuery  url.Values
-	listParams []paramFlag
-	scopes     []string
-	filters    listFilters
-	read       collectionRead
-	items      shape
-	item       shape
-	roots      shape
-	search     *searchListing
+	use          string
+	noun         string
+	short        string
+	long         string
+	listNote     string
+	about        string
+	under        string
+	listedBy     string
+	atPath       bool
+	nestedParent bool
+	path         string
+	query        url.Values
+	listQuery    url.Values
+	listParams   []paramFlag
+	scopes       []string
+	filters      listFilters
+	read         collectionRead
+	items        shape
+	item         shape
+	roots        shape
+	search       *searchListing
 }
 
 func newResourceCommand[T any](a *app, r resource[T], extra ...*cobra.Command) *cobra.Command {
@@ -193,15 +210,18 @@ func (r resource[T]) listRequest() request { return withQueries(r.path, r.query,
 func (r resource[T]) ids() *idSource { return r.idsIn(r.header[0]) }
 
 func (r resource[T]) idsIn(column string) *idSource {
-	list := r.listRequest()
-	if r.search != nil || !r.listsAtPath() || list.names(placeholderSite) && !r.itemRequest().names(placeholderSite) {
+	if r.search != nil || !r.listsAtPath() || r.listsOnlyPerSite() {
 		return nil
 	}
 	listed := r.listing()
 	if r.roots != nil {
 		listed.items = r.roots
 	}
-	return listedIDs(r.reader(), list, listed, column)
+	return listedIDs(r.reader(), r.listRequest(), listed, column)
+}
+
+func (r resource[T]) listsOnlyPerSite() bool {
+	return r.listRequest().names(placeholderSite) && !r.itemRequest().names(placeholderSite)
 }
 
 func (r resource[T]) itemIDs() argumentIDs { return argumentIDs{r.header[0]: r.ids()} }
@@ -259,9 +279,8 @@ type readTarget struct {
 func newRead(a *app, c *command, scopes []string) (*cobra.Command, *readTarget) {
 	cmd := &cobra.Command{Use: c.use, Short: c.short, Long: c.long,
 		Annotations: map[string]string{scopesAnnotation: strings.Join(scopes, " ")}}
-	t := &readTarget{a: a, req: c.req, site: c.req.bind(cmd, c.choices), scopes: scopes}
-	t.rule = typeScopes(cmd, c.req, scopes, c.builtIn)
-	completeArguments(a, cmd, t.site, c.ids, c.choices, t.rule)
+	t := &readTarget{a: a, req: c.req, scopes: scopes}
+	t.site, t.rule = c.binding().bind(a, cmd, scopes)
 	t.optedIn = requireOptIn(cmd, scopes)
 	return cmd, t
 }
@@ -281,8 +300,9 @@ func (t *readTarget) open(ctx context.Context, args []string) (*emporix.Client, 
 func (rd reader[T]) command(a *app, c *command) *cobra.Command {
 	cmd, target := newRead(a, c, rd.scopes)
 	printed := addTableOutput(cmd, rd.header, rd.long...)
-	read, items := rd.withMixinSite(c.fetch).bind(cmd)
-	cmd.Long = rd.help(cmd.Long, target.rule)
+	bound := rd.withMixinSite(c.fetch).bind(cmd)
+	read, items := bound.read, bound.items
+	cmd.Long = rd.help(joinParagraphs(cmd.Long, bound.help), target.rule)
 	lang := defaultLanguage
 	cmd.RunE = func(cc *cobra.Command, args []string) error {
 		client, path, query, err := target.open(cc.Context(), args)

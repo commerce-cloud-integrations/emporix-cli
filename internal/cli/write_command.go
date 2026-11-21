@@ -3,6 +3,7 @@ package cli
 import (
 	"fmt"
 	"net/http"
+	"net/url"
 	"slices"
 	"strconv"
 	"strings"
@@ -49,7 +50,7 @@ func (w *write) command(a *app) *cobra.Command {
 	if w.answers.ForbiddenIsRefusal {
 		checkRefusalHelp(cmd)
 	}
-	site, rule := w.bindArguments(a, cmd)
+	site, rule := w.binding().bind(a, cmd, slices.Concat(w.scopes, w.paramScopes.scopes))
 	lang := w.bindLanguage(cmd)
 	if w.answers.ReportsOutcome {
 		cmd.Long += "\n\n" + outcomeHelp
@@ -60,10 +61,13 @@ func (w *write) command(a *app) *cobra.Command {
 	setParams := w.params.bind(cmd)
 	paramScoped := w.paramScopes.bind(cmd)
 	setHeaders := queryFlags{optional: w.headers}.bind(cmd)
-	for _, sw := range w.switches {
-		cmd.Flags().Bool(sw.flag, false, sw.usage)
+	setSwitches := make([]func(url.Values), len(w.switches))
+	for i, sw := range w.switches {
+		on := cmd.Flags().Bool(sw.flag, false, sw.usage)
+		setSwitches[i] = func(query url.Values) { query.Set(sw.param, strconv.FormatBool(*on)) }
 	}
 	choose := w.choice.bind(cmd)
+	extent := w.deletes.bind(cmd)
 	var end endingPlanner = printing{}
 	if w.answer != nil {
 		end = w.answer.bind(a, cmd)
@@ -75,9 +79,8 @@ func (w *write) command(a *app) *cobra.Command {
 		path, query := w.req.fill(args, *site)
 		setParams(query)
 		needed := paramScoped(query)
-		for _, sw := range w.switches {
-			on, _ := c.Flags().GetBool(sw.flag)
-			query.Set(sw.param, strconv.FormatBool(on))
+		for _, set := range setSwitches {
+			set(query)
 		}
 		sent := &emporix.Write{Path: path, Query: query, Answers: w.answers, Header: http.Header{}}
 		if header := w.languageHeader(*lang); header != "" {
@@ -85,22 +88,13 @@ func (w *write) command(a *app) *cobra.Command {
 		}
 		setHeaders(sent.Header)
 		scopes, then := end.plan(c, choose(query, rule.fill(args, slices.Concat(w.scopes, needed))))
-		return s.sendThen(c, scopes, sent, args[n:], w.subject(c, args), then)
+		return s.sendThen(c, scopes, sent, args[n:], w.subject(extent, args), then)
 	}
 	return cmd
 }
 
-func (w *write) bindArguments(a *app, cmd *cobra.Command) (site *siteCode, rule typeRule) {
-	site = w.req.bind(cmd, w.choices)
-	if len(w.reserved) > 0 {
-		if !w.req.names(placeholderID) {
-			panic(w.use + ": a write reserves values of an ID only where its request names " + placeholderID)
-		}
-		cmd.Args = refuseReserved(cmd.Args, w.reserved)
-	}
-	rule = typeScopes(cmd, w.req, slices.Concat(w.scopes, w.paramScopes.scopes), w.builtIn)
-	completeArguments(a, cmd, site, w.ids, w.choices, rule)
-	return site, rule
+func (w *write) binding() *argumentBinding {
+	return &argumentBinding{req: w.req, choices: w.choices, builtIn: w.builtIn, ids: w.ids, reserved: w.reserved}
 }
 
 func (w *write) requested() []string {
@@ -118,6 +112,8 @@ func (w *write) checkDeclaration() {
 		panic(fmt.Sprintf("%s: a write requests a write-capable scope", w.use))
 	case w.req.query.Has(w.choice.param):
 		panic(fmt.Sprintf("%s: its choice sets %s, which its request sends already", w.use, w.choice.param))
+	case len(w.reserved) > 0 && !w.req.names(placeholderID):
+		panic(w.use + ": a write reserves values of an ID only where its request names " + placeholderID)
 	}
 	w.checkDeletion()
 }
@@ -137,8 +133,8 @@ func (w *write) confirmation() confirmation {
 	return confirmationFor(w.method, word, w.deletes)
 }
 
-func (w *write) subject(cmd *cobra.Command, args []string) subject {
-	about := subject{many: w.deletes.at(cmd)}
+func (w *write) subject(extent func() string, args []string) subject {
+	about := subject{many: extent()}
 	if n := len(w.req.arguments()); n > 0 {
 		about.word = args[n-1]
 	}
@@ -163,13 +159,17 @@ func (d deletion) sentence() string {
 
 func deletesMany(many string) string { return many + " with one request" }
 
-func (d deletion) at(cmd *cobra.Command) string {
-	if d.with != "" {
-		if on, _ := cmd.Flags().GetBool(d.with); !on {
-			return ""
-		}
+func (d deletion) bind(cmd *cobra.Command) func() string {
+	if d.with == "" {
+		return func() string { return d.many }
 	}
-	return d.many
+	with := cmd.Flags().Lookup(d.with).Value
+	return func() string {
+		if with.String() == strconv.FormatBool(true) {
+			return d.many
+		}
+		return ""
+	}
 }
 
 func (w *write) checkDeletion() {

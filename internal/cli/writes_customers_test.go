@@ -27,12 +27,12 @@ func customerServiceWrites() []writeCase {
 		{
 			args: []string{"customers", "create"}, file: customerJSON, method: http.MethodPost,
 			path: "/customer/acme1/customers", query: "sendPasswordResetNotifications=false", scopes: manage,
-			status: http.StatusCreated, body: `{"id":"0100"}`, want: "{\n  \"id\": \"0100\"\n}\n",
+			status: http.StatusCreated, response: `{"id":"0100"}`, want: "{\n  \"id\": \"0100\"\n}\n",
 		},
 		{
 			args: []string{"customers", "create", "--password-reset-email"}, file: customerJSON, method: http.MethodPost,
 			path: "/customer/acme1/customers", query: "sendPasswordResetNotifications=true", scopes: manage,
-			status: http.StatusCreated, body: `{"id":"0101"}`, want: "{\n  \"id\": \"0101\"\n}\n",
+			status: http.StatusCreated, response: `{"id":"0101"}`, want: "{\n  \"id\": \"0101\"\n}\n",
 		},
 		{
 			args: []string{"customers", "update", "0100"}, file: customerJSON, method: http.MethodPut,
@@ -50,12 +50,12 @@ func customerServiceWrites() []writeCase {
 		{
 			args: []string{"customers", "import"}, file: "[" + customerJSON + ",\n" + customerJSON + "]\n",
 			method: http.MethodPost, path: "/customer/acme1/customers/import", scopes: imports,
-			status: http.StatusMultiStatus, body: bulkCreated, want: createdJSON,
+			status: http.StatusMultiStatus, response: bulkCreated, want: createdJSON,
 		},
 		{
 			args: []string{"customers", "addresses", "create", "0100"}, file: addressJSON, method: http.MethodPost,
 			path: "/customer/acme1/customers/0100/addresses", scopes: manage, status: http.StatusCreated,
-			body: `{"id":"a1"}`, want: "{\n  \"id\": \"a1\"\n}\n",
+			response: `{"id":"a1"}`, want: "{\n  \"id\": \"a1\"\n}\n",
 		},
 		{
 			args: []string{"customers", "addresses", "update", "0100", "a 1"}, file: addressJSON, method: http.MethodPut,
@@ -87,7 +87,7 @@ func customerServiceWrites() []writeCase {
 			sent:   `{"emailNotificationsEnabled":true,"emailReminderDate":"2027-01-24","retentionEndDate":"2027-01-31"}`,
 			method: http.MethodPost,
 			path:   "/customer/acme1/config/password-migration-retention", scopes: imports, status: http.StatusOK,
-			body: retention, want: "{\n  \"emailNotificationsEnabled\": true,\n  \"emailReminderDate\": \"2027-01-24\",\n" +
+			response: retention, want: "{\n  \"emailNotificationsEnabled\": true,\n  \"emailReminderDate\": \"2027-01-24\",\n" +
 				"  \"retentionEndDate\": \"2027-01-31\"\n}\n",
 		},
 		{
@@ -102,7 +102,7 @@ func customerServiceWrites() []writeCase {
 		{
 			args: []string{"customers", "password-migration", "delete"}, method: http.MethodDelete,
 			path: "/customer/acme1/config/password-migration-retention", scopes: imports, confirmBy: "acme1",
-			many: "the password migration retention of the tenant", status: http.StatusNoContent,
+			deletedMany: "the password migration retention of the tenant", status: http.StatusNoContent,
 		},
 	}
 }

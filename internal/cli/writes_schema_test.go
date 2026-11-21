@@ -14,7 +14,7 @@ func schemaServiceWrites() []writeCase {
 		{
 			args: []string{"schemas", "create"}, file: `{"name":{"en":"Specs"},"types":["PRODUCT"],"attributes":[]}`,
 			method: http.MethodPost, path: "/schema/acme1/schemas", scopes: manage, lang: "*", status: http.StatusCreated,
-			body: `{"id":"s1"}`, want: "{\n  \"id\": \"s1\"\n}\n",
+			response: `{"id":"s1"}`, want: "{\n  \"id\": \"s1\"\n}\n",
 		},
 		{
 			args:   []string{"schemas", "update", "s1"},
@@ -31,7 +31,7 @@ func schemaServiceWrites() []writeCase {
 			file:   referenceBody,
 			form:   []sentPart{schemaFilePart(), {name: "body", contentType: emporix.JSONContentType, content: referenceBody}},
 			method: http.MethodPost, path: "/schema/acme1/references", scopes: manage, lang: "*", status: http.StatusCreated,
-			body: `{"id":"r1"}`, want: "{\n  \"id\": \"r1\"\n}\n",
+			response: `{"id":"r1"}`, want: "{\n  \"id\": \"r1\"\n}\n",
 		},
 		{
 			args:   []string{"schemas", "references", "update", "r1", "--json-schema", "testdata/schema.json"},

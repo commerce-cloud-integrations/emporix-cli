@@ -18,11 +18,11 @@ const removeFromAgents = "delete it even where agents use it"
 // update and patch alike where they take force: they disable the item and
 // what uses it.
 type aiItemWrites struct {
-	one      string
-	members  string
-	language languageMode
-	disable  string
-	remove   string
+	summaryNoun  string
+	members      string
+	language     languageMode
+	disableUsage string
+	deleteUsage  string
 }
 
 func aiManagedGroup[T any](a *app, r resource[T], w aiItemWrites, extra ...*cobra.Command) *cobra.Command {
@@ -37,26 +37,26 @@ func aiItemWriteCommands[T any](a *app, r resource[T], w aiItemWrites) []*cobra.
 	id := r.header[:1]
 	source := r.header[0] + " is the " + r.header[0] + " that `epx " + r.listLine() + "` shows."
 	read := "`epx " + r.commandLine(r.itemUse("get"), r.itemRequest()) + " -o json`"
-	remove := itemDelete(r, "Delete "+w.one, "Deletes "+the+". Emporix refuses to delete one that others use, unless "+
-		"--force unassigns it from them. "+source, scopes)
-	remove.switches = forceSwitch(w.remove)
+	remove := itemDelete(r, "Delete "+w.summaryNoun, "Deletes "+the+". Emporix refuses to delete one that others "+
+		"use, unless --force unassigns it from them. "+source, scopes)
+	remove.switches = forceSwitch(w.deleteUsage)
 	return []*cobra.Command{
 		(&write{
-			use: r.itemUse("update"), short: "Upsert " + w.one, method: http.MethodPut,
+			use: r.itemUse("update"), short: "Upsert " + w.summaryNoun, method: http.MethodPut,
 			long: joinSentences("Replaces "+the+" with the JSON in --file, or creates it with that ID where "+
 				"none exists (an upsert): Emporix answers with the id of one it created and nothing for one it "+
 				"replaced. With metadata.version, as "+read+" prints it, "+
 				"Emporix replaces only that version: another is a conflict (exit 5).", w.members, source),
-			req: item, scopes: scopes, body: &payload{}, language: w.language, switches: forceSwitch(w.disable),
+			req: item, scopes: scopes, body: &payload{}, language: w.language, switches: forceSwitch(w.disableUsage),
 			ids: r.itemIDs(),
 		}).command(a),
 		(&write{
-			use: r.itemUse("patch"), short: "Change members of " + w.one, method: http.MethodPatch,
+			use: r.itemUse("patch"), short: "Change members of " + w.summaryNoun, method: http.MethodPatch,
 			long: "Changes " + the + " with the JSON array of operations in --file, each with op " +
 				"(ADD, REMOVE or REPLACE), path and value, e.g. " +
 				literal(`[{"op": "REPLACE", "path": "/enabled", "value": false}]`) + "; its other members keep their values. " +
 				itemSentence(id, id, r.listLine()),
-			req: item, scopes: scopes, body: operationsFile(), switches: forceSwitch(w.disable), ids: r.itemIDs(),
+			req: item, scopes: scopes, body: operationsFile(), switches: forceSwitch(w.disableUsage), ids: r.itemIDs(),
 		}).command(a),
 		remove.command(a),
 	}

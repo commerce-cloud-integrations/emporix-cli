@@ -13,8 +13,8 @@ type rewardSummary struct {
 	CustomerID   string      `json:"customerId"`
 	ActivePoints json.Number `json:"activePoints"`
 	Summary      *struct {
-		Added    *[]rewardPoints `json:"addedPointsList"`
-		Redeemed []rewardPoints  `json:"redeemedPointsList"`
+		Added    optionalList[rewardPoints] `json:"addedPointsList"`
+		Redeemed []rewardPoints             `json:"redeemedPointsList"`
 	} `json:"summary"`
 }
 
@@ -31,6 +31,8 @@ func (r *rewardSummary) redeemed() string {
 	}
 	return totalPoints(r.Summary.Redeemed)
 }
+
+type optionalList[T any] *[]T
 
 type rewardPoints struct {
 	Points json.Number `json:"points"`

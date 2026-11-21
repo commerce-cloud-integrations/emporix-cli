@@ -129,7 +129,7 @@ func newSiteMixinsCommand(a *app, sites resource[site]) *cobra.Command {
 			"settings), by NAME, each VALUE cut (`-o json` prints them whole). A site without mixins lists none.",
 		// Emporix documents site.site_manage for mixins, but serves them without a scope (live), so
 		// none is requested, whatever the scopes of sites.
-		scopes: []string{},
+		scopes: noScopes{},
 		// Emporix sends an empty body for a site without mixins, which is no mixin, not a missing site.
 		fetch: single{items: members, read: emptyAs("{}")},
 		view: view[namedValue]{

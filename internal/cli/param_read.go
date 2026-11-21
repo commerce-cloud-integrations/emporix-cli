@@ -19,13 +19,15 @@ type paramRead struct {
 	fetch  fetcher
 }
 
-func (p *paramRead) bind(cmd *cobra.Command) (readFunc, shape) {
+func (p *paramRead) bind(cmd *cobra.Command) boundRead {
 	setParams := p.params.bind(cmd)
-	read, items := p.fetch.bind(cmd)
-	return func(client *emporix.Client, ctx context.Context, path string, query url.Values) (json.RawMessage, error) {
+	bound := p.fetch.bind(cmd)
+	read := bound.read
+	bound.read = func(c *emporix.Client, ctx context.Context, path string, query url.Values) (json.RawMessage, error) {
 		setParams(query)
-		return read(client, ctx, path, query)
-	}, items
+		return read(c, ctx, path, query)
+	}
+	return bound
 }
 
 type queryFlags struct {

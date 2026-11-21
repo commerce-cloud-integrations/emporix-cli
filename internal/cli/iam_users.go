@@ -75,7 +75,7 @@ func newUserGroupsCommand(a *app, users resource[iamUser]) *cobra.Command {
 		sub:     groupsOf.use,
 		short:   "List the groups of a user",
 		long:    "Reads the groups a user belongs to.",
-		scopes:  groups.scopes,
+		scopes:  ownScopes(groups.scopes),
 		fetch:   listing{},
 		unknown: listsNothing,
 		view:    groups.view,
@@ -92,22 +92,22 @@ func userAccessReads(a *app, users resource[iamUser]) []*cobra.Command {
 	accessControls := iamAccessControls().reader()
 	return []*cobra.Command{
 		childCommand(a, users, child[string]{
-			use:   "scopes",
+			sub:   "scopes",
 			short: "List the scopes of a user",
 			long: "Reads the scopes a user is granted through their groups, sorted, without the tenant " +
 				"entry; a user without scopes lists nothing, like an unknown one.",
-			scopes:  []string{"iam.scope_read"},
+			scopes:  ownScopes{"iam.scope_read"},
 			fetch:   single{items: userScopeItems},
 			unknown: listsNothing,
 			view:    stringsView("scope", "SCOPE"),
 		}),
 		childCommand(a, users, child[iamAccessControl]{
-			use:   "access-controls",
+			sub:   "access-controls",
 			short: "List the access controls of a user",
 			long: "Reads the access controls a user is granted through their groups. " + accessControlColumns + " " +
 				"Emporix lists them on one page only, so they are read as " + onePage(userAccessControlsPage) +
 				": a user with more fails.",
-			scopes:  accessControls.scopes,
+			scopes:  ownScopes(accessControls.scopes),
 			fetch:   listing{read: onFirstPage(userAccessControlsPage)},
 			unknown: listsNothing,
 			view:    accessControls.view,

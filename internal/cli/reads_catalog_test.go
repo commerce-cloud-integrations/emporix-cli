@@ -33,27 +33,27 @@ func productReads() []readCase {
 			path:    "/product/acme1/product-templates",
 			scopes:  []string{"product.product_template_read"},
 			filters: listFilters{kinds: filterable},
-			body: `[{"id":"t1","name":{"en":"Transistor","nl":"Transistor NL"},
+			response: `[{"id":"t1","name":{"en":"Transistor","nl":"Transistor NL"},
 				"attributes":[{"key":"power","type":"NUMBER"}],"metadata":{"version":3}}]`,
 			want: "ID  NAME           ATTRIBUTES  VERSION\nt1  Transistor NL  1           3\n",
 		},
 		{
-			args:    []string{"products", "list"},
-			path:    "/product/acme1/products",
-			scopes:  []string{"product.product_read_unpublished"},
-			filters: listFilters{kinds: filterable},
-			body:    productsBody,
+			args:     []string{"products", "list"},
+			path:     "/product/acme1/products",
+			scopes:   []string{"product.product_read_unpublished"},
+			filters:  listFilters{kinds: filterable},
+			response: productsBody,
 			want: "ID      CODE    TYPE     PUBLISHED  NAME\n" +
 				"001234  001234  BASIC    false      Transistors (fr)\n" +
 				"ZZ1     ZZ1     BASIC    true       Valve\n" +
 				"P2      P2      VARIANT             Plain name\n",
 		},
 		{
-			args:    []string{"products", "list", "--language", "NL"},
-			path:    "/product/acme1/products",
-			scopes:  []string{"product.product_read_unpublished"},
-			filters: listFilters{kinds: filterable},
-			body:    productsBody,
+			args:     []string{"products", "list", "--language", "NL"},
+			path:     "/product/acme1/products",
+			scopes:   []string{"product.product_read_unpublished"},
+			filters:  listFilters{kinds: filterable},
+			response: productsBody,
 			want: "ID      CODE    TYPE     PUBLISHED  NAME\n" +
 				"001234  001234  BASIC    false      Transistor\n" +
 				"ZZ1     ZZ1     BASIC    true       Klep\n" +
@@ -64,7 +64,7 @@ func productReads() []readCase {
 			path:   "/product/acme1/products/001%20234%2Fx",
 			scopes: []string{"product.product_read_unpublished"},
 			mode:   getWhole,
-			body: `{"id":"001 234/x","code":"001234","productType":"BASIC","published":false,"name":{"en":"Transistor",
+			response: `{"id":"001 234/x","code":"001234","productType":"BASIC","published":false,"name":{"en":"Transistor",
 				"nl":"Transistor NL"}}`,
 			want: "ID         CODE    TYPE   PUBLISHED  NAME\n001 234/x  001234  BASIC  false      Transistor NL\n",
 		},
@@ -73,7 +73,7 @@ func productReads() []readCase {
 			path:   "/product/acme1/product-templates/t1",
 			scopes: []string{"product.product_template_read"},
 			mode:   getWhole,
-			body: `{"id":"t1","name":{"en":"Transistor","nl":"Transistor NL"},"attributes":[{"key":"power"}],
+			response: `{"id":"t1","name":{"en":"Transistor","nl":"Transistor NL"},"attributes":[{"key":"power"}],
 				"metadata":{"version":3}}`,
 			want: "ID  NAME           ATTRIBUTES  VERSION\nt1  Transistor NL  1           3\n",
 		},
@@ -82,7 +82,7 @@ func productReads() []readCase {
 			path:   "/product/acme1/products/recalculate/jobs",
 			scopes: []string{"product.product_manage"},
 			mode:   getWhole,
-			body: `[{"id":"j1","parentRoot":"100200","requestedByIds":["100200-1","100200-2"],"status":"FINISHED",
+			response: `[{"id":"j1","parentRoot":"100200","requestedByIds":["100200-1","100200-2"],"status":"FINISHED",
 				"createdAt":"2026-10-13T10:10:00.000Z","processingStartedAt":"2026-10-13T10:10:03.000Z",
 				"finishedAt":"2026-10-13T10:10:07.000Z","error":null,"attempts":1},
 				{"id":"j2","parentRoot":"100300","status":"FAILED","createdAt":"2026-10-13T10:08:00.000Z",
@@ -101,7 +101,7 @@ func productReads() []readCase {
 			path:   "/product/acme1/products/recalculate/jobs/j%2F1",
 			scopes: []string{"product.product_manage"},
 			mode:   getWhole,
-			body: `{"id":"j/1","parentRoot":"100200","status":"PROCESSING","createdAt":"2026-10-13T10:10:00.000Z",
+			response: `{"id":"j/1","parentRoot":"100200","status":"PROCESSING","createdAt":"2026-10-13T10:10:00.000Z",
 				"attempts":1}`,
 			want: "ID   ROOT PRODUCT  STATUS      ATTEMPTS  CREATED                   FINISHED  ERROR\n" +
 				"j/1  100200        PROCESSING  1         2026-10-13T10:10:00.000Z            \n",
@@ -112,24 +112,24 @@ func productReads() []readCase {
 func categoryReads() []readCase {
 	return []readCase{
 		{
-			args:    []string{"categories", "list", "--language", "nl"},
-			path:    "/category/acme1/categories",
-			query:   "showUnpublished=true",
-			scopes:  []string{"category.category_read_unpublished"},
-			filters: listFilters{kinds: filterable},
-			body:    categoriesBody,
+			args:     []string{"categories", "list", "--language", "nl"},
+			path:     "/category/acme1/categories",
+			query:    "showUnpublished=true",
+			scopes:   []string{"category.category_read_unpublished"},
+			filters:  listFilters{kinds: filterable},
+			response: categoriesBody,
 			want: `ID  CODE        TYPE      PUBLISHED  NAME
 c1  Transistor  STANDARD  true       Transistoren
 c2              STANDARD  false      Plain only
 `,
 		},
 		{
-			args:    []string{"categories", "list", "--language", "de"},
-			path:    "/category/acme1/categories",
-			query:   "showUnpublished=true",
-			scopes:  []string{"category.category_read_unpublished"},
-			filters: listFilters{kinds: filterable},
-			body:    categoriesBody,
+			args:     []string{"categories", "list", "--language", "de"},
+			path:     "/category/acme1/categories",
+			query:    "showUnpublished=true",
+			scopes:   []string{"category.category_read_unpublished"},
+			filters:  listFilters{kinds: filterable},
+			response: categoriesBody,
 			want: `ID  CODE        TYPE      PUBLISHED  NAME
 c1  Transistor  STANDARD  true       Transistors (en)
 c2              STANDARD  false      Plain only
@@ -141,17 +141,17 @@ c2              STANDARD  false      Plain only
 			query:  "showUnpublished=true",
 			scopes: []string{"category.category_read_unpublished"},
 			mode:   getWhole,
-			body: `{"id":"c2","type":"STANDARD","published":false,"name":"Plain only",
+			response: `{"id":"c2","type":"STANDARD","published":false,"name":"Plain only",
 				"localizedName":{"nl":"Alleen gewoon"}}`,
 			want: "ID  CODE  TYPE      PUBLISHED  NAME\nc2        STANDARD  false      Alleen gewoon\n",
 		},
 		{
-			args:    []string{"categories", "for-product", "001 234/x", "--language", "nl"},
-			path:    "/category/acme1/assignments/references/001%20234%2Fx",
-			query:   "showUnpublished=true",
-			scopes:  []string{"category.category_read_unpublished"},
-			filters: listFilters{kinds: sortable},
-			body:    categoriesBody,
+			args:     []string{"categories", "for-product", "001 234/x", "--language", "nl"},
+			path:     "/category/acme1/assignments/references/001%20234%2Fx",
+			query:    "showUnpublished=true",
+			scopes:   []string{"category.category_read_unpublished"},
+			filters:  listFilters{kinds: sortable},
+			response: categoriesBody,
 			want: "ID  CODE        TYPE      PUBLISHED  NAME\n" +
 				"c1  Transistor  STANDARD  true       Transistoren\n" +
 				"c2              STANDARD  false      Plain only\n",
@@ -162,7 +162,7 @@ c2              STANDARD  false      Plain only
 			query:   "showUnpublished=true",
 			scopes:  []string{"category.category_read_unpublished"},
 			filters: listFilters{kinds: sortable},
-			body: `[{"id":"c2","parentId":"c/1","type":"STANDARD","published":true,"localizedName":{"nl":"Zagen"}},
+			response: `[{"id":"c2","parentId":"c/1","type":"STANDARD","published":true,"localizedName":{"nl":"Zagen"}},
 				{"id":"c3","parentId":"c2","type":"STANDARD","published":false,"localizedName":{"en":"Blades"}}]`,
 			want: "ID  PARENT  CODE  TYPE      PUBLISHED  NAME\n" +
 				"c2  c/1           STANDARD  true       Zagen\n" +
@@ -174,7 +174,7 @@ c2              STANDARD  false      Plain only
 			query:   "showUnpublished=true",
 			scopes:  []string{"category.category_read_unpublished"},
 			filters: listFilters{kinds: sortable},
-			body: `[{"id":"c/1","type":"STANDARD","published":true,"localizedName":{"nl":"Werkplaats"}},
+			response: `[{"id":"c/1","type":"STANDARD","published":true,"localizedName":{"nl":"Werkplaats"}},
 				{"id":"c2","parentId":"c/1","type":"STANDARD","published":true,"localizedName":{"nl":"Zagen"}}]`,
 			want: "ID   CODE  TYPE      PUBLISHED  NAME\n" +
 				"c/1        STANDARD  true       Werkplaats\n" +
@@ -186,7 +186,7 @@ c2              STANDARD  false      Plain only
 			query:   "showUnpublished=true",
 			scopes:  []string{"category.category_read_unpublished"},
 			filters: listFilters{kinds: sortable},
-			body: `[{"id":"a1","categoryId":"c2","ref":{"id":"100200","type":"product","published":false,
+			response: `[{"id":"a1","categoryId":"c2","ref":{"id":"100200","type":"product","published":false,
 				"localizedName":{"en":"Saw","nl":"Zaag"}}}]`,
 			want: "ID  PRODUCT  TYPE     PUBLISHED  NAME\na1  100200   product  false      Zaag\n",
 		},
@@ -201,7 +201,7 @@ func categoryTreeReads() []readCase {
 			query:  "showUnpublished=true",
 			scopes: []string{"category.category_read_unpublished"},
 			mode:   getWhole,
-			body: `[{"id":"r1","code":"tools","published":true,"localizedName":{"en":"Tools","nl":"Werkplaats"},
+			response: `[{"id":"r1","code":"tools","published":true,"localizedName":{"en":"Tools","nl":"Werkplaats"},
 				"subcategories":[{"id":"c1","published":false,"localizedName":{"en":"Saws"},"subcategories":[
 					{"id":"c2","name":"Plain only","subcategories":null}]}]},
 				{"id":"r2","localizedName":{"nl":"Tuin"}}]`,
@@ -212,22 +212,22 @@ func categoryTreeReads() []readCase {
 				"r2                    Tuin\n",
 		},
 		{
-			args:   []string{"category-trees", "list", "--type", "CLASSIFICATION"},
-			path:   "/category/acme1/category-trees",
-			query:  "showUnpublished=true&type=CLASSIFICATION",
-			scopes: []string{"category.category_read_unpublished"},
-			mode:   getWhole,
-			body:   `[{"id":"r3","code":"tools","localizedName":{"en":"Tools"},"subcategories":[{"id":"c4","name":"Saws"}]}]`,
-			want:   "ID  CODE   PUBLISHED  NAME\nr3  tools             Tools\nc4                      Saws\n",
+			args:     []string{"category-trees", "list", "--type", "CLASSIFICATION"},
+			path:     "/category/acme1/category-trees",
+			query:    "showUnpublished=true&type=CLASSIFICATION",
+			scopes:   []string{"category.category_read_unpublished"},
+			mode:     getWhole,
+			response: `[{"id":"r3","code":"tools","localizedName":{"en":"Tools"},"subcategories":[{"id":"c4","name":"Saws"}]}]`,
+			want:     "ID  CODE   PUBLISHED  NAME\nr3  tools             Tools\nc4                      Saws\n",
 		},
 		{
-			args:   []string{"category-trees", "list", "--type", "STANDARD", "--limit", "1"},
-			path:   "/category/acme1/category-trees",
-			query:  "showUnpublished=true&type=STANDARD",
-			scopes: []string{"category.category_read_unpublished"},
-			mode:   getWhole,
-			body:   `[{"id":"r1","name":"Garden"},{"id":"r2","name":"Kitchen"}]`,
-			want:   "ID  CODE  PUBLISHED  NAME\nr1                   Garden\n",
+			args:     []string{"category-trees", "list", "--type", "STANDARD", "--limit", "1"},
+			path:     "/category/acme1/category-trees",
+			query:    "showUnpublished=true&type=STANDARD",
+			scopes:   []string{"category.category_read_unpublished"},
+			mode:     getWhole,
+			response: `[{"id":"r1","name":"Garden"},{"id":"r2","name":"Kitchen"}]`,
+			want:     "ID  CODE  PUBLISHED  NAME\nr1                   Garden\n",
 		},
 		{
 			args:   []string{"category-trees", "get", "r 1", "--language", "nl"},
@@ -235,7 +235,7 @@ func categoryTreeReads() []readCase {
 			query:  "showUnpublished=true",
 			scopes: []string{"category.category_read_unpublished"},
 			mode:   getWhole,
-			body: `{"id":"r 1","localizedName":{"nl":"Tuin"},
+			response: `{"id":"r 1","localizedName":{"nl":"Tuin"},
 				"subcategories":[{"id":"c3","localizedName":{"nl":"Banken"}}]}`,
 			want: "ID   CODE  PUBLISHED  NAME\n" +
 				"r 1                   Tuin\n" +
@@ -247,10 +247,10 @@ func categoryTreeReads() []readCase {
 func catalogReads() []readCase {
 	return []readCase{
 		{
-			args:    []string{"brands", "list"},
-			path:    "/brand/brands",
-			filters: listFilters{kinds: filterable},
-			body:    brandsBody,
+			args:     []string{"brands", "list"},
+			path:     "/brand/brands",
+			filters:  listFilters{kinds: filterable},
+			response: brandsBody,
 			want: `ID  NAME
 b1  Brand one
 b2  NORTHWIND TRADE (nl)
@@ -258,50 +258,50 @@ b3  Plain only
 `,
 		},
 		{
-			args:    []string{"brands", "list", "--language", "nl"},
-			path:    "/brand/brands",
-			filters: listFilters{kinds: filterable},
-			body:    brandsBody,
-			want:    "ID  NAME\nb1  Merk een\nb2  NORTHWIND TRADE\nb3  Plain only\n",
+			args:     []string{"brands", "list", "--language", "nl"},
+			path:     "/brand/brands",
+			filters:  listFilters{kinds: filterable},
+			response: brandsBody,
+			want:     "ID  NAME\nb1  Merk een\nb2  NORTHWIND TRADE\nb3  Plain only\n",
 		},
 		{
-			args:    []string{"catalogs", "list"},
-			path:    "/catalog/acme1/catalogs",
-			filters: listFilters{kinds: sortable},
-			body:    catalogsBody,
+			args:     []string{"catalogs", "list"},
+			path:     "/catalog/acme1/catalogs",
+			filters:  listFilters{kinds: sortable},
+			response: catalogsBody,
 			want: `ID   NAME       STATUS   VISIBLE  FROM     TO       SITES    ROOT CATEGORIES
 cc   Main       visible  true     2025-10  2028-10  NL,main  1
 odd  Raar (nl)  visible  false                               0
 `,
 		},
 		{
-			args:    []string{"catalogs", "list", "--language", "nl"},
-			path:    "/catalog/acme1/catalogs",
-			filters: listFilters{kinds: sortable},
-			body:    catalogsBody,
-			want:    catalogsTableInDutch,
+			args:     []string{"catalogs", "list", "--language", "nl"},
+			path:     "/catalog/acme1/catalogs",
+			filters:  listFilters{kinds: sortable},
+			response: catalogsBody,
+			want:     catalogsTableInDutch,
 		},
 		{
-			args: []string{"catalogs", "get", "cc", "--language", "nl"},
-			path: "/catalog/acme1/catalogs/cc",
-			mode: getWhole,
-			body: `{"id":"cc","name":{"en":"Main","nl":"Hoofd"},"status":"visible","categoryIds":["c1","c2"]}`,
+			args:     []string{"catalogs", "get", "cc", "--language", "nl"},
+			path:     "/catalog/acme1/catalogs/cc",
+			mode:     getWhole,
+			response: `{"id":"cc","name":{"en":"Main","nl":"Hoofd"},"status":"visible","categoryIds":["c1","c2"]}`,
 			want: "ID  NAME   STATUS   VISIBLE  FROM  TO  SITES  ROOT CATEGORIES\n" +
 				"cc  Hoofd  visible                            2\n",
 		},
 		{
-			args:    []string{"catalogs", "for-category", "c/1", "--language", "nl"},
-			path:    "/catalog/acme1/catalogs/categories/c%2F1",
-			filters: listFilters{kinds: sortable},
-			body:    catalogsBody,
-			want:    catalogsTableInDutch,
+			args:     []string{"catalogs", "for-category", "c/1", "--language", "nl"},
+			path:     "/catalog/acme1/catalogs/categories/c%2F1",
+			filters:  listFilters{kinds: sortable},
+			response: catalogsBody,
+			want:     catalogsTableInDutch,
 		},
 		{
-			args: []string{"brands", "get", "b1", "--language", "nl"},
-			path: "/brand/brands/b1",
-			mode: getWhole,
-			body: `{"id":"b1","name":"Brand_1","localizedName":{"en":"Brand one","nl":"Merk een"}}`,
-			want: "ID  NAME\nb1  Merk een\n",
+			args:     []string{"brands", "get", "b1", "--language", "nl"},
+			path:     "/brand/brands/b1",
+			mode:     getWhole,
+			response: `{"id":"b1","name":"Brand_1","localizedName":{"en":"Brand one","nl":"Merk een"}}`,
+			want:     "ID  NAME\nb1  Merk een\n",
 		},
 	}
 }
@@ -312,18 +312,18 @@ func labelReads() []readCase {
 			args:    []string{"labels", "list", "--language", "nl"},
 			path:    "/label/labels",
 			filters: listFilters{kinds: filterable},
-			body: `[{"id":"l1","name":"new","description":{"en":"<p>New</p>","nl":"<p>Nieuw</p>"},"mediaId":"m1",
+			response: `[{"id":"l1","name":"new","description":{"en":"<p>New</p>","nl":"<p>Nieuw</p>"},"mediaId":"m1",
 				"overlay":{"isTrue":true,"position":1.0}},{"id":"l2","name":"sale","description":"Sale"}]`,
 			want: "ID  NAME  OVERLAY  POSITION  MEDIA  DESCRIPTION\n" +
 				"l1  new   true     1.0       m1     <p>Nieuw</p>\n" +
 				"l2  sale                            Sale\n",
 		},
 		{
-			args: []string{"labels", "get", "l/1", "--language", "nl"},
-			path: "/label/labels/l%2F1",
-			mode: getWhole,
-			body: `{"id":"l/1","name":"new","description":{"nl":"Nieuw"},"overlay":{"isTrue":false,"position":2}}`,
-			want: "ID   NAME  OVERLAY  POSITION  MEDIA  DESCRIPTION\nl/1  new   false    2                Nieuw\n",
+			args:     []string{"labels", "get", "l/1", "--language", "nl"},
+			path:     "/label/labels/l%2F1",
+			mode:     getWhole,
+			response: `{"id":"l/1","name":"new","description":{"nl":"Nieuw"},"overlay":{"isTrue":false,"position":2}}`,
+			want:     "ID   NAME  OVERLAY  POSITION  MEDIA  DESCRIPTION\nl/1  new   false    2                Nieuw\n",
 		},
 	}
 }
@@ -335,7 +335,7 @@ func mediaReads() []readCase {
 			path:    "/media/acme1/assets",
 			scopes:  []string{"media.asset_read"},
 			filters: listFilters{kinds: filterable},
-			body: `[{"id":"m1","type":"BLOB","access":"PRIVATE","status":"READY","details":{"filename":"a.pdf",
+			response: `[{"id":"m1","type":"BLOB","access":"PRIVATE","status":"READY","details":{"filename":"a.pdf",
 				"mimeType":"application/pdf","bytes":2048.0},"refIds":[{"type":"PRODUCT","id":"100200"},
 				{"type":"CATEGORY","id":"c1"}]},{"id":"m2","type":"LINK","access":"PUBLIC",
 				"url":"https://example.com/a.png"}]`,
@@ -348,26 +348,26 @@ func mediaReads() []readCase {
 			path:   "/media/acme1/assets/m%2F1",
 			scopes: []string{"media.asset_read"},
 			mode:   getWhole,
-			body: `{"id":"m/1","type":"BLOB","access":"PRIVATE","status":"PENDING",
+			response: `{"id":"m/1","type":"BLOB","access":"PRIVATE","status":"PENDING",
 				"details":{"filename":"b.pdf","mimeType":"application/pdf"}}`,
 			want: "ID   TYPE  ACCESS   STATUS   FILE   MIME TYPE        BYTES  REFERENCES\n" +
 				"m/1  BLOB  PRIVATE  PENDING  b.pdf  application/pdf         \n",
 		},
 		{
-			args:   []string{"media", "download-url", "m/1"},
-			path:   "/media/acme1/assets/m%2F1/download-url",
-			scopes: []string{"media.asset_read"},
-			mode:   getWhole,
-			body:   `{"provider":"GCS","url":"https://storage.example.com/a.pdf?sig=x","expiresAt":"2026-10-14T12:15:00Z"}`,
+			args:     []string{"media", "download-url", "m/1"},
+			path:     "/media/acme1/assets/m%2F1/download-url",
+			scopes:   []string{"media.asset_read"},
+			mode:     getWhole,
+			response: `{"provider":"GCS","url":"https://storage.example.com/a.pdf?sig=x","expiresAt":"2026-10-14T12:15:00Z"}`,
 			want: "PROVIDER  EXPIRES               URL\n" +
 				"GCS       2026-10-14T12:15:00Z  https://storage.example.com/a.pdf?sig=x\n",
 		},
 		{
-			args:   []string{"media", "download-url", "m2"},
-			path:   "/media/acme1/assets/m2/download-url",
-			scopes: []string{"media.asset_read"},
-			mode:   getWhole,
-			body:   `{"provider":"LINK","url":"https://example.com/a.png"}`,
+			args:     []string{"media", "download-url", "m2"},
+			path:     "/media/acme1/assets/m2/download-url",
+			scopes:   []string{"media.asset_read"},
+			mode:     getWhole,
+			response: `{"provider":"LINK","url":"https://example.com/a.png"}`,
 			want: "PROVIDER  EXPIRES  URL\n" +
 				"LINK               https://example.com/a.png\n",
 		},

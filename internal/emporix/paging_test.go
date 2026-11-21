@@ -267,17 +267,17 @@ func TestGetUnpaged(t *testing.T) {
 }
 
 func TestCountingTotal(t *testing.T) {
-	for value, want := range map[string]int{"": -1, "x": -1, "-3": -1, "0": 0, "15": 15} {
+	for value, want := range map[string]reportedTotal{"": {}, "x": {}, "-3": {}, "0": reported(0), "15": reported(15)} {
 		counted, hybris := http.Header{}, http.Header{}
 		counted.Set("X-Total-Count", value)
 		hybris.Set("hybris-count", value)
 		if got := totalCounting().total(counted); got != want {
-			t.Errorf("X-Total-Count %q: total %d, want %d", value, got, want)
+			t.Errorf("X-Total-Count %q: total %+v, want %+v", value, got, want)
 		}
 		if got := hybrisCounting().total(hybris); got != want {
-			t.Errorf("hybris-count %q: total %d, want %d", value, got, want)
+			t.Errorf("hybris-count %q: total %+v, want %+v", value, got, want)
 		}
-		if totalCounting().total(hybris) != -1 || hybrisCounting().total(counted) != -1 {
+		if totalCounting().total(hybris).known || hybrisCounting().total(counted).known {
 			t.Errorf("%q: a counting read the other's header", value)
 		}
 	}

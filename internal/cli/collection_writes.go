@@ -2,7 +2,6 @@ package cli
 
 import (
 	"net/http"
-	"strings"
 
 	"github.com/spf13/cobra"
 )
@@ -16,11 +15,18 @@ type collectionAt struct {
 	parentIDs, itemIDs argumentIDs
 }
 
-func (c *collectionAt) use(verb string) string { return strings.TrimSpace(verb + " " + c.parent) }
+func (c *collectionAt) ofTenant() bool { return c.parent == "" }
+
+func (c *collectionAt) use(verb string) string {
+	if c.ofTenant() {
+		return verb
+	}
+	return verb + " " + c.parent
+}
 
 func (c *collectionAt) itemUse(verb string) string { return c.use(verb) + " " + c.item }
 
-func (r resource[T]) at() collectionAt {
+func (r resource[T]) tenantCollection() collectionAt {
 	return collectionAt{path: r.path, item: r.header[0], itemPath: r.itemPath(),
 		get: r.getLine(), itemIDs: r.itemIDs()}
 }
@@ -32,9 +38,9 @@ type collectionWrites struct {
 	language     languageMode
 	languageHelp string
 	upsert       bool
-	create       string
-	update       string
-	remove       string
+	createHelp   string
+	updateHelp   string
+	deleteHelp   string
 	bulk         *bulkWrites
 }
 
@@ -44,16 +50,16 @@ func (w *collectionWrites) writes() (create, update, remove *write) {
 		replace = "Upsert "
 	}
 	create = &write{
-		use: w.at.use(createUse), short: "Create " + w.one, long: w.create, method: http.MethodPost,
+		use: w.at.use(createUse), short: "Create " + w.one, long: w.createHelp, method: http.MethodPost,
 		req: request{path: w.at.path}, scopes: w.scopes, body: &payload{}, language: w.language,
 		languageHelp: w.languageHelp, ids: w.at.parentIDs,
 	}
 	update = &write{
-		use: w.at.itemUse("update"), short: replace + w.one, long: w.update, method: http.MethodPut,
+		use: w.at.itemUse("update"), short: replace + w.one, long: w.updateHelp, method: http.MethodPut,
 		req: request{path: w.at.itemPath}, scopes: w.scopes, body: &payload{}, language: w.language,
 		languageHelp: w.languageHelp, ids: w.at.itemIDs,
 	}
-	remove = deleteWrite(w.at.itemUse(deleteUse), "Delete "+w.one, w.remove, request{path: w.at.itemPath}, w.scopes)
+	remove = deleteWrite(w.at.itemUse(deleteUse), "Delete "+w.one, w.deleteHelp, request{path: w.at.itemPath}, w.scopes)
 	remove.ids = w.at.itemIDs
 	if w.bulk != nil {
 		update.reserved = reservedFor(w.bulk.update, bulkUpdateUse)

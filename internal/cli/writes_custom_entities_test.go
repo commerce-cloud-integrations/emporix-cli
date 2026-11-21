@@ -17,7 +17,7 @@ func customEntityWriteCases() []writeCase {
 		{
 			args: []string{"custom-entities", "create"}, file: `{"id":"DOCUMENT","name":{"en":"Document"}}`,
 			method: http.MethodPost, path: "/schema/acme1/custom-entities", scopes: types, lang: "*",
-			status: http.StatusCreated, body: `{"id":"DOCUMENT"}`, want: "{\n  \"id\": \"DOCUMENT\"\n}\n",
+			status: http.StatusCreated, response: `{"id":"DOCUMENT"}`, want: "{\n  \"id\": \"DOCUMENT\"\n}\n",
 		},
 		{
 			args: []string{"custom-entities", "update", "DOCUMENT"},
@@ -37,13 +37,13 @@ func customEntityWriteCases() []writeCase {
 		{
 			args: []string{"custom-entities", "instances", "create", "DOCUMENT"}, file: instanceJSON,
 			method: http.MethodPost, path: "/schema/acme1/custom-entities/DOCUMENT/instances", scopes: checked,
-			lang: "*", status: http.StatusCreated, body: `{"id":"123"}`, want: "{\n  \"id\": \"123\"\n}\n",
+			lang: "*", status: http.StatusCreated, response: `{"id":"123"}`, want: "{\n  \"id\": \"123\"\n}\n",
 		},
 		{
 			args: []string{"custom-entities", "instances", "update", "DOCUMENT", "12 3", "--validate-references", "false"},
 			file: `{"name":{"en":"Report"},"metadata":{"version":2}}`, method: http.MethodPut,
 			path: "/schema/acme1/custom-entities/DOCUMENT/instances/12%203", query: "validateReferences=false",
-			scopes: instances, lang: "*", status: http.StatusCreated, body: `{"id":"12 3"}`,
+			scopes: instances, lang: "*", status: http.StatusCreated, response: `{"id":"12 3"}`,
 			want: "{\n  \"id\": \"12 3\"\n}\n",
 		},
 		{
@@ -61,28 +61,28 @@ func customEntityWriteCases() []writeCase {
 			args: []string{"custom-entities", "instances", "bulk-create", "DOCUMENT", "--validate-references", "true"},
 			file: "[" + instanceJSON + "]", method: http.MethodPost,
 			path: "/schema/acme1/custom-entities/DOCUMENT/instances/bulk", query: "validateReferences=true",
-			scopes: checked, lang: "*", status: http.StatusMultiStatus, body: `[{"index":0,"code":201,"status":"Created"}]`,
+			scopes: checked, lang: "*", status: http.StatusMultiStatus, response: `[{"index":0,"code":201,"status":"Created"}]`,
 			want: "[\n  {\n    \"code\": 201,\n    \"index\": 0,\n    \"status\": \"Created\"\n  }\n]\n",
 		},
 		{
 			args: []string{"custom-entities", "instances", "bulk-update", "DOCUMENT"},
 			file: `[{"id":"123","name":{"en":"Report"}},{"id":"124","name":{"en":"Manual"}}]`, method: http.MethodPut,
 			path: "/schema/acme1/custom-entities/DOCUMENT/instances/bulk", scopes: instances, lang: "*",
-			status: http.StatusMultiStatus, body: `[{"index":0,"code":204},{"index":1,"code":201}]`,
+			status: http.StatusMultiStatus, response: `[{"index":0,"code":204},{"index":1,"code":201}]`,
 			want: "[\n  {\n    \"code\": 204,\n    \"index\": 0\n  },\n  {\n    \"code\": 201,\n    \"index\": 1\n  }\n]\n",
 		},
 		{
 			args:   []string{"custom-entities", "instances", "bulk-patch", "DOCUMENT"},
 			file:   `[{"id":"123","data":[{"op":"replace","path":"/name/en","value":"Report"}]}]`,
 			method: http.MethodPatch, path: "/schema/acme1/custom-entities/DOCUMENT/instances/bulk", scopes: instances,
-			lang: "*", status: http.StatusMultiStatus, body: `[{"index":0,"id":"123","code":204}]`,
+			lang: "*", status: http.StatusMultiStatus, response: `[{"index":0,"id":"123","code":204}]`,
 			want: "[\n  {\n    \"code\": 204,\n    \"id\": \"123\",\n    \"index\": 0\n  }\n]\n",
 		},
 		{
 			args: []string{"custom-entities", "instances", "bulk-delete", "DOCUMENT"}, file: `["123","124"]`,
 			method: http.MethodDelete, path: "/schema/acme1/custom-entities/DOCUMENT/instances/bulk", scopes: instances,
-			confirmBy: "DOCUMENT", many: "the instances of a custom entity type that --file names",
-			status: http.StatusMultiStatus, body: `[{"index":0,"code":204},{"index":1,"code":204}]`,
+			confirmBy: "DOCUMENT", deletedMany: "the instances of a custom entity type that --file names",
+			status: http.StatusMultiStatus, response: `[{"index":0,"code":204},{"index":1,"code":204}]`,
 			want: "[\n  {\n    \"code\": 204,\n    \"index\": 0\n  },\n  {\n    \"code\": 204,\n    \"index\": 1\n  }\n]\n",
 		},
 	}

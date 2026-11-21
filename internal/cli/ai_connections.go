@@ -69,10 +69,10 @@ func newAIToolsCommand(a *app) *cobra.Command {
 		},
 	})
 	return aiManagedGroup(a, r, aiItemWrites{
-		one: "an agent tool",
+		summaryNoun: "an agent tool",
 		members: "The JSON holds its type (slack, teams, rag_custom, rag_emporix or search), name and config, " +
 			"and whether it is enabled. " + searchToolNeedsReindex + " " + fileGeneratorNotATool,
-		disable: usedByAgents, remove: removeFromAgents,
+		disableUsage: usedByAgents, deleteUsage: removeFromAgents,
 	})
 }
 
@@ -91,10 +91,10 @@ func newAITokensCommand(a *app) *cobra.Command {
 		},
 	})
 	return aiManagedGroup(a, r, aiItemWrites{
-		one: "an AI token",
+		summaryNoun: "an AI token",
 		members: "The JSON holds its name and value, the API key or secret, which cannot change once the " +
 			"token is created. A dry run prints the body, value included.",
-		remove: "delete it even where agents or MCP servers use it",
+		deleteUsage: "delete it even where agents or MCP servers use it",
 	})
 }
 
@@ -114,11 +114,11 @@ func newAIOAuthsCommand(a *app) *cobra.Command {
 		},
 	})
 	return aiManagedGroup(a, r, aiItemWrites{
-		one: "an OAuth configuration",
+		summaryNoun: "an OAuth configuration",
 		members: "The JSON holds its url (the token URL), clientId and grantType (client_credentials, the " +
 			"only one), and its scope, clientSecretToken (the token that holds the secret) and whether it " +
 			"is enabled.",
-		disable: usedByAgents, remove: removeFromAgents,
+		disableUsage: usedByAgents, deleteUsage: removeFromAgents,
 	})
 }
 
@@ -137,9 +137,9 @@ func newAIMCPServersCommand(a *app) *cobra.Command {
 		},
 	})
 	return aiManagedGroup(a, r, aiItemWrites{
-		one: "an MCP server",
+		summaryNoun: "an MCP server",
 		members: "The JSON holds its type (custom: config with the server's url; dynamic: its tools), name " +
 			"and transport, and whether it is enabled. " + mixinsHelp,
-		disable: usedByAgents, remove: removeFromAgents,
+		disableUsage: usedByAgents, deleteUsage: removeFromAgents,
 	})
 }

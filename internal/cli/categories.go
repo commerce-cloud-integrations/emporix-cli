@@ -54,7 +54,7 @@ func newCategoriesCommand(a *app) *cobra.Command {
 			ids:   argumentIDs{productID: products().ids()},
 		}),
 		childCommand(a, r, child[category]{
-			use:   "subcategories",
+			sub:   "subcategories",
 			short: "List the categories below a category",
 			long: "Reads every category below a category, at all levels, published and unpublished; PARENT " +
 				"is the id of the category each one lies directly below.",
@@ -63,7 +63,7 @@ func newCategoriesCommand(a *app) *cobra.Command {
 			view:  subcategoryView(),
 		}),
 		childCommand(a, r, child[category]{
-			use:   "parents",
+			sub:   "parents",
 			short: "List the categories above a category",
 			long: "Reads the categories above a category, published and unpublished, from its root down " +
 				"unless --sort says otherwise.",

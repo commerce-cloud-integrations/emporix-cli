@@ -48,7 +48,8 @@ func renewAt(issued time.Time, lifetime time.Duration) time.Time {
 	if lifetime <= 0 {
 		return time.Time{}
 	}
-	return issued.Add(lifetime - lifetime/10)
+	lastTenth := lifetime / 10
+	return issued.Add(lifetime - lastTenth)
 }
 
 func (t *token) due(now time.Time) bool { return !t.renew.IsZero() && !now.Before(t.renew) }
@@ -92,21 +93,33 @@ func newTokenRequest(ctx context.Context, endpoint, form, userAgent string) (*ht
 	return req, nil
 }
 
+type tokenGrant struct {
+	TokenType string `json:"token_type"`
+	ExpiresIn int    `json:"expires_in"`
+	Scope     string `json:"scope"`
+}
+
 func parseToken(body []byte, tenant string, requested []string) (*token, error) {
 	var payload struct {
 		AccessToken string `json:"access_token"`
-		TokenType   string `json:"token_type"`
-		ExpiresIn   int    `json:"expires_in"`
-		Scope       string `json:"scope"`
+		tokenGrant
 	}
 	if err := json.Unmarshal(body, &payload); err != nil || payload.AccessToken == "" {
 		return nil, errors.New("token response has no access token")
 	}
-	if !strings.EqualFold(payload.TokenType, "bearer") {
-		return nil, fmt.Errorf("unsupported token type %q", payload.TokenType)
+	info, err := payload.verify(tenant, requested)
+	if err != nil {
+		return nil, err
 	}
-	info := TokenInfo{ExpiresIn: time.Duration(payload.ExpiresIn) * time.Second}
-	info.Tenant, info.Scopes = SplitScopes(payload.Scope)
+	return &token{value: payload.AccessToken, info: info}, nil
+}
+
+func (g tokenGrant) verify(tenant string, requested []string) (TokenInfo, error) {
+	if !strings.EqualFold(g.TokenType, "bearer") {
+		return TokenInfo{}, fmt.Errorf("unsupported token type %q", g.TokenType)
+	}
+	info := TokenInfo{ExpiresIn: time.Duration(g.ExpiresIn) * time.Second}
+	info.Tenant, info.Scopes = SplitScopes(g.Scope)
 	var missing []string
 	for _, scope := range requested {
 		if !slices.Contains(info.Scopes, scope) {
@@ -114,9 +127,9 @@ func parseToken(body []byte, tenant string, requested []string) (*token, error) 
 		}
 	}
 	if info.Tenant != tenant || len(missing) > 0 {
-		return nil, &ScopeError{Tenant: tenant, GrantedTenant: info.Tenant, Missing: missing}
+		return TokenInfo{}, &ScopeError{Tenant: tenant, GrantedTenant: info.Tenant, Missing: missing}
 	}
-	return &token{value: payload.AccessToken, info: info}, nil
+	return info, nil
 }
 
 // SplitScopes splits an OAuth scope text, scopes separated by spaces as

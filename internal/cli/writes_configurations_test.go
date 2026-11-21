@@ -14,7 +14,7 @@ func configurationWrites() []writeCase {
 			args: []string{"configurations", "create"},
 			file: `[{"key":"storefront.host","value":"shop.acme.example"}]`, method: http.MethodPost,
 			path: "/configuration/acme1/configurations", scopes: manage, status: http.StatusCreated,
-			body: `[{"key":"storefront.host","secured":false,"value":"shop.acme.example","version":1}]`,
+			response: `[{"key":"storefront.host","secured":false,"value":"shop.acme.example","version":1}]`,
 			want: "[\n  {\n    \"key\": \"storefront.host\",\n    \"secured\": false,\n    \"value\": \"shop.acme.example\",\n" +
 				"    \"version\": 1\n  }\n]\n",
 		},
@@ -22,19 +22,19 @@ func configurationWrites() []writeCase {
 			args: []string{"configurations", "update", "project_country"},
 			file: "{\"key\": \"project_country\", \"value\": \"AT\", \"version\": 1}\n", method: http.MethodPut,
 			path: "/configuration/acme1/configurations/project_country", scopes: manage, status: http.StatusOK,
-			body: `{"key":"project_country","value":"AT","version":2}`,
-			want: "{\n  \"key\": \"project_country\",\n  \"value\": \"AT\",\n  \"version\": 2\n}\n",
+			response: `{"key":"project_country","value":"AT","version":2}`,
+			want:     "{\n  \"key\": \"project_country\",\n  \"value\": \"AT\",\n  \"version\": 2\n}\n",
 		},
 		{
 			args: []string{"configurations", "client-create", "acme.indexing-client"},
 			file: `[{"key":"batchSize","value":100}]`, method: http.MethodPost, path: client, scopes: manage,
-			status: http.StatusCreated, body: `[{"client":"acme.indexing-client","key":"batchSize","value":100}]`,
+			status: http.StatusCreated, response: `[{"client":"acme.indexing-client","key":"batchSize","value":100}]`,
 			want: "[\n  {\n    \"client\": \"acme.indexing-client\",\n    \"key\": \"batchSize\",\n    \"value\": 100\n  }\n]\n",
 		},
 		{
 			args: []string{"configurations", "client-update", "acme.indexing-client", "batchSize"},
 			file: `{"key":"batchSize","value":250}`, method: http.MethodPut, path: client + "/batchSize", scopes: manage,
-			status: http.StatusOK, body: `{"client":"acme.indexing-client","key":"batchSize","value":250}`,
+			status: http.StatusOK, response: `{"client":"acme.indexing-client","key":"batchSize","value":250}`,
 			want: "{\n  \"client\": \"acme.indexing-client\",\n  \"key\": \"batchSize\",\n  \"value\": 250\n}\n",
 		},
 	}

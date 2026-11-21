@@ -22,6 +22,7 @@ import os
 import re
 import sys
 from pathlib import Path
+from typing import NamedTuple
 
 SITE = Path(__file__).resolve().parents[3] / "site"
 FENCE = re.compile(r"^\s*```")
@@ -167,6 +168,17 @@ def main(args: list) -> int:
         return 1
 
 
+class Entry(NamedTuple):
+    """A page written by write_pages, as the indexes list it."""
+    group: str
+    page: str
+    title: str
+    description: str
+    canonical: str
+    md_url: str
+    text: str
+
+
 def write_pages(export: str, source: str, base: str, host: str) -> int:
     """Writes the Markdown copies and head tags of the pages in export, then the indexes."""
     docs = json.loads(Path(source, "docs.json").read_text(encoding="utf-8"))
@@ -194,7 +206,7 @@ def write_pages(export: str, source: str, base: str, host: str) -> int:
         save(md_path, text)
         page_html = target.read_text(encoding="utf-8")
         save(target, add_head(page_html, canonical, title, description, site))
-        entries.append((group, page, title, description, canonical, md_url, text))
+        entries.append(Entry(group, page, title, description, canonical, md_url, text))
     write_indexes(Path(export), docs, site, host, base, entries)
     return 0
 
@@ -205,21 +217,21 @@ def save(path: Path, text: str) -> None:
         out.write(text)
 
 
-def write_indexes(export: Path, docs: dict, site: dict, host: str, base: str, entries: list) -> None:
+def write_indexes(export: Path, docs: dict, site: dict, host: str, base: str, entries: list[Entry]) -> None:
     """Writes llms.txt, llms-full.txt, sitemap.xml and robots.txt at the root of export."""
     lines = ["# " + site["name"], "", "> " + docs.get("description", "")]
     current = None
-    for group, _, title, description, _, md_url, _ in entries:
-        if group != current:
-            current = group
-            lines += ["", "## " + (group or "Pages"), ""]
-        lines.append("- [%s](%s)%s" % (title, md_url, ": " + description if description else ""))
+    for entry in entries:
+        if entry.group != current:
+            current = entry.group
+            lines += ["", "## " + (entry.group or "Pages"), ""]
+        lines.append("- [%s](%s)%s" % (entry.title, entry.md_url, ": " + entry.description if entry.description else ""))
     save(export / "llms.txt", "\n".join(lines) + "\n")
     full = ["# %s — full documentation" % site["name"], ""]
-    for _, _, _, _, canonical, _, text in entries:
-        full += ["Source: " + canonical, "", text, "---", ""]
+    for entry in entries:
+        full += ["Source: " + entry.canonical, "", entry.text, "---", ""]
     save(export / "llms-full.txt", "\n".join(full))
-    urls = "".join("  <url><loc>%s</loc></url>\n" % html.escape(entry[4]) for entry in entries)
+    urls = "".join("  <url><loc>%s</loc></url>\n" % html.escape(entry.canonical) for entry in entries)
     sitemap = ('<?xml version="1.0" encoding="UTF-8"?>\n'
                '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + urls + "</urlset>\n")
     save(export / "sitemap.xml", sitemap)

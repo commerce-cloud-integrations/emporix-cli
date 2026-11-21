@@ -61,7 +61,11 @@ func (f *fakeEmporix) serve(w http.ResponseWriter, r *http.Request) {
 	f.methods = append(f.methods, r.Method)
 	f.totals = append(f.totals, r.Header.Get("X-Total-Count"))
 	f.languages = append(f.languages, headerValue(r.Header, "Content-Language"))
-	body, _ := io.ReadAll(r.Body)
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		respond(http.StatusBadRequest, `{"message":"unreadable body"}`)(w, r)
+		return
+	}
 	f.sent = append(f.sent, strings.TrimSpace(r.Method+" "+string(body)))
 	f.bodies = append(f.bodies, string(body))
 	f.types = append(f.types, r.Header.Get("Content-Type"))
@@ -122,20 +126,20 @@ func inTurn(handlers ...http.HandlerFunc) http.HandlerFunc {
 func (tt *readCase) served(t *testing.T) http.HandlerFunc {
 	t.Helper()
 	switch {
-	case tt.media != "":
-		return inLanguage(tt.language(), respond(http.StatusOK, tt.body, "Content-Type", tt.media))
-	case tt.total != "":
-		return allLanguages(respond(http.StatusOK, "", "X-Total-Count", tt.total))
+	case tt.contentType != "":
+		return inLanguage(tt.language(), respond(http.StatusOK, tt.response, "Content-Type", tt.contentType))
+	case tt.totalHeader != "":
+		return allLanguages(respond(http.StatusOK, "", "X-Total-Count", tt.totalHeader))
 	case tt.mode == getAllBodyPaged:
-		return allLanguages(firstBodyPage(tt.body))
+		return allLanguages(firstBodyPage(tt.response))
 	case tt.mode == getAllOnFirstPage:
 		var items []json.RawMessage
-		if err := json.Unmarshal([]byte(tt.body), &items); err != nil {
+		if err := json.Unmarshal([]byte(tt.response), &items); err != nil {
 			t.Fatalf("a getAllOnFirstPage case's body must be an array: %v", err)
 		}
-		return allLanguages(respond(http.StatusOK, tt.body, "X-Total-Count", strconv.Itoa(len(items))))
+		return allLanguages(respond(http.StatusOK, tt.response, "X-Total-Count", strconv.Itoa(len(items))))
 	default:
-		return allLanguages(firstPage(tt.body))
+		return allLanguages(firstPage(tt.response))
 	}
 }
 

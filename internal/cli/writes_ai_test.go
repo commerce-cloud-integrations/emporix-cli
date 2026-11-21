@@ -40,7 +40,7 @@ func aiAgentWrites() []writeCase {
 		{
 			args: []string{"ai", "agents", "update", "a1"}, file: agent, method: http.MethodPut,
 			path: aiAgenticPath + "agents/a1", scopes: manage, lang: "*", status: http.StatusCreated,
-			body: `{"id":"a1"}`, want: "{\n  \"id\": \"a1\"\n}\n",
+			response: `{"id":"a1"}`, want: "{\n  \"id\": \"a1\"\n}\n",
 		},
 		{
 			args: []string{"ai", "agents", "patch", "a1"}, file: `[{"op":"REPLACE","path":"/enabled","value":false}]`,
@@ -55,32 +55,32 @@ func aiAgentWrites() []writeCase {
 			args:   []string{"ai", "agents", "create", "complaint-template"},
 			file:   `{"name":"Complaints","description":"Resolves complaints","userPrompt":"Use get-order."}`,
 			method: http.MethodPost, path: aiAgenticPath + "templates/complaint-template/agents", scopes: manage,
-			lang: "*", status: http.StatusCreated, body: `{"id":"a2"}`, want: "{\n  \"id\": \"a2\"\n}\n",
+			lang: "*", status: http.StatusCreated, response: `{"id":"a2"}`, want: "{\n  \"id\": \"a2\"\n}\n",
 		},
 		{
 			args: []string{"ai", "agents", "export", "--agent", "a1", "--agent", "a 2"},
 			sent: `{"agentIds":["a1","a 2"]}`, method: http.MethodPost, path: aiAgenticPath + "agents/export",
-			scopes: []string{"ai.agent_read"}, status: http.StatusOK, body: export,
+			scopes: []string{"ai.agent_read"}, status: http.StatusOK, response: export,
 			want: "{\n  \"checksum\": \"de56\",\n  \"data\": \"eyJhZ2VudHMiOltdfQ==\",\n" +
 				"  \"exportedAt\": \"2026-10-14T10:00:00Z\",\n  \"jobId\": \"j1\"\n}\n",
 		},
 		{
 			args: []string{"ai", "agents", "export"}, file: `{"agentIds":["a1"]}`, method: http.MethodPost,
 			path: aiAgenticPath + "agents/export", scopes: []string{"ai.agent_read"}, status: http.StatusOK,
-			body: `{"jobId":"j1"}`, want: "{\n  \"jobId\": \"j1\"\n}\n",
+			response: `{"jobId":"j1"}`, want: "{\n  \"jobId\": \"j1\"\n}\n",
 		},
 		{
 			args: []string{"ai", "agents", "import"}, file: export, method: http.MethodPost,
 			path: aiAgenticPath + "agents/import", scopes: manage, status: http.StatusOK,
-			body: `{"message":"Imported 1 agents.","jobId":"j2"}`,
-			want: "{\n  \"jobId\": \"j2\",\n  \"message\": \"Imported 1 agents.\"\n}\n",
+			response: `{"message":"Imported 1 agents.","jobId":"j2"}`,
+			want:     "{\n  \"jobId\": \"j2\",\n  \"message\": \"Imported 1 agents.\"\n}\n",
 		},
 		{
 			args: []string{"ai", "agents", "attach", "a1", "--upload", "testdata/order.csv"},
 			form: []sentPart{{name: "attachment", file: "order.csv", contentType: "text/csv",
 				content: orderCSV()}},
 			method: http.MethodPost, path: aiAgenticPath + "a1/attachments", scopes: chat,
-			status: http.StatusCreated, body: `{"id":"att1","sessionId":"s1"}`,
+			status: http.StatusCreated, response: `{"id":"att1","sessionId":"s1"}`,
 			want: "{\n  \"id\": \"att1\",\n  \"sessionId\": \"s1\"\n}\n",
 		},
 		{
@@ -88,14 +88,14 @@ func aiAgentWrites() []writeCase {
 			form: []sentPart{{name: "attachment", file: "order.text", contentType: "text/plain",
 				content: orderText()}},
 			method: http.MethodPost, path: aiAgenticPath + "a1/attachments", scopes: chat,
-			status: http.StatusCreated, body: `{"id":"att2","sessionId":"s1"}`,
+			status: http.StatusCreated, response: `{"id":"att2","sessionId":"s1"}`,
 			want: "{\n  \"id\": \"att2\",\n  \"sessionId\": \"s1\"\n}\n",
 		},
 		{
 			args:   []string{"ai", "agents", "attach", "a1", "--media", "m1"},
 			form:   []sentPart{{name: "attachmentId", content: "m1"}},
 			method: http.MethodPost, path: aiAgenticPath + "a1/attachments", scopes: chat,
-			status: http.StatusOK, body: `{"id":"m1","sessionId":"s2"}`,
+			status: http.StatusOK, response: `{"id":"m1","sessionId":"s2"}`,
 			want: "{\n  \"id\": \"m1\",\n  \"sessionId\": \"s2\"\n}\n",
 		},
 		{
@@ -156,44 +156,45 @@ func aiCreditWrites() []writeCase {
 		{
 			args: []string{"ai", "chat", "--agent", "a1", "--message", "Where is order EON1243?"},
 			sent: `{"agentId":"a1","message":"Where is order EON1243?"}`, method: http.MethodPost,
-			path: aiAgenticPath + "chat", scopes: chat, status: http.StatusOK, body: reply,
+			path: aiAgenticPath + "chat", scopes: chat, status: http.StatusOK, response: reply,
 			want: "[\n  {\n    \"agentId\": \"a1\",\n    \"agentType\": \"generic\",\n" +
 				"    \"message\": \"Order EON1243 ships today.\",\n    \"sessionId\": \"s1\"\n  }\n]\n",
 		},
 		{
 			args: []string{"ai", "chat"}, file: `{"agentId":"a1","message":"Hi","attachments":[{"attachmentId":"att1",` +
 				`"caption":"Order"}]}`,
-			method: http.MethodPost, path: aiAgenticPath + "chat", scopes: chat, status: http.StatusOK, body: `[]`,
+			method: http.MethodPost, path: aiAgenticPath + "chat", scopes: chat, status: http.StatusOK, response: `[]`,
 			want: "[]\n",
 		},
 		{
 			args: []string{"ai", "chat", "--agent", "a1", "--message", "Draw a forest", "--allow-file-generation"},
 			sent: `{"agentId":"a1","message":"Draw a forest"}`, method: http.MethodPost, path: aiAgenticPath + "chat",
 			scopes: []string{"ai.agentexecution_manage", "media.asset_manage"}, status: http.StatusOK,
-			body: `[{"sessionId":"s1","artifacts":[{"artifactId":"m1","kind":"image","status":"ready"}]}]`,
+			response: `[{"sessionId":"s1","artifacts":[{"artifactId":"m1","kind":"image","status":"ready"}]}]`,
 			want: "[\n  {\n    \"artifacts\": [\n      {\n        \"artifactId\": \"m1\",\n        \"kind\": \"image\",\n" +
 				"        \"status\": \"ready\"\n      }\n    ],\n    \"sessionId\": \"s1\"\n  }\n]\n",
 		},
 		{
 			args: []string{"ai", "chat-async", "--agent", "a1", "--message", "Hi"}, sent: `{"agentId":"a1","message":"Hi"}`,
 			method: http.MethodPost, path: aiAgenticPath + "chat-async", scopes: chat, status: http.StatusCreated,
-			body: `{"jobId":"j3"}`, want: "{\n  \"jobId\": \"j3\"\n}\n",
+			response: `{"jobId":"j3"}`, want: "{\n  \"jobId\": \"j3\"\n}\n",
 		},
 		{
 			args: []string{"ai", "chat-async"}, file: `{"agentId":"a1","message":"Hi"}`, method: http.MethodPost,
-			path: aiAgenticPath + "chat-async", scopes: chat, status: http.StatusCreated, body: `{"jobId":"j3"}`,
+			path: aiAgenticPath + "chat-async", scopes: chat, status: http.StatusCreated, response: `{"jobId":"j3"}`,
 			want: "{\n  \"jobId\": \"j3\"\n}\n",
 		},
 		{
 			args: []string{"ai", "generate-text", "--prompt", "Describe product 100200", "--max-tokens", "500"},
 			sent: `{"maxTokens":500,"prompt":"Describe product 100200"}`, method: http.MethodPost,
 			path: aiServicePath + "texts", scopes: []string{"ai.text_manage"}, status: http.StatusOK,
-			body: `{"result":"A pipe cutter."}`, want: "{\n  \"result\": \"A pipe cutter.\"\n}\n",
+			response: `{"result":"A pipe cutter."}`, want: "{\n  \"result\": \"A pipe cutter.\"\n}\n",
 		},
 		{
 			args: []string{"ai", "generate-text"}, file: `{"id":"en","prompt":"Describe product 100200"}`,
 			method: http.MethodPost, path: aiServicePath + "texts", scopes: []string{"ai.text_manage"}, status: http.StatusOK,
-			body: `{"id":"en","result":"A pipe cutter."}`, want: "{\n  \"id\": \"en\",\n  \"result\": \"A pipe cutter.\"\n}\n",
+			response: `{"id":"en","result":"A pipe cutter."}`,
+			want:     "{\n  \"id\": \"en\",\n  \"result\": \"A pipe cutter.\"\n}\n",
 		},
 		{
 			args: []string{"ai", "generate-completion", "--message", "SYSTEM:You write product texts.", "--message",
@@ -201,12 +202,12 @@ func aiCreditWrites() []writeCase {
 			sent: `{"messages":[{"role":"SYSTEM","content":"You write product texts."},` +
 				`{"role":"USER","content":"Describe product 100200: a pipe cutter"}]}`,
 			method: http.MethodPost, path: aiServicePath + "completions", scopes: []string{"ai.completion_manage"},
-			status: http.StatusOK, body: `{"result":"Done."}`, want: "{\n  \"result\": \"Done.\"\n}\n",
+			status: http.StatusOK, response: `{"result":"Done."}`, want: "{\n  \"result\": \"Done.\"\n}\n",
 		},
 		{
 			args: []string{"ai", "generate-completion"}, file: `{"messages":[{"role":"USER","content":"Hi"}]}`,
 			method: http.MethodPost, path: aiServicePath + "completions", scopes: []string{"ai.completion_manage"},
-			status: http.StatusOK, body: `{"result":"Hello."}`, want: "{\n  \"result\": \"Hello.\"\n}\n",
+			status: http.StatusOK, response: `{"result":"Hello."}`, want: "{\n  \"result\": \"Hello.\"\n}\n",
 		},
 	}
 }

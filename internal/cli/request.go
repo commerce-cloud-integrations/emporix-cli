@@ -50,16 +50,36 @@ func (req request) arguments() []string {
 	})
 }
 
-func (req request) bind(cmd *cobra.Command, choices map[string][]string) *siteCode {
+func (req request) bind(cmd *cobra.Command, choices map[string][]string) (*siteCode, cobra.PositionalArgs) {
 	n := len(req.arguments())
+	var accept cobra.PositionalArgs
 	if names := argumentNames(cmd.Use, max(n, argumentCount(cmd.Use))); len(names) > 0 {
-		cmd.Args = requestArgs(names, n, choices)
+		accept = requestArgs(names, n, choices)
 	}
 	site := new(siteCode)
 	if req.names(placeholderSite) {
 		addSiteFlag(cmd, site)
 	}
-	return site
+	return site, accept
+}
+
+type argumentBinding struct {
+	req      request
+	choices  map[string][]string
+	builtIn  builtInTypes
+	ids      argumentIDs
+	reserved map[string]string
+}
+
+func (b *argumentBinding) bind(a *app, cmd *cobra.Command, scopes []string) (*siteCode, typeRule) {
+	site, accept := b.req.bind(cmd, b.choices)
+	if len(b.reserved) > 0 {
+		accept = refuseReserved(accept, b.reserved)
+	}
+	rule := typeScopes(cmd.Use, b.req, scopes, b.builtIn)
+	cmd.Args = rule.args(accept)
+	completeArguments(a, cmd, site, b.ids, b.choices, rule)
+	return site, rule
 }
 
 func (req request) fill(args []string, site siteCode) (string, url.Values) {

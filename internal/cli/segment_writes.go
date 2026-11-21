@@ -86,13 +86,13 @@ const assignmentNote = "--file may give the assignment's mixins and metadata (it
 	"its mixins); without it, epx sends an empty object."
 
 type segmentAssignment struct {
-	suffix  string
-	columns []string
-	noun    string
-	what    string
-	note    string
-	about   string
-	choices map[string][]string
+	suffix      string
+	columns     []string
+	summaryNoun string
+	helpNoun    string
+	assignNote  string
+	argSource   string
+	choices     map[string][]string
 }
 
 func segmentAssignmentWrites[T any](a *app, segments resource[segment], c child[T], bulk *bulkWrites,
@@ -103,16 +103,16 @@ func segmentAssignmentWrites[T any](a *app, segments resource[segment], c child[
 	ofSegment := argumentIDs{segment: segments.ids()}
 	return []*cobra.Command{
 		(&write{
-			use: assign.use, short: "Assign " + kind.noun + " to a segment", method: http.MethodPut,
-			long: joinSentences("Assigns "+kind.what+" to the segment "+segment+", or replaces its assignment (an upsert).",
-				kind.about, kind.note, assignmentNote, ifUnchangedNote),
+			use: assign.use, short: "Assign " + kind.summaryNoun + " to a segment", method: http.MethodPut,
+			long: joinSentences("Assigns "+kind.helpNoun+" to the segment "+segment+", or replaces its assignment (an upsert).",
+				kind.argSource, kind.assignNote, assignmentNote, ifUnchangedNote),
 			req: request{path: assign.path}, scopes: scopes, body: emptyObjectOrFile(), choices: kind.choices,
 			reserved: bulk.reserved(http.MethodPut, assign.path), ids: ofSegment,
 		}).command(a),
 		(&write{
-			use: remove.use, short: "Remove " + kind.noun + " from a segment", method: http.MethodDelete,
-			long: "Removes " + kind.what + " from the segment " + segment + "; Emporix answers one that is not " +
-				"assigned as removed. " + kind.about,
+			use: remove.use, short: "Remove " + kind.summaryNoun + " from a segment", method: http.MethodDelete,
+			long: "Removes " + kind.helpNoun + " from the segment " + segment + "; Emporix answers one that is not " +
+				"assigned as removed. " + kind.argSource,
 			req: request{path: remove.path}, scopes: scopes, body: noBody{}, choices: kind.choices,
 			reserved: bulk.reserved(http.MethodDelete, remove.path), ids: childItemIDs(segments, c, &remove),
 		}).command(a),
@@ -136,15 +136,15 @@ func segmentCustomerWrites(a *app, segments resource[segment], customers child[s
 	customer := "CUSTOMER the customer's id (the id of `epx customers get NUMBER -o json`), not its NUMBER"
 	return slices.Concat(
 		segmentAssignmentWrites(a, segments, customers, bulk, &segmentAssignment{
-			noun: "a customer", what: "the customer CUSTOMER without a legal entity (B2C)",
-			note:  oneCustomerKindNote,
-			about: segments.argumentSource() + ", and " + customer + ".",
+			summaryNoun: "a customer", helpNoun: "the customer CUSTOMER without a legal entity (B2C)",
+			assignNote: oneCustomerKindNote,
+			argSource:  segments.argumentSource() + ", and " + customer + ".",
 		}),
 		segmentAssignmentWrites(a, segments, customers, bulk, &segmentAssignment{
-			suffix: "-b2b", columns: []string{columnCustomer, columnLegalEntity}, noun: "a customer of a legal entity",
-			what: "the customer CUSTOMER of the legal entity LEGAL_ENTITY (B2B)",
-			note: oneCustomerKindNote,
-			about: segments.argumentSource() + ", " + customer + ", and LEGAL_ENTITY the ID that " +
+			suffix: "-b2b", columns: []string{columnCustomer, columnLegalEntity}, summaryNoun: "a customer of a legal entity",
+			helpNoun:   "the customer CUSTOMER of the legal entity LEGAL_ENTITY (B2B)",
+			assignNote: oneCustomerKindNote,
+			argSource: segments.argumentSource() + ", " + customer + ", and LEGAL_ENTITY the ID that " +
 				"`epx legal-entities list` shows.",
 		}),
 		bulk.commands(a),
@@ -153,8 +153,8 @@ func segmentCustomerWrites(a *app, segments resource[segment], customers child[s
 
 func segmentGroupWrites(a *app, segments resource[segment], groups child[segmentGroup]) []*cobra.Command {
 	return segmentAssignmentWrites(a, segments, groups, nil, &segmentAssignment{
-		noun: "an IAM group", what: "the IAM group GROUP, a group of customers (userType CUSTOMER),",
-		about: segments.argumentSource() + ", and GROUP the ID of an IAM group that `epx iam groups list` shows.",
+		summaryNoun: "an IAM group", helpNoun: "the IAM group GROUP, a group of customers (userType CUSTOMER),",
+		argSource: segments.argumentSource() + ", and GROUP the ID of an IAM group that `epx iam groups list` shows.",
 	})
 }
 
@@ -173,9 +173,9 @@ func segmentItemWrites(a *app, segments resource[segment], items child[segmentIt
 			"SEGMENT_ID, a JSON array such as " + literal(`["100200", "100300"]`) + ". " + types,
 	}
 	return append(segmentAssignmentWrites(a, segments, items, bulk, &segmentAssignment{
-		columns: []string{columnType, columnID}, noun: "a product or category", what: "the product or category ID",
-		about: segments.argumentSource() + ", " + segmentItemTypeSentence() +
+		columns: []string{columnType, columnID}, summaryNoun: "a product or category", helpNoun: "the product or category ID",
+		argSource: segments.argumentSource() + ", " + segmentItemTypeSentence() +
 			", and ID the id of the product or category (as `epx products list` or `epx categories list` shows it).",
-		note: unknownItemNote, choices: segmentItemTypes(),
+		assignNote: unknownItemNote, choices: segmentItemTypes(),
 	}), bulk.commands(a)...)
 }

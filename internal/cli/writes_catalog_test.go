@@ -8,28 +8,28 @@ func brandAndLabelWrites() []writeCase {
 		{
 			args: []string{"brands", "create"}, file: `{"name":"Acme","localizedName":{"en":"Acme","de":"Acme"}}`,
 			method: http.MethodPost, path: "/brand/brands", scopes: brands, lang: "*", status: http.StatusCreated,
-			body: `{"id":"b1","name":"Acme","metadata":{"version":1}}`,
-			want: "{\n  \"id\": \"b1\",\n  \"metadata\": {\n    \"version\": 1\n  },\n  \"name\": \"Acme\"\n}\n",
+			response: `{"id":"b1","name":"Acme","metadata":{"version":1}}`,
+			want:     "{\n  \"id\": \"b1\",\n  \"metadata\": {\n    \"version\": 1\n  },\n  \"name\": \"Acme\"\n}\n",
 		},
 		{
 			args: []string{"brands", "update", "b 1"}, file: `{"name":"Acme","metadata":{"version":1}}`,
 			method: http.MethodPut, path: "/brand/brands/b%201", scopes: brands, lang: "*", status: http.StatusOK,
-			body: `{"id":"b 1","name":"Acme"}`, want: "{\n  \"id\": \"b 1\",\n  \"name\": \"Acme\"\n}\n",
+			response: `{"id":"b 1","name":"Acme"}`, want: "{\n  \"id\": \"b 1\",\n  \"name\": \"Acme\"\n}\n",
 		},
 		{
 			args: []string{"brands", "patch", "b1"}, file: `{"description":"<p>Acme</p>"}`, method: http.MethodPatch,
-			path: "/brand/brands/b1", scopes: brands, lang: "*", status: http.StatusOK, body: `{"id":"b1"}`,
+			path: "/brand/brands/b1", scopes: brands, lang: "*", status: http.StatusOK, response: `{"id":"b1"}`,
 			want: "{\n  \"id\": \"b1\"\n}\n",
 		},
 		{
 			args:   []string{"labels", "create"},
 			file:   `{"name":"Free shipping","description":"<p>Ships free</p>","overlay":{"isTrue":true,"position":1}}`,
 			method: http.MethodPost, path: "/label/labels", scopes: labels, status: http.StatusCreated,
-			body: `{"id":"l1","name":"Free shipping"}`, want: "{\n  \"id\": \"l1\",\n  \"name\": \"Free shipping\"\n}\n",
+			response: `{"id":"l1","name":"Free shipping"}`, want: "{\n  \"id\": \"l1\",\n  \"name\": \"Free shipping\"\n}\n",
 		},
 		{
 			args: []string{"labels", "update", "l1"}, file: `{"name":"Free shipping","description":"Ships free"}`,
-			method: http.MethodPut, path: "/label/labels/l1", scopes: labels, status: http.StatusOK, body: `{"id":"l1"}`,
+			method: http.MethodPut, path: "/label/labels/l1", scopes: labels, status: http.StatusOK, response: `{"id":"l1"}`,
 			want: "{\n  \"id\": \"l1\"\n}\n",
 		},
 		{
@@ -55,7 +55,7 @@ func catalogWriteCases() []writeCase {
 		{
 			args: []string{"catalogs", "create"}, file: `{"id":"AcmeStore_catalog","name":{"en":"Acme Store"}}`,
 			method: http.MethodPost, path: "/catalog/acme1/catalogs", scopes: []string{"catalog.catalog_manage"},
-			status: http.StatusCreated, body: `{"id":"AcmeStore_catalog"}`, want: "{\n  \"id\": \"AcmeStore_catalog\"\n}\n",
+			status: http.StatusCreated, response: `{"id":"AcmeStore_catalog"}`, want: "{\n  \"id\": \"AcmeStore_catalog\"\n}\n",
 		},
 		{
 			args: []string{"catalogs", "update", "AcmeStore_catalog"}, file: `{"name":{"en":"Acme"},"metadata":{"version":2}}`,
@@ -70,13 +70,13 @@ func catalogWriteCases() []writeCase {
 		{
 			args: []string{"categories", "create"}, file: `{"localizedName":{"en":"Saws"},"published":false}`,
 			method: http.MethodPost, path: "/category/acme1/categories", scopes: manage, status: http.StatusCreated,
-			body: `{"id":"c1"}`, want: "{\n  \"id\": \"c1\"\n}\n",
+			response: `{"id":"c1"}`, want: "{\n  \"id\": \"c1\"\n}\n",
 		},
 		{
 			args: []string{"categories", "create", "--publish"}, file: `{"localizedName":{"en":"Saws"},"published":true}`,
 			method: http.MethodPost, path: "/category/acme1/categories", query: "publish=true",
 			scopes: []string{categoryManageScope, "category.category_publish"}, status: http.StatusCreated,
-			body: `{"id":"c1"}`, want: "{\n  \"id\": \"c1\"\n}\n",
+			response: `{"id":"c1"}`, want: "{\n  \"id\": \"c1\"\n}\n",
 		},
 		{
 			args: []string{"categories", "update", "c1"}, file: `{"localizedName":{"en":"Saws"},"published":false}`,
@@ -95,28 +95,28 @@ func catalogWriteCases() []writeCase {
 		{
 			args: []string{"categories", "assignments", "create", "c1"}, file: `{"ref":{"id":"100200","type":"PRODUCT"}}`,
 			method: http.MethodPost, path: "/category/acme1/categories/c1/assignments", scopes: manage,
-			status: http.StatusCreated, body: `{"id":"a1"}`, want: "{\n  \"id\": \"a1\"\n}\n",
+			status: http.StatusCreated, response: `{"id":"a1"}`, want: "{\n  \"id\": \"a1\"\n}\n",
 		},
 		{
 			args: []string{"categories", "assignments", "bulk-create", "c1"}, file: assignmentsBody,
 			method: http.MethodPost, path: "/category/acme1/categories/c1/assignments/bulk", scopes: manage,
-			status: http.StatusMultiStatus, body: assignmentStatuses, want: assignmentStatusesJSON,
+			status: http.StatusMultiStatus, response: assignmentStatuses, want: assignmentStatusesJSON,
 		},
 		{
 			args: []string{"categories", "assignments", "bulk-update", "c1"}, file: assignmentRefsBody,
 			method: http.MethodPut, path: "/category/acme1/categories/c1/assignments/references/bulk", scopes: manage,
-			status: http.StatusMultiStatus, body: assignmentStatuses, want: assignmentStatusesJSON,
+			status: http.StatusMultiStatus, response: assignmentStatuses, want: assignmentStatusesJSON,
 		},
 		{
 			args:   []string{"categories", "assignments", "update", "c1", "001 234"},
 			method: http.MethodPut, path: "/category/acme1/categories/c1/assignments/references/001%20234",
-			scopes: manage, status: http.StatusCreated, body: `{"id":"a1"}`, want: "{\n  \"id\": \"a1\"\n}\n",
+			scopes: manage, status: http.StatusCreated, response: `{"id":"a1"}`, want: "{\n  \"id\": \"a1\"\n}\n",
 		},
 		{
 			args:   []string{"category-trees", "rebuild", "r1"},
 			method: http.MethodPost, path: "/category/acme1/category-trees/r1/rebuild", query: "showUnpublished=true",
 			scopes: []string{categoryManageScope, "category.category_read_unpublished"}, status: http.StatusOK,
-			body: `{"id":"r1","subcategories":[{"id":"c1","published":false}]}`,
+			response: `{"id":"r1","subcategories":[{"id":"c1","published":false}]}`,
 			want: "{\n  \"id\": \"r1\",\n  \"subcategories\": [\n    {\n      \"id\": \"c1\",\n" +
 				"      \"published\": false\n    }\n  ]\n}\n",
 		},

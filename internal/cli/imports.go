@@ -120,7 +120,7 @@ func newImportConfigurationsCommand(a *app, configurations resource[importConfig
 	return newResourceCommand(a, configurations, append([]*cobra.Command{
 		childCommand(a, configurations, streams),
 		childCommand(a, configurations, child[importSchedule]{
-			use:   "schedule",
+			sub:   "schedule",
 			short: "Show the run schedule of a configuration",
 			long: "Reads when an import configuration runs by itself: CRON is a cron expression with six fields " +
 				"(seconds first), evaluated in TIME ZONE, and NEXT RUN when it fires next. A configuration " +
@@ -135,7 +135,7 @@ func newImportConfigurationsCommand(a *app, configurations resource[importConfig
 			},
 		}),
 		childCommand(a, configurations, child[orderedStream]{
-			use:   "stream-order",
+			sub:   "stream-order",
 			short: "Show the order the streams of a configuration run in",
 			long: "Reads the order in which the streams of an import configuration run, which the service " +
 				"derives from their dependencies (also those their mappings add, and that of a FAN_OUT stream on " +
@@ -157,7 +157,7 @@ func newImportConfigurationsCommand(a *app, configurations resource[importConfig
 
 func configurationStreams(v view[importStream]) child[importStream] {
 	return child[importStream]{
-		use:   streamsUse,
+		sub:   streamsUse,
 		short: "List the streams of a configuration",
 		long: "Reads the streams of an import configuration, in the order of their seq. The service returns " +
 			"them whole, so they are read with one request.",

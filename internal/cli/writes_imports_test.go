@@ -26,35 +26,35 @@ func importWriteCases() []writeCase {
 	return slices.Concat([]writeCase{
 		{
 			args: []string{"imports", "configurations", "trigger", "c1"}, sent: `{}`, method: http.MethodPost,
-			path: configuration + "/runs", scopes: trigger, status: http.StatusOK, body: queuedRun, want: queuedRunJSON,
+			path: configuration + "/runs", scopes: trigger, status: http.StatusOK, response: queuedRun, want: queuedRunJSON,
 			conflict: activeRunConflict,
 		},
 		{
 			args: []string{"imports", "configurations", "trigger", "c1", "--mode", "FULL"}, sent: `{"mode":"FULL"}`,
-			method: http.MethodPost, path: configuration + "/runs", scopes: trigger, status: http.StatusOK, body: queuedRun,
+			method: http.MethodPost, path: configuration + "/runs", scopes: trigger, status: http.StatusOK, response: queuedRun,
 			want: queuedRunJSON, conflict: activeRunConflict,
 		},
 		{
 			args: []string{"imports", "configurations", "trigger", "c1"}, file: `{"mode":"FULL","dryRun":true}`,
-			method: http.MethodPost, path: configuration + "/runs", scopes: trigger, status: http.StatusOK, body: queuedRun,
+			method: http.MethodPost, path: configuration + "/runs", scopes: trigger, status: http.StatusOK, response: queuedRun,
 			want: queuedRunJSON, conflict: activeRunConflict,
 		},
 		{
 			args: []string{"imports", "configurations", "update-schedule", "c1", "--cron", "0 0 2 * * *", "--timezone",
 				"Europe/Berlin"},
 			sent: schedule, method: http.MethodPut, path: configuration + "/schedule", scopes: trigger,
-			status: http.StatusOK, body: schedule,
+			status: http.StatusOK, response: schedule,
 			want: "{\n  \"cron\": \"0 0 2 * * *\",\n  \"enabled\": true,\n  \"timezone\": \"Europe/Berlin\"\n}\n",
 		},
 		{
 			args: []string{"imports", "configurations", "update-schedule", "c1", "--cron", "0 0 2 * * *", "--enabled=false"},
 			sent: `{"cron":"0 0 2 * * *","enabled":false}`, method: http.MethodPut, path: configuration + "/schedule",
-			scopes: trigger, status: http.StatusOK, body: `{"cron":"0 0 2 * * *","enabled":false}`,
+			scopes: trigger, status: http.StatusOK, response: `{"cron":"0 0 2 * * *","enabled":false}`,
 			want: "{\n  \"cron\": \"0 0 2 * * *\",\n  \"enabled\": false\n}\n",
 		},
 		{
 			args: []string{"imports", "configurations", "update-schedule", "c1"}, file: schedule, method: http.MethodPut,
-			path: configuration + "/schedule", scopes: trigger, status: http.StatusOK, body: schedule,
+			path: configuration + "/schedule", scopes: trigger, status: http.StatusOK, response: schedule,
 			want: "{\n  \"cron\": \"0 0 2 * * *\",\n  \"enabled\": true,\n  \"timezone\": \"Europe/Berlin\"\n}\n",
 		},
 		{
@@ -64,20 +64,20 @@ func importWriteCases() []writeCase {
 		{
 			args: []string{"imports", "runs", "cancel", "r1"}, method: http.MethodPost, path: run + "/cancel",
 			query: "force=false", scopes: trigger, status: http.StatusAccepted,
-			body:     `{"runId":"r1","force":false,"accepted":true}`,
+			response: `{"runId":"r1","force":false,"accepted":true}`,
 			want:     "{\n  \"accepted\": true,\n  \"force\": false,\n  \"runId\": \"r1\"\n}\n",
 			conflict: cancelConflict, conflictAnswer: cancelUnknown, conflictShown: cancelUnknownShown,
 		},
 		{
 			args: []string{"imports", "runs", "cancel", "r1", "--force"}, method: http.MethodPost, path: run + "/cancel",
 			query: "force=true", scopes: trigger, status: http.StatusAccepted,
-			body:     `{"runId":"r1","force":true,"accepted":false}`,
+			response: `{"runId":"r1","force":true,"accepted":false}`,
 			want:     "{\n  \"accepted\": false,\n  \"force\": true,\n  \"runId\": \"r1\"\n}\n",
 			conflict: cancelConflict, conflictAnswer: cancelUnknown, conflictShown: cancelUnknownShown,
 		},
 		{
 			args: []string{"imports", "runs", "retry", "r1"}, method: http.MethodPost, path: run + "/retry",
-			scopes: trigger, status: http.StatusOK, body: queuedRun, want: queuedRunJSON, conflict: retryConflict,
+			scopes: trigger, status: http.StatusOK, response: queuedRun, want: queuedRunJSON, conflict: retryConflict,
 		},
 	}, importFileWriteCases(trigger))
 }
@@ -92,19 +92,19 @@ func importFileWriteCases(trigger []string) []writeCase {
 			args:   []string{"imports", "streams", "files", "upload", "s1", "--upload", "testdata/order.csv"},
 			form:   []sentPart{{name: "file", file: "order.csv", contentType: "text/csv", content: orderCSV()}},
 			method: http.MethodPost, path: filesPath, scopes: trigger, status: http.StatusOK,
-			body: `{"id":"f2","fileName":"order.csv","size":24,"status":"PENDING","loadRank":1}`,
+			response: `{"id":"f2","fileName":"order.csv","size":24,"status":"PENDING","loadRank":1}`,
 			want: "{\n  \"fileName\": \"order.csv\",\n  \"id\": \"f2\",\n  \"loadRank\": 1,\n  \"size\": 24,\n" +
 				"  \"status\": \"PENDING\"\n}\n",
 			conflict: uploadConflict(filesList, fileModeShown),
 		},
 		{
 			args: []string{"imports", "streams", "files", "order", "s1", "--id", "f3", "--id", "f2"}, sent: order,
-			method: http.MethodPut, path: filesPath + "/order", scopes: trigger, status: http.StatusOK, body: reordered,
+			method: http.MethodPut, path: filesPath + "/order", scopes: trigger, status: http.StatusOK, response: reordered,
 			want: reorderedJSON, conflict: fileOrderConflict(filesList),
 		},
 		{
 			args: []string{"imports", "streams", "files", "order", "s1"}, file: order, method: http.MethodPut,
-			path: filesPath + "/order", scopes: trigger, status: http.StatusOK, body: reordered, want: reorderedJSON,
+			path: filesPath + "/order", scopes: trigger, status: http.StatusOK, response: reordered, want: reorderedJSON,
 			conflict: fileOrderConflict(filesList),
 		},
 		{
@@ -115,7 +115,7 @@ func importFileWriteCases(trigger []string) []writeCase {
 		{
 			args: []string{"imports", "streams", "files", "requeue", "s1", "f2"}, method: http.MethodPost,
 			path: filesPath + "/f2/requeue", scopes: trigger, status: http.StatusOK,
-			body: `{"id":"f2","fileName":"order.csv","status":"PENDING","loadRank":3}`,
+			response: `{"id":"f2","fileName":"order.csv","status":"PENDING","loadRank":3}`,
 			want: "{\n  \"fileName\": \"order.csv\",\n  \"id\": \"f2\",\n  \"loadRank\": 3,\n" +
 				"  \"status\": \"PENDING\"\n}\n",
 			conflict: fileRequeueConflict(filesList),

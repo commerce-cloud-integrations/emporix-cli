@@ -60,6 +60,7 @@ func completed(t *testing.T, env map[string]string, args ...string) []string {
 }
 
 type completionCase struct {
+	name      string
 	args      []string
 	routes    map[string]http.HandlerFunc
 	want      []string
@@ -92,24 +93,28 @@ func TestCompletionOffersTheIDsOfOnePageOfTheList(t *testing.T) {
 	products := "/product/acme1/products?pageNumber=1&pageSize=100"
 	for _, tt := range []completionCase{
 		{
+			name:     "the list of the resource, described by NAME in the default language",
 			args:     []string{"products", "get", ""},
 			routes:   map[string]http.HandlerFunc{"/product/acme1/products": respond(http.StatusOK, productPage)},
 			want:     []string{"100200|Shirt", "200300|Hose (de)"},
 			requests: []string{products}, scopes: []string{productReadUnpublishedScope},
 		},
 		{
+			name:     "only the IDs that start with what is typed",
 			args:     []string{"products", "get", "2"},
 			routes:   map[string]http.HandlerFunc{"/product/acme1/products": respond(http.StatusOK, productPage)},
 			want:     []string{"200300|Hose (de)"},
 			requests: []string{products}, scopes: []string{productReadUnpublishedScope},
 		},
 		{
+			name:     "the list of another resource, for an argument that names its items",
 			args:     []string{"categories", "for-product", ""},
 			routes:   map[string]http.HandlerFunc{"/product/acme1/products": respond(http.StatusOK, productPage)},
 			want:     []string{"100200|Shirt", "200300|Hose (de)"},
 			requests: []string{products}, scopes: []string{productReadUnpublishedScope},
 		},
 		{
+			name: "a child read: the list of its parent",
 			args: []string{"price-lists", "prices", "list", ""},
 			routes: map[string]http.HandlerFunc{
 				"/price/acme1/price-lists": respond(http.StatusOK, `[{"id":"PL1","name":{"en":"Retail"}}]`),
@@ -119,6 +124,7 @@ func TestCompletionOffersTheIDsOfOnePageOfTheList(t *testing.T) {
 			scopes:   []string{"price.pricelist_read"},
 		},
 		{
+			name: "a child item: the list of the child below the parent given",
 			args: []string{"price-lists", "prices", "get", "PL1", ""},
 			routes: map[string]http.HandlerFunc{
 				"/price/acme1/price-lists/PL1/prices": respond(http.StatusOK, `[{"id":"P1"},{"id":"P2"}]`),
@@ -128,6 +134,7 @@ func TestCompletionOffersTheIDsOfOnePageOfTheList(t *testing.T) {
 			scopes:   []string{"price.pricelist_read"},
 		},
 		{
+			name: "a child item read from one response: the mixins of a site, with the scopes of the child",
 			args: []string{"sites", "mixins", "get", "AcmeStore_NL", ""},
 			routes: map[string]http.HandlerFunc{
 				"/site/acme1/sites/AcmeStore_NL/mixins": respond(http.StatusOK, `{"coupon":{},"customer":{}}`),
@@ -136,18 +143,7 @@ func TestCompletionOffersTheIDsOfOnePageOfTheList(t *testing.T) {
 			requests: []string{"/site/acme1/sites/AcmeStore_NL/mixins"},
 		},
 		{
-			args:     []string{"prices", "list", "--site", "Acme"},
-			routes:   map[string]http.HandlerFunc{"/site/acme1/sites": respond(http.StatusOK, sitePage)},
-			want:     []string{"AcmeStore_NL|Acme NL", "AcmeStore_DE|Acme DE"},
-			requests: []string{"/site/acme1/sites?pageNumber=1&pageSize=100&totalCount=true"},
-		},
-		{
-			args:     []string{"custom-entities", "instances", "get", "--mixin-site", "Acme"},
-			routes:   map[string]http.HandlerFunc{"/site/acme1/sites": respond(http.StatusOK, sitePage)},
-			want:     []string{"AcmeStore_NL|Acme NL", "AcmeStore_DE|Acme DE"},
-			requests: []string{"/site/acme1/sites?pageNumber=1&pageSize=100&totalCount=true"},
-		},
-		{
+			name: "a list of a site: the --site given before the ID, the list read whole",
 			args: []string{"shipping", "zones", "get", "--site", "AcmeStore_NL", ""},
 			routes: map[string]http.HandlerFunc{
 				"/shipping/acme1/AcmeStore_NL/zones": respond(http.StatusOK, `[{"id":"Z1","name":{"en":"Benelux"}}]`),
@@ -156,6 +152,7 @@ func TestCompletionOffersTheIDsOfOnePageOfTheList(t *testing.T) {
 			requests: []string{"/shipping/acme1/AcmeStore_NL/zones"},
 		},
 		{
+			name: "a write: the read scopes of its list, never its write scope",
 			args: []string{"units", "update", "k"},
 			routes: map[string]http.HandlerFunc{
 				"/unit-handling/acme1/units": respond(http.StatusOK, `[{"code":"kg","name":{"en":"kilogram"}},{"code":"g"}]`),
@@ -164,6 +161,7 @@ func TestCompletionOffersTheIDsOfOnePageOfTheList(t *testing.T) {
 			requests: []string{"/unit-handling/acme1/units?pageNumber=1&pageSize=100"},
 		},
 		{
+			name: "the items that get takes: the roots of category trees",
 			args: []string{"catalogs", "for-category", ""},
 			routes: map[string]http.HandlerFunc{"/category/acme1/category-trees": respond(http.StatusOK,
 				`[{"id":"C1","name":"Men","subcategories":[{"id":"C2","name":"Shirts"}]},{"id":"C3"}]`)},
@@ -172,6 +170,7 @@ func TestCompletionOffersTheIDsOfOnePageOfTheList(t *testing.T) {
 			scopes:   []string{"category.category_read_unpublished"},
 		},
 		{
+			name: "a column other than the first: the built-in search types, then the types of the indexes, each once",
 			args: []string{"search", "indexes", "get", ""},
 			routes: map[string]http.HandlerFunc{
 				"/search/acme1/search/indexes": respond(http.StatusOK, `[{"id":"i1","type":"BRAND","name":"Brands"},`+
@@ -183,7 +182,28 @@ func TestCompletionOffersTheIDsOfOnePageOfTheList(t *testing.T) {
 			scopes:   []string{searchScope},
 		},
 	} {
-		tt.check(t)
+		t.Run(tt.name, tt.check)
+	}
+}
+
+func TestSiteFlagsCompleteTheSiteCodes(t *testing.T) {
+	for _, tt := range []completionCase{
+		{
+			name:     "--site of any command: the site codes, without a scope",
+			args:     []string{"prices", "list", "--site", "Acme"},
+			routes:   map[string]http.HandlerFunc{"/site/acme1/sites": respond(http.StatusOK, sitePage)},
+			want:     []string{"AcmeStore_NL|Acme NL", "AcmeStore_DE|Acme DE"},
+			requests: []string{"/site/acme1/sites?pageNumber=1&pageSize=100&totalCount=true"},
+		},
+		{
+			name:     "--mixin-site: the site codes",
+			args:     []string{"custom-entities", "instances", "get", "--mixin-site", "Acme"},
+			routes:   map[string]http.HandlerFunc{"/site/acme1/sites": respond(http.StatusOK, sitePage)},
+			want:     []string{"AcmeStore_NL|Acme NL", "AcmeStore_DE|Acme DE"},
+			requests: []string{"/site/acme1/sites?pageNumber=1&pageSize=100&totalCount=true"},
+		},
+	} {
+		t.Run(tt.name, tt.check)
 	}
 }
 
@@ -308,7 +328,8 @@ func TestCompletionGivesUpWithinItsTimeout(t *testing.T) {
 	root := newRootCommand(a, &out, &errOut)
 	root.SetArgs([]string{"__complete", "products", "get", ""})
 	start := time.Now()
-	if err := root.ExecuteContext(context.Background()); err != nil || out.String() != ":4\n" {
+	noFiles := directiveLine(cobra.ShellCompDirectiveNoFileComp)
+	if err := root.ExecuteContext(context.Background()); err != nil || out.String() != noFiles {
 		t.Fatalf("error %v, completions %q; want none", err, out.String())
 	}
 	if took := time.Since(start); took < timeout || took > defaultCompletionTimeout {
@@ -339,7 +360,8 @@ func TestCompletionTakesTheProfileInEffect(t *testing.T) {
 	args := []string{"__complete", "shipping", "zones", "get", ""}
 	code, stdout, stderr := runIn(t, setup.env(map[string]string{envCompleteIDs: "1"}, "", false), args...)
 	// Cobra offers a required flag not given, such as --site, before any argument.
-	if code != ExitOK || !strings.HasSuffix(stdout, "\nZ1\tBenelux\n:4\n") || stderr != completionDone {
+	noFiles := directiveLine(cobra.ShellCompDirectiveNoFileComp)
+	if code != ExitOK || !strings.HasSuffix(stdout, "\nZ1\tBenelux\n"+noFiles) || stderr != completionDone {
 		t.Fatalf("exit %d, stdout %q, stderr %q; want Z1", code, stdout, stderr)
 	}
 	f.assertRequests(t, "/shipping/acme1/AcmeStore_NL/zones")

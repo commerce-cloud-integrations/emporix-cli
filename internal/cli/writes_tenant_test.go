@@ -19,7 +19,7 @@ func siteWriteCases() []writeCase {
 	return []writeCase{
 		{
 			args: []string{"sites", "create"}, file: siteJSON, method: http.MethodPost, path: "/site/acme1/sites",
-			scopes: sites, status: http.StatusCreated, body: `{"id":"AcmeStore_BE"}`,
+			scopes: sites, status: http.StatusCreated, response: `{"id":"AcmeStore_BE"}`,
 			want: "{\n  \"id\": \"AcmeStore_BE\"\n}\n",
 		},
 		{
@@ -39,7 +39,7 @@ func siteWriteCases() []writeCase {
 			args: []string{"sites", "mixins", "create", "AcmeStore_NL"},
 			file: `{"generalShopSettings":{"logoUrl":"https://shop.acme.example/logo.png"}}`, method: http.MethodPost,
 			path: "/site/acme1/sites/AcmeStore_NL/mixins", scopes: sites, status: http.StatusCreated,
-			body: `{"id":"generalShopSettings"}`, want: "{\n  \"id\": \"generalShopSettings\"\n}\n",
+			response: `{"id":"generalShopSettings"}`, want: "{\n  \"id\": \"generalShopSettings\"\n}\n",
 		},
 		{
 			args: []string{"sites", "mixins", "update", "AcmeStore_NL", "generalShopSettings"},
@@ -82,7 +82,7 @@ func currencyAndTaxWrites() []writeCase {
 		{
 			args: []string{"currencies", "create"}, file: `{"code":"CHF","name":{"en":"Swiss franc"}}`,
 			method: http.MethodPost, path: "/currency/acme1/currencies", scopes: currency, lang: "*",
-			status: http.StatusCreated, body: `{"code":"CHF"}`, want: "{\n  \"code\": \"CHF\"\n}\n",
+			status: http.StatusCreated, response: `{"code":"CHF"}`, want: "{\n  \"code\": \"CHF\"\n}\n",
 		},
 		{
 			args: []string{"currencies", "update", "CHF", "--content-language", "en"},
@@ -96,7 +96,7 @@ func currencyAndTaxWrites() []writeCase {
 		{
 			args: []string{"exchange-rates", "create", "--source", "EUR", "--target", "CHF", "--rate", "0.95"},
 			sent: `{"rate":"0.95","sourceCurrency":"EUR","targetCurrency":"CHF"}`, method: http.MethodPost,
-			path: "/currency/acme1/exchanges", scopes: currency, status: http.StatusCreated, body: `{"code":"EUR_CHF"}`,
+			path: "/currency/acme1/exchanges", scopes: currency, status: http.StatusCreated, response: `{"code":"EUR_CHF"}`,
 			want: "{\n  \"code\": \"EUR_CHF\"\n}\n",
 		},
 		{
@@ -120,7 +120,7 @@ func currencyAndTaxWrites() []writeCase {
 		},
 		{
 			args: []string{"taxes", "create"}, file: taxJSON, method: http.MethodPost, path: "/tax/acme1/taxes",
-			scopes: tax, lang: "*", status: http.StatusCreated, body: `{"locationCode":"NL"}`,
+			scopes: tax, lang: "*", status: http.StatusCreated, response: `{"locationCode":"NL"}`,
 			want: "{\n  \"locationCode\": \"NL\"\n}\n",
 		},
 		{

@@ -14,7 +14,7 @@ func returnWriteCases() []writeCase {
 	return []writeCase{
 		{
 			args: []string{"returns", "create"}, file: back, method: http.MethodPost, path: returns,
-			scopes: manageReturns, status: http.StatusCreated, body: `{"id":"R1"}`, want: "{\n  \"id\": \"R1\"\n}\n",
+			scopes: manageReturns, status: http.StatusCreated, response: `{"id":"R1"}`, want: "{\n  \"id\": \"R1\"\n}\n",
 		},
 		{
 			args: []string{"returns", "update", "R1"}, file: back, method: http.MethodPut, path: returns + "/R1",
@@ -40,7 +40,7 @@ func quoteWriteCases() []writeCase {
 	return []writeCase{
 		{
 			args: []string{"quotes", "create"}, file: `{"cartId":"cart1"}`, method: http.MethodPost, path: quotes,
-			scopes: manageQuotes, status: http.StatusCreated, body: `{"id":"Q1001"}`, want: "{\n  \"id\": \"Q1001\"\n}\n",
+			scopes: manageQuotes, status: http.StatusCreated, response: `{"id":"Q1001"}`, want: "{\n  \"id\": \"Q1001\"\n}\n",
 		},
 		{
 			args: []string{"quotes", "patch", "Q1001"}, file: `[{"op":"REPLACE","path":"/status","value":{"value":"OPEN"}}]`,
@@ -52,7 +52,7 @@ func quoteWriteCases() []writeCase {
 		},
 		{
 			args: []string{"quotes", "reasons", "create"}, file: reason, method: http.MethodPost, path: reasons,
-			scopes: manageQuotes, lang: "*", status: http.StatusCreated, body: `{"id":"r1"}`,
+			scopes: manageQuotes, lang: "*", status: http.StatusCreated, response: `{"id":"r1"}`,
 			want: "{\n  \"id\": \"r1\"\n}\n",
 		},
 		{

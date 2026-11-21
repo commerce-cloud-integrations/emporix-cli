@@ -76,7 +76,7 @@ const maxDiagnosticRows = 50000
 
 func configurationRuns() child[importRun] {
 	return child[importRun]{
-		use:   "runs",
+		sub:   "runs",
 		short: "List the runs of a configuration",
 		long: "Reads the run history of an import configuration, most recent first; `epx imports runs streams` " +
 			"shows the counters of each stream of a run.",
@@ -153,7 +153,7 @@ func newImportRunsCommand(a *app, runs resource[importRun], writes ...*cobra.Com
 		}),
 		childCommand(a, runs, runErrors()),
 		childCommand(a, runs, child[diagnosticRow]{
-			use:   "diagnostics",
+			sub:   "diagnostics",
 			short: "List the source rows behind a run's repeated keys and missing parents",
 			long: "Reads the source rows behind a run's feed-quality counters, which do not fail a run: KIND is " +
 				"REPEATED_KEY for a row whose KEY the run had already imported (OCCURRENCE times before), or " +
@@ -190,7 +190,7 @@ func runStreamView() view[runStream] {
 
 func runErrors() child[importError] {
 	return child[importError]{
-		use:   "errors",
+		sub:   "errors",
 		short: "List the errors of a run",
 		long: "Reads the errors recorded during an import run: KEY is the natural key of the record that " +
 			"failed, STAGE the step it failed in (EXTRACT reading the source, MAP applying the mappings, " +

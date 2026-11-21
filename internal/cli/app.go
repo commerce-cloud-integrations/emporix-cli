@@ -17,13 +17,13 @@ const (
 const defaultTimeout = 30 * time.Second
 
 type app struct {
-	getenv    func(string) string
-	terminal  bool
-	version   string
-	goVersion string
-	tenant    tenantFlag
-	profile   profileName
-	timeout   time.Duration
+	getenv     func(string) string
+	inTerminal bool
+	version    string
+	goVersion  string
+	tenant     tenantFlag
+	profile    profileName
+	timeout    time.Duration
 	ProfileEnv
 	resolved          resolvedKey
 	outTerminal       bool

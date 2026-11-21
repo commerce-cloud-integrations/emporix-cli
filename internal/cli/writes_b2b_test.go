@@ -29,7 +29,7 @@ func b2bWrites() []writeCase {
 		"customermanagement.legalentity_manage", b2bLegalEntityJSON, b2bLegalEntityUpdateJSON, "le1")
 	for i := range entities {
 		if entities[i].method == http.MethodDelete {
-			entities[i].many = "the legal entity with its subsidiaries, assignments and IAM customer groups"
+			entities[i].deletedMany = "the legal entity with its subsidiaries, assignments and IAM customer groups"
 		}
 	}
 	return slices.Concat(
@@ -51,7 +51,7 @@ func b2bWriteCases(group, path, scope, created, updated, id string) []writeCase 
 	return []writeCase{
 		{
 			args: []string{group, createUse}, file: created, method: http.MethodPost, path: path, scopes: scopes,
-			status: http.StatusCreated, body: `{"id":"` + id + `"}`, want: b2bCreatedJSON(id),
+			status: http.StatusCreated, response: `{"id":"` + id + `"}`, want: b2bCreatedJSON(id),
 		},
 		{
 			args: []string{group, "update", id}, file: updated, method: http.MethodPut, path: item, scopes: scopes,
@@ -126,9 +126,9 @@ func TestB2BWritesHelp(t *testing.T) {
 		"legal-entities update": {"it requires name and type.", "list` shows. Keep every customer group",
 			"(Admin, Buyer, Requester and Contact)", "without the Contact group, Emporix deletes that group"},
 		"legal-entities delete": {"Deletes the legal entity ID; it sends no body. ID is the ID that `epx " +
-			"legal-entities list` shows; an unknown one " + string(answeredDeleted) + ". The assignments are",
+			"legal-entities list` shows; an unknown one " + answeredDeleted.String() + ". The assignments are",
 			"customer locations stay", "with its subsidiaries, assignments and IAM customer groups with one request"},
-		"vendors delete": {"vendors list` shows; an unknown one " + string(answeredDeleted) +
+		"vendors delete": {"vendors list` shows; an unknown one " + answeredDeleted.String() +
 			". Its subsidiaries stay"},
 		"contact-assignments delete": {"list` shows; an unknown one is not found.\n\n"},
 		"customer-locations delete":  {"is not found. A legal entity that names it"},

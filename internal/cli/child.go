@@ -18,25 +18,63 @@ type child[T any] struct {
 	long      string
 	query     url.Values
 	listQuery url.Values
-	scopes    []string
+	scopes    childScopes
 	fetch     fetcher
 	unknown   unknownParent
 }
 
-type unknownParent string
+type unknownParent int
 
 const (
-	notFound        unknownParent = "is not found"
-	listsNothing    unknownParent = "lists nothing"
-	answeredDeleted unknownParent = "is answered as one that Emporix deleted (204 No Content)"
+	notFound unknownParent = iota
+	listsNothing
+	answeredDeleted
+	unscoped
 )
+
+func (u unknownParent) String() string {
+	return [...]string{
+		notFound:        "is not found",
+		listsNothing:    "lists nothing",
+		answeredDeleted: "is answered as one that Emporix deleted (204 No Content)",
+		unscoped: "has no scope that Emporix grants (exit code 3), and a type created in the last " +
+			"minutes has none yet",
+	}[u]
+}
+
+type childScopes interface {
+	requested() []string
+}
+
+type ownScopes []string
+
+func (s ownScopes) requested() []string {
+	if len(s) == 0 {
+		panic("a child's own scopes name one at least: one that requests none declares noScopes")
+	}
+	return s
+}
+
+type noScopes struct{}
+
+func (noScopes) requested() []string { return nil }
+
+type listedChild[T any] struct {
+	child[T]
+	members listing
+}
+
+func listedChildOf[T any](members listing, c child[T]) listedChild[T] {
+	c.fetch = members
+	return listedChild[T]{child: c, members: members}
+}
 
 func childCommand[P, T any](a *app, parent resource[P], c child[T]) *cobra.Command {
 	rd := c.reader(parent.scopes)
 	return rd.command(a, &command{
-		use:   c.use + " " + parent.argument(),
+		use:   c.name() + " " + parent.argument(),
 		short: c.short,
-		long:  joinSentences(c.long, parent.argumentSentence(unknownFor(rd.scopes, cmp.Or(c.unknown, notFound)))),
+		long:  joinSentences(c.long, parent.argumentSentence(unknownFor(rd.scopes, c.unknown))),
 		req:   c.listRequest(parent.path),
 		fetch: c.fetch,
 		ids:   argumentIDs{parent.argument(): parent.ids()},
@@ -44,18 +82,13 @@ func childCommand[P, T any](a *app, parent resource[P], c child[T]) *cobra.Comma
 }
 
 func (c child[T]) reader(parentScopes []string) reader[T] {
-	if c.scopes != nil {
-		return reader[T]{view: c.view, scopes: c.scopes}
+	if c.scopes == nil {
+		return reader[T]{view: c.view, scopes: parentScopes}
 	}
-	return reader[T]{view: c.view, scopes: parentScopes}
+	return reader[T]{view: c.view, scopes: c.scopes.requested()}
 }
 
-func (c child[T]) collection() string {
-	if c.use == listUse && c.sub == "" {
-		panic(c.singular + ": a child listed by " + listUse + " names its path in sub")
-	}
-	return cmp.Or(c.sub, c.use)
-}
+func (c child[T]) name() string { return cmp.Or(c.use, c.sub) }
 
 func childAt[P, T any](parent resource[P], c child[T]) collectionAt {
 	target := childItemTarget(parent, c, getUse, nil)
@@ -69,39 +102,38 @@ func (c child[T]) listRequest(parentPath string) request {
 }
 
 func (c child[T]) below(parentPath string) string {
-	return parentPath + "/" + placeholderParent + "/" + c.collection()
+	if c.sub == "" {
+		panic(c.name() + ": a child names its path below the parent item in sub")
+	}
+	return parentPath + "/" + placeholderParent + "/" + c.sub
 }
 
 func childListLine[P, T any](parent resource[P], c child[T]) string {
-	return parent.commandLine(c.use+" "+parent.argument(), c.listRequest(parent.path))
+	return parent.commandLine(c.name()+" "+parent.argument(), c.listRequest(parent.path))
 }
 
 func (r resource[T]) nested(group string) resource[T] {
 	r.under, r.use, r.listedBy, r.atPath = strings.TrimSpace(r.under+" "+r.use), group, r.listLine(), r.listsAtPath()
+	r.nestedParent = true
 	return r
 }
 
 func (r resource[T]) listsAtPath() bool { return r.listedBy == "" || r.atPath }
 
 func (c child[T]) searchUse() string {
-	if c.use == listUse {
+	if c.name() == listUse {
 		return collectionSearch
 	}
-	return collectionSearch + "-" + c.use
+	return collectionSearch + "-" + c.name()
 }
 
-func childSearchCommand[P, T any](a *app, parent resource[P], c child[T], short, long string,
-	fields ...bodyField) *cobra.Command {
-	members, listed := c.fetch.(listing)
-	if !listed {
-		panic(c.searchUse() + ": only a listed child collection has a search")
-	}
-	search := c
-	search.use = c.searchUse()
-	search.sub = c.collection() + "/" + collectionSearch
-	search.short = short
-	search.long = joinSentences(long, searchSentence(childListLine(parent, c)))
-	search.fetch = members.search(fields...)
+func childSearchCommand[P, T any](a *app, parent resource[P], l listedChild[T], s *childSearch) *cobra.Command {
+	search := l.child
+	search.use = l.searchUse()
+	search.sub = l.sub + "/" + collectionSearch
+	search.short = s.short
+	search.long = joinSentences(s.long, searchSentence(childListLine(parent, l.child)))
+	search.fetch = l.members.search(s.fields...)
 	return childCommand(a, parent, search)
 }
 
@@ -114,23 +146,26 @@ type childSearch struct {
 type childGroup struct {
 	short  string
 	long   string
-	search *childSearch
 	items  []*childItem
 	writes []*cobra.Command
 }
 
 func newChildGroup[P, T any](a *app, parent resource[P], c child[T], g *childGroup) *cobra.Command {
-	if parent.listedBy == "" {
+	if !parent.nestedParent {
 		panic(c.singular + ": a child in a group of its own is below a nested parent")
 	}
 	commands := []*cobra.Command{childCommand(a, parent, c)}
-	if g.search != nil {
-		commands = append(commands, childSearchCommand(a, parent, c, g.search.short, g.search.long, g.search.fields...))
-	}
 	for _, item := range g.items {
 		commands = append(commands, childItemCommand(a, parent, c, item))
 	}
 	return newGroup(parent.use, g.short, g.long, append(commands, g.writes...)...)
+}
+
+func newSearchedChildGroup[P, T any](a *app, parent resource[P], l listedChild[T], s *childSearch,
+	g *childGroup) *cobra.Command {
+	searched := *g
+	searched.writes = slices.Concat([]*cobra.Command{childSearchCommand(a, parent, l, s)}, g.writes)
+	return newChildGroup(a, parent, l.child, &searched)
 }
 
 type childItem struct {

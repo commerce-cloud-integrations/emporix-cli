@@ -91,7 +91,7 @@ func newOrdersCommand(a *app) *cobra.Command {
 			"Emporix counts 0 for a filter on id or customer.id although list finds the orders (seen "+
 			"live): list them instead."),
 		childCommand(a, orders, child[orderStatus]{
-			use:   "transitions",
+			sub:   "transitions",
 			short: "List the statuses an order can move to next",
 			long:  "Reads the statuses that an order can move to next.",
 			fetch: listing{read: (*emporix.Client).GetUnpaged},

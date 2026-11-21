@@ -14,7 +14,7 @@ func couponWriteCases() []writeCase {
 	return []writeCase{
 		{
 			args: []string{"coupons", "create"}, file: couponJSON, method: http.MethodPost, path: "/coupon/acme1/coupons",
-			scopes: manage, status: http.StatusCreated, body: `{"id":"SAVE7"}`, want: "{\n  \"id\": \"SAVE7\"\n}\n",
+			scopes: manage, status: http.StatusCreated, response: `{"id":"SAVE7"}`, want: "{\n  \"id\": \"SAVE7\"\n}\n",
 		},
 		{
 			args: []string{"coupons", "update", "SAVE 7"}, file: `{"name":"Save 7","metadata":{"version":2}}`,
@@ -35,14 +35,14 @@ func couponWriteCases() []writeCase {
 			sent: `{"customerNumber":"C1","discount":{"amount":5.00,"currency":"EUR"},` +
 				`"orderCode":"o1","orderTotal":{"amount":1090,"currency":"EUR"}}`,
 			method: http.MethodPost, path: "/coupon/acme1/coupons/SAVE%207/redemptions", scopes: onBehalf,
-			status: http.StatusCreated, body: `{"id":"r1"}`, want: "{\n  \"id\": \"r1\"\n}\n", refuses: true,
+			status: http.StatusCreated, response: `{"id":"r1"}`, want: "{\n  \"id\": \"r1\"\n}\n", refuses: true,
 		},
 		{
 			args: []string{"coupons", "redeem", "SAVE7"},
 			file: `{"legalEntityId":"le1","orderTotal":{"amount":10,"currency":"EUR"},` +
 				`"discount":{"amount":1,"currency":"EUR"}}`,
 			method: http.MethodPost, path: "/coupon/acme1/coupons/SAVE7/redemptions", scopes: onBehalf,
-			status: http.StatusCreated, body: `{"id":"r2"}`, want: "{\n  \"id\": \"r2\"\n}\n", refuses: true,
+			status: http.StatusCreated, response: `{"id":"r2"}`, want: "{\n  \"id\": \"r2\"\n}\n", refuses: true,
 		},
 		{
 			args: []string{"coupons", "redemption-delete", "SAVE7", "r 1"}, method: http.MethodDelete,
@@ -52,8 +52,8 @@ func couponWriteCases() []writeCase {
 		{
 			args: []string{"coupons", "referral-create", "100 01"}, method: http.MethodPost,
 			path: "/coupon/acme1/referral-coupons/100%2001", status: http.StatusOK,
-			body: `{"code":"REF_30","issuedTo":"100 01","referralCoupon":true}`,
-			want: "{\n  \"code\": \"REF_30\",\n  \"issuedTo\": \"100 01\",\n  \"referralCoupon\": true\n}\n",
+			response: `{"code":"REF_30","issuedTo":"100 01","referralCoupon":true}`,
+			want:     "{\n  \"code\": \"REF_30\",\n  \"issuedTo\": \"100 01\",\n  \"referralCoupon\": true\n}\n",
 		},
 	}
 }
@@ -117,8 +117,8 @@ func rewardPointWriteCases() []writeCase {
 		{
 			args: []string{"reward-points", "redeem-option-create"}, file: option, method: http.MethodPost,
 			path: "/reward-points/acme1/redeemOptions", scopes: manage, status: http.StatusOK,
-			body: `[{"id":"o1","type":"coupon","points":90}]`,
-			want: "[\n  {\n    \"id\": \"o1\",\n    \"points\": 90,\n    \"type\": \"coupon\"\n  }\n]\n",
+			response: `[{"id":"o1","type":"coupon","points":90}]`,
+			want:     "[\n  {\n    \"id\": \"o1\",\n    \"points\": 90,\n    \"type\": \"coupon\"\n  }\n]\n",
 		},
 		{
 			args: []string{"reward-points", "redeem-option-update", "o1"}, file: option, method: http.MethodPut,
@@ -139,7 +139,7 @@ func shoppingListWriteCases() []writeCase {
 		{
 			args: []string{"shopping-lists", "create"}, file: list, method: http.MethodPost,
 			path: "/shoppinglist/acme1/shopping-lists", scopes: manage, status: http.StatusCreated,
-			body: `{"id":"c1"}`, want: "{\n  \"id\": \"c1\"\n}\n",
+			response: `{"id":"c1"}`, want: "{\n  \"id\": \"c1\"\n}\n",
 		},
 		{
 			args: []string{"shopping-lists", "update", "c:1"}, file: `{"name":"default","items":[]}`,
@@ -154,7 +154,7 @@ func shoppingListWriteCases() []writeCase {
 		{
 			args: []string{"shopping-lists", "delete-all", "c1"}, method: http.MethodDelete,
 			path: "/shoppinglist/acme1/shopping-lists/c1", scopes: manage, confirmBy: "c1",
-			many: "every shopping list of the customer", status: http.StatusNoContent,
+			deletedMany: "every shopping list of the customer", status: http.StatusNoContent,
 		},
 	}
 }

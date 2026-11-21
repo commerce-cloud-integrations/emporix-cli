@@ -45,28 +45,28 @@ type Config struct {
 // (GETs, or the reads with a body of a client made by WithBody) and
 // writes (Prepare and Send). A Client is not safe for concurrent use.
 type Client struct {
-	cfg     Config
-	base    *url.URL
-	scopes  []string
-	http    *http.Client
-	retry   retryPolicy
-	paging  pagingPolicy
-	token   *token
-	now     func() time.Time
-	method  string
-	body    Body
-	created bool
-	refusal bool
-	header  http.Header
+	cfg    Config
+	base   *url.URL
+	scopes []string
+	http   *http.Client
+	retry  retryPolicy
+	paging pagingPolicy
+	token  *token
+	now    func() time.Time
+	method string
+	body   Body
+	reads  readPolicy
+	header http.Header
+	sink   func(items []json.RawMessage) error
 }
 
 // New validates cfg and returns a client whose token requests exactly the
 // tenant plus scopes. Plain HTTP is accepted only for loopback test servers.
 func New(cfg *Config, scopes ...string) (*Client, error) {
-	if err := CheckEndpoint(cfg.BaseURL, cfg.Tenant); err != nil {
+	base, err := parseEndpoint(cfg.BaseURL, cfg.Tenant)
+	if err != nil {
 		return nil, err
 	}
-	base, _ := url.Parse(cfg.BaseURL)
 	if cfg.ClientID == "" || cfg.ClientSecret == "" {
 		return nil, fmt.Errorf("%w: client ID and client secret are required", ErrInvalidInput)
 	}
@@ -122,8 +122,14 @@ func (c *Client) WithBody(method string, body Body) (*Client, error) {
 func (c *Client) Posting() *Client { return c.sending(http.MethodPost, Body{}) }
 
 func (c *Client) sending(method string, body Body) *Client {
-	copied := *c
+	copied := c.withoutSink()
 	copied.method, copied.body = method, body
+	return copied
+}
+
+func (c *Client) withoutSink() *Client {
+	copied := *c
+	copied.sink = nil
 	return &copied
 }
 
@@ -133,9 +139,9 @@ func (c *Client) sending(method string, body Body) *Client {
 // documents 201 and no resource). Every other read fails on 201 Created, the
 // sign that it may have created something.
 func (c *Client) AcceptCreated() *Client {
-	accepting := *c
-	accepting.created = true
-	return &accepting
+	accepting := c.withoutSink()
+	accepting.reads.createdIsAnswer = true
+	return accepting
 }
 
 // ForbiddenIsRefusal returns a copy of c whose reads take a 403 Forbidden
@@ -144,9 +150,9 @@ func (c *Client) AcceptCreated() *Client {
 // so, such as whether a customer may redeem a coupon. Every other read takes
 // a 403 as ErrAuth.
 func (c *Client) ForbiddenIsRefusal() *Client {
-	refusing := *c
-	refusing.refusal = true
-	return &refusing
+	refusing := c.withoutSink()
+	refusing.reads.forbiddenIsRefusal = true
+	return refusing
 }
 
 func checkScope(scope string) error {
@@ -165,21 +171,27 @@ func checkScope(scope string) error {
 // baseURL is a scheme and host only, https (plain HTTP only for a loopback
 // host), and tenant a tenant name. Its errors are ErrInvalidInput.
 func CheckEndpoint(baseURL, tenant string) error {
+	_, err := parseEndpoint(baseURL, tenant)
+	return err
+}
+
+func parseEndpoint(baseURL, tenant string) (*url.URL, error) {
 	base, err := url.Parse(baseURL)
 	if err != nil || !isOrigin(base) {
-		return fmt.Errorf("%w: API URL must be a scheme and host only, e.g. %s", ErrInvalidInput, DefaultBaseURL)
+		return nil, fmt.Errorf("%w: API URL must be a scheme and host only, e.g. %s", ErrInvalidInput,
+			DefaultBaseURL)
 	}
 	if base.Scheme != "https" && (base.Scheme != "http" || !isLoopback(base.Hostname())) {
-		return fmt.Errorf("%w: API URL must use https (plain http only for a loopback host)", ErrInvalidInput)
+		return nil, fmt.Errorf("%w: API URL must use https (plain http only for a loopback host)", ErrInvalidInput)
 	}
 	if tenant == "" {
-		return fmt.Errorf("%w: tenant is empty", ErrInvalidInput)
+		return nil, fmt.Errorf("%w: tenant is empty", ErrInvalidInput)
 	}
 	if !tenantPattern.MatchString(tenant) {
-		return fmt.Errorf("%w: invalid tenant: use letters, digits, _ and -, starting with a letter or digit",
+		return nil, fmt.Errorf("%w: invalid tenant: use letters, digits, _ and -, starting with a letter or digit",
 			ErrInvalidInput)
 	}
-	return nil
+	return base, nil
 }
 
 func isOrigin(u *url.URL) bool {
@@ -249,23 +261,28 @@ func (c *Client) get(ctx context.Context, path string, query url.Values, header 
 	if err != nil {
 		return reply{}, err
 	}
-	if !c.answered(result.status) {
+	if !c.reads.answered(result.status) {
 		return reply{}, newAPIError(c.method, result.path, result.status, result.body,
-			c.failureClass(result.status, result.body))
+			c.reads.failureClass(result.status, result.body))
 	}
 	return result, nil
 }
 
-func (c *Client) failureClass(status int, body []byte) error {
-	if c.refusal && refusesInput(status, body) {
+type readPolicy struct {
+	createdIsAnswer    bool
+	forbiddenIsRefusal bool
+}
+
+func (p readPolicy) failureClass(status int, body []byte) error {
+	if p.forbiddenIsRefusal && refusesInput(status, body) {
 		return nil
 	}
 	return resourceErrorClass(status)
 }
 
-func (c *Client) answered(status int) bool {
+func (p readPolicy) answered(status int) bool {
 	return status == http.StatusOK || status == http.StatusNoContent ||
-		(c.created && status == http.StatusCreated)
+		(p.createdIsAnswer && status == http.StatusCreated)
 }
 
 type reply struct {
@@ -287,18 +304,23 @@ func (c *Client) exchange(req *http.Request) (reply, error) {
 	}
 	defer func() { _ = resp.Body.Close() }()
 	result := reply{status: resp.StatusCode, header: resp.Header, path: req.URL.EscapedPath()}
-	body, err := io.ReadAll(io.LimitReader(resp.Body, maxBodyBytes+1))
-	switch {
-	case err == nil && len(body) <= maxBodyBytes:
-		result.body = body
-		return result, nil
-	case !succeeded(result.status):
-		return result, nil
-	case err != nil:
-		return reply{}, fmt.Errorf("reading response: %w", err)
-	default:
-		return reply{}, fmt.Errorf("response exceeds %d bytes", maxBodyBytes)
+	body, err := readBody(resp.Body)
+	if err != nil && succeeded(result.status) {
+		return reply{}, err
 	}
+	result.body = body
+	return result, nil
+}
+
+func readBody(body io.Reader) ([]byte, error) {
+	data, err := io.ReadAll(io.LimitReader(body, maxBodyBytes+1))
+	switch {
+	case err != nil:
+		return nil, fmt.Errorf("reading response: %w", err)
+	case len(data) > maxBodyBytes:
+		return nil, fmt.Errorf("response exceeds %d bytes", maxBodyBytes)
+	}
+	return data, nil
 }
 
 func queryLeftOut(err error) error {
@@ -320,14 +342,18 @@ func (c *Client) headers(content string, extras ...http.Header) http.Header {
 		header.Set("Content-Type", content)
 	}
 	for _, extra := range extras {
-		for _, key := range slices.Sorted(maps.Keys(extra)) {
-			header.Del(key)
-			for _, value := range extra[key] {
-				header.Add(key, value)
-			}
-		}
+		replaceInKeyOrder(header, extra)
 	}
 	return header
+}
+
+func replaceInKeyOrder(dst, src http.Header) {
+	for _, key := range slices.Sorted(maps.Keys(src)) {
+		dst.Del(key)
+		for _, value := range src[key] {
+			dst.Add(key, value)
+		}
+	}
 }
 
 func newRequest(ctx context.Context, method, target, bearer string, header http.Header, body []byte) (

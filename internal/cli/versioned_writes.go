@@ -1,10 +1,6 @@
 package cli
 
-import (
-	"cmp"
-
-	"github.com/spf13/cobra"
-)
+import "github.com/spf13/cobra"
 
 const versionedWritesNote = "create and update ID (an upsert) send the JSON body of --file; delete ID sends none."
 
@@ -15,12 +11,12 @@ type versioned struct {
 	updateNote string
 	deleteNote string
 	unknown    unknownParent
-	cascade    string
+	deletes    string
 }
 
 func (r resource[T]) versionedWrites(a *app, scopes []string, v *versioned) []*cobra.Command {
-	del := r.deleteWrite(scopes, joinSentences(r.versionedDeleteHelp(cmp.Or(v.unknown, notFound)), v.deleteNote))
-	del.deletes = deletion{many: v.cascade}
+	del := r.deleteWrite(scopes, joinSentences(r.versionedDeleteHelp(v.unknown), v.deleteNote))
+	del.deletes = deletion{many: v.deletes}
 	return []*cobra.Command{
 		r.createWrite(scopes, joinSentences(r.versionedCreateHelp(v.members), v.createNote)).command(a),
 		r.upsertWrite(scopes, joinSentences(r.versionedUpsertHelp(v.required), v.updateNote)).command(a),
@@ -44,7 +40,7 @@ func (r resource[T]) versionedUpsertHelp(required string) string {
 
 func (r resource[T]) versionedDeleteHelp(unknown unknownParent) string {
 	return "Deletes the " + r.singular + " " + r.header[0] + "; it sends no body. " + r.idSource() +
-		"; an unknown one " + string(unknown) + "."
+		"; an unknown one " + unknown.String() + "."
 }
 
 func (r resource[T]) getJSON() string {

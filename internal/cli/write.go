@@ -57,7 +57,7 @@ func (p *payload) bind(cmd *cobra.Command) string {
 	if p.typed != nil {
 		usage += " instead of the one that epx makes"
 	}
-	p.body = bodyFile{flag: fileFlag, limit: maxWriteFileBytes, array: p.array}.bindWith(cmd, usage+stdinFileNote,
+	p.body = bodyFile{flag: fileFlag, limit: maxWriteFileBytes, nonEmptyArray: p.array}.bindWith(cmd, usage+stdinFileNote,
 		p.typed)
 	if !p.optional && p.typed == nil {
 		requireFlag(cmd, fileFlag)
@@ -251,12 +251,14 @@ func batchStopped(i, n, sent int, failed []*emporix.ItemsError, err error) error
 	if errors.As(emporix.JoinItems(sent, failed), &before) {
 		listed = fmt.Sprintf(", and %d of them failed, as listed above", len(before.Failed))
 		if class := errors.Unwrap(before); class == nil || !errors.Is(err, class) {
-			err = errors.New(err.Error())
+			err = withoutClass(err)
 		}
 	}
 	return fmt.Errorf("request %d of %d, from item %d: %w (the %d items before it were sent%s; those after it "+
 		"were not)", i+1, n, sent, err, sent, listed)
 }
+
+func withoutClass(err error) error { return errors.New(err.Error()) }
 
 func (s *sender) finish(cmd *cobra.Command, response json.RawMessage, err error) error {
 	var items *emporix.ItemsError
@@ -297,7 +299,7 @@ func (s *sender) confirmable(cmd *cobra.Command) error {
 	case s.body.fromStdin():
 		return usageError{fmt.Errorf("%s reads the body from standard input, which then cannot confirm it: "+
 			"give --%s to send it", cmd.CommandPath(), yesFlag)}
-	case !s.a.terminal:
+	case !s.a.inTerminal:
 		return usageError{fmt.Errorf("%s asks for confirmation on a terminal, which standard "+
 			"input is not: give --%s to send it, or --%s to print it", cmd.CommandPath(), yesFlag, dryRunFlag)}
 	default:

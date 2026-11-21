@@ -56,7 +56,7 @@ func newMediaCommand(a *app) *cobra.Command {
 		},
 	}
 	return newResourceCommand(a, assets, append([]*cobra.Command{childCommand(a, assets, child[downloadURL]{
-		use:   "download-url",
+		sub:   "download-url",
 		short: "Show a URL that downloads an asset",
 		long: "Reads a URL that downloads an asset. For a private stored file it is a signed URL that " +
 			"works without a token until EXPIRES (15 minutes by default), so treat it as a secret; for " +

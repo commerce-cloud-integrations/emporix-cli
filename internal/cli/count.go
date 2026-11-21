@@ -15,7 +15,7 @@ type counted struct {
 	filters listFilters
 }
 
-func (c counted) bind(cmd *cobra.Command) (readFunc, shape) {
+func (c counted) bind(cmd *cobra.Command) boundRead {
 	var opts emporix.ListOptions
 	c.filters.without(sortable).registerFilters(&opts, cmd)
 	count := func(client *emporix.Client, ctx context.Context, path string, query url.Values) (json.RawMessage, error) {
@@ -25,7 +25,9 @@ func (c counted) bind(cmd *cobra.Command) (readFunc, shape) {
 		}
 		return json.RawMessage(strconv.Itoa(n)), nil
 	}
-	return count, func(body json.RawMessage) ([]json.RawMessage, error) { return []json.RawMessage{body}, nil }
+	return boundRead{read: count, items: func(body json.RawMessage) ([]json.RawMessage, error) {
+		return []json.RawMessage{body}, nil
+	}}
 }
 
 func (r resource[T]) countCommand(a *app, long string) *cobra.Command {

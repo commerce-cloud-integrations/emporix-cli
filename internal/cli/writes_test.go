@@ -15,7 +15,7 @@ type writeCase struct {
 	args           []string
 	file           string
 	form           []sentPart
-	read           string
+	readFirst      string
 	readScopes     []string
 	sent           string
 	method         string
@@ -24,9 +24,9 @@ type writeCase struct {
 	scopes         []string
 	lang           string
 	confirmBy      string
-	many           string
+	deletedMany    string
 	status         int
-	body           string
+	response       string
 	want           string
 	conflict       string
 	conflictAnswer string
@@ -52,7 +52,7 @@ func apiWrites() []writeCase {
 				"--scope", "product.product_manage", "-p", "doIndex=false"},
 			file: "{ \"id\": \"100200\",\n  \"weight\": 1.50 }\n", method: http.MethodPost, path: "/product/acme1/products",
 			query: "doIndex=false&skipVariantGeneration=true", scopes: []string{"product.product_manage"},
-			status: http.StatusCreated, body: `{"id":"100200","weight":1.50}`,
+			status: http.StatusCreated, response: `{"id":"100200","weight":1.50}`,
 			want: "{\n  \"id\": \"100200\",\n  \"weight\": 1.50\n}\n",
 		},
 		{
@@ -63,7 +63,7 @@ func apiWrites() []writeCase {
 		{
 			args: []string{"api", "patch", "/site/{tenant}/sites/AcmeStore_NL", "--scope", "site.site_manage"},
 			file: `{"active":false}`, method: http.MethodPatch, path: "/site/acme1/sites/AcmeStore_NL",
-			scopes: []string{"site.site_manage"}, status: http.StatusOK, body: `{"code":"AcmeStore_NL","active":false}`,
+			scopes: []string{"site.site_manage"}, status: http.StatusOK, response: `{"code":"AcmeStore_NL","active":false}`,
 			want: "{\n  \"active\": false,\n  \"code\": \"AcmeStore_NL\"\n}\n",
 		},
 		{
@@ -100,22 +100,22 @@ func (tt *writeCase) with(t *testing.T, flags ...string) []string {
 func (tt *writeCase) fake(t *testing.T, status int) *fakeEmporix {
 	t.Helper()
 	fake := newFakeEmporix(t)
-	fake.route(tt.path, tt.serve(status, tt.body))
+	fake.route(tt.path, tt.serve(status, tt.response))
 	return fake
 }
 
 func (tt *writeCase) serve(status int, body string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if tt.read != "" && r.Method == http.MethodGet {
-			respond(http.StatusOK, tt.read)(w, r)
+		if tt.readFirst != "" && r.Method == http.MethodGet {
+			respond(http.StatusOK, tt.readFirst)(w, r)
 			return
 		}
 		respond(status, body)(w, r)
 	}
 }
 
-func (tt *writeCase) readFirst() (uris, tokens []string) {
-	if tt.read == "" {
+func (tt *writeCase) priorRead() (uris, tokens []string) {
+	if tt.readFirst == "" {
 		return nil, nil
 	}
 	return []string{tt.path}, []string{tokenScope(tt.readScopes)}
@@ -123,7 +123,7 @@ func (tt *writeCase) readFirst() (uris, tokens []string) {
 
 func (tt *writeCase) assertSent(t *testing.T, fake *fakeEmporix) {
 	t.Helper()
-	uris, tokens := tt.readFirst()
+	uris, tokens := tt.priorRead()
 	fake.assertRequests(t, append(uris, tt.uri(""))...)
 	fake.assertTokens(t, append(tokens, tokenScope(tt.scopes))...)
 	last := len(fake.sent) - 1
@@ -160,7 +160,7 @@ func (tt *writeCase) dryRun(base string) *regexp.Regexp {
 
 func (tt *writeCase) assertNoWrite(t *testing.T, fake *fakeEmporix) {
 	t.Helper()
-	uris, tokens := tt.readFirst()
+	uris, tokens := tt.priorRead()
 	fake.assertRequests(t, uris...)
 	fake.assertTokens(t, tokens...)
 }
@@ -293,15 +293,16 @@ func TestWriteConflictsExitWith5(t *testing.T) {
 }
 
 func TestCompletionOffersFilesForFileOnly(t *testing.T) {
+	files, noFiles := directiveLine(cobra.ShellCompDirectiveDefault), directiveLine(cobra.ShellCompDirectiveNoFileComp)
 	for _, tt := range []struct {
 		args []string
 		want string
 	}{
-		{args: []string{"api", "post", "/x", "--file", ""}, want: ":0\n"},
-		{args: []string{"api", "delete", "/x", "--file", "b"}, want: ":0\n"},
-		{args: []string{"api", "put", ""}, want: ":4\n"},
-		{args: []string{"api", "patch", "/x", "--scope", ""}, want: ":4\n"},
-		{args: []string{"api", "post", "/x", "-p", ""}, want: ":4\n"},
+		{args: []string{"api", "post", "/x", "--file", ""}, want: files},
+		{args: []string{"api", "delete", "/x", "--file", "b"}, want: files},
+		{args: []string{"api", "put", ""}, want: noFiles},
+		{args: []string{"api", "patch", "/x", "--scope", ""}, want: noFiles},
+		{args: []string{"api", "post", "/x", "-p", ""}, want: noFiles},
 	} {
 		code, stdout, _ := runCLI(t, nil, append([]string{cobra.ShellCompRequestCmd}, tt.args...)...)
 		if code != ExitOK || !strings.HasSuffix(stdout, tt.want) {

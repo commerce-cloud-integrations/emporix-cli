@@ -121,7 +121,7 @@ func priceCommand(fake *fakeEmporix, method string) *cobra.Command {
 	a := &app{getenv: func(key string) string { return fake.env()[key] }, timeout: defaultTimeout}
 	cmd := reader[thing]{view: thingView()}.command(a, &command{
 		use: "price ID", long: "Calculates the price of a thing.", req: request{path: "/things/{id}/price"},
-		fetch: bodyRead{method: method, fetch: single{items: oneObject}},
+		fetch: bodyRead{method: method, body: objectBody{}, fetch: single{items: oneObject}},
 	})
 	applyExitPolicy(cmd)
 	cmd.SetArgs([]string{"t 1"})
@@ -163,9 +163,9 @@ func TestSearchesSayTheyChangeNothing(t *testing.T) {
 			t.Errorf("%s: %v", path, err)
 			continue
 		}
-		sendsBody := tt.sent != ""
+		sendsBody := tt.requestBody != ""
 		if takesBody := slices.Contains(searches, path); takesBody != sendsBody {
-			t.Errorf("%s: takes --body %v, but its read cases send the body %q", path, takesBody, tt.sent)
+			t.Errorf("%s: takes --body %v, but its read cases send the body %q", path, takesBody, tt.requestBody)
 			continue
 		}
 		posted := tt.method == http.MethodPost || tt.method == http.MethodPut
@@ -176,15 +176,16 @@ func TestSearchesSayTheyChangeNothing(t *testing.T) {
 }
 
 func TestCompletionOffersFilesForBodyOnly(t *testing.T) {
+	files, noFiles := directiveLine(cobra.ShellCompDirectiveDefault), directiveLine(cobra.ShellCompDirectiveNoFileComp)
 	for _, tt := range []struct {
 		args []string
 		want string
 	}{
-		{args: []string{"products", "search", "--body", ""}, want: ":0\n"},
-		{args: []string{"category-trees", "search", "--body", "b"}, want: ":0\n"},
-		{args: []string{"products", "search", "--query", ""}, want: ":4\n"},
-		{args: []string{"category-trees", "search", "--category", ""}, want: ":4\n"},
-		{args: []string{"products", "search", ""}, want: ":4\n"},
+		{args: []string{"products", "search", "--body", ""}, want: files},
+		{args: []string{"category-trees", "search", "--body", "b"}, want: files},
+		{args: []string{"products", "search", "--query", ""}, want: noFiles},
+		{args: []string{"category-trees", "search", "--category", ""}, want: noFiles},
+		{args: []string{"products", "search", ""}, want: noFiles},
 	} {
 		code, stdout, _ := runCLI(t, nil, append([]string{cobra.ShellCompRequestCmd}, tt.args...)...)
 		if code != ExitOK || !strings.HasSuffix(stdout, tt.want) {

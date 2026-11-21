@@ -119,13 +119,13 @@ func (e *ItemsError) Unwrap() error { return e.class }
 
 type sentItems struct {
 	count int
-	key   string
+	key   itemKey
 	names []string
 }
 
-func namedItems(items []json.RawMessage, key string) sentItems {
+func namedItems(items []json.RawMessage, key itemKey) sentItems {
 	sent := sentItems{count: len(items), key: key}
-	if key != "" {
+	if key != unkeyed {
 		sent.names = make([]string, len(items))
 		for i, item := range items {
 			sent.names[i] = memberString(item, key)
@@ -134,10 +134,10 @@ func namedItems(items []json.RawMessage, key string) sentItems {
 	return sent
 }
 
-func memberString(raw json.RawMessage, key string) string {
+func memberString(raw json.RawMessage, key itemKey) string {
 	var object map[string]json.RawMessage
 	var value string
-	if json.Unmarshal(raw, &object) != nil || json.Unmarshal(object[key], &value) != nil {
+	if json.Unmarshal(raw, &object) != nil || json.Unmarshal(object[string(key)], &value) != nil {
 		return ""
 	}
 	return value
@@ -160,7 +160,7 @@ func (r itemResult) code() int {
 
 func (s sentItems) item(r itemResult, raw json.RawMessage, position, first int, read []bool) (item int,
 	name string, isItem bool) {
-	if s.key == "" {
+	if s.key == unkeyed {
 		if r.Index != nil {
 			position = *r.Index - first
 		}
@@ -234,11 +234,11 @@ func sharedClass(failures []ItemFailure) error {
 // (ItemFailure.Index). A body that Prepare refuses is left whole, for
 // Prepare to refuse.
 func (w *Write) Split() []*Write {
-	if !w.Batched || w.Parts == nil || w.Parts.member != "" {
+	if !w.Batched || w.Parts == nil || w.Parts.member != topLevel {
 		return []*Write{w}
 	}
 	most := w.Parts.most
-	items, isArray := within(w.Body.data, "")
+	items, isArray := within(w.Body.data, topLevel)
 	if !isArray || len(items) <= most {
 		return []*Write{w}
 	}

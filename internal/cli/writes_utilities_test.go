@@ -13,7 +13,7 @@ func webhookWrites() []writeCase {
 	return []writeCase{
 		{
 			args: []string{"webhooks", "configurations", "create"}, file: config, method: http.MethodPost,
-			path: "/webhook/acme1/config", scopes: manage, status: http.StatusCreated, body: `{"code":"http"}`,
+			path: "/webhook/acme1/config", scopes: manage, status: http.StatusCreated, response: `{"code":"http"}`,
 			want: "{\n  \"code\": \"http\"\n}\n",
 		},
 		{
@@ -40,8 +40,8 @@ func webhookWrites() []writeCase {
 			file: `[{"eventType":"order.created","action":"SUBSCRIBE","metadata":{"version":1}},` +
 				`{"eventType":"cart.closed","action":"UNSUBSCRIBE","fieldsToUnsubscribe":["customer"]}]`,
 			method: http.MethodPatch, path: "/webhook/acme1/event-subscriptions", scopes: manage,
-			status: http.StatusMultiStatus,
-			body:   `[{"eventType":"order.created","code":200,"status":"OK"},{"eventType":"cart.closed","code":200}]`,
+			status:   http.StatusMultiStatus,
+			response: `[{"eventType":"order.created","code":200,"status":"OK"},{"eventType":"cart.closed","code":200}]`,
 			want: "[\n  {\n    \"code\": 200,\n    \"eventType\": \"order.created\",\n    \"status\": \"OK\"\n  },\n" +
 				"  {\n    \"code\": 200,\n    \"eventType\": \"cart.closed\"\n  }\n]\n",
 		},
@@ -57,7 +57,7 @@ func searchWrites() []writeCase {
 		{
 			args: []string{"search", "indexes", "update", "vehicle", "vehicles"}, file: index, method: http.MethodPut,
 			path: "/search/acme1/search/vehicle/indexes/vehicles", scopes: manage, lang: "*",
-			status: http.StatusAccepted, body: `{"id":"job1"}`, want: "{\n  \"id\": \"job1\"\n}\n",
+			status: http.StatusAccepted, response: `{"id":"job1"}`, want: "{\n  \"id\": \"job1\"\n}\n",
 		},
 		{
 			args:   []string{"search", "indexes", "update", "vehicle", "vehicles"},
@@ -68,13 +68,13 @@ func searchWrites() []writeCase {
 		{
 			args: []string{"search", "indexes", "delete", "vehicle", "vehicles"}, method: http.MethodDelete,
 			path: "/search/acme1/search/vehicle/indexes/vehicles", scopes: manage, confirmBy: "vehicles",
-			status: http.StatusAccepted,
-			body:   `{"id":"job2"}`, want: "{\n  \"id\": \"job2\"\n}\n",
+			status:   http.StatusAccepted,
+			response: `{"id":"job2"}`, want: "{\n  \"id\": \"job2\"\n}\n",
 		},
 		{
 			args: []string{"search", "indexes", "import"}, file: `{"exportedAt":"2026-10-01T08:00:00Z","data":"` + pkg + `"}`,
 			method: http.MethodPost, path: "/search/acme1/search/indexes/import", scopes: manage, lang: "*",
-			status: http.StatusOK, body: `[{"id":"vehicles","type":"vehicle","jobId":"job3","jobType":"create_index"}]`,
+			status: http.StatusOK, response: `[{"id":"vehicles","type":"vehicle","jobId":"job3","jobType":"create_index"}]`,
 			want: "[\n  {\n    \"id\": \"vehicles\",\n    \"jobId\": \"job3\",\n    \"jobType\": \"create_index\",\n" +
 				"    \"type\": \"vehicle\"\n  }\n]\n",
 		},
@@ -82,7 +82,7 @@ func searchWrites() []writeCase {
 			args:   []string{"search", "queries", "update", "vehicle", "by-make"},
 			file:   `{"index":"vehicles","queries":[{"type":"TEXT","query":"toyota","field":"make"}]}`,
 			method: http.MethodPut, path: "/search/acme1/search/vehicle/queries/by-make", scopes: manage, lang: "*",
-			status: http.StatusCreated, body: `{"id":"by-make"}`, want: "{\n  \"id\": \"by-make\"\n}\n",
+			status: http.StatusCreated, response: `{"id":"by-make"}`, want: "{\n  \"id\": \"by-make\"\n}\n",
 		},
 		{
 			args: []string{"search", "queries", "delete", "vehicle", "by-make"}, method: http.MethodDelete,
@@ -93,7 +93,7 @@ func searchWrites() []writeCase {
 			args: []string{"search", "indexes", "update", "legal-entity", "companies"}, method: http.MethodPut,
 			file: `{"name":{"en":"Companies"},"fields":[{"path":"name","text":true}]}`,
 			path: "/search/acme1/search/legal-entity/indexes/companies", scopes: manage, lang: "*",
-			status: http.StatusAccepted, body: `{"id":"job4"}`, want: "{\n  \"id\": \"job4\"\n}\n",
+			status: http.StatusAccepted, response: `{"id":"job4"}`, want: "{\n  \"id\": \"job4\"\n}\n",
 		},
 		{
 			args: []string{"search", "queries", "delete", "customer", "by-city"}, method: http.MethodDelete,
@@ -112,13 +112,13 @@ func sequentialIDWrites() []writeCase {
 			file: `{"name":"Orders","schemaType":"orderNoSequence","preText":"ORD-","startValue":1,` +
 				`"maxValue":999999,"numberOfDigits":6}`,
 			method: http.MethodPost, path: "/sequential-id/acme1/schemas", scopes: manage, status: http.StatusCreated,
-			body: `{"id":"` + id + `"}`, want: "{\n  \"id\": \"" + id + "\"\n}\n",
+			response: `{"id":"` + id + `"}`, want: "{\n  \"id\": \"" + id + "\"\n}\n",
 		},
 		{
 			args:   []string{"sequential-ids", "create"},
 			file:   `{"name":"Orders","schemaType":"orderNoSequence","startValue":1,"maxValue":999999,"numberOfDigits":6}`,
 			method: http.MethodPost, path: "/sequential-id/acme1/schemas", scopes: manage, status: http.StatusCreated,
-			body: id, want: "\"" + id + "\"\n",
+			response: id, want: "\"" + id + "\"\n",
 		},
 		{
 			args: []string{"sequential-ids", "activate", id}, method: http.MethodPost,
@@ -132,25 +132,25 @@ func sequentialIDWrites() []writeCase {
 			args:   []string{"sequential-ids", "next-id", "orderNoSequence", "--sequence-key", "2026-10"},
 			sent:   `{"sequenceKey":"2026-10"}`,
 			method: http.MethodPost, path: "/sequential-id/acme1/schemas/types/orderNoSequence/nextId", scopes: view,
-			status: http.StatusCreated, body: `{"id":"ORD-000045"}`, want: "{\n  \"id\": \"ORD-000045\"\n}\n",
+			status: http.StatusCreated, response: `{"id":"ORD-000045"}`, want: "{\n  \"id\": \"ORD-000045\"\n}\n",
 		},
 		{
 			args: []string{"sequential-ids", "next-id", "orderNoSequence", "--site", "AcmeStore_NL"}, sent: `{}`,
 			method: http.MethodPost, path: "/sequential-id/acme1/schemas/types/orderNoSequence/nextId",
-			query: "siteCode=AcmeStore_NL", scopes: view, status: http.StatusCreated, body: `{"id":"ORD-000046"}`,
+			query: "siteCode=AcmeStore_NL", scopes: view, status: http.StatusCreated, response: `{"id":"ORD-000046"}`,
 			want: "{\n  \"id\": \"ORD-000046\"\n}\n",
 		},
 		{
 			args: []string{"sequential-ids", "next-id", "invoiceNoSequence"},
 			file: `{"placeholders":{"__year__":"2026"}}`, method: http.MethodPost,
 			path: "/sequential-id/acme1/schemas/types/invoiceNoSequence/nextId", scopes: view,
-			status: http.StatusCreated, body: `{"id":"INV-2026-7"}`, want: "{\n  \"id\": \"INV-2026-7\"\n}\n",
+			status: http.StatusCreated, response: `{"id":"INV-2026-7"}`, want: "{\n  \"id\": \"INV-2026-7\"\n}\n",
 		},
 		{
 			args: []string{"sequential-ids", "next-ids", "--site", "AcmeStore_NL"},
 			file: `{"orderNoSequence":{"numberOfIds":2}}`, method: http.MethodPost,
 			path: "/sequential-id/sequenceSchemaBatch/nextIds", query: "siteCode=AcmeStore_NL", scopes: view,
-			status: http.StatusCreated, body: `{"orderNoSequence":{"ids":["ORD-000047","ORD-000048"]}}`,
+			status: http.StatusCreated, response: `{"orderNoSequence":{"ids":["ORD-000047","ORD-000048"]}}`,
 			want: "{\n  \"orderNoSequence\": {\n    \"ids\": [\n      \"ORD-000047\",\n      \"ORD-000048\"\n" +
 				"    ]\n  }\n}\n",
 		},

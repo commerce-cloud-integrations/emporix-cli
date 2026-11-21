@@ -28,7 +28,7 @@ func segmentItself() []writeCase {
 	return []writeCase{
 		{
 			args: []string{"segments", "create"}, file: segmentJSON, method: http.MethodPost, path: segments,
-			scopes: manage, lang: "*", status: http.StatusCreated, body: `{"id":"s1"}`, want: "{\n  \"id\": \"s1\"\n}\n",
+			scopes: manage, lang: "*", status: http.StatusCreated, response: `{"id":"s1"}`, want: "{\n  \"id\": \"s1\"\n}\n",
 		},
 		{
 			args: []string{"segments", "update", "s 1"}, file: `{"name":{"en":"Gold"},"metadata":{"version":3}}`,
@@ -45,23 +45,23 @@ func segmentItself() []writeCase {
 		{
 			args: []string{"segments", "delete", "s1", "--with-assignments"}, method: http.MethodDelete, path: segments + "/s1",
 			query: "forceDelete=true", scopes: manage, confirmBy: "s1",
-			many: "the segment and its item, customer and IAM group assignments", status: http.StatusNoContent,
+			deletedMany: "the segment and its item, customer and IAM group assignments", status: http.StatusNoContent,
 		},
 		{
 			args: []string{"segments", "bulk-create"}, file: "[" + segmentJSON + "," + segmentJSON + "]",
 			method: http.MethodPost, path: segments + "/bulk", scopes: manage, lang: "*", status: http.StatusMultiStatus,
-			body: bulkDone, want: doneJSON,
+			response: bulkDone, want: doneJSON,
 		},
 		{
 			args: []string{"segments", "bulk-update"}, file: "[" + segmentJSON + "," + segmentJSON + "]",
 			method: http.MethodPut, path: segments + "/bulk", scopes: manage, lang: "*", status: http.StatusMultiStatus,
-			body: bulkDone, want: doneJSON,
+			response: bulkDone, want: doneJSON,
 		},
 		{
 			args: []string{"segments", "bulk-delete", "--with-assignments"}, file: `["s1","s2"]`, method: http.MethodDelete,
 			path: segments + "/bulk", query: "forceDelete=true", scopes: manage, confirmBy: "acme1",
-			many: "the segments that --file names", status: http.StatusMultiStatus,
-			body: bulkDone, want: doneJSON,
+			deletedMany: "the segments that --file names", status: http.StatusMultiStatus,
+			response: bulkDone, want: doneJSON,
 		},
 	}
 }
@@ -97,14 +97,15 @@ func segmentAssignments() []writeCase {
 		{
 			args: []string{"segments", "customers", "bulk-update", "s 1"},
 			file: `[{"customerId":"c1"},{"customerId":"c2","legalEntityId":"le1"}]`, method: http.MethodPut,
-			path: segment + "/customers/bulk", scopes: manage, status: http.StatusMultiStatus, body: bulkDone, want: doneJSON,
+			path: segment + "/customers/bulk", scopes: manage, status: http.StatusMultiStatus, response: bulkDone,
+			want: doneJSON,
 		},
 		{
 			args: []string{"segments", "customers", "bulk-delete", "s 1"},
 			file: `[{"customerId":"c1"},{"customerId":"c2","legalEntityId":"le1"}]`, method: http.MethodDelete,
 			path: segment + "/customers/bulk", scopes: manage, confirmBy: "s 1",
-			many: "the customer assignments of a segment that --file names", status: http.StatusMultiStatus,
-			body: bulkDone, want: doneJSON,
+			deletedMany: "the customer assignments of a segment that --file names", status: http.StatusMultiStatus,
+			response: bulkDone, want: doneJSON,
 		},
 		{
 			args: []string{"segments", "groups", "update", "s 1", "g1"}, sent: "{}", method: http.MethodPut,
@@ -133,13 +134,13 @@ func segmentAssignments() []writeCase {
 		{
 			args: []string{"segments", "items", "bulk-update", "s 1", "PRODUCT"}, file: `[{"id":"100200"},{"id":"100300"}]`,
 			method: http.MethodPut, path: segment + "/items/PRODUCT/bulk", scopes: manage, status: http.StatusMultiStatus,
-			body: bulkDone, want: doneJSON,
+			response: bulkDone, want: doneJSON,
 		},
 		{
 			args: []string{"segments", "items", "bulk-delete", "s 1", "PRODUCT"}, file: `["100200","100300"]`,
 			method: http.MethodDelete, path: segment + "/items/PRODUCT/bulk", scopes: manage, confirmBy: "PRODUCT",
-			many:   "the item assignments of a segment that --file names",
-			status: http.StatusMultiStatus, body: bulkDone, want: doneJSON,
+			deletedMany: "the item assignments of a segment that --file names",
+			status:      http.StatusMultiStatus, response: bulkDone, want: doneJSON,
 		},
 	}
 }

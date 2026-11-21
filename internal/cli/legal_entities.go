@@ -62,7 +62,7 @@ func newLegalEntitiesCommand(a *app) *cobra.Command {
 			"customer locations stay, and its customers no longer name it (one with no other legal " +
 			"entity becomes a B2C customer).",
 		unknown: answeredDeleted,
-		cascade: "the legal entity with its subsidiaries, assignments and IAM customer groups",
+		deletes: "the legal entity with its subsidiaries, assignments and IAM customer groups",
 	})
 	return newResourceCommand(a, entities, slices.Concat(reads, writes)...)
 }

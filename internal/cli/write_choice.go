@@ -26,9 +26,9 @@ func (c queryChoice) bind(cmd *cobra.Command) func(query url.Values, scopes []st
 	flags := make([]string, len(c.options))
 	for i, option := range c.options {
 		refuseTypeScopes(cmd.Use, option.scopes)
-		given[i] = cmd.Flags().Bool(option.flag, false, option.usage+" (requests "+
-			strings.Join(option.scopes, ", ")+" too)")
-		_ = cmd.Flags().SetAnnotation(option.flag, writeScopesAnnotation, option.scopes)
+		usage := option.usage + " (requests " + strings.Join(option.scopes, ", ") + " too)"
+		given[i] = cmd.Flags().Bool(option.flag, false, usage)
+		annotate(cmd, option.flag, writeScopesAnnotation, option.scopes)
 		flags[i] = option.flag
 	}
 	if c.param != "" {

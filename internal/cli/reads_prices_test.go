@@ -25,26 +25,26 @@ const feeTable = "ID  CODE     NAME        TYPE      AMOUNT   ITEM TYPE  SITE  A
 func priceReads() []readCase {
 	return []readCase{
 		{
-			args:    []string{"prices", "list", "--site", "AcmeStore_NL"},
-			path:    "/price/acme1/prices",
-			query:   "siteCode=AcmeStore_NL",
-			filters: listFilters{kinds: filterable},
-			body:    pricesBody,
-			want:    pricesTable,
+			args:     []string{"prices", "list", "--site", "AcmeStore_NL"},
+			path:     "/price/acme1/prices",
+			query:    "siteCode=AcmeStore_NL",
+			filters:  listFilters{kinds: filterable},
+			response: pricesBody,
+			want:     pricesTable,
 		},
 		{
-			args:    []string{"prices", "for-product", "001 234/x", "--site", "main"},
-			path:    "/price/acme1/prices",
-			query:   "itemId=001+234%2Fx&itemType=PRODUCT&siteCode=main",
-			filters: listFilters{kinds: filterable},
-			body:    pricesBody,
-			want:    pricesTable,
+			args:     []string{"prices", "for-product", "001 234/x", "--site", "main"},
+			path:     "/price/acme1/prices",
+			query:    "itemId=001+234%2Fx&itemType=PRODUCT&siteCode=main",
+			filters:  listFilters{kinds: filterable},
+			response: pricesBody,
+			want:     pricesTable,
 		},
 		{
-			args: []string{"prices", "get", "p2"},
-			path: "/price/acme1/prices/p2",
-			mode: getWhole,
-			body: `{"id":"p2","itemId":{"itemType":"PRODUCT","id":"ZZ1"}}`,
+			args:     []string{"prices", "get", "p2"},
+			path:     "/price/acme1/prices/p2",
+			mode:     getWhole,
+			response: `{"id":"p2","itemId":{"itemType":"PRODUCT","id":"ZZ1"}}`,
 			want: "ID  ITEM  TYPE     CURRENCY  COUNTRY  SITES  TIERS  FROM  TO\n" +
 				"p2  ZZ1   PRODUCT                                         \n",
 		},
@@ -58,7 +58,7 @@ func priceModelReads() []readCase {
 			path:    "/price/acme1/priceModels",
 			scopes:  []string{"price.pricemodel_read"},
 			filters: listFilters{kinds: sortable},
-			body: `[
+			response: `[
 		{"id":"pm1","name":{"en":"Default price model","nl":"Standaard"},"default":true,"includesTax":false,
 			"includesMarkup":false,"measurementUnit":{"quantity":1.0,"unitCode":"pc"},
 			"tierDefinition":{"tierType":"BASIC","tiers":[{"id":"t1","minQuantity":{"quantity":0.0,"unitCode":"pc"}}]}},
@@ -75,11 +75,11 @@ func priceModelReads() []readCase {
 				"pm4                                                                  \n",
 		},
 		{
-			args:   []string{"price-models", "get", "pm1", "--language", "nl"},
-			path:   "/price/acme1/priceModels/pm1",
-			scopes: []string{"price.pricemodel_read"},
-			mode:   getWhole,
-			body:   `{"id":"pm1","name":{"en":"Default","nl":"Standaard"},"tierDefinition":{"tierType":"BASIC"}}`,
+			args:     []string{"price-models", "get", "pm1", "--language", "nl"},
+			path:     "/price/acme1/priceModels/pm1",
+			scopes:   []string{"price.pricemodel_read"},
+			mode:     getWhole,
+			response: `{"id":"pm1","name":{"en":"Default","nl":"Standaard"},"tierDefinition":{"tierType":"BASIC"}}`,
 			want: "ID   NAME       DEFAULT  TYPE   TIERS  UNIT  TAX  MARKUP\n" +
 				"pm1  Standaard           BASIC                    \n",
 		},
@@ -93,7 +93,7 @@ func priceListReads() []readCase {
 			path:    "/price/acme1/price-lists",
 			scopes:  []string{"price.pricelist_read"},
 			filters: listFilters{kinds: filterable},
-			body: `[
+			response: `[
 		{"id":"pl1","name":{"en":"Wholesale","nl":"Groothandel"},"currency":"EUR","countries":["NL","BE"],
 			"customerGroups":["cg1","cg2"],"siteCode":"AcmeStore_NL",
 			"validity":{"from":"2026-01-01T00:00:00.000Z","to":"2027-01-01T00:00:00.000Z"}},
@@ -113,7 +113,7 @@ func priceListReads() []readCase {
 			path:    "/price/acme1/price-lists/pl%2F1/prices",
 			scopes:  []string{"price.pricelist_read"},
 			filters: listFilters{kinds: filterable},
-			body: `[
+			response: `[
 		{"id":"p1","itemId":{"itemType":"PRODUCT","id":"001234"},"priceModelId":"pm2",
 			"tierValues":[{"id":"t1","priceValue":15.90},{"id":"t2","priceValue":14}]},
 		{"id":"p2","itemId":{"itemType":"PRODUCT","id":"100200"},"tierValues":[{"priceValue":9.5}]}]`,
@@ -122,11 +122,11 @@ func priceListReads() []readCase {
 				"p2  100200  PRODUCT         9.5\n",
 		},
 		{
-			args:   []string{"price-lists", "get", "pl1", "--language", "nl"},
-			path:   "/price/acme1/price-lists/pl1",
-			scopes: []string{"price.pricelist_read"},
-			mode:   getWhole,
-			body:   `{"id":"pl1","name":{"en":"Wholesale","nl":"Groothandel"},"currency":"EUR","siteCode":"main"}`,
+			args:     []string{"price-lists", "get", "pl1", "--language", "nl"},
+			path:     "/price/acme1/price-lists/pl1",
+			scopes:   []string{"price.pricelist_read"},
+			mode:     getWhole,
+			response: `{"id":"pl1","name":{"en":"Wholesale","nl":"Groothandel"},"currency":"EUR","siteCode":"main"}`,
 			want: "ID   NAME         CURRENCY  SITE  COUNTRIES  REGIONS  CUSTOMER GROUPS  LEGAL ENTITY  FROM  TO\n" +
 				"pl1  Groothandel  EUR       main                                                           \n",
 		},
@@ -139,7 +139,7 @@ func feeReads() []readCase {
 			args:  []string{"fees", "list", "--site", "main", "--language", "nl"},
 			path:  "/fee/acme1/fees",
 			query: "siteCode=main",
-			body: `[
+			response: `[
 		{"id":"f1","code":"deposit","name":{"en":"Deposit","nl":"Statiegeld"},"feeType":"ABSOLUTE_MULTIPLY_ITEMQUANTITY",
 			"feeAbsolute":{"amount":0.15,"currency":"EUR"},"itemType":"PRODUCT","siteCode":"main","active":true,
 			"taxable":false,"activeTimespan":{"startDate":"2026-01-01T00:00:00Z","endDate":"2027-01-01T00:00:00Z"}},
@@ -165,30 +165,30 @@ func feeReads() []readCase {
 				"                               \n",
 		},
 		{
-			args: []string{"fees", "get", "f1", "--language", "nl"},
-			path: "/fee/acme1/fees/f1",
-			mode: getWhole,
-			body: `{"fee":` + feeBody + `,"itemYRNs":{"siteCode":"main","itemYrns":["urn:x"]}}`,
-			want: feeTable,
+			args:     []string{"fees", "get", "f1", "--language", "nl"},
+			path:     "/fee/acme1/fees/f1",
+			mode:     getWhole,
+			response: `{"fee":` + feeBody + `,"itemYRNs":{"siteCode":"main","itemYrns":["urn:x"]}}`,
+			want:     feeTable,
 		},
 		{
-			args:  []string{"fees", "for-product", "100 200", "--site", "AcmeStore_NL", "--language", "nl"},
-			path:  "/fee/acme1/productFees/100%20200/fees",
-			query: "expand=true&siteCode=AcmeStore_NL",
-			mode:  getWhole,
-			body:  "[" + feeBody + "]",
-			want:  feeTable,
+			args:     []string{"fees", "for-product", "100 200", "--site", "AcmeStore_NL", "--language", "nl"},
+			path:     "/fee/acme1/productFees/100%20200/fees",
+			query:    "expand=true&siteCode=AcmeStore_NL",
+			mode:     getWhole,
+			response: "[" + feeBody + "]",
+			want:     feeTable,
 		},
 		{
 			args: []string{
 				"fees", "for-item", "urn:yaas:saasag:caasproduct:product:acme1;100200", "--site", "AcmeStore_NL",
 				"--language", "nl",
 			},
-			path:  "/fee/acme1/itemFees/urn:yaas:saasag:caasproduct:product:acme1%3B100200/fees",
-			query: "expand=true&siteCode=AcmeStore_NL",
-			mode:  getWhole,
-			body:  "[" + feeBody + "]",
-			want:  feeTable,
+			path:     "/fee/acme1/itemFees/urn:yaas:saasag:caasproduct:product:acme1%3B100200/fees",
+			query:    "expand=true&siteCode=AcmeStore_NL",
+			mode:     getWhole,
+			response: "[" + feeBody + "]",
+			want:     feeTable,
 		},
 	}
 }
@@ -199,7 +199,7 @@ func availabilityReads() []readCase {
 			args:    []string{"availability", "list", "--site", "AcmeStore NL"},
 			path:    "/availability/acme1/availability/site/AcmeStore%20NL",
 			filters: listFilters{kinds: filterable},
-			body: `[
+			response: `[
 		{"id":"a1","productId":"001234","site":"AcmeStore NL","stockLevel":12.0,"available":true,
 		 "distributionChannel":"ASSORTMENT"},
 		{"productId":"ZZ1","site":"AcmeStore NL"}]`,
@@ -208,11 +208,11 @@ func availabilityReads() []readCase {
 				"ZZ1      AcmeStore NL                    \n",
 		},
 		{
-			args: []string{"availability", "get", "001 234/x", "--site", "main"},
-			path: "/availability/acme1/availability/001%20234%2Fx/main",
-			mode: getWhole,
-			body: `{"productId":"001 234/x","site":"main","stockLevel":0,"available":false}`,
-			want: "PRODUCT    SITE  STOCK  AVAILABLE  CHANNEL\n001 234/x  main  0      false      \n",
+			args:     []string{"availability", "get", "001 234/x", "--site", "main"},
+			path:     "/availability/acme1/availability/001%20234%2Fx/main",
+			mode:     getWhole,
+			response: `{"productId":"001 234/x","site":"main","stockLevel":0,"available":false}`,
+			want:     "PRODUCT    SITE  STOCK  AVAILABLE  CHANNEL\n001 234/x  main  0      false      \n",
 		},
 	}
 }

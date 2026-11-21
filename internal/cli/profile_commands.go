@@ -136,7 +136,7 @@ func (a *app) saveWithSecret(ctx context.Context, store config.Store, file confi
 func (a *app) readSecret(cmd *cobra.Command, name string) (string, error) {
 	var secret string
 	var err error
-	if a.terminal {
+	if a.inTerminal {
 		secret, err = a.askSecret(cmd, name)
 	} else {
 		secret, err = readLine(cmd.Context(), cmd.InOrStdin(), "reading the client secret")
@@ -295,7 +295,7 @@ func newProfileRemoveCommand(a *app) *cobra.Command {
 }
 
 func (a *app) removeProfile(cmd *cobra.Command, name string, yes bool) error {
-	if !yes && !a.terminal {
+	if !yes && !a.inTerminal {
 		return usageError{fmt.Errorf("%s asks for confirmation on a terminal, which standard input is not: "+
 			"give --%s to remove the profile", cmd.CommandPath(), yesFlag)}
 	}

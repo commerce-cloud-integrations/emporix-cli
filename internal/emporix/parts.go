@@ -15,9 +15,9 @@ type Parts struct {
 	noun    string
 	sender  string
 	most    int
-	member  string
-	results string
-	key     string
+	member  arrayAt
+	results arrayAt
+	key     itemKey
 	read    func(sent *sentParts, results []json.RawMessage) (failed []ItemFailure, notRun int, ok bool)
 }
 
@@ -36,7 +36,7 @@ const (
 // result is then its item's by that member, whatever their order, and a
 // failure names its item by it.
 func Items(most int, key string) *Parts {
-	return &Parts{noun: ItemNoun, sender: "a bulk write", most: most, key: key, read: readItems}
+	return &Parts{noun: ItemNoun, sender: "a bulk write", most: most, key: itemKey(key), read: readItems}
 }
 
 // Commands returns the Parts of a chain of commands: a JSON object whose
@@ -55,15 +55,15 @@ type sentParts struct {
 	first int
 }
 
-func (p *Parts) split(named string, body []byte, query url.Values) (*sentParts, error) {
+func (p *Parts) split(named string, body []byte, query url.Values, first int) (*sentParts, error) {
 	if p == nil {
 		return nil, nil
 	}
 	parts, ok := within(body, p.member)
 	if !ok || len(parts) == 0 {
 		shape := "a JSON array"
-		if p.member != "" {
-			shape = "a JSON object whose " + p.member + " is an array"
+		if p.member != topLevel {
+			shape = "a JSON object whose " + string(p.member) + " is an array"
 		}
 		return nil, fmt.Errorf("%w: %s: %s sends %s of one or more %ss", ErrInvalidInput, named, p.sender, shape,
 			p.noun)
@@ -72,16 +72,24 @@ func (p *Parts) split(named string, body []byte, query url.Values) (*sentParts, 
 		return nil, fmt.Errorf("%w: %s: %s sends at most %d %ss in one request, not %d: split them",
 			ErrInvalidInput, named, p.sender, p.most, p.noun, len(parts))
 	}
-	return &sentParts{Parts: p, parts: parts, query: query}, nil
+	return &sentParts{Parts: p, parts: parts, query: query, first: first}, nil
 }
 
-func within(data []byte, member string) ([]json.RawMessage, bool) {
-	if member != "" {
+type arrayAt string
+
+const topLevel arrayAt = ""
+
+type itemKey string
+
+const unkeyed itemKey = ""
+
+func within(data []byte, at arrayAt) ([]json.RawMessage, bool) {
+	if at != topLevel {
 		var object map[string]json.RawMessage
 		if json.Unmarshal(data, &object) != nil {
 			return nil, false
 		}
-		data = object[member]
+		data = object[string(at)]
 	}
 	var array []json.RawMessage
 	return array, json.Unmarshal(data, &array) == nil && array != nil

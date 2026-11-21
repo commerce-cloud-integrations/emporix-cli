@@ -5,6 +5,7 @@ import (
 	"errors"
 	"net/http"
 	"slices"
+	"strconv"
 	"strings"
 	"testing"
 	"time"
@@ -17,7 +18,8 @@ func TestAuthenticateReportsGrantedToken(t *testing.T) {
 		t.Fatalf("Authenticate: %v", err)
 	}
 	wantScopes := []string{"product.product_read_unpublished", "site.site_read"}
-	if info.Tenant != testTenant || !slices.Equal(info.Scopes, wantScopes) || info.ExpiresIn != 14399*time.Second {
+	if info.Tenant != testTenant || !slices.Equal(info.Scopes, wantScopes) ||
+		info.ExpiresIn != testTokenSeconds*time.Second {
 		t.Fatalf("info = %+v", info)
 	}
 }
@@ -122,7 +124,7 @@ func TestTokensAreRenewedBeforeTheyExpire(t *testing.T) {
 	issued := time.Date(2026, 10, 14, 12, 0, 0, 0, time.UTC)
 	clock := issued
 	client.now = func() time.Time { return clock }
-	renew := 14399 * time.Second * 9 / 10
+	renew := testTokenSeconds * time.Second * 9 / 10
 	for _, step := range []struct {
 		at     time.Duration
 		tokens int
@@ -133,7 +135,8 @@ func TestTokensAreRenewedBeforeTheyExpire(t *testing.T) {
 		}
 	}
 	clock = clock.Add(renew)
-	fake.tokenBody = `{"access_token":"t","token_type":"Bearer","expires_in":14399,"scope":"tenant=other"}`
+	fake.tokenBody = `{"access_token":"t","token_type":"Bearer","expires_in":` + strconv.Itoa(testTokenSeconds) +
+		`,"scope":"tenant=other"}`
 	if _, err := client.Get(context.Background(), "/x", nil); !errors.Is(err, ErrAuth) {
 		t.Fatalf("Get with a renewed token for another tenant: %v; want ErrAuth", err)
 	}

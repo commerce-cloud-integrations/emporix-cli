@@ -23,12 +23,12 @@ func paymentGatewayWrites() []writeCase {
 	return []writeCase{
 		{
 			args: []string{"payment-modes", "create"}, file: mode, method: http.MethodPost, path: modes, scopes: manage,
-			status: http.StatusOK, body: `{"id":"pm1",` + mode[1:], want: modeJSON,
+			status: http.StatusOK, response: `{"id":"pm1",` + mode[1:], want: modeJSON,
 		},
 		{
 			args: []string{"payment-modes", "update", "pm1"}, file: `{"active":true,"configuration":{}}`,
 			method: http.MethodPut, path: modes + "/pm1", scopes: manage, status: http.StatusOK,
-			body: `{"id":"pm1",` + mode[1:], want: modeJSON,
+			response: `{"id":"pm1",` + mode[1:], want: modeJSON,
 		},
 		{
 			args: []string{"payment-modes", "delete", "pm 1"}, method: http.MethodDelete, path: modes + "/pm%201",
@@ -38,33 +38,33 @@ func paymentGatewayWrites() []writeCase {
 			args:   []string{"payment-transactions", "authorize"},
 			file:   `{"order":{"id":"1001"},"paymentModeId":"pm1","amountToAuthorize":3.99,"currency":"EUR"}`,
 			method: http.MethodPost, path: payments + "/authorize", scopes: []string{"payment-gateway.authorize_manage"},
-			status: http.StatusOK, body: `{"successful":true,"paymentTransactionId":"T1","requiresExternalPayment":false}`,
+			status: http.StatusOK, response: `{"successful":true,"paymentTransactionId":"T1","requiresExternalPayment":false}`,
 			want: "{\n  \"paymentTransactionId\": \"T1\",\n  \"requiresExternalPayment\": false,\n  \"successful\": true\n}\n",
 		},
 		{
 			args: []string{"payment-transactions", "capture", "T1", "--amount", "3.990", "--currency", "EUR"},
 			sent: `{"amount":3.990,"currency":"EUR"}`, method: http.MethodPost, path: payments + "/T1/capture",
-			scopes: captureScopes, status: http.StatusOK, body: captured, want: capture,
+			scopes: captureScopes, status: http.StatusOK, response: captured, want: capture,
 		},
 		{
 			args: []string{"payment-transactions", "capture", "T1"}, file: `{"amount":3.99,"currency":"EUR"}`,
 			method: http.MethodPost, path: payments + "/T1/capture", scopes: captureScopes, status: http.StatusOK,
-			body: captured, want: capture,
+			response: captured, want: capture,
 		},
 		{
 			args: []string{"payment-transactions", "refund", "T 1", "--amount", "1", "--currency", "EUR", "--capture-id",
 				"c1"},
 			sent: `{"amount":1,"captureId":"c1","currency":"EUR"}`, method: http.MethodPost, path: payments + "/T%201/refund",
-			scopes: refundScopes, status: http.StatusOK, body: successful, want: success,
+			scopes: refundScopes, status: http.StatusOK, response: successful, want: success,
 		},
 		{
 			args: []string{"payment-transactions", "refund", "T1"}, file: `{"amount":1,"currency":"EUR"}`,
 			method: http.MethodPost, path: payments + "/T1/refund", scopes: refundScopes, status: http.StatusOK,
-			body: successful, want: success,
+			response: successful, want: success,
 		},
 		{
 			args: []string{"payment-transactions", "cancel", "T1"}, method: http.MethodPost, path: payments + "/T1/cancel",
-			scopes: []string{"payment-gateway.cancel_manage"}, status: http.StatusOK, body: successful, want: success,
+			scopes: []string{"payment-gateway.cancel_manage"}, status: http.StatusOK, response: successful, want: success,
 		},
 	}
 }

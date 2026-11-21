@@ -3,6 +3,7 @@ package cli
 import (
 	"io"
 	"slices"
+	"strconv"
 	"strings"
 	"testing"
 
@@ -22,8 +23,12 @@ func TestCompletionScripts(t *testing.T) {
 	}
 }
 
+func directiveLine(directive cobra.ShellCompDirective) string {
+	return ":" + strconv.Itoa(int(directive)) + "\n"
+}
+
 func TestCompletionNeverSuggestsFiles(t *testing.T) {
-	const noFiles = ":4\n"
+	noFiles := directiveLine(cobra.ShellCompDirectiveNoFileComp)
 	tests := []struct {
 		args []string
 		want []string
@@ -109,11 +114,11 @@ func registeredAfter(args ...string) (registered, completing []string) {
 
 func TestCompletionAfterRootFlags(t *testing.T) {
 	code, stdout, _ := runCLI(t, nil, "--timeout=5s", cobra.ShellCompNoDescRequestCmd, "quotes", "pdf", "Q1", "--out", "")
-	if code != ExitOK || stdout != ":0\n" {
+	if code != ExitOK || stdout != directiveLine(cobra.ShellCompDirectiveDefault) {
 		t.Errorf("--out: exit %d, completions %q; want file names", code, stdout)
 	}
 	code, stdout, _ = runCLI(t, nil, "--timeout", "5s", cobra.ShellCompRequestCmd, "products", "list", "-o", "")
-	if code != ExitOK || stdout != "table\njson\nyaml\ncsv\n:4\n" {
+	if code != ExitOK || stdout != "table\njson\nyaml\ncsv\n"+directiveLine(cobra.ShellCompDirectiveNoFileComp) {
 		t.Errorf("-o: exit %d, completions %q; want the formats", code, stdout)
 	}
 }
@@ -126,7 +131,9 @@ func TestPersistentFlagsComplete(t *testing.T) {
 	completeChoices(group, "format", []string{"a", "b"})
 	group.PersistentFlags().String("in", "", "")
 	completeFileNames(group, "in")
-	completeFlags(&app{}, root, sites().ids())
+	if err := completeFlags(&app{}, root, sites().ids()); err != nil {
+		t.Fatal(err)
+	}
 	for flag, want := range map[string][]string{"format": {"a", "b"}, "in": nil} {
 		complete, ok := group.GetFlagCompletionFunc(flag)
 		if !ok {
@@ -135,6 +142,20 @@ func TestPersistentFlagsComplete(t *testing.T) {
 		if got, _ := complete(group, nil, ""); !slices.Equal(got, want) {
 			t.Errorf("--%s: completions %q; want %q", flag, got, want)
 		}
+	}
+}
+
+func TestFlagCompletionThatFailsIsAnError(t *testing.T) {
+	root := &cobra.Command{Use: "epx"}
+	request := &cobra.Command{Use: cobra.ShellCompRequestCmd}
+	root.AddCommand(request)
+	root.Flags().String("format", "", "")
+	completeChoices(root, "format", []string{"a", "b"})
+	if err := completeFlagsFor(&app{}, request); err != nil {
+		t.Fatalf("first completion request: %v", err)
+	}
+	if err := completeFlagsFor(&app{}, request); err == nil || !strings.HasPrefix(err.Error(), "epx: ") {
+		t.Errorf("registering --format twice: error %v; want one naming epx", err)
 	}
 }
 

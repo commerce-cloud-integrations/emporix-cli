@@ -43,12 +43,12 @@ func newIAMGroupsCommand(a *app) *cobra.Command {
 		"changes groups and their users. " + writesChangeAccess
 	extra := append(iamGroupWrites(a, groups), newGroupUsersCommand(a, groups),
 		childCommand(a, groups, child[iamAccessControl]{
-			use:   "access-controls",
+			sub:   "access-controls",
 			short: "List the access controls of a group",
 			long: "Reads the access controls a group grants its users. " + accessControlColumns + " " +
 				"A group's ACCESS CONTROLS in `epx iam groups list` may also count removed access controls, " +
 				"which this leaves out.",
-			scopes: accessControls.scopes,
+			scopes: ownScopes(accessControls.scopes),
 			fetch:  listing{},
 			view:   accessControls.view,
 		}))
@@ -62,7 +62,7 @@ func newGroupUsersCommand(a *app, groups resource[iamGroup]) *cobra.Command {
 		sub:     membersOf.use,
 		short:   "List the users of a group",
 		long:    "Reads the members of a group: USER is a user's id and TYPE the kind of user.",
-		scopes:  []string{"iam.user_read"},
+		scopes:  ownScopes{"iam.user_read"},
 		fetch:   listing{},
 		unknown: listsNothing,
 		view: view[groupMember]{

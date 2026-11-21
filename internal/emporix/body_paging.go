@@ -38,16 +38,16 @@ func (c *Client) GetAllBodyPaged(ctx context.Context, path string, query url.Val
 		return nil, fmt.Errorf("%w: %s: a search paged in its body needs a JSON object as its body",
 			ErrInvalidInput, c.named(path))
 	}
-	sending := *c
+	everyPageSender := c.withoutSink()
 	return c.getAll(ctx, path, query, opts, func(ctx context.Context, path string, query url.Values, page, size int) (
-		[]json.RawMessage, int, error) {
+		[]json.RawMessage, reportedTotal, error) {
 		members["pageNumber"] = json.RawMessage(strconv.Itoa(page))
 		members["pageSize"] = json.RawMessage(strconv.Itoa(size))
 		body, err := JSONBodyOf(members)
 		if err != nil {
-			return nil, 0, err
+			return nil, reportedTotal{}, err
 		}
-		sending.body = body
-		return sending.arrayPage(ctx, path, query, page, totalCounting())
+		everyPageSender.body = body
+		return everyPageSender.arrayPage(ctx, path, query, page, totalCounting())
 	})
 }

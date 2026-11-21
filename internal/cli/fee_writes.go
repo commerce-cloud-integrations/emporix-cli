@@ -27,19 +27,19 @@ const feeUpdateConflict = "another fee has the code already, or the fee ID does 
 
 func feeWrites(a *app, fees resource[fee]) []*cobra.Command {
 	create, update, remove := (&collectionWrites{
-		at: fees.at(), one: "a fee", language: mapsOnly, languageHelp: feeLanguageHelp(),
-		create: "Creates the fee in --file, a JSON object with code (unique in the tenant), name, feeType " +
+		at: fees.tenantCollection(), one: "a fee", language: mapsOnly, languageHelp: feeLanguageHelp(),
+		createHelp: "Creates the fee in --file, a JSON object with code (unique in the tenant), name, feeType " +
 			"(PERCENT, ABSOLUTE or ABSOLUTE_MULTIPLY_ITEMQUANTITY), feePercentage or feeAbsolute (amount " +
 			"and currency), siteCode and active, and optionally itemType (PRODUCT or PAYMENTTYPE), " +
 			"taxable with taxCode, and activeTimespan, e.g. " + literal(`{"code": "deposit", "name": {"en": "Deposit"}, `+
 			`"feeType": "ABSOLUTE", "feeAbsolute": {"amount": 0.25, "currency": "EUR"}, `+
 			`"siteCode": "AcmeStore_NL", "active": true}`) + ". Without an id, Emporix makes one; the response " +
 			"gives it and its YRN. A code that the tenant has already is a conflict (exit 5).",
-		update: "Replaces the fee ID with the one in --file, a JSON object as create takes it, or with " +
+		updateHelp: "Replaces the fee ID with the one in --file, a JSON object as create takes it, or with " +
 			"--partial changes only the members that it gives, which still include code, siteCode, " +
 			"active and feeType (Emporix refuses the body otherwise). Emporix answers an unknown ID " +
 			"with 409 Conflict (exit 5), not as not found.",
-		remove: "Deletes the fee ID, which no item has then. " + unknownAsDeleted("ID"),
+		deleteHelp: "Deletes the fee ID, which no item has then. " + unknownAsDeleted("ID"),
 	}).writes()
 	create.scopes, update.scopes, remove.scopes = []string{feeCreate}, []string{feeUpdate}, []string{feeDelete}
 	update.short, update.switches = "Replace or change a fee", []paramFlag{partialSwitch("fee")}
@@ -52,22 +52,22 @@ func feeIDsField() bodyField {
 }
 
 type feeOwner struct {
-	segment string
-	arg     string
-	suffix  string
-	one     string
-	the     string
-	note    string
-	site    bool
-	feeSite string
-	ids     *idSource
+	segment     string
+	arg         string
+	suffix      string
+	summaryNoun string
+	helpNoun    string
+	argSource   string
+	site        bool
+	feeSite     string
+	ids         *idSource
 }
 
 func feeOwners() (item, product feeOwner) {
-	return feeOwner{segment: "itemFees", arg: "YRN", one: "an item", the: "the item YRN",
-			note: "YRN names the item, " + yrnNote + "."},
-		feeOwner{segment: "productFees", arg: "PRODUCT_ID", suffix: "-product", one: "a product",
-			the: "the product PRODUCT_ID", note: productIDNote, site: true, feeSite: " on the site of the fee",
+	return feeOwner{segment: "itemFees", arg: "YRN", summaryNoun: "an item", helpNoun: "the item YRN",
+			argSource: "YRN names the item, " + yrnNote + "."},
+		feeOwner{segment: "productFees", arg: "PRODUCT_ID", suffix: "-product", summaryNoun: "a product",
+			helpNoun: "the product PRODUCT_ID", argSource: productIDNote, site: true, feeSite: " on the site of the fee",
 			ids: products().ids()}
 }
 
@@ -98,28 +98,29 @@ func (o *feeOwner) writes() []*write {
 	ids := argumentIDs{o.arg: o.ids}
 	return []*write{
 		{
-			use: "update" + o.suffix + " " + o.arg, short: "Add fees to " + o.one + short, method: http.MethodPut,
+			use: "update" + o.suffix + " " + o.arg, short: "Add fees to " + o.summaryNoun + short, method: http.MethodPut,
 			long: joinSentences("Adds the fees that --fee names, or the feeIds of --file, a JSON object such as "+
-				literal(`{"feeIds": ["f1", "f2"]}`)+", to those of "+o.the+onSite+", creating its item fee where it has none. "+
+				literal(`{"feeIds": ["f1", "f2"]}`)+", to those of "+o.helpNoun+onSite+", creating its item fee where it "+
+				"has none. "+
 				"Emporix removes no fee, with or without --partial, and an empty list changes nothing: delete"+
-				o.suffix+"-fee removes one.", siteNote, o.note),
+				o.suffix+"-fee removes one.", siteNote, o.argSource),
 			req: update, params: updateSite, scopes: []string{itemFeeUpdate},
 			body: &payload{typed: objectBody{feeIDsField()}}, switches: []paramFlag{{param: partialParam, flag: partialParam,
 				usage: "send partial=true instead of partial=false, which Emporix treats alike"}}, ids: ids,
 		},
 		{
-			use: deleteUse + o.suffix + " " + o.arg, short: "Delete the item fee of " + o.one, method: http.MethodDelete,
-			long: "Deletes the item fee of " + o.the + ", which then has no fees. " + mainUnlessSite +
-				" " + unknownAsDeleted(o.arg) + " " + o.note,
+			use: deleteUse + o.suffix + " " + o.arg, short: "Delete the item fee of " + o.summaryNoun, method: http.MethodDelete,
+			long: "Deletes the item fee of " + o.helpNoun + ", which then has no fees. " + mainUnlessSite +
+				" " + unknownAsDeleted(o.arg) + " " + o.argSource,
 			req:    request{path: o.fees(placeholderID)},
 			params: siteOrMain(), scopes: []string{itemFeeDelete}, body: noBody{}, ids: ids,
-			deletes: deletion{many: "every fee of " + o.the},
+			deletes: deletion{many: "every fee of " + o.helpNoun},
 		},
 		{
-			use: deleteUse + o.suffix + "-fee " + o.arg + " FEE_ID", short: "Remove a fee from " + o.one,
+			use: deleteUse + o.suffix + "-fee " + o.arg + " FEE_ID", short: "Remove a fee from " + o.summaryNoun,
 			method: http.MethodDelete,
-			long: "Removes the fee FEE_ID from the item fee of " + o.the + o.feeSite + "; Emporix deletes " +
-				"the item fee once it has no fees. " + unknownAsDeleted("FEE_ID") + " " + o.note + " " + feeID,
+			long: "Removes the fee FEE_ID from the item fee of " + o.helpNoun + o.feeSite + "; Emporix deletes " +
+				"the item fee once it has no fees. " + unknownAsDeleted("FEE_ID") + " " + o.argSource + " " + feeID,
 			req:    request{path: o.fees(placeholderParent) + "/" + placeholderID},
 			scopes: []string{itemFeeDelete}, body: noBody{}, ids: ids,
 		},

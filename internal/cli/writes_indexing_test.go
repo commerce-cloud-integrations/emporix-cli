@@ -21,7 +21,7 @@ func indexingWrites() []writeCase {
 		{
 			args: []string{"indexing", "providers", "create"}, file: provider, method: http.MethodPost,
 			path: "/indexing/acme1/configurations", scopes: manage, status: http.StatusCreated,
-			body: `{"id":"ALGOLIA"}`, want: "{\n  \"id\": \"ALGOLIA\"\n}\n",
+			response: `{"id":"ALGOLIA"}`, want: "{\n  \"id\": \"ALGOLIA\"\n}\n",
 		},
 		{
 			args: []string{"indexing", "providers", "update", "ALGOLIA"}, file: provider, method: http.MethodPut,
@@ -38,18 +38,18 @@ func indexingWrites() []writeCase {
 		{
 			args: []string{"indexing", "reindex-jobs", "create", "--entity-type", "PRODUCT", "--rag"},
 			sent: `{"entityType":"PRODUCT","rag":true}`, method: http.MethodPost, path: "/indexing/acme1/reindex-jobs",
-			scopes: manage, status: http.StatusCreated, body: reindexJobBody, want: reindexJobJSON,
+			scopes: manage, status: http.StatusCreated, response: reindexJobBody, want: reindexJobJSON,
 		},
 		{
 			args:   []string{"indexing", "reindex-jobs", "create", "--entity-type", "LEGAL-ENTITY"},
 			sent:   `{"entityType":"LEGAL-ENTITY"}`,
 			method: http.MethodPost, path: "/indexing/acme1/reindex-jobs", scopes: manage, status: http.StatusCreated,
-			body: reindexJobBody, want: reindexJobJSON,
+			response: reindexJobBody, want: reindexJobJSON,
 		},
 		{
 			args: []string{"indexing", "reindex-jobs", "create"}, file: `{"entityType":"vehicle"}`,
 			method: http.MethodPost, path: "/indexing/acme1/reindex-jobs", scopes: manage, status: http.StatusOK,
-			body: reindexJobBody, want: reindexJobJSON,
+			response: reindexJobBody, want: reindexJobJSON,
 		},
 		{
 			args: []string{"ai", "rag", "reindex", "PRODUCT"}, method: http.MethodPost,

@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"net/url"
+	"strconv"
 	"sync"
 	"testing"
 	"time"
@@ -16,6 +17,8 @@ const (
 	testID     = "client-id"
 	testSecret = "s3cret value&="
 	testToken  = "tok-123"
+
+	testTokenSeconds = 14399
 )
 
 type fakeEmporix struct {
@@ -37,7 +40,8 @@ func newFakeEmporix(t *testing.T) *fakeEmporix {
 	f := &fakeEmporix{
 		t:           t,
 		tokenStatus: http.StatusOK,
-		tokenBody: `{"access_token":"` + testToken + `","token_type":"Bearer","expires_in":14399,` +
+		tokenBody: `{"access_token":"` + testToken + `","token_type":"Bearer",` +
+			`"expires_in":` + strconv.Itoa(testTokenSeconds) + `,` +
 			`"scope":"tenant=acme1 site.site_read product.product_read_unpublished"}`,
 		routes: map[string]func(http.ResponseWriter, *http.Request){},
 	}
