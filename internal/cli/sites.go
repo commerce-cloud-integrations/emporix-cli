@@ -91,18 +91,23 @@ func siteWrites(a *app, sites resource[site]) []*cobra.Command {
 				"The reference requires code, name, defaultLanguage, languages, currency, homeBase (an " +
 				"address with country and zipCode), shipToCountries and taxDeterminationBasedOn " +
 				"(BILLING_ADDRESS or SHIPPING_ADDRESS); active, default, includesTax, " +
-				"availableCurrencies, payment, shipping, tax, mixins and cartCalculationScale are optional.",
+				"availableCurrencies, payment, shipping, tax, mixins and cartCalculationScale are optional. " +
+				"Emporix stores payment, shipping and tax configurations as given, inactive ones too, and " +
+				"refuses more than one active tax configuration (400 Bad Request).",
 			req: request{path: sites.path}, scopes: manage, body: &payload{},
 		}).command(a),
 		(&write{
 			use: sites.itemUse("update"), short: "Replace a site", method: http.MethodPut,
 			long: "Replaces the site CODE with the JSON in --file, shaped as create takes it: a member that it " +
-				"leaves out is removed. It changes the payment, shipping and tax configurations that the body " +
-				"gives too; Emporix changes an inactive one only with --expand naming it, e.g. payment:all. " +
+				"leaves out is removed. Of its payment, shipping and tax configurations, Emporix replaces only " +
+				"the active ones: an inactive one in the body is dropped, one stored inactive stays, and an " +
+				"active one that the body leaves out is removed. --expand NAME:all, e.g. payment:all, replaces " +
+				"the whole list of NAME, inactive ones included; active and none change it as no --expand does. " +
 				unknown,
 			req: item, scopes: manage, body: &payload{}, ids: sites.itemIDs(),
 			params: queryFlags{optional: []paramFlag{{param: expandParam, flag: expandParam,
-				usage: "the `SETTINGS` to expand, e.g. payment:all,shipping:all,tax:all (all, active or none each)"}}},
+				usage: "the `SETTINGS` to expand, e.g. payment:all,shipping:all,tax:all " +
+					"(all, active or none each; only all changes inactive ones)"}}},
 		}).command(a),
 		(&write{
 			use: sites.itemUse("patch"), short: "Change members of a site", method: http.MethodPatch,
@@ -172,15 +177,20 @@ func siteMixinWrites(a *app, mixinsOf resource[site], mixins child[namedValue]) 
 		}).command(a),
 		(&write{
 			use: mixin("update").use, short: "Replace a mixin of a site", method: http.MethodPut,
-			long: "Replaces the mixin NAME of the site " + siteCode + " with the JSON object in --file; the " +
-				"reference's example gives it as create does, in an object named after the mixin. " + unknown,
+			long: "Replaces the mixin NAME of the site " + siteCode + " with the JSON object in --file: the " +
+				"mixin's own fields, as `epx sites mixins get " + siteCode + " NAME -o json` prints them. A field " +
+				"that it leaves out is removed; metadata.schema is kept when left out. Do not wrap the fields in " +
+				"an object named after the mixin, as the reference's example does: Emporix stores that object " +
+				"as one more field of the mixin. " + unknown,
 			req: item, scopes: manage, body: &payload{}, ids: ids,
 		}).command(a),
 		(&write{
 			use: mixin("patch").use, short: "Change fields of a mixin of a site",
 			method: http.MethodPatch,
 			long: "Changes the fields of the mixin NAME of the site " + siteCode + " that the JSON object in " +
-				"--file gives, such as " + literal(`{"active": true}`) + "; the others keep their values.",
+				"--file gives, such as " + literal(`{"active": true}`) + "; the others keep their values, and a " +
+				"nested object merges member by member. An object named after the mixin is not its fields: " +
+				"Emporix adds it as one more field.",
 			req: item, scopes: manage, body: &payload{}, ids: ids,
 		}).command(a),
 		(&write{

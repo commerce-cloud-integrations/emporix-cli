@@ -146,8 +146,9 @@ func newSchemaReferencesCommand(a *app) *cobra.Command {
 			req: request{path: references.itemPath()}, scopes: manage, body: referenceForm(), language: mapsOnly,
 			ids: references.itemIDs(),
 		}).command(a),
-		itemDelete(references, "Delete a schema reference", "Deletes the schema reference ID. The JSON schema "+
-			"file that it holds stays where Emporix stored it. "+unknownDeletedHelp, manage).command(a),
+		itemDelete(references, "Delete a schema reference", "Deletes the schema reference ID with every "+
+			"version of it. The JSON schema files of its versions stay where Emporix stored them. "+
+			unknownDeletedHelp, manage).command(a),
 	)
 }
 

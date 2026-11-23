@@ -226,7 +226,7 @@ Also takes the [global flags](/commands#global-flags).
 
 Delete a schema reference.
 
-Deletes the schema reference ID. The JSON schema file that it holds stays where Emporix stored it. Emporix answers an unknown ID as a deleted one (204), so epx exits with 0.
+Deletes the schema reference ID with every version of it. The JSON schema files of its versions stay where Emporix stored them. Emporix answers an unknown ID as a deleted one (204), so epx exits with 0.
 
 Deletes data, which cannot be undone. On a terminal, epx sends DELETE only once you type ID at its prompt. `--yes` sends without asking (required without a terminal); `--dry-run` prints the request instead of sending it.
 

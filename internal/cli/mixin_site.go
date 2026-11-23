@@ -21,7 +21,8 @@ const siteHeader = "emporix-site"
 const mixinSiteHelp = "Where a mixin's schema is site-aware, an item may hold, besides the mixin NAME, an overlay " +
 	"for a site, NAME__SITE, with the values that differ there. --" + mixinSiteFlag + " SITE sends SITE as " +
 	"the " + siteHeader + " header: Emporix then merges the overlay of SITE into NAME (nested objects " +
-	"member by member; arrays and other values are replaced, not merged; a null leaves the " +
+	"member by member; arrays, a localized attribute's list of translations too, and other values are " +
+	"replaced, not merged; a null leaves the " +
 	"base value) and leaves out every overlay. A site without an overlay, or one the tenant " +
 	"lacks (codes are case-sensitive; epx does not check them), gets NAME as stored. Without " +
 	"--" + mixinSiteFlag + ", mixins and overlays are read as stored, whatever the default site of the " +

@@ -38,7 +38,7 @@ func aiItemWriteCommands[T any](a *app, r resource[T], w aiItemWrites) []*cobra.
 	source := r.header[0] + " is the " + r.header[0] + " that `epx " + r.listLine() + "` shows."
 	read := "`epx " + r.commandLine(r.itemUse("get"), r.itemRequest()) + " -o json`"
 	remove := itemDelete(r, "Delete "+w.summaryNoun, "Deletes "+the+". Emporix refuses to delete one that others "+
-		"use, unless --force unassigns it from them. "+source, scopes)
+		"use, unless --force unassigns it from them. "+source+" "+unknownDeletedHelp, scopes)
 	remove.switches = forceSwitch(w.deleteUsage)
 	return []*cobra.Command{
 		(&write{
@@ -117,7 +117,6 @@ func agentWrites(a *app) []*cobra.Command {
 }
 
 func aiJobDelete(jobs resource[aiJob]) *write {
-	id := jobs.header[:1]
-	return itemDelete(jobs, "Delete an agent job", "Deletes the agent job ID. "+itemSentence(id, id, jobs.listLine()),
-		[]string{aiManageScope})
+	return itemDelete(jobs, "Delete an agent job", "Deletes the agent job ID. ID is the ID that `epx "+
+		jobs.listLine()+"` shows. "+unknownDeletedHelp, []string{aiManageScope})
 }

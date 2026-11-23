@@ -60,7 +60,7 @@ epx sites create [flags]
 .fi
 .RE
 .PP
-Creates a site from the JSON in \fB\-\-file\fR, shaped as \fBepx sites get CODE \-o json\fR prints one. The reference requires code, name, defaultLanguage, languages, currency, homeBase (an address with country and zipCode), shipToCountries and taxDeterminationBasedOn (BILLING_ADDRESS or SHIPPING_ADDRESS); active, default, includesTax, availableCurrencies, payment, shipping, tax, mixins and cartCalculationScale are optional.
+Creates a site from the JSON in \fB\-\-file\fR, shaped as \fBepx sites get CODE \-o json\fR prints one. The reference requires code, name, defaultLanguage, languages, currency, homeBase (an address with country and zipCode), shipToCountries and taxDeterminationBasedOn (BILLING_ADDRESS or SHIPPING_ADDRESS); active, default, includesTax, availableCurrencies, payment, shipping, tax, mixins and cartCalculationScale are optional. Emporix stores payment, shipping and tax configurations as given, inactive ones too, and refuses more than one active tax configuration (400 Bad Request).
 .PP
 Changes data: on a terminal, epx asks before it sends POST. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
 .PP
@@ -283,7 +283,7 @@ epx sites mixins patch SITE_CODE NAME [flags]
 .fi
 .RE
 .PP
-Changes the fields of the mixin NAME of the site SITE_CODE that the JSON object in \fB\-\-file\fR gives, such as \fB{"active": true}\fR; the others keep their values.
+Changes the fields of the mixin NAME of the site SITE_CODE that the JSON object in \fB\-\-file\fR gives, such as \fB{"active": true}\fR; the others keep their values, and a nested object merges member by member. An object named after the mixin is not its fields: Emporix adds it as one more field.
 .PP
 Changes data: on a terminal, epx asks before it sends PATCH. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
 .PP
@@ -311,7 +311,7 @@ epx sites mixins update SITE_CODE NAME [flags]
 .fi
 .RE
 .PP
-Replaces the mixin NAME of the site SITE_CODE with the JSON object in \fB\-\-file\fR; the reference\(aqs example gives it as create does, in an object named after the mixin. An unknown site or mixin is not found (exit 4).
+Replaces the mixin NAME of the site SITE_CODE with the JSON object in \fB\-\-file\fR: the mixin\(aqs own fields, as \fBepx sites mixins get SITE_CODE NAME \-o json\fR prints them. A field that it leaves out is removed; metadata.schema is kept when left out. Do not wrap the fields in an object named after the mixin, as the reference\(aqs example does: Emporix stores that object as one more field of the mixin. An unknown site or mixin is not found (exit 4).
 .PP
 Changes data: on a terminal, epx asks before it sends PUT. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
 .PP
@@ -367,7 +367,7 @@ epx sites update CODE [flags]
 .fi
 .RE
 .PP
-Replaces the site CODE with the JSON in \fB\-\-file\fR, shaped as create takes it: a member that it leaves out is removed. It changes the payment, shipping and tax configurations that the body gives too; Emporix changes an inactive one only with \fB\-\-expand\fR naming it, e.g. payment:all. An unknown CODE is not found (exit 4).
+Replaces the site CODE with the JSON in \fB\-\-file\fR, shaped as create takes it: a member that it leaves out is removed. Of its payment, shipping and tax configurations, Emporix replaces only the active ones: an inactive one in the body is dropped, one stored inactive stays, and an active one that the body leaves out is removed. \fB\-\-expand\fR NAME:all, e.g. payment:all, replaces the whole list of NAME, inactive ones included; active and none change it as no \fB\-\-expand\fR does. An unknown CODE is not found (exit 4).
 .PP
 Changes data: on a terminal, epx asks before it sends PUT. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
 .PP
@@ -379,7 +379,7 @@ Requires the site.site_manage scope.
 Print the request instead of sending it (excludes \fB\-o\fR).
 .TP
 \fB\-\-expand <SETTINGS>\fR
-The SETTINGS to expand, e.g. payment:all,shipping:all,tax:all (all, active or none each).
+The SETTINGS to expand, e.g. payment:all,shipping:all,tax:all (all, active or none each; only all changes inactive ones).
 .TP
 \fB\-\-file <PATH>\fR
 JSON request body in PATH, sent byte for byte (\- reads standard input; sending it then needs \fB\-\-yes\fR; required).

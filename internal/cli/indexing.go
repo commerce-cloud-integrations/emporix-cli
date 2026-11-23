@@ -209,6 +209,8 @@ func reindexJobCreate(jobs resource[reindexJob]) *write {
 			"Searches of customers and legal entities, in the Search Service and by the tools of agents, " +
 			"read what a CUSTOMER or LEGAL-ENTITY job indexes. " +
 			"Emporix answers with the job, or with the job of that type that is IN_PROGRESS already. " +
+			"It accepts a TYPE that it does not know too and ends that job SUCCESS with nothing indexed, " +
+			"so check the TYPE first. " +
 			"A job is PENDING while others take its turn, PUBLISHED once every entity was sent to the " +
 			"index and SUCCESS once the index took them all. For BATTERY_INCLUDED, Emporix checks the " +
 			"stored keys before it starts a PRODUCT job (400 Bad Request when they are invalid, 502 when " +

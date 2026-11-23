@@ -22,6 +22,16 @@ change or remove commands, columns or flags, and its notes list each such change
   `metadata.mixins`, one whose schema it cannot download and a value its schema does not allow.
 - `epx returns update` and `patch` help say Emporix ignores siteCode and restriction there,
   where its reference documents that it refuses them.
+- `epx sites mixins update` help says to send the mixin's own fields: the object named after the
+  mixin that the reference's example shows is stored as one more field of the mixin. `patch` help
+  says nested objects merge.
+- `epx sites update` help says Emporix replaces only the active payment, shipping and tax
+  configurations unless `--expand NAME:all`, which replaces the whole list; `sites create` help
+  says Emporix refuses more than one active tax configuration.
+- `epx ai jobs delete` help says Emporix answers an unknown ID as deleted (exit 0), not as not
+  found; the deletes of agents, tools, tokens, OAuth configurations and MCP servers say so too.
+- `epx indexing reindex-jobs create` help says Emporix accepts an unknown TYPE and ends its job
+  with nothing indexed. `epx schemas references delete` help says it deletes every version.
 
 ## 0.5.0 (2026-11-19)
 

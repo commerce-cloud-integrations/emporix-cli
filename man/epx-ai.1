@@ -118,7 +118,7 @@ epx ai agents delete ID [flags]
 .fi
 .RE
 .PP
-Deletes the agent ID. Emporix refuses to delete one that others use, unless \fB\-\-force\fR unassigns it from them. ID is the ID that \fBepx ai agents list\fR shows.
+Deletes the agent ID. Emporix refuses to delete one that others use, unless \fB\-\-force\fR unassigns it from them. ID is the ID that \fBepx ai agents list\fR shows. Emporix answers an unknown ID as a deleted one (204), so epx exits with 0.
 .PP
 Deletes data, which cannot be undone. On a terminal, epx sends DELETE only once you type ID at its prompt. \fB\-\-yes\fR sends without asking (required without a terminal); \fB\-\-dry\-run\fR prints the request instead of sending it.
 .PP
@@ -781,7 +781,7 @@ epx ai jobs delete ID [flags]
 .fi
 .RE
 .PP
-Deletes the agent job ID. ID is the ID that \fBepx ai jobs list\fR shows; an unknown one is not found.
+Deletes the agent job ID. ID is the ID that \fBepx ai jobs list\fR shows. Emporix answers an unknown ID as a deleted one (204), so epx exits with 0.
 .PP
 Deletes data, which cannot be undone. On a terminal, epx sends DELETE only once you type ID at its prompt. \fB\-\-yes\fR sends without asking (required without a terminal); \fB\-\-dry\-run\fR prints the request instead of sending it.
 .PP
@@ -1152,7 +1152,7 @@ epx ai mcp\-servers delete ID [flags]
 .fi
 .RE
 .PP
-Deletes the MCP server ID. Emporix refuses to delete one that others use, unless \fB\-\-force\fR unassigns it from them. ID is the ID that \fBepx ai mcp\-servers list\fR shows.
+Deletes the MCP server ID. Emporix refuses to delete one that others use, unless \fB\-\-force\fR unassigns it from them. ID is the ID that \fBepx ai mcp\-servers list\fR shows. Emporix answers an unknown ID as a deleted one (204), so epx exits with 0.
 .PP
 Deletes data, which cannot be undone. On a terminal, epx sends DELETE only once you type ID at its prompt. \fB\-\-yes\fR sends without asking (required without a terminal); \fB\-\-dry\-run\fR prints the request instead of sending it.
 .PP
@@ -1376,7 +1376,7 @@ epx ai oauths delete ID [flags]
 .fi
 .RE
 .PP
-Deletes the OAuth configuration ID. Emporix refuses to delete one that others use, unless \fB\-\-force\fR unassigns it from them. ID is the ID that \fBepx ai oauths list\fR shows.
+Deletes the OAuth configuration ID. Emporix refuses to delete one that others use, unless \fB\-\-force\fR unassigns it from them. ID is the ID that \fBepx ai oauths list\fR shows. Emporix answers an unknown ID as a deleted one (204), so epx exits with 0.
 .PP
 Deletes data, which cannot be undone. On a terminal, epx sends DELETE only once you type ID at its prompt. \fB\-\-yes\fR sends without asking (required without a terminal); \fB\-\-dry\-run\fR prints the request instead of sending it.
 .PP
@@ -1775,7 +1775,7 @@ epx ai tokens delete ID [flags]
 .fi
 .RE
 .PP
-Deletes the token ID. Emporix refuses to delete one that others use, unless \fB\-\-force\fR unassigns it from them. ID is the ID that \fBepx ai tokens list\fR shows.
+Deletes the token ID. Emporix refuses to delete one that others use, unless \fB\-\-force\fR unassigns it from them. ID is the ID that \fBepx ai tokens list\fR shows. Emporix answers an unknown ID as a deleted one (204), so epx exits with 0.
 .PP
 Deletes data, which cannot be undone. On a terminal, epx sends DELETE only once you type ID at its prompt. \fB\-\-yes\fR sends without asking (required without a terminal); \fB\-\-dry\-run\fR prints the request instead of sending it.
 .PP
@@ -1970,7 +1970,7 @@ epx ai tools delete ID [flags]
 .fi
 .RE
 .PP
-Deletes the tool ID. Emporix refuses to delete one that others use, unless \fB\-\-force\fR unassigns it from them. ID is the ID that \fBepx ai tools list\fR shows.
+Deletes the tool ID. Emporix refuses to delete one that others use, unless \fB\-\-force\fR unassigns it from them. ID is the ID that \fBepx ai tools list\fR shows. Emporix answers an unknown ID as a deleted one (204), so epx exits with 0.
 .PP
 Deletes data, which cannot be undone. On a terminal, epx sends DELETE only once you type ID at its prompt. \fB\-\-yes\fR sends without asking (required without a terminal); \fB\-\-dry\-run\fR prints the request instead of sending it.
 .PP

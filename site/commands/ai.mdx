@@ -160,7 +160,7 @@ epx ai agents create complaint-template --file agent.json --dry-run
 
 Delete an agent.
 
-Deletes the agent ID. Emporix refuses to delete one that others use, unless `--force` unassigns it from them. ID is the ID that [`epx ai agents list`](/commands/ai#epx-ai-agents-list) shows.
+Deletes the agent ID. Emporix refuses to delete one that others use, unless `--force` unassigns it from them. ID is the ID that [`epx ai agents list`](/commands/ai#epx-ai-agents-list) shows. Emporix answers an unknown ID as a deleted one (204), so epx exits with 0.
 
 Deletes data, which cannot be undone. On a terminal, epx sends DELETE only once you type ID at its prompt. `--yes` sends without asking (required without a terminal); `--dry-run` prints the request instead of sending it.
 
@@ -754,7 +754,7 @@ Its reads require the ai.agent\_read scope. Its writes require the ai.agent\_man
 
 Delete an agent job.
 
-Deletes the agent job ID. ID is the ID that [`epx ai jobs list`](/commands/ai#epx-ai-jobs-list) shows; an unknown one is not found.
+Deletes the agent job ID. ID is the ID that [`epx ai jobs list`](/commands/ai#epx-ai-jobs-list) shows. Emporix answers an unknown ID as a deleted one (204), so epx exits with 0.
 
 Deletes data, which cannot be undone. On a terminal, epx sends DELETE only once you type ID at its prompt. `--yes` sends without asking (required without a terminal); `--dry-run` prints the request instead of sending it.
 
@@ -1114,7 +1114,7 @@ Its reads require the ai.agent\_read scope. Its writes require the ai.agent\_man
 
 Delete an MCP server.
 
-Deletes the MCP server ID. Emporix refuses to delete one that others use, unless `--force` unassigns it from them. ID is the ID that [`epx ai mcp-servers list`](/commands/ai#epx-ai-mcp-servers-list) shows.
+Deletes the MCP server ID. Emporix refuses to delete one that others use, unless `--force` unassigns it from them. ID is the ID that [`epx ai mcp-servers list`](/commands/ai#epx-ai-mcp-servers-list) shows. Emporix answers an unknown ID as a deleted one (204), so epx exits with 0.
 
 Deletes data, which cannot be undone. On a terminal, epx sends DELETE only once you type ID at its prompt. `--yes` sends without asking (required without a terminal); `--dry-run` prints the request instead of sending it.
 
@@ -1324,7 +1324,7 @@ Its reads require the ai.agent\_read scope. Its writes require the ai.agent\_man
 
 Delete an OAuth configuration.
 
-Deletes the OAuth configuration ID. Emporix refuses to delete one that others use, unless `--force` unassigns it from them. ID is the ID that [`epx ai oauths list`](/commands/ai#epx-ai-oauths-list) shows.
+Deletes the OAuth configuration ID. Emporix refuses to delete one that others use, unless `--force` unassigns it from them. ID is the ID that [`epx ai oauths list`](/commands/ai#epx-ai-oauths-list) shows. Emporix answers an unknown ID as a deleted one (204), so epx exits with 0.
 
 Deletes data, which cannot be undone. On a terminal, epx sends DELETE only once you type ID at its prompt. `--yes` sends without asking (required without a terminal); `--dry-run` prints the request instead of sending it.
 
@@ -1698,7 +1698,7 @@ Its reads require the ai.agent\_read scope. Its writes require the ai.agent\_man
 
 Delete an AI token.
 
-Deletes the token ID. Emporix refuses to delete one that others use, unless `--force` unassigns it from them. ID is the ID that [`epx ai tokens list`](/commands/ai#epx-ai-tokens-list) shows.
+Deletes the token ID. Emporix refuses to delete one that others use, unless `--force` unassigns it from them. ID is the ID that [`epx ai tokens list`](/commands/ai#epx-ai-tokens-list) shows. Emporix answers an unknown ID as a deleted one (204), so epx exits with 0.
 
 Deletes data, which cannot be undone. On a terminal, epx sends DELETE only once you type ID at its prompt. `--yes` sends without asking (required without a terminal); `--dry-run` prints the request instead of sending it.
 
@@ -1883,7 +1883,7 @@ Its reads require the ai.agent\_read scope. Its writes require the ai.agent\_man
 
 Delete an agent tool.
 
-Deletes the tool ID. Emporix refuses to delete one that others use, unless `--force` unassigns it from them. ID is the ID that [`epx ai tools list`](/commands/ai#epx-ai-tools-list) shows.
+Deletes the tool ID. Emporix refuses to delete one that others use, unless `--force` unassigns it from them. ID is the ID that [`epx ai tools list`](/commands/ai#epx-ai-tools-list) shows. Emporix answers an unknown ID as a deleted one (204), so epx exits with 0.
 
 Deletes data, which cannot be undone. On a terminal, epx sends DELETE only once you type ID at its prompt. `--yes` sends without asking (required without a terminal); `--dry-run` prints the request instead of sending it.
 
