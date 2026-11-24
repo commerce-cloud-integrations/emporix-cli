@@ -1635,7 +1635,7 @@ epx ai rag reindex TYPE [flags]
 .fi
 .RE
 .PP
-Embeds every entity of a type again in the vector database, replacing its records there; it sends no body. Emporix has deprecated this endpoint in favor of a reindex job: \fBepx indexing reindex\-jobs create\fR, which \fB\-\-wait\fR follows. Give it \fB\-\-rag\fR for PRODUCT; for CUSTOMER and LEGAL\-ENTITY, the job updates their embeddings without it. TYPE is PRODUCT, ORDER, CUSTOMER or LEGAL\-ENTITY in any case, or a custom entity type, whose ID \fBepx custom\-entities list\fR shows. LEGAL\-ENTITY takes a hyphen, not an underscore. Emporix has answered an unknown TYPE with 204 No Content (exit 0), not the 400 Bad Request its reference gives, so check the TYPE first.
+Embeds every entity of a type again in the vector database, replacing its records there; it sends no body. Emporix has deprecated this endpoint in favor of a reindex job: \fBepx indexing reindex\-jobs create\fR, which \fB\-\-wait\fR follows. Give it \fB\-\-rag\fR for PRODUCT; for CUSTOMER and LEGAL\-ENTITY, the job updates their embeddings without it. TYPE is PRODUCT, ORDER, CUSTOMER or LEGAL\-ENTITY in any case, or a custom entity type, whose ID \fBepx custom\-entities list\fR shows. LEGAL\-ENTITY takes a hyphen, not an underscore. Emporix answers an unknown TYPE with 204 No Content (exit 0), not the 400 Bad Request its reference gives, and starts a reindex job for it that \fBepx indexing reindex\-jobs list\fR shows and that ends SUCCESS with nothing indexed, so check the TYPE first.
 .PP
 Changes data: on a terminal, epx asks before it sends POST. \fB\-\-yes\fR sends without asking (required without a terminal); \fB\-\-dry\-run\fR prints the request instead of sending it.
 .PP

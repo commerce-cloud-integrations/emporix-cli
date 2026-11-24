@@ -124,6 +124,10 @@ func siteWrites(a *app, sites resource[site]) []*cobra.Command {
 	}
 }
 
+const inactiveSiteMixins = " Emporix serves the mixins of an inactive site only with the write-capable " +
+	siteManageScope + " scope, which these reads do not request: for an inactive site it answers 403 " +
+	"(exit 3), also for an unknown NAME."
+
 func newSiteMixinsCommand(a *app, sites resource[site]) *cobra.Command {
 	mixinsOf := sites.nested("mixins")
 	mixins := child[namedValue]{
@@ -131,9 +135,10 @@ func newSiteMixinsCommand(a *app, sites resource[site]) *cobra.Command {
 		sub:   mixinsOf.use,
 		short: "List the mixins of a site",
 		long: "Reads the mixins of a site, the custom settings that extend it (such as coupon or customer " +
-			"settings), by NAME, each VALUE cut (`-o json` prints them whole). A site without mixins lists none.",
-		// Emporix documents site.site_manage for mixins, but serves them without a scope (live), so
-		// none is requested, whatever the scopes of sites.
+			"settings), by NAME, each VALUE cut (`-o json` prints them whole). A site without mixins lists none." +
+			inactiveSiteMixins,
+		// Emporix documents site.site_manage for mixins, but serves those of active sites without a
+		// scope (live), so none is requested, whatever the scopes of sites.
 		scopes: noScopes{},
 		// Emporix sends an empty body for a site without mixins, which is no mixin, not a missing site.
 		fetch: single{items: members, read: emptyAs("{}")},
@@ -151,7 +156,8 @@ func newSiteMixinsCommand(a *app, sites resource[site]) *cobra.Command {
 		items: []*childItem{{
 			use:   getUse,
 			short: "Show one mixin of a site",
-			long:  "Reads one mixin of a site: its fields by NAME, each VALUE cut (`-o json` prints them whole).",
+			long: "Reads one mixin of a site: its fields by NAME, each VALUE cut (`-o json` prints them whole)." +
+				inactiveSiteMixins,
 			items: members,
 		}},
 		writes: siteMixinWrites(a, mixinsOf, mixins),

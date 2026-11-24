@@ -111,6 +111,8 @@ func newSchemaReferencesCommand(a *app) *cobra.Command {
 		long: "Reads schema references: schemas uploaded as a JSON schema file, for attribute types that " +
 			"schemas cannot define. TYPES lists the entity types a reference applies to; the file's " +
 			"URL is only in `-o json`.",
+		listNote: "--query finds a reference by ID as _id:ID (id:ID finds none) and a type in its stored " +
+			"form, types:VENDOR_LOCATION; Emporix ignores a sort by id.",
 		path:    "/schema/{tenant}/references",
 		filters: listFilters{kinds: filterable},
 		view: view[schema]{

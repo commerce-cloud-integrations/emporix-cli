@@ -183,7 +183,11 @@ func documentsCommand(a *app, types builtInTypes) *cobra.Command {
 			"instances of a custom entity type, as a search index holds them. SCORE is how well a document " +
 			"matches; its other fields are only in `-o json`. --body gives a search of an index by its own " +
 			"queries and filters instead. An unknown saved search, or index of --body, is not found " +
-			"(exit 4). " + typeSentence(types) + " " +
+			"(exit 4). --sort sorts only by fields that the index holds with exact true (Emporix leaves " +
+			"the others unsorted and refuses id, 400 Bad Request). Emporix orders documents of the same " +
+			"SCORE differently on each request, so a search that finds more than one page of documents " +
+			"(100) can repeat one on a later page: epx then fails with exit 1 (with --stream, after " +
+			"printing the pages before it). " + typeSentence(types) + " " +
 			"Known limitation: for customer or legal-entity, epx requests the read scope that " +
 			"finds every document, so a credential that holds only a restricted one, such as " +
 			"customer.customer_read--DE, or only the own-read scope, such as customer.customer_read_own, " +

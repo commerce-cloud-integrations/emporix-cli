@@ -180,15 +180,14 @@ func (in *instanceWrites) declareReferenceCheck(w *write, byDefault bool) {
 	if byDefault {
 		w.long += "\n\nEmporix checks the items that the references of the instance name (unless " +
 			"--validate-references false) with epx's token, which reads the instances of " + in.typeArg + " " +
-			"alone: a reference to an instance of another custom entity type is then expected to fail " +
-			"with 400 Bad Request, as one to the type fails without that scope, and one to another kind " +
-			"of item, such as a product, may fail too."
+			"alone: a reference to an instance of another custom entity type or to an order fails with " +
+			"400 Bad Request whether the item exists or not, and one to a product finds published " +
+			"products only (an unpublished one is not found, 400)."
 		return
 	}
 	w.long += "\n\nWith --validate-references true, Emporix checks the items that the references of each " +
 		"instance name with epx's token, which reads the instances of " + in.typeArg + " alone: an " +
-		"instance with a reference to an item that does not exist fails with 500 Internal Server " +
-		"Error (nothing is created), as one with a reference to an instance of " +
-		"another custom entity type is expected to, and one with a reference to another kind of " +
-		"item, such as a product, may."
+		"instance with a reference to an item that does not exist, to an instance of another custom " +
+		"entity type, to an order or to an unpublished product fails with 500 Internal Server Error " +
+		"(Emporix does not write it); one to a published product passes."
 }

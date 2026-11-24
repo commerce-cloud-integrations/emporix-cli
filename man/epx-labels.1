@@ -22,7 +22,7 @@ epx labels create [flags]
 .fi
 .RE
 .PP
-Creates a label from the JSON in \fB\-\-file\fR, such as \fB{"name": "Free shipping", "description": "<p>Ships free</p>", "overlay": {"isTrue": true, "position": 1}}\fR, and prints the label that Emporix answers with. Emporix generates its id unless the JSON names one; an id that exists already is a conflict.
+Creates a label from the JSON in \fB\-\-file\fR, such as \fB{"name": "Free shipping", "description": "<p>Ships free</p>", "overlay": {"isTrue": true, "position": 1}}\fR, and prints the label that Emporix answers with. Emporix generates its id unless the JSON names one; an id that exists already is a conflict. Its name is a string (Emporix refuses a map of translations, 400 Bad Request); its description is a string or a map of translations.
 .PP
 Changes data: on a terminal, epx asks before it sends POST. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
 .PP
@@ -167,7 +167,7 @@ epx labels update ID [flags]
 .fi
 .RE
 .PP
-Replaces the label ID with the JSON in \fB\-\-file\fR, which must name its name and description. An unknown ID is not found. It prints the label that Emporix answers with.
+Replaces the label ID with the JSON in \fB\-\-file\fR, which must name its name and description. Its name is a string (Emporix refuses a map of translations, 400 Bad Request); its description is a string or a map of translations. An unknown ID is not found. It prints the label that Emporix answers with.
 .PP
 Changes data: on a terminal, epx asks before it sends PUT. \fB\-\-yes\fR sends without asking (required without a terminal, or with \fB\-\-file\fR \-); \fB\-\-dry\-run\fR prints the request instead of sending it.
 .PP

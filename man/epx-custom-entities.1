@@ -180,7 +180,7 @@ epx custom\-entities instances bulk\-create CUSTOM_ENTITY_ID [flags]
 .PP
 Creates instances of the custom entity type CUSTOM_ENTITY_ID from \fB\-\-file\fR, a JSON array of instances, each as create takes it. CUSTOM_ENTITY_ID is the ID that \fBepx custom\-entities list\fR shows.
 .PP
-With \fB\-\-validate\-references\fR true, Emporix checks the items that the references of each instance name with epx\(aqs token, which reads the instances of CUSTOM_ENTITY_ID alone: an instance with a reference to an item that does not exist fails with 500 Internal Server Error (nothing is created), as one with a reference to an instance of another custom entity type is expected to, and one with a reference to another kind of item, such as a product, may.
+With \fB\-\-validate\-references\fR true, Emporix checks the items that the references of each instance name with epx\(aqs token, which reads the instances of CUSTOM_ENTITY_ID alone: an instance with a reference to an item that does not exist, to an instance of another custom entity type, to an order or to an unpublished product fails with 500 Internal Server Error (Emporix does not write it); one to a published product passes.
 .PP
 Localized text in the body is a map of translations, e.g. \fB{"en": "Acme", "de": "Acme"}\fR, as \fB\-o json\fR of a read prints it, sent with Content\-Language: *. Emporix refuses a string in its place.
 .PP
@@ -249,7 +249,7 @@ epx custom\-entities instances bulk\-patch CUSTOM_ENTITY_ID [flags]
 .PP
 Changes instances of the custom entity type CUSTOM_ENTITY_ID as \fB\-\-file\fR says: a JSON array with the id of each instance and the JSON Patch operations that change it, as patch takes them, such as \fB[{"id": "123", "data": [{"op": "replace", "path": "/name/en", "value": "Report"}]}]\fR. CUSTOM_ENTITY_ID is the ID that \fBepx custom\-entities list\fR shows.
 .PP
-With \fB\-\-validate\-references\fR true, Emporix checks the items that the references of each instance name with epx\(aqs token, which reads the instances of CUSTOM_ENTITY_ID alone: an instance with a reference to an item that does not exist fails with 500 Internal Server Error (nothing is created), as one with a reference to an instance of another custom entity type is expected to, and one with a reference to another kind of item, such as a product, may.
+With \fB\-\-validate\-references\fR true, Emporix checks the items that the references of each instance name with epx\(aqs token, which reads the instances of CUSTOM_ENTITY_ID alone: an instance with a reference to an item that does not exist, to an instance of another custom entity type, to an order or to an unpublished product fails with 500 Internal Server Error (Emporix does not write it); one to a published product passes.
 .PP
 Localized text in the body is a map of translations, e.g. \fB{"en": "Acme", "de": "Acme"}\fR, as \fB\-o json\fR of a read prints it, sent with Content\-Language: *. Emporix refuses a string in its place.
 .PP
@@ -288,7 +288,7 @@ epx custom\-entities instances bulk\-update CUSTOM_ENTITY_ID [flags]
 .PP
 Replaces the instances of the custom entity type CUSTOM_ENTITY_ID in \fB\-\-file\fR, a JSON array of instances, each with its id and as update takes it, or creates those that do not exist (an upsert). CUSTOM_ENTITY_ID is the ID that \fBepx custom\-entities list\fR shows.
 .PP
-With \fB\-\-validate\-references\fR true, Emporix checks the items that the references of each instance name with epx\(aqs token, which reads the instances of CUSTOM_ENTITY_ID alone: an instance with a reference to an item that does not exist fails with 500 Internal Server Error (nothing is created), as one with a reference to an instance of another custom entity type is expected to, and one with a reference to another kind of item, such as a product, may.
+With \fB\-\-validate\-references\fR true, Emporix checks the items that the references of each instance name with epx\(aqs token, which reads the instances of CUSTOM_ENTITY_ID alone: an instance with a reference to an item that does not exist, to an instance of another custom entity type, to an order or to an unpublished product fails with 500 Internal Server Error (Emporix does not write it); one to a published product passes.
 .PP
 Localized text in the body is a map of translations, e.g. \fB{"en": "Acme", "de": "Acme"}\fR, as \fB\-o json\fR of a read prints it, sent with Content\-Language: *. Emporix refuses a string in its place.
 .PP
@@ -327,7 +327,7 @@ epx custom\-entities instances create CUSTOM_ENTITY_ID [flags]
 .PP
 Creates an instance of the custom entity type CUSTOM_ENTITY_ID from the JSON object in \fB\-\-file\fR, such as \fB{"id": "123", "name": {"en": "Report"}, "mixins": {\[u2026]}}\fR, and prints the id that Emporix answers with; it makes one unless the object names it, and an id that exists already is a conflict. An owner, such as \fB{"type": "EMPLOYEE", "userId": "\[u2026]"}\fR, cannot change once set. The attributes of a schema go under its id, which metadata.mixins maps to its URL: \fB{"mixins": {"SCHEMA_ID": {\[u2026]}}, "metadata": {"mixins": {"SCHEMA_ID": "URL"}}}\fR, the URL being the metadata.url that \fBepx schemas get SCHEMA_ID \-o json\fR prints. A localized attribute, unlike the name, is a list of translations, such as \fB[{"language": "en", "value": "Report"}]\fR. CUSTOM_ENTITY_ID is the ID that \fBepx custom\-entities list\fR shows.
 .PP
-Emporix checks the items that the references of the instance name (unless \fB\-\-validate\-references\fR false) with epx\(aqs token, which reads the instances of CUSTOM_ENTITY_ID alone: a reference to an instance of another custom entity type is then expected to fail with 400 Bad Request, as one to the type fails without that scope, and one to another kind of item, such as a product, may fail too.
+Emporix checks the items that the references of the instance name (unless \fB\-\-validate\-references\fR false) with epx\(aqs token, which reads the instances of CUSTOM_ENTITY_ID alone: a reference to an instance of another custom entity type or to an order fails with 400 Bad Request whether the item exists or not, and one to a product finds published products only (an unpublished one is not found, 400).
 .PP
 Localized text in the body is a map of translations, e.g. \fB{"en": "Acme", "de": "Acme"}\fR, as \fB\-o json\fR of a read prints it, sent with Content\-Language: *. Emporix refuses a string in its place.
 .PP
@@ -467,7 +467,7 @@ epx custom\-entities instances patch CUSTOM_ENTITY_ID ID [flags]
 .PP
 Changes the instance ID of the custom entity type CUSTOM_ENTITY_ID with the JSON array of JSON Patch (RFC 6902) operations in \fB\-\-file\fR, such as \fB[{"op": "replace", "path": "/name", "value": {"en": "Report"}}]\fR; an add whose path ends in /\- appends to an array. An unknown ID is not found. CUSTOM_ENTITY_ID is the ID that \fBepx custom\-entities list\fR shows, and ID the one that \fBepx custom\-entities instances list CUSTOM_ENTITY_ID\fR shows.
 .PP
-Emporix checks the items that the references of the instance name (unless \fB\-\-validate\-references\fR false) with epx\(aqs token, which reads the instances of CUSTOM_ENTITY_ID alone: a reference to an instance of another custom entity type is then expected to fail with 400 Bad Request, as one to the type fails without that scope, and one to another kind of item, such as a product, may fail too.
+Emporix checks the items that the references of the instance name (unless \fB\-\-validate\-references\fR false) with epx\(aqs token, which reads the instances of CUSTOM_ENTITY_ID alone: a reference to an instance of another custom entity type or to an order fails with 400 Bad Request whether the item exists or not, and one to a product finds published products only (an unpublished one is not found, 400).
 .PP
 Localized text in the body is a map of translations, e.g. \fB{"en": "Acme", "de": "Acme"}\fR, as \fB\-o json\fR of a read prints it, sent with Content\-Language: *. Emporix refuses a string in its place.
 .PP
@@ -554,7 +554,7 @@ epx custom\-entities instances update CUSTOM_ENTITY_ID ID [flags]
 .PP
 Replaces the instance ID of the custom entity type CUSTOM_ENTITY_ID with the JSON object in \fB\-\-file\fR, as create takes it without the id, or creates it with that id where none exists (an upsert). With metadata.version, as \fBepx custom\-entities instances get CUSTOM_ENTITY_ID ID \-o json\fR prints it, Emporix replaces only that version: an older one is a conflict. CUSTOM_ENTITY_ID is the ID that \fBepx custom\-entities list\fR shows, and ID the one that \fBepx custom\-entities instances list CUSTOM_ENTITY_ID\fR shows.
 .PP
-Emporix checks the items that the references of the instance name (unless \fB\-\-validate\-references\fR false) with epx\(aqs token, which reads the instances of CUSTOM_ENTITY_ID alone: a reference to an instance of another custom entity type is then expected to fail with 400 Bad Request, as one to the type fails without that scope, and one to another kind of item, such as a product, may fail too.
+Emporix checks the items that the references of the instance name (unless \fB\-\-validate\-references\fR false) with epx\(aqs token, which reads the instances of CUSTOM_ENTITY_ID alone: a reference to an instance of another custom entity type or to an order fails with 400 Bad Request whether the item exists or not, and one to a product finds published products only (an unpublished one is not found, 400).
 .PP
 Localized text in the body is a map of translations, e.g. \fB{"en": "Acme", "de": "Acme"}\fR, as \fB\-o json\fR of a read prints it, sent with Content\-Language: *. Emporix refuses a string in its place.
 .PP

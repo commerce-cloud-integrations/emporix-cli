@@ -24,8 +24,9 @@ func newAIRAGCommand(a *app) *cobra.Command {
 		" An unknown TYPE, such as LEGAL_ENTITY, gets 400 Bad Request (exit 1). " +
 		"The fields come whole, so they are read with one request."
 	reindexTypeHelp := entityTypeSentences(builtIn) +
-		" Emporix has answered an unknown TYPE with 204 No Content (exit 0), not the " +
-		"400 Bad Request its reference gives, so check the TYPE first."
+		" Emporix answers an unknown TYPE with 204 No Content (exit 0), not the 400 Bad Request its " +
+		"reference gives, and starts a reindex job for it that `epx indexing reindex-jobs list` shows " +
+		"and that ends SUCCESS with nothing indexed, so check the TYPE first."
 	whole := listing{read: (*emporix.Client).GetUnpaged}
 	fields := reader[string]{view: stringsView("RAG field", "FIELD"), scopes: []string{aiScope}}
 	filters := reader[ragFilterField]{view: view[ragFilterField]{

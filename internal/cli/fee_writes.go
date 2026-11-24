@@ -59,7 +59,6 @@ type feeOwner struct {
 	helpNoun    string
 	argSource   string
 	site        bool
-	feeSite     string
 	ids         *idSource
 }
 
@@ -67,7 +66,7 @@ func feeOwners() (item, product feeOwner) {
 	return feeOwner{segment: "itemFees", arg: "YRN", summaryNoun: "an item", helpNoun: "the item YRN",
 			argSource: "YRN names the item, " + yrnNote + "."},
 		feeOwner{segment: "productFees", arg: "PRODUCT_ID", suffix: "-product", summaryNoun: "a product",
-			helpNoun: "the product PRODUCT_ID", argSource: productIDNote, site: true, feeSite: " on the site of the fee",
+			helpNoun: "the product PRODUCT_ID", argSource: productIDNote, site: true,
 			ids: products().ids()}
 }
 
@@ -119,7 +118,7 @@ func (o *feeOwner) writes() []*write {
 		{
 			use: deleteUse + o.suffix + "-fee " + o.arg + " FEE_ID", short: "Remove a fee from " + o.summaryNoun,
 			method: http.MethodDelete,
-			long: "Removes the fee FEE_ID from the item fee of " + o.helpNoun + o.feeSite + "; Emporix deletes " +
+			long: "Removes the fee FEE_ID from the item fee of " + o.helpNoun + " on the site of the fee; Emporix deletes " +
 				"the item fee once it has no fees. " + unknownAsDeleted("FEE_ID") + " " + o.argSource + " " + feeID,
 			req:    request{path: o.fees(placeholderParent) + "/" + placeholderID},
 			scopes: []string{itemFeeDelete}, body: noBody{}, ids: ids,

@@ -32,6 +32,17 @@ change or remove commands, columns or flags, and its notes list each such change
   found; the deletes of agents, tools, tokens, OAuth configurations and MCP servers say so too.
 - `epx indexing reindex-jobs create` help says Emporix accepts an unknown TYPE and ends its job
   with nothing indexed. `epx schemas references delete` help says it deletes every version.
+- `epx sites mixins list` and `get` help say Emporix refuses the mixins of an inactive site (exit 3)
+  without the write-capable site.site_manage scope. `epx ai rag reindex` help says an unknown TYPE
+  starts a reindex job that indexes nothing.
+- `epx custom-entities instances` write help says which references Emporix refuses when it checks
+  them: to another custom entity type or an order always, to a product unless it is published.
+  `epx fees assignments delete-fee` help says it acts on the site of the fee.
+- `epx search queries update` help says Emporix refuses an existing ID without metadata.version, and
+  `epx search documents` help says `--sort` takes only exact fields and that documents of the same
+  score come in a different order on each request. `epx search indexes delete`, `epx labels` and
+  `epx schemas references list` help say what Emporix answers an unknown index, a label name and a
+  filter by ID.
 
 ## 0.5.0 (2026-11-19)
 

@@ -57,7 +57,7 @@ func searchIndexWrites(job *jobWait) perTypeWrites {
 			"  epx search indexes update VEHICLE vehicles --file index.json --wait --yes",
 		delete: "Starts the job that deletes the search index ID of the type TYPE: Emporix answers with " +
 			"the job's id (`epx search jobs get ID` reads the job), and with 409 Conflict (exit 5) while " +
-			"another job of the index is running.",
+			"another job of the index is running. An unknown one is not found (exit 4).",
 		answer: job.answering(jobIDs{field: "id"}),
 	}
 }
@@ -68,8 +68,9 @@ func savedSearchWrites() perTypeWrites {
 			"--file, a JSON object with index (the ID of a search index of TYPE), queries, filters or " +
 			"both, and optionally name and description. Emporix answers a new one with its id (201 " +
 			"Created), and a replaced one with 204 No Content. Replacing one needs its metadata.version, " +
-			"as `epx search queries get TYPE ID -o json` prints it; a stale one is a conflict (exit 5). " +
-			"An unknown index is not found (exit 4).",
+			"as `epx search queries get TYPE ID -o json` prints it; a stale one is a conflict (exit 5), and " +
+			"without it Emporix refuses an existing ID (400 Bad Request, exit 1). A read prints the index " +
+			"as indexId; the body names it as index. An unknown index is not found (exit 4).",
 		example: "  epx search queries update VEHICLE by-make --file by-make.json --dry-run",
 		delete:  "Deletes the saved search ID of the type TYPE; an unknown one is not found (exit 4).",
 	}

@@ -241,7 +241,7 @@ Also takes the [global flags](/commands#global-flags).
 
 Show one mixin of a site.
 
-Reads one mixin of a site: its fields by NAME, each VALUE cut (`-o json` prints them whole). SITE\_CODE is the CODE that [`epx sites list`](/commands/sites#epx-sites-list) shows; an unknown one is not found. NAME is the NAME that [`epx sites mixins list SITE_CODE`](/commands/sites#epx-sites-mixins-list) shows; an unknown one is not found.
+Reads one mixin of a site: its fields by NAME, each VALUE cut (`-o json` prints them whole). Emporix serves the mixins of an inactive site only with the write-capable site.site\_manage scope, which these reads do not request: for an inactive site it answers 403 (exit 3), also for an unknown NAME. SITE\_CODE is the CODE that [`epx sites list`](/commands/sites#epx-sites-list) shows; an unknown one is not found. NAME is the NAME that [`epx sites mixins list SITE_CODE`](/commands/sites#epx-sites-mixins-list) shows; an unknown one is not found.
 
 No OAuth scope is needed.
 
@@ -262,7 +262,7 @@ Also takes the [global flags](/commands#global-flags).
 
 List the mixins of a site.
 
-Reads the mixins of a site, the custom settings that extend it (such as coupon or customer settings), by NAME, each VALUE cut (`-o json` prints them whole). A site without mixins lists none. SITE\_CODE is the CODE that [`epx sites list`](/commands/sites#epx-sites-list) shows; an unknown one is not found.
+Reads the mixins of a site, the custom settings that extend it (such as coupon or customer settings), by NAME, each VALUE cut (`-o json` prints them whole). A site without mixins lists none. Emporix serves the mixins of an inactive site only with the write-capable site.site\_manage scope, which these reads do not request: for an inactive site it answers 403 (exit 3), also for an unknown NAME. SITE\_CODE is the CODE that [`epx sites list`](/commands/sites#epx-sites-list) shows; an unknown one is not found.
 
 No OAuth scope is needed.
 

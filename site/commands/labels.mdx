@@ -33,7 +33,7 @@ Its reads need no OAuth scope. Its writes require different OAuth scopes; the he
 
 Create a label.
 
-Creates a label from the JSON in `--file`, such as `{"name": "Free shipping", "description": "<p>Ships free</p>", "overlay": {"isTrue": true, "position": 1}}`, and prints the label that Emporix answers with. Emporix generates its id unless the JSON names one; an id that exists already is a conflict.
+Creates a label from the JSON in `--file`, such as `{"name": "Free shipping", "description": "<p>Ships free</p>", "overlay": {"isTrue": true, "position": 1}}`, and prints the label that Emporix answers with. Emporix generates its id unless the JSON names one; an id that exists already is a conflict. Its name is a string (Emporix refuses a map of translations, 400 Bad Request); its description is a string or a map of translations.
 
 Changes data: on a terminal, epx asks before it sends POST. `--yes` sends without asking (required without a terminal, or with `--file` -); `--dry-run` prints the request instead of sending it.
 
@@ -160,7 +160,7 @@ Also takes the [global flags](/commands#global-flags).
 
 Replace a label.
 
-Replaces the label ID with the JSON in `--file`, which must name its name and description. An unknown ID is not found. It prints the label that Emporix answers with.
+Replaces the label ID with the JSON in `--file`, which must name its name and description. Its name is a string (Emporix refuses a map of translations, 400 Bad Request); its description is a string or a map of translations. An unknown ID is not found. It prints the label that Emporix answers with.
 
 Changes data: on a terminal, epx asks before it sends PUT. `--yes` sends without asking (required without a terminal, or with `--file` -); `--dry-run` prints the request instead of sending it.
 

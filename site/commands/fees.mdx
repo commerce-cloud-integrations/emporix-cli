@@ -137,7 +137,7 @@ Also takes the [global flags](/commands#global-flags).
 
 Remove a fee from an item.
 
-Removes the fee FEE\_ID from the item fee of the item YRN; Emporix deletes the item fee once it has no fees. Emporix answers an unknown FEE\_ID as one that it deleted (204 No Content). YRN names the item, e.g. `'urn:yaas:saasag:caasproduct:product:TENANT;PRODUCT_ID'` (quoted, because the shell would end the command at ;). FEE\_ID is the ID that [`epx fees list`](/commands/fees#epx-fees-list) shows.
+Removes the fee FEE\_ID from the item fee of the item YRN on the site of the fee; Emporix deletes the item fee once it has no fees. Emporix answers an unknown FEE\_ID as one that it deleted (204 No Content). YRN names the item, e.g. `'urn:yaas:saasag:caasproduct:product:TENANT;PRODUCT_ID'` (quoted, because the shell would end the command at ;). FEE\_ID is the ID that [`epx fees list`](/commands/fees#epx-fees-list) shows.
 
 Deletes data, which cannot be undone. On a terminal, epx sends DELETE only once you type FEE\_ID at its prompt. `--yes` sends without asking (required without a terminal); `--dry-run` prints the request instead of sending it.
 

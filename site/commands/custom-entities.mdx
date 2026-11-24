@@ -203,7 +203,7 @@ Create instances of a custom entity type in bulk.
 
 Creates instances of the custom entity type CUSTOM\_ENTITY\_ID from `--file`, a JSON array of instances, each as create takes it. CUSTOM\_ENTITY\_ID is the ID that [`epx custom-entities list`](/commands/custom-entities#epx-custom-entities-list) shows.
 
-With `--validate-references` true, Emporix checks the items that the references of each instance name with epx's token, which reads the instances of CUSTOM\_ENTITY\_ID alone: an instance with a reference to an item that does not exist fails with 500 Internal Server Error (nothing is created), as one with a reference to an instance of another custom entity type is expected to, and one with a reference to another kind of item, such as a product, may.
+With `--validate-references` true, Emporix checks the items that the references of each instance name with epx's token, which reads the instances of CUSTOM\_ENTITY\_ID alone: an instance with a reference to an item that does not exist, to an instance of another custom entity type, to an order or to an unpublished product fails with 500 Internal Server Error (Emporix does not write it); one to a published product passes.
 
 Localized text in the body is a map of translations, e.g. `{"en": "Acme", "de": "Acme"}`, as `-o json` of a read prints it, sent with Content-Language: \*. Emporix refuses a string in its place.
 
@@ -265,7 +265,7 @@ Change instances of a custom entity type in bulk.
 
 Changes instances of the custom entity type CUSTOM\_ENTITY\_ID as `--file` says: a JSON array with the id of each instance and the JSON Patch operations that change it, as patch takes them, such as `[{"id": "123", "data": [{"op": "replace", "path": "/name/en", "value": "Report"}]}]`. CUSTOM\_ENTITY\_ID is the ID that [`epx custom-entities list`](/commands/custom-entities#epx-custom-entities-list) shows.
 
-With `--validate-references` true, Emporix checks the items that the references of each instance name with epx's token, which reads the instances of CUSTOM\_ENTITY\_ID alone: an instance with a reference to an item that does not exist fails with 500 Internal Server Error (nothing is created), as one with a reference to an instance of another custom entity type is expected to, and one with a reference to another kind of item, such as a product, may.
+With `--validate-references` true, Emporix checks the items that the references of each instance name with epx's token, which reads the instances of CUSTOM\_ENTITY\_ID alone: an instance with a reference to an item that does not exist, to an instance of another custom entity type, to an order or to an unpublished product fails with 500 Internal Server Error (Emporix does not write it); one to a published product passes.
 
 Localized text in the body is a map of translations, e.g. `{"en": "Acme", "de": "Acme"}`, as `-o json` of a read prints it, sent with Content-Language: \*. Emporix refuses a string in its place.
 
@@ -300,7 +300,7 @@ Upsert instances of a custom entity type in bulk.
 
 Replaces the instances of the custom entity type CUSTOM\_ENTITY\_ID in `--file`, a JSON array of instances, each with its id and as update takes it, or creates those that do not exist (an upsert). CUSTOM\_ENTITY\_ID is the ID that [`epx custom-entities list`](/commands/custom-entities#epx-custom-entities-list) shows.
 
-With `--validate-references` true, Emporix checks the items that the references of each instance name with epx's token, which reads the instances of CUSTOM\_ENTITY\_ID alone: an instance with a reference to an item that does not exist fails with 500 Internal Server Error (nothing is created), as one with a reference to an instance of another custom entity type is expected to, and one with a reference to another kind of item, such as a product, may.
+With `--validate-references` true, Emporix checks the items that the references of each instance name with epx's token, which reads the instances of CUSTOM\_ENTITY\_ID alone: an instance with a reference to an item that does not exist, to an instance of another custom entity type, to an order or to an unpublished product fails with 500 Internal Server Error (Emporix does not write it); one to a published product passes.
 
 Localized text in the body is a map of translations, e.g. `{"en": "Acme", "de": "Acme"}`, as `-o json` of a read prints it, sent with Content-Language: \*. Emporix refuses a string in its place.
 
@@ -335,7 +335,7 @@ Create an instance of a custom entity type.
 
 Creates an instance of the custom entity type CUSTOM\_ENTITY\_ID from the JSON object in `--file`, such as `{"id": "123", "name": {"en": "Report"}, "mixins": {…}}`, and prints the id that Emporix answers with; it makes one unless the object names it, and an id that exists already is a conflict. An owner, such as `{"type": "EMPLOYEE", "userId": "…"}`, cannot change once set. The attributes of a schema go under its id, which metadata.mixins maps to its URL: `{"mixins": {"SCHEMA_ID": {…}}, "metadata": {"mixins": {"SCHEMA_ID": "URL"}}}`, the URL being the metadata.url that [`epx schemas get SCHEMA_ID -o json`](/commands/schemas#epx-schemas-get) prints. A localized attribute, unlike the name, is a list of translations, such as `[{"language": "en", "value": "Report"}]`. CUSTOM\_ENTITY\_ID is the ID that [`epx custom-entities list`](/commands/custom-entities#epx-custom-entities-list) shows.
 
-Emporix checks the items that the references of the instance name (unless `--validate-references` false) with epx's token, which reads the instances of CUSTOM\_ENTITY\_ID alone: a reference to an instance of another custom entity type is then expected to fail with 400 Bad Request, as one to the type fails without that scope, and one to another kind of item, such as a product, may fail too.
+Emporix checks the items that the references of the instance name (unless `--validate-references` false) with epx's token, which reads the instances of CUSTOM\_ENTITY\_ID alone: a reference to an instance of another custom entity type or to an order fails with 400 Bad Request whether the item exists or not, and one to a product finds published products only (an unpublished one is not found, 400).
 
 Localized text in the body is a map of translations, e.g. `{"en": "Acme", "de": "Acme"}`, as `-o json` of a read prints it, sent with Content-Language: \*. Emporix refuses a string in its place.
 
@@ -457,7 +457,7 @@ Change an instance of a custom entity type.
 
 Changes the instance ID of the custom entity type CUSTOM\_ENTITY\_ID with the JSON array of JSON Patch (RFC 6902) operations in `--file`, such as `[{"op": "replace", "path": "/name", "value": {"en": "Report"}}]`; an add whose path ends in /- appends to an array. An unknown ID is not found. CUSTOM\_ENTITY\_ID is the ID that [`epx custom-entities list`](/commands/custom-entities#epx-custom-entities-list) shows, and ID the one that [`epx custom-entities instances list CUSTOM_ENTITY_ID`](/commands/custom-entities#epx-custom-entities-instances-list) shows.
 
-Emporix checks the items that the references of the instance name (unless `--validate-references` false) with epx's token, which reads the instances of CUSTOM\_ENTITY\_ID alone: a reference to an instance of another custom entity type is then expected to fail with 400 Bad Request, as one to the type fails without that scope, and one to another kind of item, such as a product, may fail too.
+Emporix checks the items that the references of the instance name (unless `--validate-references` false) with epx's token, which reads the instances of CUSTOM\_ENTITY\_ID alone: a reference to an instance of another custom entity type or to an order fails with 400 Bad Request whether the item exists or not, and one to a product finds published products only (an unpublished one is not found, 400).
 
 Localized text in the body is a map of translations, e.g. `{"en": "Acme", "de": "Acme"}`, as `-o json` of a read prints it, sent with Content-Language: \*. Emporix refuses a string in its place.
 
@@ -531,7 +531,7 @@ Upsert an instance of a custom entity type.
 
 Replaces the instance ID of the custom entity type CUSTOM\_ENTITY\_ID with the JSON object in `--file`, as create takes it without the id, or creates it with that id where none exists (an upsert). With metadata.version, as [`epx custom-entities instances get CUSTOM_ENTITY_ID ID -o json`](/commands/custom-entities#epx-custom-entities-instances-get) prints it, Emporix replaces only that version: an older one is a conflict. CUSTOM\_ENTITY\_ID is the ID that [`epx custom-entities list`](/commands/custom-entities#epx-custom-entities-list) shows, and ID the one that [`epx custom-entities instances list CUSTOM_ENTITY_ID`](/commands/custom-entities#epx-custom-entities-instances-list) shows.
 
-Emporix checks the items that the references of the instance name (unless `--validate-references` false) with epx's token, which reads the instances of CUSTOM\_ENTITY\_ID alone: a reference to an instance of another custom entity type is then expected to fail with 400 Bad Request, as one to the type fails without that scope, and one to another kind of item, such as a product, may fail too.
+Emporix checks the items that the references of the instance name (unless `--validate-references` false) with epx's token, which reads the instances of CUSTOM\_ENTITY\_ID alone: a reference to an instance of another custom entity type or to an order fails with 400 Bad Request whether the item exists or not, and one to a product finds published products only (an unpublished one is not found, 400).
 
 Localized text in the body is a map of translations, e.g. `{"en": "Acme", "de": "Acme"}`, as `-o json` of a read prints it, sent with Content-Language: \*. Emporix refuses a string in its place.
 

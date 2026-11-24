@@ -40,20 +40,24 @@ func newLabelsCommand(a *app) *cobra.Command {
 		},
 	}
 	manage := []string{"label.label_manage"}
-	const answer = "It prints the label that Emporix answers with."
+	const (
+		answer     = "It prints the label that Emporix answers with."
+		labelTexts = "Its name is a string (Emporix refuses a map of translations, 400 Bad Request); its " +
+			"description is a string or a map of translations."
+	)
 	return newResourceCommand(a, labels,
 		(&write{
 			use: createUse, short: "Create a label", method: http.MethodPost,
 			long: "Creates a label from the JSON in --file, such as " + literal(
 				`{"name": "Free shipping", "description": "<p>Ships free</p>", "overlay": {"isTrue": true, `+
 					`"position": 1}}`) + ", and prints the label that Emporix answers with. Emporix generates its id " +
-				"unless the JSON names one; an id that exists already is a conflict.",
+				"unless the JSON names one; an id that exists already is a conflict. " + labelTexts,
 			req: request{path: labels.path}, scopes: manage, body: &payload{},
 		}).command(a),
 		(&write{
 			use: labels.itemUse("update"), short: "Replace a label", method: http.MethodPut,
 			long: "Replaces the label ID with the JSON in --file, which must name its name and description. " +
-				"An unknown ID is not found. " + answer,
+				labelTexts + " An unknown ID is not found. " + answer,
 			req: request{path: labels.itemPath()}, scopes: manage, body: &payload{}, ids: labels.itemIDs(),
 		}).command(a),
 		(&write{

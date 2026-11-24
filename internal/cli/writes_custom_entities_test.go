@@ -178,8 +178,8 @@ func TestCustomEntityWriteHelp(t *testing.T) {
 			"(true without it), requesting custom.<type>_read where it is true or not given: true or false",
 			"Emporix checks the items that the references of the instance name (unless " +
 				"--validate-references false) with epx's token, which reads the instances of CUSTOM_ENTITY_ID " +
-				"alone: a reference to an instance of another custom entity type is then expected to fail " +
-				"with 400 Bad Request,",
+				"alone: a reference to an instance of another custom entity type or to an order fails with " +
+				"400 Bad Request whether the item exists or not,",
 			"\n\nWhere --validate-references is true or not given, epx also requests " +
 				"the custom.<type>_read scope.\n\nRequires the custom.<type>_manage scope. <type> is the custom " +
 				"entity type in lower case (custom.document_manage for DOCUMENT).\n\nUsage:"}},
@@ -201,8 +201,8 @@ func TestCustomEntityWriteHelp(t *testing.T) {
 		{args: []string{"custom-entities", "instances", "bulk-create"}, want: []string{
 			"(false without it), requesting custom.<type>_read where it is true:",
 			"With --validate-references true, Emporix checks the items that the references of each ",
-			"instance with a reference to an item that does not exist fails with 500 Internal Server " +
-				"Error (nothing is created)",
+			"instance with a reference to an item that does not exist, to an instance of another custom " +
+				"entity type, to an order or to an unpublished product fails with 500 Internal Server Error",
 			"\n\nWhere --validate-references is true, epx also requests the custom.<type>_read scope.\n\nRequires the " +
 				"custom.<type>_manage scope.",
 			"Emporix takes up to 200 items in one request (epx refuses more)"}},

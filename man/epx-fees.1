@@ -109,7 +109,7 @@ epx fees assignments delete\-fee YRN FEE_ID [flags]
 .fi
 .RE
 .PP
-Removes the fee FEE_ID from the item fee of the item YRN; Emporix deletes the item fee once it has no fees. Emporix answers an unknown FEE_ID as one that it deleted (204 No Content). YRN names the item, e.g. \fB\(aqurn:yaas:saasag:caasproduct:product:TENANT;PRODUCT_ID\(aq\fR (quoted, because the shell would end the command at ;). FEE_ID is the ID that \fBepx fees list\fR shows.
+Removes the fee FEE_ID from the item fee of the item YRN on the site of the fee; Emporix deletes the item fee once it has no fees. Emporix answers an unknown FEE_ID as one that it deleted (204 No Content). YRN names the item, e.g. \fB\(aqurn:yaas:saasag:caasproduct:product:TENANT;PRODUCT_ID\(aq\fR (quoted, because the shell would end the command at ;). FEE_ID is the ID that \fBepx fees list\fR shows.
 .PP
 Deletes data, which cannot be undone. On a terminal, epx sends DELETE only once you type FEE_ID at its prompt. \fB\-\-yes\fR sends without asking (required without a terminal); \fB\-\-dry\-run\fR prints the request instead of sending it.
 .PP

@@ -237,7 +237,7 @@ epx sites mixins get SITE_CODE NAME [flags]
 .fi
 .RE
 .PP
-Reads one mixin of a site: its fields by NAME, each VALUE cut (\fB\-o json\fR prints them whole). SITE_CODE is the CODE that \fBepx sites list\fR shows; an unknown one is not found. NAME is the NAME that \fBepx sites mixins list SITE_CODE\fR shows; an unknown one is not found.
+Reads one mixin of a site: its fields by NAME, each VALUE cut (\fB\-o json\fR prints them whole). Emporix serves the mixins of an inactive site only with the write\-capable site.site_manage scope, which these reads do not request: for an inactive site it answers 403 (exit 3), also for an unknown NAME. SITE_CODE is the CODE that \fBepx sites list\fR shows; an unknown one is not found. NAME is the NAME that \fBepx sites mixins list SITE_CODE\fR shows; an unknown one is not found.
 .PP
 No OAuth scope is needed.
 .PP
@@ -260,7 +260,7 @@ epx sites mixins list SITE_CODE [flags]
 .fi
 .RE
 .PP
-Reads the mixins of a site, the custom settings that extend it (such as coupon or customer settings), by NAME, each VALUE cut (\fB\-o json\fR prints them whole). A site without mixins lists none. SITE_CODE is the CODE that \fBepx sites list\fR shows; an unknown one is not found.
+Reads the mixins of a site, the custom settings that extend it (such as coupon or customer settings), by NAME, each VALUE cut (\fB\-o json\fR prints them whole). A site without mixins lists none. Emporix serves the mixins of an inactive site only with the write\-capable site.site_manage scope, which these reads do not request: for an inactive site it answers 403 (exit 3), also for an unknown NAME. SITE_CODE is the CODE that \fBepx sites list\fR shows; an unknown one is not found.
 .PP
 No OAuth scope is needed.
 .PP

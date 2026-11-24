@@ -81,8 +81,8 @@ func TestRAGHelpNamesTheBuiltInTypes(t *testing.T) {
 	}{
 		{use: "fields", want: types + read, not: "204"},
 		{use: "filter-fields", want: types + read, not: "204"},
-		{use: "reindex", want: types + "Emporix has answered an unknown TYPE with 204 No Content (exit 0), not the " +
-			"400 Bad Request its reference gives, so check the TYPE first.",
+		{use: "reindex", want: types + "Emporix answers an unknown TYPE with 204 No Content (exit 0), not the " +
+			"400 Bad Request its reference gives, and starts a reindex job for it",
 			not: read},
 	} {
 		text := helpText(t, "ai", "rag", tt.use)
