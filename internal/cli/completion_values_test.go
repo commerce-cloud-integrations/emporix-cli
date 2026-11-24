@@ -84,6 +84,33 @@ func TestCompletionOffersTheBuiltInSearchTypesAndTheCustomOnes(t *testing.T) {
 	}
 }
 
+func TestCompletionOffersTheSavedSearchesOfTheType(t *testing.T) {
+	queries := "/search/acme1/search/VEHICLE/queries"
+	saved := map[string]http.HandlerFunc{queries: respond(http.StatusOK,
+		`[{"id":"by-name","name":{"en":"By name"}},{"id":"by-year"},{"id":"recent"}]`)}
+	for _, tt := range []completionCase{
+		{
+			name: "every saved search of the TYPE typed",
+			args: []string{"search", "documents", "VEHICLE", "--saved-search", ""}, routes: saved,
+			want:     []string{"by-name|By name", "by-year", "recent"},
+			requests: []string{queries + "?pageNumber=1&pageSize=100"}, scopes: []string{searchScope},
+		},
+		{
+			name: "only those that start with what is typed",
+			args: []string{"search", "documents", "VEHICLE", "--saved-search", "by"}, routes: saved,
+			want:     []string{"by-name|By name", "by-year"},
+			requests: []string{queries + "?pageNumber=1&pageSize=100"}, scopes: []string{searchScope},
+		},
+	} {
+		t.Run(tt.name, tt.check)
+	}
+	f := newFakeEmporix(t)
+	if got, _ := completion(t, completionEnv(f), "search", "documents", "--saved-search", ""); len(got) != 0 {
+		t.Errorf("--saved-search before a TYPE: completions %q; want none", got)
+	}
+	f.assertRequests(t)
+}
+
 func TestCompletionOfSeveralAgentIDsCompletesTheLast(t *testing.T) {
 	agents := map[string]http.HandlerFunc{agentsPath: respond(http.StatusOK,
 		`[{"id":"a1","name":{"en":"Support"}},{"id":"a2"},{"id":"b1","name":{"en":"Fraud"}},{"id":"b,2"}]`)}

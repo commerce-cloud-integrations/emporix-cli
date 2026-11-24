@@ -63,6 +63,11 @@ func flagCompletion(a *app, flag *pflag.Flag, codes *idSource) cobra.CompletionF
 		return func(c *cobra.Command, _ []string, toComplete string) ([]cobra.Completion, cobra.ShellCompDirective) {
 			return offerArgument(nil, codes, a.listedItems(c.Context(), codes, nil, ""), toComplete)
 		}
+	case savedSearchFlag:
+		src := savedSearchIDs()
+		return func(c *cobra.Command, args []string, toComplete string) ([]cobra.Completion, cobra.ShellCompDirective) {
+			return offerArgument(nil, src, a.listedItems(c.Context(), src, args, ""), toComplete)
+		}
 	default:
 		return nil
 	}

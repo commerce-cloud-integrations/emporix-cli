@@ -7,6 +7,11 @@ change or remove commands, columns or flags, and its notes list each such change
 
 ## Unreleased
 
+### Added
+
+- With EPX_COMPLETE_IDS=1, `--saved-search` of `epx search documents` completes with the saved searches of
+  the TYPE given.
+
 ### Changed
 
 - `epx fees get` reads the fee only from the `fee` member of the response, where Emporix and its API
@@ -43,6 +48,10 @@ change or remove commands, columns or flags, and its notes list each such change
   score come in a different order on each request. `epx search indexes delete`, `epx labels` and
   `epx schemas references list` help say what Emporix answers an unknown index, a label name and a
   filter by ID.
+- `epx search documents` reads a search in one page of up to 2000 documents, the most Emporix sends.
+  Emporix orders documents of the same score differently on each request, so a search that found more than
+  100 failed (exit 1) on a document that a later page repeated. A search that finds more than 2000 fails
+  (exit 1).
 
 ## 0.5.0 (2026-11-19)
 

@@ -62,8 +62,8 @@ func TestHelpSaysHowEmporixAnswers(t *testing.T) {
 		{[]string{"search", "indexes", "delete"}, []string{"An unknown one is not found (exit 4)"}},
 		{[]string{"search", "documents"}, []string{
 			"--sort sorts only by fields that the index holds with exact true",
-			"Emporix orders documents of the same SCORE differently on each request",
-			"can repeat one on a later page: epx then fails with exit 1 (with --stream, after printing the pages before it)",
+			"Emporix orders documents of the same SCORE differently on each request, so pages of them overlap",
+			"epx reads them as one page of up to 2000, the most Emporix sends, and a search that finds more fails",
 		}},
 		{[]string{"products", "get"}, []string{
 			"arrays, a localized attribute's list of translations too, and other values are replaced, not merged",

@@ -23,7 +23,7 @@ const completionSize = 100
 
 func completionHelp() string {
 	return "With " + envCompleteIDs + "=1 in the environment, the arguments that name items (such as ID of " +
-		"`epx products get ID`) and --site complete too, with up to " + strconv.Itoa(completionSize) +
+		"`epx products get ID`), --site and --saved-search complete too, with up to " + strconv.Itoa(completionSize) +
 		" of the IDs and site codes that " +
 		"the first page of their list shows (the whole list where Emporix sends it in one response), " +
 		"read with the API key in effect and the scopes of that list within " +

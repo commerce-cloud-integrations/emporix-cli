@@ -162,6 +162,8 @@ func instanceAndDocumentSearchReads() []readCase {
 			args: []string{"search", "documents", "DOCUMENT", "--saved-search", "manuals", "--text", "diesel engine",
 				"--language", "nl"},
 			path:        "/search/acme1/search/DOCUMENT",
+			mode:        getAllInOnePage,
+			pageSize:    "2000",
 			scopes:      []string{"search.search_read", "custom.document_read"},
 			filters:     listFilters{kinds: sortable},
 			method:      http.MethodPost,
@@ -173,6 +175,8 @@ func instanceAndDocumentSearchReads() []readCase {
 		{
 			args:        []string{"search", "documents", "customer", "--saved-search", "by-city", "--text", "Utrecht"},
 			path:        "/search/acme1/search/customer",
+			mode:        getAllInOnePage,
+			pageSize:    "2000",
 			scopes:      []string{"search.search_read", "customer.customer_read"},
 			filters:     listFilters{kinds: sortable},
 			method:      http.MethodPost,
@@ -183,6 +187,8 @@ func instanceAndDocumentSearchReads() []readCase {
 		{
 			args:        []string{"search", "documents", "legal-entity", "--saved-search", "by-name", "--text", "acme"},
 			path:        "/search/acme1/search/legal-entity",
+			mode:        getAllInOnePage,
+			pageSize:    "2000",
 			scopes:      []string{"search.search_read", "customermanagement.legalentity_read"},
 			filters:     listFilters{kinds: sortable},
 			method:      http.MethodPost,

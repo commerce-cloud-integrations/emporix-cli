@@ -69,25 +69,7 @@ const badQuery = "Emporix answers a list's malformed --query with an internal er
 
 func newSearchCommand(a *app) *cobra.Command {
 	types := newExactTypes(searchTypes(), searchUse)
-	queries := resource[savedSearch]{
-		use:   "queries",
-		noun:  "saved searches",
-		short: "Read, upsert and delete saved searches",
-		under: searchUse,
-		long: "Reads saved searches: queries and filters (only in `-o json`) stored to run against a search " +
-			"INDEX of a type. " + badQuery,
-		path:    searchPerType + "queries",
-		scopes:  []string{searchScope},
-		filters: listFilters{kinds: filterable},
-		view: view[savedSearch]{
-			singular:  "saved search",
-			header:    []string{columnID, columnType, columnName, columnIndex, columnVersion},
-			localized: true,
-			row: func(s savedSearch, lang language) []string {
-				return []string{s.ID, s.Type, s.Name.in(lang), s.IndexID, s.Metadata.Version.String()}
-			},
-		},
-	}
+	queries := savedSearches()
 	jobs := indexJobs()
 	return newGroup(searchUse, "Search documents; read and change search indexes and saved searches",
 		"Reads the Search Service (a preview at Emporix), which searches customers, legal entities "+
@@ -163,6 +145,42 @@ func indexJobs() resource[indexJob] {
 	}
 }
 
+func savedSearches() resource[savedSearch] {
+	return resource[savedSearch]{
+		use:   "queries",
+		noun:  "saved searches",
+		short: "Read, upsert and delete saved searches",
+		under: searchUse,
+		long: "Reads saved searches: queries and filters (only in `-o json`) stored to run against a search " +
+			"INDEX of a type. " + badQuery,
+		path:    searchPerType + "queries",
+		scopes:  []string{searchScope},
+		filters: listFilters{kinds: filterable},
+		view: view[savedSearch]{
+			singular:  "saved search",
+			header:    []string{columnID, columnType, columnName, columnIndex, columnVersion},
+			localized: true,
+			row: func(s savedSearch, lang language) []string {
+				return []string{s.ID, s.Type, s.Name.in(lang), s.IndexID, s.Metadata.Version.String()}
+			},
+		},
+	}
+}
+
+const savedSearchFlag = "saved-search"
+
+func savedSearchIDs() *idSource {
+	r := savedSearches()
+	return listedIDs(r.reader(), ofTypeRequest(r), r.listing(), columnID)
+}
+
+func ofTypeRequest[T any](r resource[T]) request {
+	return request{path: searchPerType + placeholderID + "/" + r.use}
+}
+
+// searchDocumentsPage is the largest page of the Search Service.
+const searchDocumentsPage = 2000
+
 func documentsCommand(a *app, types builtInTypes) *cobra.Command {
 	documents := reader[searchDocument]{
 		scopes: []string{searchScope, customTypeReadScope}, // the reference also requires one that reads the documents
@@ -185,9 +203,9 @@ func documentsCommand(a *app, types builtInTypes) *cobra.Command {
 			"queries and filters instead. An unknown saved search, or index of --body, is not found " +
 			"(exit 4). --sort sorts only by fields that the index holds with exact true (Emporix leaves " +
 			"the others unsorted and refuses id, 400 Bad Request). Emporix orders documents of the same " +
-			"SCORE differently on each request, so a search that finds more than one page of documents " +
-			"(100) can repeat one on a later page: epx then fails with exit 1 (with --stream, after " +
-			"printing the pages before it). " + typeSentence(types) + " " +
+			"SCORE differently on each request, so pages of them overlap: epx reads them as " +
+			onePage(searchDocumentsPage) + ", the most Emporix sends, and a search that finds more fails " +
+			"with exit 1; narrow it. " + typeSentence(types) + " " +
 			"Known limitation: for customer or legal-entity, epx requests the read scope that " +
 			"finds every document, so a credential that holds only a restricted one, such as " +
 			"customer.customer_read--DE, or only the own-read scope, such as customer.customer_read_own, " +
@@ -195,8 +213,8 @@ func documentsCommand(a *app, types builtInTypes) *cobra.Command {
 		req:     request{path: searchPerType + placeholderID},
 		ids:     argumentIDs{columnType: customEntities().ids()},
 		builtIn: types,
-		fetch: listing{filters: listFilters{kinds: sortable}}.search(
-			stringField("searchQueryId", "saved-search", "the `ID` of the saved search to run").require(),
+		fetch: listing{filters: listFilters{kinds: sortable}, read: inOnePage(searchDocumentsPage)}.search(
+			stringField("searchQueryId", savedSearchFlag, "the `ID` of the saved search to run").require(),
 			stringField("query", "text", "the `text` to search for in every term of the saved search").require(),
 		),
 	})
@@ -222,7 +240,7 @@ func indexSelection(rule typeRule) func(value string) (indexRef, error) {
 
 func perTypeCommand[T any](a *app, r resource[T], writes perTypeWrites, types exactTypes,
 	extra ...*cobra.Command) *cobra.Command {
-	ofType := request{path: searchPerType + placeholderID + "/" + r.use}
+	ofType := ofTypeRequest(r)
 	rd, listed, listedTypes := r.reader(), r.listing(), r.idsIn(columnType)
 	target := perTypeTarget{
 		singular: r.singular,

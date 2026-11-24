@@ -266,3 +266,16 @@ func TestExactTypesNeedBuiltInTypes(t *testing.T) {
 		})
 	}
 }
+
+func TestSearchDocumentsFailsBeyondOnePage(t *testing.T) {
+	fake := newFakeEmporix(t)
+	fake.route("/search/acme1/search/VEHICLE", allLanguages(respond(http.StatusOK,
+		`[{"id":"d1","_score":1},{"id":"d2","_score":1}]`, "X-Total-Count", "2001")))
+	code, stdout, stderr := runCLI(t, fake.env(), "search", "documents", "VEHICLE", "--saved-search", "s1",
+		"--text", "x")
+	if code != ExitError || stdout != "" || !strings.Contains(stderr, "one page of 2000 returned 2 of 2001 items") {
+		t.Fatalf("exit %d, stdout %q, stderr %q; want exit %d and the page that does not hold every document",
+			code, stdout, stderr, ExitError)
+	}
+	fake.assertRequests(t, "/search/acme1/search/VEHICLE?pageNumber=1&pageSize=2000")
+}
